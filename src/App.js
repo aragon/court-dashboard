@@ -1,7 +1,13 @@
 import React from 'react'
 
+import Disputes from './components/Disputes/Disputes'
+
 function App() {
-  return <div>{/* Set your component here */}</div>
+  return (
+    <div>
+      <Disputes />
+    </div>
+  )
 }
 
 export default App
