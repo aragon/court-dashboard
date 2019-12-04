@@ -1,21 +1,25 @@
 import React from 'react'
-import styled from 'styled-components'
 
-function Stepper({ children }) {
-  return <Wrapper>{children}</Wrapper>
+function Stepper({ linePosition, lineColor, children, ...props }) {
+  return (
+    <div
+      css={`
+        & > :not(:last-child)::after {
+          position: absolute;
+          content: '';
+          width: 1px;
+          height: 100%;
+          top: ${linePosition[0]};
+          left: ${linePosition[1]};
+          background: ${lineColor};
+          z-index: 1;
+        }
+      `}
+      {...props}
+    >
+      {children}
+    </div>
+  )
 }
-
-const Wrapper = styled.div`
-  & > :not(:last-child)::after {
-    position: absolute;
-    content: '';
-    width: 1px;
-    height: 75%;
-    background: #8fa4b5;
-    top: 50%;
-    left: 40px;
-    z-index: 1;
-  }
-`
 
 export default Stepper

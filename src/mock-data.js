@@ -95,42 +95,42 @@ export const disputes = [
 export const timeline = [
   {
     label: 'Open dispute #62',
-    date: '20-11-2019',
+    date: '20/11/2019',
     icon: IconFlag,
   },
   {
     label: 'Submit evidence',
-    date: '20-11-2019',
+    date: '20/11/2019',
     icon: IconFolder,
   },
   {
     label: 'Jurors drafted',
-    date: '20-11-2019',
+    date: '20/11/2019',
     icon: IconUsers,
   },
   {
     label: 'Review evidence',
-    date: '20-11-2019',
+    date: '20/11/2019',
     icon: IconReview,
   },
   {
     label: 'Voting period',
-    date: '20-11-2019',
+    date: '20/11/2019',
     icon: IconVoting,
   },
   {
     label: 'Apeal Ruling',
-    date: '20-11-2019',
+    date: '20/11/2019',
     icon: IconFeather,
   },
   {
     label: 'Claim rewards',
-    date: '20-11-2019',
+    date: '20/11/2019',
     icon: IconTokens,
   },
   {
     label: 'Milestone',
-    date: '20-11-2019',
+    date: '20/11/2019',
     icon: IconFlag,
   },
 ]

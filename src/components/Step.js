@@ -1,15 +1,37 @@
 import React from 'react'
 import styled from 'styled-components'
 
-export default function Step({ children, current }) {
-  return <Wrapper current={current}>{children}</Wrapper>
+import { GU, useTheme } from '@aragon/ui'
+
+export default function Step({ primary, secondary, active }) {
+  const theme = useTheme()
+
+  return (
+    <div
+      css={`
+        display: flex;
+        align-items: flex-start;
+        position: relative;
+        background: ${active ? theme.surfaceSelected : ''};
+        padding: ${1 * GU}px ${3 * GU}px;
+
+        &:first-child {
+          padding-top: 0;
+        }
+
+        &:last-child {
+          padding-bottom: 0;
+        }
+      `}
+    >
+      <Primary>{primary}</Primary>
+      <Secondary>{secondary}</Secondary>
+    </div>
+  )
 }
 
-const Wrapper = styled.div`
-  padding: 15px 20px;
-  display: flex;
-  align-items: flex-start;
-  position: relative;
-  background: ${props => (props.current ? '#F9FAFC' : '')};
-  transition: background 0.4s ease;
+const Primary = styled.div`
+  z-index: 2;
+  margin-right: 24px;
 `
+const Secondary = styled.div``

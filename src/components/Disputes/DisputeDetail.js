@@ -17,7 +17,7 @@ function DisputeDetail({ dispute, onBack }) {
           </Box>
         }
         secondary={
-          <Box heading="Dispute timeline">
+          <Box heading="Dispute timeline" padding={0}>
             <Timeline />
           </Box>
         }
