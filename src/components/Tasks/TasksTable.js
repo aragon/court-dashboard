@@ -55,7 +55,7 @@ const TaskTable = ({ tasks }) => {
   const sortedTasks = useMemo(
     () =>
       filteredTasks.sort(({ dueDate: dateLeft }, { dueDate: dateRight }) =>
-        // Sort by date descending
+        // Sort by date ascending
         compareAsc(dateLeft, dateRight)
       ),
     [filteredTasks]
