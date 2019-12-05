@@ -1,15 +1,31 @@
 import React from 'react'
-import styled from 'styled-components'
+import { GU, useTheme } from '@aragon/ui'
 
-export default function Step({ children, current }) {
-  return <Wrapper current={current}>{children}</Wrapper>
+export default function Step({ primary, secondary, active }) {
+  const theme = useTheme()
+
+  return (
+    <div
+      css={`
+        background: ${active ? theme.surfaceSelected : ''};
+      `}
+    >
+      <div
+        css={`
+          position: relative;
+          z-index: 2;
+        `}
+      >
+        {primary}
+      </div>
+
+      <div
+        css={`
+          margin-left: ${1.5 * GU}px;
+        `}
+      >
+        {secondary}
+      </div>
+    </div>
+  )
 }
-
-const Wrapper = styled.div`
-  padding: 15px 20px;
-  display: flex;
-  align-items: flex-start;
-  position: relative;
-  background: ${props => (props.current ? '#F9FAFC' : '')};
-  transition: background 0.4s ease;
-`

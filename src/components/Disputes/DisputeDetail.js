@@ -14,9 +14,12 @@ function DisputeDetail({ dispute, onBack }) {
       <Split
         primary={<DisputeInfo dispute={dispute} />}
         secondary={
-          <Box heading="Dispute timeline">
-            <Timeline />
-          </Box>
+          <React.Fragment>
+            <Box heading="Voting results">Results</Box>
+            <Box heading="Dispute timeline" padding={0}>
+              <Timeline />
+            </Box>
+          </React.Fragment>
         }
       />
     </React.Fragment>

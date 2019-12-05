@@ -1,14 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Button, Header, useTheme } from '@aragon/ui'
+import { Header } from '@aragon/ui'
 
+import MainButton from '../MainButton'
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
 
 import { disputes } from '../../mock-data'
 
 function Disputes() {
-  const theme = useTheme()
-
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
 
   const handleBack = useCallback(() => {
@@ -19,17 +18,7 @@ function Disputes() {
     <React.Fragment>
       <Header
         primary="Disputes"
-        secondary={
-          !selectedDispute && (
-            <Button
-              label="Buy ANJ"
-              css={`
-                background: ${theme.surfaceContentSecondary};
-                color: ${theme.surface};
-              `}
-            />
-          )
-        }
+        secondary={!selectedDispute && <MainButton label="Buy ANJ" />}
       />
       {selectedDispute ? (
         <DisputeDetail dispute={selectedDispute} onBack={handleBack} />
