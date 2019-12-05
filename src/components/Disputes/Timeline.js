@@ -12,8 +12,8 @@ function Timeline() {
   return (
     <div>
       <Stepper
-        linePosition={['25%', '47px']}
         lineColor={theme.surfaceIcon}
+        lineTop={15}
         css={`
           padding: ${3 * GU}px 0;
         `}
@@ -27,9 +27,10 @@ function Timeline() {
               primary={
                 <div
                   css={`
-                    background: ${active ? '#8FA4B5' : '#ECEFF4'};
+                    background: ${active ? theme.surfaceIcon : '#ECEFF4'};
                     border-radius: 80%;
                     padding: 10px;
+                    position: relative;
                     z-index: 2;
                     display: inline-flex;
                   `}
