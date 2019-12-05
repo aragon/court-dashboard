@@ -1,13 +1,13 @@
 import React from 'react'
-import { Button, textStyle, GU } from '@aragon/ui'
-
-import DAIIcon from '../../assets/dai.svg'
-import ANTIcon from '../../assets/ant.svg'
-import ANJIcon from '../../assets/anj.svg'
+import { Button, textStyle, GU, useTheme } from '@aragon/ui'
 
 import Balance from './Balance'
 
+import { balances } from '../../mock-data'
+
 function Balances() {
+  const theme = useTheme()
+
   return (
     <div>
       <div
@@ -20,47 +20,42 @@ function Balances() {
           <span
             css={`
               ${textStyle('body3')}
-              color: #637381;
-              font-weight: 200;
+              color: ${theme.contentSecondary};
               display: inline-block;
               margin-bottom: ${1.5 * GU}px;
             `}
           >
             Wallet balance
           </span>
-          <Balance
-            symbol="DAI"
-            amount="3.304,76"
-            value="3.300"
-            iconSrc={DAIIcon}
-          />
-          <Balance
-            symbol="ANT"
-            amount="3.304,76"
-            value="3.300"
-            iconSrc={ANTIcon}
-          />
+          {balances.wallet.map(balance => (
+            <Balance
+              symbol={balance.tokenSymbol}
+              amount={balance.amount}
+              value={balance.value}
+              iconSrc={balance.icon}
+            />
+          ))}
         </div>
         <div>
           <span
             css={`
               ${textStyle('body3')}
-              color: #637381;
-              font-weight: 200;
+              color: ${theme.contentSecondary};
               display: inline-block;
               margin-bottom: ${1.5 * GU}px;
             `}
           >
             Staked balance
           </span>
-          <Balance
-            symbol="ANJ"
-            amount="3.304,76"
-            value="3.300"
-            iconSrc={ANJIcon}
-          />
+          {balances.staked.map(balance => (
+            <Balance
+              symbol={balance.tokenSymbol}
+              amount={balance.amount}
+              value={balance.value}
+              iconSrc={balance.icon}
+            />
+          ))}
           <Button color="#636971">
-            {' '}
             <span
               css={`
                 color: #636971;
@@ -74,22 +69,22 @@ function Balances() {
           <span
             css={`
               ${textStyle('body3')}
-              color: #637381;
-              font-weight: 200;
+              color: ${theme.contentSecondary};
               display: inline-block;
               margin-bottom: ${1.5 * GU}px;
             `}
           >
             Active balance
           </span>
-          <Balance
-            symbol="ANJ"
-            amount="3.304,76"
-            value="3.300"
-            iconSrc={ANJIcon}
-          />
+          {balances.active.map(balance => (
+            <Balance
+              symbol={balance.tokenSymbol}
+              amount={balance.amount}
+              value={balance.value}
+              iconSrc={balance.icon}
+            />
+          ))}
           <Button color="#636971">
-            {' '}
             <span
               css={`
                 color: #636971;
@@ -103,26 +98,21 @@ function Balances() {
           <span
             css={`
               ${textStyle('body3')}
-              color: #637381;
-              font-weight: 200;
+              color: ${theme.contentSecondary};
               display: inline-block;
               margin-bottom: ${1.5 * GU}px;
             `}
           >
             Rewards
           </span>
-          <Balance
-            symbol="DAI"
-            amount="3.304,76"
-            value="3.300"
-            iconSrc={DAIIcon}
-          />
-          <Balance
-            symbol="ANJ"
-            amount="3.304,76"
-            value="3.300"
-            iconSrc={ANJIcon}
-          />
+          {balances.rewards.map(balance => (
+            <Balance
+              symbol={balance.tokenSymbol}
+              amount={balance.amount}
+              value={balance.value}
+              iconSrc={balance.icon}
+            />
+          ))}
         </div>
       </div>
     </div>

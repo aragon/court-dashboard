@@ -1,8 +1,10 @@
 import React from 'react'
 
-import { GU, textStyle } from '@aragon/ui'
+import { GU, textStyle, useTheme } from '@aragon/ui'
 
 export default function Balance({ symbol, amount, value, iconSrc }) {
+  const theme = useTheme()
+
   return (
     <div
       css={`
@@ -25,8 +27,7 @@ export default function Balance({ symbol, amount, value, iconSrc }) {
         <span
           css={`
             ${textStyle('label1')}
-            color: #637381;
-            font-weight: 200;
+            color: ${theme.contentSecondary};
           `}
         >
           {symbol}
@@ -44,8 +45,7 @@ export default function Balance({ symbol, amount, value, iconSrc }) {
       <span
         css={`
           ${textStyle('label2')}
-          color: #637381;
-          font-weight: 200;
+          color: ${theme.contentSecondary};
         `}
       >{`$ ${value}`}</span>
     </div>

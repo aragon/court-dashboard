@@ -8,13 +8,14 @@ export default function Step({ primary, secondary, active }) {
     <div
       css={`
         display: flex;
-        align-items: flex-start;
-        position: relative;
+        align-items: stretch;
         background: ${active ? theme.surfaceSelected : ''};
         padding: ${1 * GU}px ${3 * GU}px;
+
         &:first-child {
           padding-top: 0;
         }
+
         &:last-child {
           padding-bottom: 0;
         }
@@ -22,13 +23,20 @@ export default function Step({ primary, secondary, active }) {
     >
       <div
         css={`
+          position: relative;
           z-index: 2;
-          margin-right: 24px;
         `}
       >
         {primary}
       </div>
-      <div>{secondary}</div>
+
+      <div
+        css={`
+          margin-left: ${1.5 * GU}px;
+        `}
+      >
+        {secondary}
+      </div>
     </div>
   )
 }
