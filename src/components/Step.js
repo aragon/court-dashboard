@@ -7,18 +7,7 @@ export default function Step({ primary, secondary, active }) {
   return (
     <div
       css={`
-        display: flex;
-        align-items: stretch;
         background: ${active ? theme.surfaceSelected : ''};
-        padding: ${1 * GU}px ${3 * GU}px;
-
-        &:first-child {
-          padding-top: 0;
-        }
-
-        &:last-child {
-          padding-bottom: 0;
-        }
       `}
     >
       <div
