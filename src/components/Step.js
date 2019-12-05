@@ -1,6 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
-
 import { GU, useTheme } from '@aragon/ui'
 
 export default function Step({ primary, secondary, active }) {
@@ -24,14 +22,15 @@ export default function Step({ primary, secondary, active }) {
         }
       `}
     >
-      <Primary>{primary}</Primary>
-      <Secondary>{secondary}</Secondary>
+      <div
+        css={`
+          z-index: 2;
+          margin-right: ${2 * GU}px;
+        `}
+      >
+        {primary}
+      </div>
+      <div>{secondary}</div>
     </div>
   )
 }
-
-const Primary = styled.div`
-  z-index: 2;
-  margin-right: 24px;
-`
-const Secondary = styled.div``

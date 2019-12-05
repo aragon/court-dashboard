@@ -12,13 +12,13 @@ function Timeline() {
   return (
     <div>
       <Stepper
-        linePosition={['25%', '43px']}
+        linePosition={['25%', '47px']}
         lineColor={theme.surfaceIcon}
         css={`
           padding: ${3 * GU}px 0;
         `}
       >
-        {timeline.map(({ label, date, icon }, index) => {
+        {timeline.map(({ label, date, Icon }, index) => {
           const active = current === index
           return (
             <Step
@@ -29,12 +29,12 @@ function Timeline() {
                   css={`
                     background: ${active ? '#8FA4B5' : '#ECEFF4'};
                     border-radius: 80%;
-                    padding: 12px;
+                    padding: 10px;
                     z-index: 2;
                     display: inline-flex;
                   `}
                 >
-                  <img width="16" src={icon} />
+                  <Icon color={active ? '#fff' : theme.surfaceIcon} />
                 </div>
               }
               secondary={

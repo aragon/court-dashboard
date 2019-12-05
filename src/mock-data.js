@@ -4,13 +4,15 @@ import {
   DISPUTE_STATUS_CLOSED,
 } from './dispute-status-type'
 
-import IconFlag from './assets/flag.svg'
-import IconFolder from './assets/folder.svg'
-import IconUsers from './assets/users.svg'
-import IconReview from './assets/review.svg'
-import IconVoting from './assets/voting.svg'
-import IconFeather from './assets/feather.svg'
-import IconTokens from './assets/tokens.svg'
+import {
+  IconCoin,
+  IconFolder,
+  IconFlag,
+  IconGroup,
+  IconSearch,
+  IconVote,
+  IconWrite,
+} from '@aragon/ui'
 
 export const disputes = [
   {
@@ -96,41 +98,41 @@ export const timeline = [
   {
     label: 'Open dispute #62',
     date: '20/11/2019',
-    icon: IconFlag,
+    Icon: IconFlag,
   },
   {
     label: 'Submit evidence',
     date: '20/11/2019',
-    icon: IconFolder,
+    Icon: IconFolder,
   },
   {
     label: 'Jurors drafted',
     date: '20/11/2019',
-    icon: IconUsers,
+    Icon: IconGroup,
   },
   {
     label: 'Review evidence',
     date: '20/11/2019',
-    icon: IconReview,
+    Icon: IconSearch,
   },
   {
     label: 'Voting period',
     date: '20/11/2019',
-    icon: IconVoting,
+    Icon: IconVote,
   },
   {
     label: 'Apeal Ruling',
     date: '20/11/2019',
-    icon: IconFeather,
+    Icon: IconWrite,
   },
   {
     label: 'Claim rewards',
     date: '20/11/2019',
-    icon: IconTokens,
+    Icon: IconCoin,
   },
   {
     label: 'Milestone',
     date: '20/11/2019',
-    icon: IconFlag,
+    Icon: IconFlag,
   },
 ]
