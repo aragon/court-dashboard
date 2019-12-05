@@ -17,9 +17,12 @@ function DisputeDetail({ dispute, onBack }) {
           </Box>
         }
         secondary={
-          <Box heading="Dispute timeline" padding={0}>
-            <Timeline />
-          </Box>
+          <React.Fragment>
+            <Box heading="Voting results">Results</Box>
+            <Box heading="Dispute timeline" padding={0}>
+              <Timeline />
+            </Box>
+          </React.Fragment>
         }
       />
     </React.Fragment>
