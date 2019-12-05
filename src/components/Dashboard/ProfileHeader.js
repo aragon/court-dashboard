@@ -1,18 +1,25 @@
 import React from 'react'
-import styled from 'styled-components'
 
-import { Button, GU, textStyle, useViewport } from '@aragon/ui'
+import { Box, Button, GU, textStyle, useTheme, useViewport } from '@aragon/ui'
 
-import ProfileIcon from '../assets/profile.png'
-import ANJProfileIcon from '../assets/anj-active.svg'
-import IconCheck from '../assets/IconCheck.svg'
+import ProfileIcon from '../../assets/profile.png'
+import ANJBadgeIcon from '../../assets/anjBadge.svg'
+import IconCheck from '../../assets/IconCheck.svg'
 
-import Balances from './Balances/Balances'
+import Balances from './Balances'
 
 export default function ProfileHeader({ active }) {
   const { below } = useViewport()
+  const theme = useTheme()
+
   return (
-    <Wrapper>
+    <Box
+      padding="40"
+      css={`
+        border-radius: 0;
+        margin-bottom: ${2 * GU}px;
+      `}
+    >
       <div
         css={`
           margin-bottom: ${3 * GU}px;
@@ -36,7 +43,7 @@ export default function ProfileHeader({ active }) {
             <img alt="profile" src={ProfileIcon} />
             <img
               alt="active-juror"
-              src={ANJProfileIcon}
+              src={ANJBadgeIcon}
               css="position: absolute; top: 0; right: -5px"
             />
           </div>
@@ -51,8 +58,6 @@ export default function ProfileHeader({ active }) {
               <span
                 css={`
                   ${textStyle('title4')}
-                  color: #212B36;
-                  font-weight: 200;
                   letter-spacing: 1px;
                   margin-right: ${2 * GU}px;
                 `}
@@ -76,8 +81,7 @@ export default function ProfileHeader({ active }) {
                   <span
                     css={`
                       ${textStyle('label2')}
-                      color: #637381;
-                      font-weight: 200;
+                      color: ${theme.contentSecondary};
                     `}
                   >
                     ACTIVE JUROR
@@ -89,8 +93,6 @@ export default function ProfileHeader({ active }) {
               <p
                 css={`
                   ${textStyle('body3')}
-                  color: #212B36;
-                  font-weight: 200;
                 `}
               >
                 You are active and eligible to be drafted starting from the next
@@ -114,13 +116,6 @@ export default function ProfileHeader({ active }) {
         )}
       </div>
       <Balances />
-    </Wrapper>
+    </Box>
   )
 }
-
-const Wrapper = styled.div`
-  background: white;
-  border: 1px solid #dde4e9;
-  margin-top: 30px;
-  padding: 36px;
-`

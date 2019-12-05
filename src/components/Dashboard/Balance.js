@@ -36,7 +36,6 @@ export default function Balance({ symbol, amount, value, iconSrc }) {
         <span
           css={`
             ${textStyle('title2')}
-            font-weight: 200;
           `}
         >
           {amount}
