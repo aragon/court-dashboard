@@ -1,9 +1,9 @@
 import React from 'react'
-import MainButton from '../../MainButton'
+import MainButton from '../MainButton'
 import { Header } from '@aragon/ui'
 import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
-import { getDummyTasks } from '../../MockData'
+import { getDummyTasks } from '../../mock-data'
 
 const Tasks = () => {
   const tasks = getDummyTasks()
@@ -12,7 +12,7 @@ const Tasks = () => {
     <>
       <Header
         primary="Tasks"
-        secondary={<MainButton label="Buy ANJ" onClick={() => {}} />}
+        secondary={<MainButton primary label="Buy ANJ" onClick={() => {}} />}
       />
       <TaskBox />
       <TaskTable tasks={tasks} />
