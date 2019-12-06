@@ -6,6 +6,8 @@ import NavBar from './NavBar'
 import Header from './Header'
 import ErrorPage from './ErrorPage'
 
+import Dashboard from './components/Dashboard/Dashboard'
+
 function App() {
   return (
     <div>
