@@ -31,7 +31,6 @@ const DisputeInfo = ({ dispute }) => {
           display: grid;
           grid-template-columns: auto;
           grid-gap: ${2.5 * GU}px;
-          margin-top: ${2.5 * GU}px;
           align-items: center;
         `}
       >
@@ -139,8 +138,8 @@ const DisputeInfo = ({ dispute }) => {
           <div>
             <span
               css={`
-                ${textStyle('body3')}
-                color: #637381;
+                ${textStyle('label2')}
+                color: ${theme.contentSecondary};
                 font-weight: 200;
                 display: block;
                 margin-bottom: ${1.5 * GU}px;
@@ -160,8 +159,8 @@ const DisputeInfo = ({ dispute }) => {
           <div>
             <span
               css={`
-                ${textStyle('body3')}
-                color: #637381;
+                ${textStyle('label2')}
+                color: ${theme.contentSecondary};
                 font-weight: 200;
                 display: block;
                 margin-bottom: ${1.5 * GU}px;
@@ -181,8 +180,8 @@ const DisputeInfo = ({ dispute }) => {
           <div>
             <span
               css={`
-                ${textStyle('body3')}
-                color: #637381;
+                ${textStyle('label2')}
+                color: ${theme.contentSecondary};
                 font-weight: 200;
                 display: block;
                 margin-bottom: ${1.5 * GU}px;
@@ -202,8 +201,8 @@ const DisputeInfo = ({ dispute }) => {
           <div>
             <span
               css={`
-                ${textStyle('body3')}
-                color: #637381;
+                ${textStyle('label2')}
+                color: ${theme.contentSecondary};
                 font-weight: 200;
                 display: block;
                 margin-bottom: ${1.5 * GU}px;
@@ -222,7 +221,6 @@ const DisputeInfo = ({ dispute }) => {
           onClick={() => {}}
           wide
           css={`
-            margin-bottom: ${2 * GU}px;
             background: ${theme.surfaceContentSecondary};
           `}
         >
