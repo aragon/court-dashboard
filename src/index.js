@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Main } from '@aragon/ui'
 import App from './App'
 
 import { createClient, Provider } from 'urql'
@@ -11,9 +10,7 @@ const client = createClient({
 
 ReactDOM.render(
   <Provider value={client}>
-    <Main>
-      <App />
-    </Main>
+    <App />
   </Provider>,
   document.getElementById('root')
 )
