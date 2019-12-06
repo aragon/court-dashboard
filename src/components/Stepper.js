@@ -19,13 +19,16 @@ function Stepper({
           display: flex;
           align-items: stretch;
           padding: ${stepVerticalPadding}px ${stepHorizontalPadding}px;
+
           &:first-child {
             padding-top: 0;
           }
+
           &:last-child {
             padding-bottom: 0;
           }
         }
+
         & > :not(:last-child) > :first-child ::after {
           background: ${lineColor};
           content: '';
