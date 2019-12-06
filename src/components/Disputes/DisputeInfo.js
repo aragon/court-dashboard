@@ -139,7 +139,7 @@ const DisputeInfo = ({ dispute }) => {
             <span
               css={`
                 ${textStyle('label2')}
-                color: #637381;
+                color: ${theme.contentSecondary};
                 font-weight: 200;
                 display: block;
                 margin-bottom: ${1.5 * GU}px;
@@ -160,7 +160,7 @@ const DisputeInfo = ({ dispute }) => {
             <span
               css={`
                 ${textStyle('label2')}
-                color: #637381;
+                color: ${theme.contentSecondary};
                 font-weight: 200;
                 display: block;
                 margin-bottom: ${1.5 * GU}px;
@@ -181,7 +181,7 @@ const DisputeInfo = ({ dispute }) => {
             <span
               css={`
                 ${textStyle('label2')}
-                color: #637381;
+                color: ${theme.contentSecondary};
                 font-weight: 200;
                 display: block;
                 margin-bottom: ${1.5 * GU}px;
@@ -202,7 +202,7 @@ const DisputeInfo = ({ dispute }) => {
             <span
               css={`
                 ${textStyle('label2')}
-                color: #637381;
+                color: ${theme.contentSecondary};
                 font-weight: 200;
                 display: block;
                 margin-bottom: ${1.5 * GU}px;
