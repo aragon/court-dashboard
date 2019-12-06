@@ -8,6 +8,8 @@ import ErrorPage from './ErrorPage'
 
 import Dashboard from './components/Dashboard/Dashboard'
 
+import Disputes from './components/Disputes/Disputes'
+
 function App() {
   return (
     <div>
@@ -29,11 +31,7 @@ function App() {
               <Switch>
                 <Route path="/dashboard" component={Dashboard} />
                 <Route exact path="/tasks" render={() => <div>tasks</div>} />
-                <Route
-                  exact
-                  path="/disputes"
-                  render={() => <div>disputes</div>}
-                />
+                <Route exact path="/disputes" component={Disputes} />
                 <Route component={ErrorPage} />
               </Switch>
             </Main>
