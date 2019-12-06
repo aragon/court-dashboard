@@ -18,6 +18,15 @@ import DisputeStatus from './DisputeStatus'
 function DisputeCard({ dispute, selectDispute }) {
   const theme = useTheme()
 
+  const {
+    id,
+    creator,
+    description,
+    rewardAmount,
+    stakedAmount,
+    termDate,
+  } = dispute
+
   return (
     <CardItem>
       <div
@@ -29,7 +38,7 @@ function DisputeCard({ dispute, selectDispute }) {
       >
         <DisputeStatus dispute={dispute} />
         <ContextMenu>
-          <ContextMenuItem onClick={() => selectDispute(dispute.id)}>
+          <ContextMenuItem onClick={() => selectDispute(id)}>
             <IconInfo />
             View
           </ContextMenuItem>
@@ -49,10 +58,10 @@ function DisputeCard({ dispute, selectDispute }) {
           `}
         >
           Dispute
-          <strong> #{dispute.id}</strong>
+          <strong> #{id}</strong>
         </h3>
         <DisputeText
-          text={dispute.description}
+          text={description}
           css={`
             overflow: hidden;
             ${textStyle('body2')};
@@ -64,20 +73,20 @@ function DisputeCard({ dispute, selectDispute }) {
             -webkit-line-clamp: 2;
           `}
         />
-        <IdentityBadge entity={dispute.creator} badgeOnly />
+        <IdentityBadge entity={creator} badgeOnly />
       </div>
       <DisputeDetails labelColor={theme.contentSecondary}>
         <div>
           <span>Reward</span>
-          <span>{dispute.rewardAmount} DAI</span>
+          <span>{rewardAmount} DAI</span>
         </div>
         <div>
           <span>Collateral staked</span>
-          <span>{dispute.stakedAmount} ANJ</span>
+          <span>{stakedAmount} ANJ</span>
         </div>
         <div>
           <span>Term Date</span>
-          <span>{dispute.termDate}</span>
+          <span>{termDate}</span>
         </div>
       </DisputeDetails>
     </CardItem>
