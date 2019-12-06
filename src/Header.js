@@ -7,6 +7,8 @@ function Header() {
         box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 3px;
         background: rgb(255, 255, 255);
         padding: 20px;
+        position: relative;
+        z-index: 3;
       `}
     >
       Court Demo

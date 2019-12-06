@@ -27,7 +27,7 @@ function App() {
             <Main>
               <Redirect from="/" to="/dashboard" />
               <Switch>
-                <Route path="/dashboard" render={() => <div>dashboard</div>} />
+                <Route path="/dashboard" component={Dashboard} />
                 <Route exact path="/tasks" render={() => <div>tasks</div>} />
                 <Route
                   exact
