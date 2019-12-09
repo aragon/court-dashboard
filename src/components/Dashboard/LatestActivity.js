@@ -13,7 +13,7 @@ function LatestActivity() {
     <Box heading="latest activity" padding={0}>
       <Stepper
         lineColor="rgba(255, 151, 128, 0.2)"
-        lineExtraHeight={5}
+        lineExtraHeight={10}
         lineTop={15}
         lineWidth={2}
         css={`
