@@ -3,7 +3,7 @@ import { Box, Header, Split } from '@aragon/ui'
 
 import MainButton from '../MainButton'
 import ProfileHeader from './ProfileHeader'
-import LatestActivity from './LatestActivity'
+import DashboardStats from './DashboardStats'
 
 function Dashboard() {
   return (
@@ -13,7 +13,7 @@ function Dashboard() {
         secondary={<MainButton label="Buy ANJ" primary />}
       />
       <ProfileHeader active />
-      <Split primary={<Box />} secondary={<LatestActivity />} />
+      <Split primary={<Box />} secondary={<DashboardStats />} />
     </React.Fragment>
   )
 }
