@@ -3,7 +3,6 @@ import { Button, useTheme, useViewport } from '@aragon/ui'
 
 function MainButton({ label, icon, onClick, primary }) {
   const { below } = useViewport()
-
   const theme = useTheme()
 
   return (

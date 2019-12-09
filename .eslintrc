@@ -27,6 +27,8 @@
         "tabSize": 2
       }
     ],
+    "react/jsx-fragments": 0,
+    "react/jsx-key": 0,
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "linebreak-style": ["error", "unix"]
