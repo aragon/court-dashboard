@@ -58,6 +58,7 @@ const Nav = styled.nav`
   padding: 16px 0;
   background: white;
   margin-top: 2px;
+  width: 200px;
   z-index: 3;
 `
 

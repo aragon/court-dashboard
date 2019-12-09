@@ -130,9 +130,9 @@ const TaskTable = ({ tasks }) => {
         const hoursAndSec = format(dueDate, 'HH:mm')
         console.log('Hour ', hoursAndSec)
         return [
-          <Text key={1}>{taskName}</Text>,
-          <Link key={2}>#{disputeId}</Link>,
-          <Text key={3}>{priority}</Text>,
+          <Text>{taskName}</Text>,
+          <Link>#{disputeId}</Link>,
+          <Text>{priority}</Text>,
           <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
           <div key={5}>{`${format(
             formattedDate,

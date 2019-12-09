@@ -1,7 +1,7 @@
 import React from 'react'
 import { GU, useTheme } from '@aragon/ui'
 
-export default function Step({ primary, secondary, active }) {
+export default function Step({ stepPoint, content, active }) {
   const theme = useTheme()
 
   return (
@@ -16,7 +16,7 @@ export default function Step({ primary, secondary, active }) {
           z-index: 2;
         `}
       >
-        {primary}
+        {stepPoint}
       </div>
 
       <div
@@ -24,7 +24,7 @@ export default function Step({ primary, secondary, active }) {
           margin-left: ${1.5 * GU}px;
         `}
       >
-        {secondary}
+        {content}
       </div>
     </div>
   )

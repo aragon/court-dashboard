@@ -22,7 +22,7 @@ function LatestActivity() {
       >
         {latestActivity.map(activity => (
           <Step
-            primary={
+            stepPoint={
               <div
                 css={`
                   border-radius: 50%;
@@ -40,7 +40,7 @@ function LatestActivity() {
                 />
               </div>
             }
-            secondary={
+            content={
               <div
                 css={`
                   line-height: 2;

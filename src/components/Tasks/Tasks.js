@@ -1,6 +1,7 @@
 import React from 'react'
-import MainButton from '../MainButton'
 import { Header } from '@aragon/ui'
+
+import MainButton from '../MainButton'
 import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
 import { getDummyTasks } from '../../mock-data'

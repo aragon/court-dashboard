@@ -7,7 +7,7 @@ import Step from '../Step'
 
 function Timeline() {
   const theme = useTheme()
-  const current = 3
+  const current = 4
 
   return (
     <div>
@@ -24,7 +24,7 @@ function Timeline() {
             <Step
               key={index}
               active={active}
-              primary={
+              stepPoint={
                 <div
                   css={`
                     background: ${active ? theme.surfaceIcon : '#ECEFF4'};
@@ -38,7 +38,7 @@ function Timeline() {
                   <Icon color={active ? '#fff' : theme.surfaceIcon} />
                 </div>
               }
-              secondary={
+              content={
                 <div>
                   <div>
                     <span css={textStyle('body1')}>{label}</span>

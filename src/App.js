@@ -7,6 +7,7 @@ import Header from './Header'
 import ErrorPage from './ErrorPage'
 
 import Dashboard from './components/Dashboard/Dashboard'
+import Tasks from './components/Tasks/Tasks'
 import Disputes from './components/Disputes/Disputes'
 
 function App() {
@@ -28,13 +29,13 @@ function App() {
             <Main>
               <div
                 css={`
-                  padding-bottom: 32px;
+                  padding-bottom: 48px;
                 `}
               >
                 <Redirect from="/" to="/dashboard" />
                 <Switch>
                   <Route path="/dashboard" component={Dashboard} />
-                  <Route exact path="/tasks" render={() => <div>tasks</div>} />
+                  <Route exact path="/tasks" component={Tasks} />
                   <Route exact path="/disputes" component={Disputes} />
                   <Route component={ErrorPage} />
                 </Switch>
