@@ -1,5 +1,5 @@
 import isBetween from 'dayjs/plugin/isBetween'
-const dayjs = require('dayjs')
+import dayjs from 'dayjs'
 
 dayjs.extend(isBetween)
 
