@@ -2,9 +2,8 @@ import React, { useMemo, useState } from 'react'
 import {
   ContextMenu,
   DataView,
-  DropDown,
+  DateRangePicker,
   GU,
-  IconApps,
   Link,
   Text,
   textStyle,
@@ -13,24 +12,26 @@ import {
 } from '@aragon/ui'
 import dayjs from '../Lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
-import TasksFilters from './TasksFilters'
+import { addressesEqual } from '../Lib/web3-utils'
 
+const ENTRIES_PER_PAGE = 5
 const INITIAL_DATE_RANGE = { start: null, end: null }
 
-const getFilteredTasks = ({ tasks, selectedDateRange }) => {
+const getFilteredTasks = ({ tasks, connectedAccount, selectedDateRange }) => {
   return tasks.filter(
     ({ taskName, disputeId, priority, juror, dueDate }) =>
-      !selectedDateRange.start ||
-      !selectedDateRange.end ||
-      dayjs(dueDate).isBetween(
-        dayjs(selectedDateRange.start).startOf('day'),
-        dayjs(selectedDateRange.end).endOf('day'),
-        '[]'
-      )
+      (connectedAccount === '' || addressesEqual(juror, connectedAccount)) &&
+      (!selectedDateRange.start ||
+        !selectedDateRange.end ||
+        dayjs(dueDate).isBetween(
+          dayjs(selectedDateRange.start).startOf('day'),
+          dayjs(selectedDateRange.end).endOf('day'),
+          '[]'
+        ))
   )
 }
 
-const TaskTable = ({ tasks }) => {
+const TaskTable = ({ tasks, connectedAccount }) => {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [page, setPage] = useState(0)
   const { below } = useViewport()
@@ -43,6 +44,7 @@ const TaskTable = ({ tasks }) => {
 
   const filteredTasks = getFilteredTasks({
     tasks,
+    connectedAccount,
     selectedDateRange,
   })
 
@@ -58,6 +60,7 @@ const TaskTable = ({ tasks }) => {
   return (
     <DataView
       page={page}
+      entriesPerPage={ENTRIES_PER_PAGE}
       onPageChange={() => {}}
       heading={
         <>
@@ -78,37 +81,16 @@ const TaskTable = ({ tasks }) => {
               Upcoming tasks
             </div>
 
-            <div css="text-align: right;">
-              <DropDown
-                placeholder={
-                  <div
-                    css={`
-                      display: flex;
-                    `}
-                  >
-                    <IconApps />
-                    <Text
-                      css={`
-                        margin-left: ${GU}px;
-                      `}
-                    >
-                      Actions
-                    </Text>
-                  </div>
-                }
-                header="Actions"
-                items={[]}
-                onChange={() => {}}
-                width="162px"
-              />
-            </div>
+            {!compactMode && (
+              <div css="text-align: right;">
+                <DateRangePicker
+                  startDate={selectedDateRange.start}
+                  endDate={selectedDateRange.end}
+                  onChange={handleSelectedDateRangeChange}
+                />
+              </div>
+            )}
           </div>
-          {!compactMode && (
-            <TasksFilters
-              dateRangeFilter={selectedDateRange}
-              onDateRangeChange={handleSelectedDateRangeChange}
-            />
-          )}
         </>
       }
       fields={[
@@ -129,7 +111,7 @@ const TaskTable = ({ tasks }) => {
           <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
           <div key={5}>{`${dayjs(formattedDate).format(
             'DD/MM/YY'
-          )} at ${hoursAndSec} - Term `}</div>,
+          )} at ${hoursAndSec}`}</div>,
         ]
       }}
       renderEntryActions={() => (
@@ -138,7 +120,6 @@ const TaskTable = ({ tasks }) => {
           <ContextMenuItem /> */}
         </ContextMenu>
       )}
-      onSelectEntries={() => {}}
     />
   )
 }
