@@ -5,14 +5,13 @@ import {
   DateRangePicker,
   GU,
   Link,
-  Text,
   textStyle,
   theme,
   useViewport,
 } from '@aragon/ui'
 import dayjs from '../Lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
-import { addressesEqual } from '../Lib/web3-utils'
+import { addressesEqual } from '../Lib/web3'
 
 const ENTRIES_PER_PAGE = 5
 const INITIAL_DATE_RANGE = { start: null, end: null }
@@ -52,7 +51,11 @@ const TaskTable = ({ tasks, connectedAccount }) => {
     () =>
       filteredTasks.sort(({ dueDate: dateLeft }, { dueDate: dateRight }) =>
         // Sort by date ascending
-        dayjs(dateLeft).isAfter(dayjs(dateRight)) ? 1 : -1
+        dayjs(dateLeft).isAfter(dayjs(dateRight))
+          ? 1
+          : dayjs(dateLeft).isSame(dayjs(dateRight))
+          ? 0
+          : -1
       ),
     [filteredTasks]
   )
@@ -93,21 +96,27 @@ const TaskTable = ({ tasks, connectedAccount }) => {
           </div>
         </>
       }
-      fields={[
-        { label: 'Task', priority: 1 },
-        { label: 'Dispute', priority: 2 },
-        { label: 'Priority', priority: 3 },
-        { label: 'Assigned to juror', priority: 4 },
-        { label: 'Due date', priority: 5 },
-      ]}
+      fields={['Task', 'Dispute', 'Priority', 'Assigned to juror', 'Due date']}
       entries={sortedTasks}
       renderEntry={({ taskName, disputeId, priority, juror, dueDate }) => {
         const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
         const hoursAndSec = dayjs(dueDate).format('HH:mm')
         return [
-          <Text>{taskName}</Text>,
+          <span
+            css={`
+              ${textStyle('body2')}
+            `}
+          >
+            {taskName}
+          </span>,
           <Link>#{disputeId}</Link>,
-          <Text>{priority}</Text>,
+          <span
+            css={`
+              ${textStyle('body2')}
+            `}
+          >
+            {priority}
+          </span>,
           <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
           <div key={5}>{`${dayjs(formattedDate).format(
             'DD/MM/YY'

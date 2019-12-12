@@ -6,7 +6,6 @@ import {
   GU,
   IconApps,
   Link,
-  Text,
   textStyle,
   theme,
   useViewport,
@@ -50,7 +49,11 @@ const TaskTable = ({ tasks }) => {
     () =>
       filteredTasks.sort(({ dueDate: dateLeft }, { dueDate: dateRight }) =>
         // Sort by date ascending
-        dayjs(dateLeft).isAfter(dayjs(dateRight)) ? 1 : -1
+        dayjs(dateLeft).isAfter(dayjs(dateRight))
+          ? 1
+          : dayjs(dateLeft).isSame(dayjs(dateRight))
+          ? 0
+          : -1
       ),
     [filteredTasks]
   )
@@ -87,13 +90,13 @@ const TaskTable = ({ tasks }) => {
                     `}
                   >
                     <IconApps />
-                    <Text
+                    <span
                       css={`
-                        margin-left: ${GU}px;
+                        ${textStyle('body2')}
                       `}
                     >
                       Actions
-                    </Text>
+                    </span>
                   </div>
                 }
                 header="Actions"
@@ -111,21 +114,27 @@ const TaskTable = ({ tasks }) => {
           )}
         </>
       }
-      fields={[
-        { label: 'Task', priority: 1 },
-        { label: 'Dispute', priority: 2 },
-        { label: 'Priority', priority: 3 },
-        { label: 'Assigned to juror', priority: 4 },
-        { label: 'Due date', priority: 5 },
-      ]}
+      fields={['Task', 'Dispute', 'Priority', 'Assigned to juror', 'Due date']}
       entries={sortedTasks}
       renderEntry={({ taskName, disputeId, priority, juror, dueDate }) => {
         const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
         const hoursAndSec = dayjs(dueDate).format('HH:mm')
         return [
-          <Text>{taskName}</Text>,
+          <span
+            css={`
+              ${textStyle('body2')}
+            `}
+          >
+            {taskName}
+          </span>,
           <Link>#{disputeId}</Link>,
-          <Text>{priority}</Text>,
+          <span
+            css={`
+              ${textStyle('body2')}
+            `}
+          >
+            {priority}
+          </span>,
           <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
           <div key={5}>{`${dayjs(formattedDate).format(
             'DD/MM/YY'
