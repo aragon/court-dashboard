@@ -20,8 +20,9 @@ function LatestActivity() {
           padding: ${3 * GU}px 0;
         `}
       >
-        {latestActivity.map(activity => (
+        {latestActivity.map((activity, index) => (
           <Step
+            key={index}
             stepPoint={
               <div
                 css={`
