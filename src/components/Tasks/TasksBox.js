@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, GU, useViewport } from '@aragon/ui'
 import TaskAmounts from './TasksAmounts'
 
-const TasksBox = () => {
+function TasksBox() {
   const { below } = useViewport()
   const compactMode = below('medium')
   const tasks = [
@@ -31,9 +31,9 @@ const TasksBox = () => {
             display: flex;
             ${compactMode
               ? `
-                    flex-direction: column;
-                    padding: ${1 * GU}px 0;
-                  `
+                  flex-direction: column;
+                  padding: ${1 * GU}px 0;
+                `
               : ''}
           `}
         >
