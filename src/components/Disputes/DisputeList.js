@@ -1,9 +1,7 @@
 import React from 'react'
-import styled from 'styled-components'
-
 import {
   Bar,
-  ButtonBase,
+  Button,
   CardLayout,
   DateRangePicker,
   DropDown,
@@ -71,9 +69,7 @@ function DisputeList({ disputes, selectDispute }) {
           // endDate={disputeDateRangeFilter.end}
           // onChange={handleDisputeDateRangeFilterChange}
           />
-          <Button element="button" borderColor={theme.contentSecondary}>
-            My disputes
-          </Button>
+          <Button>My disputes</Button>
         </div>
       </Bar>
       <CardLayout columnWidthMin={30 * GU} rowHeight={307}>
@@ -90,12 +86,5 @@ function DisputeList({ disputes, selectDispute }) {
     </div>
   )
 }
-
-const Button = styled(ButtonBase)`
-  padding: 0 24px;
-  border: 1px solid ${({ borderColor }) => borderColor};
-  height: 40px;
-  ${textStyle('body2')}
-`
 
 export default DisputeList

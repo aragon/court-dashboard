@@ -1,7 +1,6 @@
 import React from 'react'
-import { Box, Header, Split } from '@aragon/ui'
+import { Button, Box, Header, Split } from '@aragon/ui'
 
-import MainButton from '../MainButton'
 import ProfileHeader from './ProfileHeader'
 import DashboardStats from './DashboardStats'
 
@@ -10,7 +9,7 @@ function Dashboard() {
     <React.Fragment>
       <Header
         primary="Dashboard"
-        secondary={<MainButton label="Buy ANJ" primary />}
+        secondary={<Button label="Buy ANJ" mode="strong" />}
       />
       <ProfileHeader active />
       <Split primary={<Box />} secondary={<DashboardStats />} />

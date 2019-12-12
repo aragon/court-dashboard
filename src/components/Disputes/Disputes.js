@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Header } from '@aragon/ui'
+import { Button, Header } from '@aragon/ui'
 
-import MainButton from '../MainButton'
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
 
@@ -18,7 +17,7 @@ function Disputes() {
     <React.Fragment>
       <Header
         primary="Disputes"
-        secondary={!selectedDispute && <MainButton label="Buy ANJ" />}
+        secondary={!selectedDispute && <Button label="Buy ANJ" />}
       />
       {selectedDispute ? (
         <DisputeDetail dispute={selectedDispute} onBack={handleBack} />
