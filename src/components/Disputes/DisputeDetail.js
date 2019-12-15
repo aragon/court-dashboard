@@ -1,8 +1,9 @@
 import React from 'react'
 import { BackButton, Bar, Box, Split } from '@aragon/ui'
-import DisputeInfo from './DisputeInfo'
 
-import Timeline from './Timeline'
+import DisputeInfo from './DisputeInfo'
+import DisputeEvidences from './DisputeEvidences'
+import DisputeTimeline from './DisputeTimeline'
 
 function DisputeDetail({ dispute, onBack }) {
   return (
@@ -12,12 +13,19 @@ function DisputeDetail({ dispute, onBack }) {
       </Bar>
 
       <Split
-        primary={<DisputeInfo dispute={dispute} />}
+        primary={
+          <React.Fragment>
+            <DisputeInfo dispute={dispute} />
+            {dispute.evidences && (
+              <DisputeEvidences evidences={dispute.evidences} />
+            )}
+          </React.Fragment>
+        }
         secondary={
           <React.Fragment>
             <Box heading="Voting results">Results</Box>
             <Box heading="Dispute timeline" padding={0}>
-              <Timeline />
+              <DisputeTimeline />
             </Box>
           </React.Fragment>
         }

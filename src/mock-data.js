@@ -67,6 +67,10 @@ export const disputes = [
     stakedAmount: 746,
     term: 1,
     termDate: '15/02/20',
+    evidences: [
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+    ],
   },
   {
     id: 1,
@@ -78,6 +82,10 @@ export const disputes = [
     stakedAmount: 865,
     term: 1,
     termDate: '15/02/20',
+    evidences: [
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+    ],
   },
   {
     id: 2,
@@ -89,6 +97,10 @@ export const disputes = [
     stakedAmount: 500,
     term: 1,
     termDate: '15/02/20',
+    evidences: [
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+    ],
   },
   {
     id: 3,
@@ -100,6 +112,10 @@ export const disputes = [
     stakedAmount: 1023,
     term: 1,
     termDate: '15/02/20',
+    evidences: [
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+    ],
   },
   {
     id: 4,
@@ -111,6 +127,10 @@ export const disputes = [
     stakedAmount: 985,
     term: 1,
     termDate: '15/02/20',
+    evidences: [
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+    ],
   },
   {
     id: 5,
@@ -122,6 +142,10 @@ export const disputes = [
     stakedAmount: 495,
     term: 1,
     termDate: '15/02/20',
+    evidences: [
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+    ],
   },
   {
     id: 6,
@@ -133,6 +157,10 @@ export const disputes = [
     stakedAmount: 385,
     term: 1,
     termDate: '15/02/20',
+    evidences: [
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
+    ],
   },
 ]
 

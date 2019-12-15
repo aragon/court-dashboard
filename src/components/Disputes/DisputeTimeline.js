@@ -5,7 +5,7 @@ import { timeline } from '../../mock-data'
 import Stepper from '../Stepper'
 import Step from '../Step'
 
-function Timeline() {
+function DisputeTimeline() {
   const theme = useTheme()
   const current = 4
 
@@ -78,4 +78,4 @@ function Timeline() {
   )
 }
 
-export default Timeline
+export default DisputeTimeline
