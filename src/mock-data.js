@@ -1,6 +1,5 @@
 import {
   DISPUTE_STATUS_OPEN,
-  DISPUTE_STATUS_APPEAL,
   DISPUTE_STATUS_CLOSED,
 } from './dispute-status-type'
 

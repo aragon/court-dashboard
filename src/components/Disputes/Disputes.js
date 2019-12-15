@@ -7,8 +7,37 @@ import { useQuery } from 'urql'
 
 import { disputes } from '../../mock-data'
 
+const disputesQuery = `
+  query {
+    disputes {
+      id
+      createTermId
+      possibleRulings
+      finalRuling
+      lastRoundId
+      state
+      metadata
+      createdAt
+      subject {
+        id
+      }
+    }
+  }
+`
+
 function Disputes() {
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
+  const [res] = useQuery({
+    query: disputesQuery,
+  })
+
+  if (res.fetching) {
+    console.log('Loading...')
+  } else if (res.error) {
+    console.log(res.error)
+  }
+
+  console.log('RESSS ', res)
 
   const handleBack = useCallback(() => {
     selectDispute(-1)
