@@ -3,7 +3,6 @@ import { useTheme } from '@aragon/ui'
 
 import {
   DISPUTE_STATUS_OPEN,
-  DISPUTE_STATUS_APPEAL,
   DISPUTE_STATUS_CLOSED,
 } from '../../dispute-status-type'
 
@@ -11,15 +10,8 @@ const getStatusAttributes = (dispute, theme) => {
   if (dispute.status === DISPUTE_STATUS_OPEN) {
     return {
       label: 'Open',
-      color: theme.positiveSurfaceContent,
-      background: theme.green.alpha(0.2),
-    }
-  }
-  if (dispute.status === DISPUTE_STATUS_APPEAL) {
-    return {
-      label: 'Appeal',
-      color: '#564038', // TODO: use theme when available (colors.BrownDark)
-      background: 'rgba(216, 188, 177, 0.2)', // colors.BrownLight
+      color: '#22B187',
+      background: 'rgba(53, 214, 167, 0.1)',
     }
   }
   if (dispute.status === DISPUTE_STATUS_CLOSED) {

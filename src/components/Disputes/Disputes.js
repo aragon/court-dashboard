@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { Header } from '@aragon/ui'
-
 import MainButton from '../MainButton'
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
+import { useQuery } from 'urql'
 
 import { disputes } from '../../mock-data'
 

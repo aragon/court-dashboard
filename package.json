@@ -39,6 +39,7 @@
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-react": "^7.7.4",
+    "@urql/devtools": "^0.1.0",
     "babel-eslint": "^10.0.3",
     "babel-plugin-styled-components": "^1.10.6",
     "customize-cra": "^0.9.1",
