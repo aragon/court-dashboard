@@ -37,7 +37,7 @@ const DisputeInfo = ({ dispute }) => {
         <div
           css={`
             display: flex;
-            margin-bottom: ${5 * GU}px;
+            margin-bottom: ${3 * GU}px;
             justify-content: space-between;
           `}
         >

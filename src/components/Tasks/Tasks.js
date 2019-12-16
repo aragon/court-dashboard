@@ -3,11 +3,9 @@ import { Button, Header } from '@aragon/ui'
 
 import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
-import { getDummyTasks } from '../../mock-data'
+import { tasks } from '../../mock-data'
 
 const Tasks = () => {
-  const tasks = getDummyTasks()
-
   return (
     <>
       <Header

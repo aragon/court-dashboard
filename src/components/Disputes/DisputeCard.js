@@ -1,16 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import {
-  Card,
-  GU,
-  ContextMenu,
-  ContextMenuItem,
-  IconInfo,
-  IdentityBadge,
-  textStyle,
-  useTheme,
-} from '@aragon/ui'
+import { Card, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
 
 import DisputeText from './DisputeText'
 import DisputeStatus from './DisputeStatus'
@@ -28,7 +19,7 @@ function DisputeCard({ dispute, selectDispute }) {
   } = dispute
 
   return (
-    <CardItem>
+    <CardItem onClick={() => selectDispute(dispute.id)}>
       <div
         css={`
           display: flex;
@@ -37,12 +28,6 @@ function DisputeCard({ dispute, selectDispute }) {
         `}
       >
         <DisputeStatus dispute={dispute} />
-        <ContextMenu>
-          <ContextMenuItem onClick={() => selectDispute(id)}>
-            <IconInfo />
-            View
-          </ContextMenuItem>
-        </ContextMenu>
       </div>
 
       <div
