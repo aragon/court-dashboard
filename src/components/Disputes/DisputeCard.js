@@ -1,25 +1,19 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Card, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
+import { Card, GU, textStyle, useTheme } from '@aragon/ui'
 
 import DisputeText from './DisputeText'
 import DisputeStatus from './DisputeStatus'
+import DisputePhase from './DisputePhase'
 
 function DisputeCard({ dispute, selectDispute }) {
   const theme = useTheme()
-
-  const {
-    id,
-    creator,
-    description,
-    rewardAmount,
-    stakedAmount,
-    termDate,
-  } = dispute
+  const { id, metadata, rounds } = dispute
+  const phase = rounds && rounds[rounds.length - 1].state
 
   return (
-    <CardItem onClick={() => selectDispute(dispute.id)}>
+    <CardItem onClick={() => selectDispute(id)}>
       <div
         css={`
           display: flex;
@@ -42,38 +36,23 @@ function DisputeCard({ dispute, selectDispute }) {
             ${textStyle('body1')}
           `}
         >
-          Dispute
-          <strong> #{id}</strong>
+          <strong> Dispute #{id}</strong>
         </h3>
         <DisputeText
-          text={description}
+          text={metadata}
           css={`
             overflow: hidden;
             ${textStyle('body2')};
-            color: ${theme.contentSecondary};
+            color: ${theme.content};
             line-height: ${27}px; // 27px = line-height of textstyle('body1')
-            height: ${27 * 2}px; // 27px * 2 = line-height * 2 lines
+            height: ${27 * 3}px; // 27px * 3 = line-height * 3 lines
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
           `}
         />
-        <IdentityBadge entity={creator} badgeOnly />
       </div>
-      <DisputeDetails labelColor={theme.contentSecondary}>
-        <div>
-          <span>Reward</span>
-          <span>{rewardAmount} DAI</span>
-        </div>
-        <div>
-          <span>Collateral staked</span>
-          <span>{stakedAmount} ANJ</span>
-        </div>
-        <div>
-          <span>Term Date</span>
-          <span>{termDate}</span>
-        </div>
-      </DisputeDetails>
+      <DisputePhase phase={phase} />
     </CardItem>
   )
 }
@@ -87,20 +66,20 @@ const CardItem = styled(Card)`
   border: 0;
 `
 
-const DisputeDetails = styled.div`
-  line-height: 27px;
+// const DisputeDetails = styled.div`
+//   line-height: 27px;
 
-  & > div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+//   & > div {
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
 
-    & > span:first-child {
-      ${textStyle('label2')}
-      font-weight: 300;
-      color: ${({ labelColor }) => labelColor};
-    }
-  }
-`
+//     & > span:first-child {
+//       ${textStyle('label2')}
+//       font-weight: 300;
+//       color: ${({ labelColor }) => labelColor};
+//     }
+//   }
+// `
 
 export default DisputeCard

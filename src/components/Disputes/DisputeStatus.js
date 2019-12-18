@@ -1,20 +1,17 @@
 import React from 'react'
 import { useTheme } from '@aragon/ui'
 
-import {
-  DISPUTE_STATUS_OPEN,
-  DISPUTE_STATUS_CLOSED,
-} from '../../dispute-status-type'
+import { Status } from './types'
 
 const getStatusAttributes = (dispute, theme) => {
-  if (dispute.status === DISPUTE_STATUS_OPEN) {
+  if (dispute.reducedState === Status.Open) {
     return {
       label: 'Open',
       color: '#22B187',
       background: 'rgba(53, 214, 167, 0.1)',
     }
   }
-  if (dispute.status === DISPUTE_STATUS_CLOSED) {
+  if (dispute.reducedState === Status.Closed) {
     return {
       label: 'Closed',
       color: theme.content,

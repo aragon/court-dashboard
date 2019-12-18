@@ -1,22 +1,11 @@
 import React from 'react'
-import styled from 'styled-components'
 
-import {
-  Bar,
-  ButtonBase,
-  CardLayout,
-  DateRangePicker,
-  DropDown,
-  GU,
-  Tag,
-  textStyle,
-  useTheme,
-} from '@aragon/ui'
+import { Bar, CardLayout, DateRangePicker, DropDown, GU } from '@aragon/ui'
 
 import DisputeCard from './DisputeCard'
 
-function DisputeList({ disputes, selectDispute }) {
-  const theme = useTheme()
+function DisputeList({ disputes, selectDispute, statusTypes, phaseTypes }) {
+  // const theme = useTheme()
   return (
     <div>
       <Bar>
@@ -31,31 +20,11 @@ function DisputeList({ disputes, selectDispute }) {
           `}
         >
           <DropDown
-            header="Disputes"
-            placeholder="Disputes"
+            header="Phase"
+            placeholder="Phase"
             // selected={disputeStatusFilter}
             // onChange={handleDisputeStatusFilterChange}
-            items={[
-              // eslint-disable-next-line
-              <div>
-                All
-                <span
-                  css={`
-                    margin-left: ${1.5 * GU}px;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: ${theme.info};
-                    ${textStyle('label3')};
-                  `}
-                >
-                  <Tag limitDigits={4} label={disputes.length} size="small" />
-                </span>
-              </div>,
-              'Open',
-              'Appeal',
-              'Closed',
-            ]}
+            items={phaseTypes}
             width="128px"
           />
           <DropDown
@@ -63,7 +32,7 @@ function DisputeList({ disputes, selectDispute }) {
             placeholder="Status"
             // selected={disputeStatusFilter}
             // onChange={handleDisputeStatusFilterChange}
-            items={[]}
+            items={statusTypes}
             width="128px"
           />
           <DateRangePicker
@@ -71,9 +40,6 @@ function DisputeList({ disputes, selectDispute }) {
           // endDate={disputeDateRangeFilter.end}
           // onChange={handleDisputeDateRangeFilterChange}
           />
-          <Button element="button" borderColor={theme.contentSecondary}>
-            My disputes
-          </Button>
         </div>
       </Bar>
       <CardLayout columnWidthMin={30 * GU} rowHeight={307}>
@@ -90,12 +56,5 @@ function DisputeList({ disputes, selectDispute }) {
     </div>
   )
 }
-
-const Button = styled(ButtonBase)`
-  padding: 0 24px;
-  border: 1px solid ${({ borderColor }) => borderColor};
-  height: 40px;
-  ${textStyle('body2')}
-`
 
 export default DisputeList
