@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aragon/ui": "^1.0.0",
+    "@aragon/ui": "^1.2.0",
     "dayjs": "^1.8.14",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
