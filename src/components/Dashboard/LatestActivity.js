@@ -12,7 +12,7 @@ function LatestActivity() {
   return (
     <Box heading="latest activity" padding={0}>
       <Stepper
-        lineColor="rgba(255, 151, 128, 0.2)"
+        lineColor={theme.accent.alpha(0.2)}
         lineExtraHeight={10}
         lineTop={15}
         lineWidth={2}
@@ -20,22 +20,23 @@ function LatestActivity() {
           padding: ${3 * GU}px 0;
         `}
       >
-        {latestActivity.map(activity => (
+        {latestActivity.map((activity, index) => (
           <Step
+            key={index}
             stepPoint={
               <div
                 css={`
                   border-radius: 50%;
-                  border: 2px solid rgb(255, 151, 128, 0.2);
-                  padding: 8px;
+                  border: 2px solid ${theme.accent.alpha(0.2)};
+                  padding: ${1 * GU}px;
                 `}
               >
                 <span
                   css={`
-                    background: rgb(255, 151, 128);
-                    border-radius: 50%;
                     display: block;
-                    padding: 5px;
+                    padding: ${0.5 * GU}px;
+                    background: ${theme.accent};
+                    border-radius: 50%;
                   `}
                 />
               </div>
@@ -53,9 +54,9 @@ function LatestActivity() {
                 </div>
                 <div
                   css={`
-                      ${textStyle('body4')}
-                      color: ${theme.contentSecondary}
-                    `}
+                    ${textStyle('body4')};
+                    color: ${theme.contentSecondary};
+                  `}
                 >
                   {activity.date}
                 </div>

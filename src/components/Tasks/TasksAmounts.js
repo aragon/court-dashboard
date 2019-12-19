@@ -1,21 +1,18 @@
 import React from 'react'
-import { GU } from '@aragon/ui'
+import { GU, useTheme } from '@aragon/ui'
 
-const TasksAmounts = ({ amount, status }) => {
+function TasksAmounts({ amount, status }) {
+  const theme = useTheme()
   return (
     <div css="display: inline-block">
       <div
         css={`
-          width: 40px;
-          height: 40px;
-          left: 351px;
-          top: 211px;
-
+          width: ${5 * GU}px;
+          height: ${5 * GU}px;
           background: linear-gradient(
-            34.19deg,
-            #ff8a88 -609.22%,
-            #ff918d -73.61%,
-            #ffccb6 105.9%
+            35deg,
+            ${theme.accentStart} -75%,
+            ${theme.accentEnd} 105%
           );
           border-radius: 50%;
         `}
@@ -23,12 +20,12 @@ const TasksAmounts = ({ amount, status }) => {
       <div>
         <div
           css={`
-            color: #637381;
+            color: ${theme.surfaceContentSecondary};
             font-style: normal;
             font-weight: normal;
             font-size: 16px;
             line-height: 25px;
-            margin-top: ${GU}px;
+            margin-top: ${1 * GU}px;
           `}
         >
           {status.toUpperCase()}

@@ -1,7 +1,6 @@
 import React from 'react'
-import { Header, Split } from '@aragon/ui'
+import { Button, Header, Split } from '@aragon/ui'
 
-import MainButton from '../MainButton'
 import BalanceModule from './BalanceModule'
 import DashboardStats from './DashboardStats'
 import TaskTable from './TaskTable'
@@ -16,7 +15,7 @@ function Dashboard() {
     <React.Fragment>
       <Header
         primary="Dashboard"
-        secondary={<MainButton label="Buy ANJ" primary />}
+        secondary={<Button label="Buy ANJ" mode="strong" />}
       />
       <BalanceModule connectedAccount={connectedAccount} active />
       <Split
