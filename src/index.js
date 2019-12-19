@@ -14,12 +14,12 @@ import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { devtoolsExchange } from '@urql/devtools'
 
 const subscriptionClient = new SubscriptionClient(
-  'ws://127.0.0.1:8001/subgraphs/name/aragon/aragon-court-rpc',
+  'wss://api.thegraph.com/subgraphs/name/aragon/aragon-court-rinkeby',
   {}
 )
 
 const client = createClient({
-  url: 'http://127.0.0.1:8000/subgraphs/name/aragon/aragon-court-rpc',
+  url: 'https://api.thegraph.com/subgraphs/name/aragon/aragon-court-rinkeby',
   exchanges: [
     debugExchange,
     devtoolsExchange,

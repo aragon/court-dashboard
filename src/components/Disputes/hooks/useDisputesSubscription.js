@@ -9,9 +9,8 @@ export default function useDisputesSubscription() {
   // See https://formidable.com/open-source/urql/docs/basics/#subscriptions - Usage with hooks
   const handleSubscription = (disputes = [], response) => {
     /** Here we are reducing all the response againg because the response is not returning only the new elements or modified elements
-     So we don't have a way to know if some item was updated or not
+     So we don't have a way to know if some item was updated or not. The first argument is where the previouse subscription response comes
      */
-    console.log('RESPONSE ', response)
     return setDisputes(response.disputes.map(dispute => reduceDispute(dispute)))
   }
   useSubscription(
@@ -20,7 +19,5 @@ export default function useDisputesSubscription() {
     },
     handleSubscription
   )
-
-  console.log('DISPUTES ', disputes)
   return disputes
 }
