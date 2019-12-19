@@ -5,7 +5,11 @@ const DisputeFilters = ({
   phaseTypes,
   statusTypes,
   dateRangeFilter,
+  phaseFilter,
+  statusFilter,
   onDateRangeChange,
+  onPhaseChange,
+  onStatusChange,
 }) => {
   return (
     <div
@@ -21,18 +25,16 @@ const DisputeFilters = ({
       <DropDown
         header="Phase"
         placeholder="Phase"
-        // selected={disputeStatusFilter}
-        // onChange={handleDisputeStatusFilterChange}
+        selected={phaseFilter}
+        onChange={onPhaseChange}
         items={phaseTypes}
-        width="128px"
       />
       <DropDown
         header="Status"
         placeholder="Status"
-        // selected={disputeStatusFilter}
-        // onChange={handleDisputeStatusFilterChange}
+        selected={statusFilter}
+        onChange={onStatusChange}
         items={statusTypes}
-        width="128px"
       />
       <DateRangePicker
         startDate={dateRangeFilter.start}

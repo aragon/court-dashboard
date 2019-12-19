@@ -1,7 +1,7 @@
-import { useState, useQuery } from 'react'
+import { useState } from 'react'
 import { useSubscription } from 'urql'
 import { reduceDispute } from '../reducer'
-import { AllDisputes, JurorDrafts } from '../../../queries/disputes'
+import { AllDisputes } from '../../../queries/disputes'
 
 export default function useDisputesSubscription() {
   const [disputes, setDisputes] = useState([])
@@ -11,6 +11,7 @@ export default function useDisputesSubscription() {
     /** Here we are reducing all the response againg because the response is not returning only the new elements or modified elements
      So we don't have a way to know if some item was updated or not
      */
+    console.log('RESPONSE ', response)
     return setDisputes(response.disputes.map(dispute => reduceDispute(dispute)))
   }
   useSubscription(
@@ -20,17 +21,6 @@ export default function useDisputesSubscription() {
     handleSubscription
   )
 
+  console.log('DISPUTES ', disputes)
   return disputes
-}
-
-export function useJurorDraftQuery() {
-  const [jurorDisputes, setJurorDisputes] = useState([])
-  const [result] = useQuery({
-    query: JurorDrafts,
-    variables: { id: 'juror' },
-  })
-  if (!result.fetching) {
-    setJurorDisputes(result.data.juror.drafts.map(draft => draft.round.dispute))
-  }
-  return jurorDisputes
 }

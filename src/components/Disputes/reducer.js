@@ -10,7 +10,7 @@ export const reduceDispute = dispute => {
         ? DisputesTypes.Status.Closed
         : DisputesTypes.Status.Open,
 
-    /* TO-DO This should be reduced using Facu's suggestions about how to calculate it */
+    /* TO-DO  SUPER HORRIBE FOR NOW - This should be reduced using Facu's suggestions about how to calculate it */
     currentPhase:
       DisputesTypes.convertFromString(dispute.state) ===
       DisputesTypes.Phase.JuryDrafting
