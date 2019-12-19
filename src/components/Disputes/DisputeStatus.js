@@ -34,6 +34,7 @@ export default function DisputeStatus({ dispute }) {
         font-size: 12px;
         color: ${color};
         background: ${background};
+        margin-top: 2px;
       `}
     >
       {label}

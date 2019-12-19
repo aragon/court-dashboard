@@ -32,4 +32,24 @@ export function addressesEqual(first, second) {
   return first === second
 }
 
+export function hexToAscii(hexx) {
+  const hex = hexx.toString()
+  let str = ''
+  for (let i = 0; i < hex.length && hex.substr(i, 2) !== '00'; i += 2)
+    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+  return str
+}
+
+export function toDate(evmTimestamp) {
+  const milliseconds = evmTimestamp.toString() * 1000
+  const date = new Date(milliseconds)
+  return (
+    date
+      .toISOString()
+      .slice(0, 19)
+      .replace(/-/g, '/')
+      .replace('T', ' ') + ' UTC'
+  )
+}
+
 export const addressPattern = '(0x)?[0-9a-fA-F]{40}'
