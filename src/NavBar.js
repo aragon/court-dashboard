@@ -1,82 +1,94 @@
 import React from 'react'
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+import { useHistory, useRouteMatch } from 'react-router-dom'
+import { ButtonBase, GU, useTheme, textStyle } from '@aragon/ui'
 
 import menuIcon from './assets/menu.svg'
-import { textStyle } from '@aragon/ui'
 
 function NavBar() {
+  const theme = useTheme()
   return (
-    <Nav>
-      <div
+    <nav
+      css={`
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        padding: ${2 * GU}px 0;
+        background: ${theme.surface};
+        margin-top: 2px;
+        box-shadow: rgba(0, 0, 0, 0.05) 2px 0px 3px;
+      `}
+    >
+      <h2
         css={`
-          text-decoration: none !important;
-          padding: 0 24px;
+          color: ${theme.surfaceContentSecondary};
+          margin-bottom: ${1 * GU}px;
+          padding: 0 ${3 * GU}px;
+          ${textStyle('label2')};
         `}
       >
-        <h2
-          css={`
-            ${textStyle('label2')}
-            color: #abafba;
-            margin-bottom: 8px;
-          `}
-        >
-          Menu
-        </h2>
-        <NavItem>
-          <Link to="/dashboard" className="link">
-            <NavItemWrapper>
-              <img src={menuIcon} />
-              Dashboard
-            </NavItemWrapper>
-          </Link>
-        </NavItem>
+        Menu
+      </h2>
 
-        <NavItem>
-          <Link to="/tasks" className="link">
-            <NavItemWrapper>
-              <img src={menuIcon} />
-              Tasks
-            </NavItemWrapper>
-          </Link>
-        </NavItem>
-        <NavItem>
-          <Link to="/disputes" className="link">
-            <NavItemWrapper>
-              <img src={menuIcon} />
-              Disputes
-            </NavItemWrapper>
-          </Link>
-        </NavItem>
-      </div>
-    </Nav>
+      <NavItem to="/dashboard" icon={menuIcon} label="Dashboard" />
+      <NavItem to="/tasks" icon={menuIcon} label="Tasks" />
+      <NavItem to="/disputes" icon={menuIcon} label="Disputes" />
+    </nav>
   )
 }
 
-const Nav = styled.nav`
-  box-shadow: rgba(0, 0, 0, 0.05) 2px 0px 3px;
-  padding: 16px 0;
-  background: white;
-  margin-top: 2px;
-  width: 200px;
-  z-index: 3;
-`
+function NavItem({ to, icon, label }) {
+  const history = useHistory()
+  const theme = useTheme()
+  const active = useRouteMatch(to) !== null
 
-const NavItem = styled.div`
-  padding: 6px 0;
+  return (
+    <ButtonBase
+      onClick={() => history.push(to)}
+      css={`
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: ${5 * GU}px;
+        padding: 0 ${2 * GU}px 0 ${3 * GU}px;
+        border-radius: 0;
+        text-align: left;
+        background: ${active ? theme.surfacePressed : 'transparent'};
+        &:active {
+          background: ${theme.surfacePressed};
+        }
+      `}
+    >
+      <div
+        css={`
+          position: absolute;
+          left: 0;
+          width: 3px;
+          height: 100%;
+          background: ${theme.accent};
+          opacity: ${Number(active)};
+          transform: translate3d(${active ? '0%' : '-100%'}, 0, 0);
+          transform-position: 0 0;
+          transition-property: transform, opacity;
+          transition-duration: 150ms;
+          transition-timing-function: ease-in-out;
+        `}
+      />
 
-  & > a {
-    text-decoration: none;
-  }
-`
-
-const NavItemWrapper = styled.div`
-  display: flex;
-  align-itmes: center;
-
-  & > :first-child {
-    margin-right: 8px;
-  }
-`
+      <img src={icon} alt="" />
+      <span
+        css={`
+          margin-left: ${1 * GU}px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          ${textStyle('body2')};
+          font-weight: ${active ? '600' : '400'};
+        `}
+      >
+        {label}
+      </span>
+    </ButtonBase>
+  )
+}
 
 export default NavBar

@@ -14,7 +14,7 @@ export default function ProfileHeader({ active }) {
 
   return (
     <Box
-      padding="40"
+      padding={40}
       css={`
         border-radius: 0;
         margin-bottom: ${2 * GU}px;
