@@ -22,7 +22,6 @@ const useSelectedDispute = disputes => {
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   const disputes = useDisputesSubscription()
-  console.log('disputes ', disputes)
   const connectedAccount = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
@@ -104,13 +103,6 @@ function Disputes() {
             <DisputeList
               disputes={screenIndex === 0 ? disputes : jurorDisputes}
               selectDispute={selectDispute}
-              // filteredDisputes={filteredDisputes}
-              // disputeStatusFilter={disputeStatusFilter}
-              // handleDisputeStatusFilterChange={handleDisputeStatusFilterChange}
-              // disputeAppFilter={disputeAppFilter}
-              // handleDisputeAppFilterChange={handleDisputeAppFilterChange}
-              // handleClearFilters={handleClearFilters}
-              // executionTargets={executionTargets}
             />
           </div>
         </>
@@ -118,9 +110,5 @@ function Disputes() {
     </React.Fragment>
   )
 }
-
-// const TabsWrapper = styled.div`
-//   margin: 0 -${Main.HORIZONTAL_PADDING}px ${3 * GU}px;
-// `
 
 export default Disputes
