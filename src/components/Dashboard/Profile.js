@@ -1,121 +1,91 @@
 import React from 'react'
+import { EthIdenticon, GU, useTheme, textStyle } from '@aragon/ui'
+import { shortenAddress } from '../../web3-utils'
+import {
+  ACCOUNT_STATUS_ACTIVE,
+  ACCOUNT_STATUS_INACTIVE,
+} from '../../dispute-status-type'
 
-import { Box, Button, GU, textStyle, useTheme, useViewport } from '@aragon/ui'
+const getProfileAttributes = (status, theme) => {
+  if (status === ACCOUNT_STATUS_ACTIVE)
+    return {
+      background: 'linear-gradient(35deg, #ff8888 -75%, #ffb36d 105%)', // TODO: replace for  theme.accentEnd and   theme.accentStart
+      primaryColor: theme.accentContent, // TODO: replace for theme.accentContent
+      secondaryColor: theme.accentContent, // TODO: replace for theme.accentContent
+      statusLabel: 'ACTIVE JUROR',
+      icon: null,
+    }
 
-import ProfileIcon from '../../assets/profile.png'
-import ANJBadgeIcon from '../../assets/anjBadge.svg'
-import IconCheck from '../../assets/IconCheck.svg'
+  if (status === ACCOUNT_STATUS_INACTIVE)
+    return {
+      background: 'linear-gradient(208deg, #FFFAF1 -3%, #FFEBEB 216%)',
+      primaryColor: theme.content,
+      secondaryColor: theme.contentSecondary,
+      statusLabel: 'INACTIVE JUROR',
+      icon: null,
+    }
 
-import Balances from './Balances'
+  return {
+    background: '#F0F2F7',
+    primaryColor: theme.content,
+    secondaryColor: theme.contentSecondary,
+    statusLabel: 'ACCOUNT',
+  }
+}
 
-export default function ProfileHeader({ active }) {
-  const { below } = useViewport()
+export default function ProfileHeader({ account, status }) {
   const theme = useTheme()
+  const {
+    background,
+    primaryColor,
+    secondaryColor,
+    statusLabel,
+    icon,
+  } = getProfileAttributes(status, theme)
 
   return (
-    <Box
-      padding="40"
+    <div
       css={`
-        border-radius: 0;
-        margin-bottom: ${2 * GU}px;
+        background: ${background};
+        padding: ${3 * GU}px;
+        display: flex;
+        align-items: stretch;
       `}
     >
+      <EthIdenticon
+        address={account}
+        radius={100}
+        scale={2}
+        css={`
+          margin-right: ${1.5 * GU}px;
+        `}
+      />
       <div
         css={`
-          margin-bottom: ${3 * GU}px;
           display: flex;
-          align-items: flex-start;
+          flex-direction: column;
           justify-content: space-between;
         `}
       >
-        <div
+        <span
           css={`
-            display: flex;
-            align-items: center;
+            ${textStyle('body1')}
+            color: ${primaryColor};
           `}
         >
-          <div
-            css={`
-              position: relative;
-              margin-right: ${3 * GU}px;
-            `}
-          >
-            <img alt="profile" src={ProfileIcon} />
-            <img
-              alt="active-juror"
-              src={ANJBadgeIcon}
-              css="position: absolute; top: 0; right: -5px"
-            />
-          </div>
-          <div>
-            <div
-              css={`
-                margin-bottom: ${1 * GU}px;
-                display: flex;
-                align-items: center;
-              `}
-            >
-              <span
-                css={`
-                  ${textStyle('title4')}
-                  letter-spacing: 1px;
-                  margin-right: ${2 * GU}px;
-                `}
-              >
-                Eliza Stewart
-              </span>
-              {active && (
-                <div
-                  css={`
-                    display: flex;
-                    align-items: center;
-                  `}
-                >
-                  <img
-                    alt="active"
-                    src={IconCheck}
-                    css={`
-                      margin-right: 4px;
-                    `}
-                  />
-                  <span
-                    css={`
-                      ${textStyle('label2')}
-                      color: ${theme.contentSecondary};
-                    `}
-                  >
-                    ACTIVE JUROR
-                  </span>
-                </div>
-              )}
-            </div>
-            <div>
-              <p
-                css={`
-                  ${textStyle('body3')}
-                `}
-              >
-                You are active and eligible to be drafted starting from the next
-                term, on 14/12/19 at 16:00.
-              </p>
-            </div>
-          </div>
-        </div>
-        {!below('medium') && (
-          <div>
-            <Button>
-              <span
-                css={`
-                  color: #636971;
-                `}
-              >
-                View profile
-              </span>
-            </Button>
-          </div>
-        )}
+          {shortenAddress(account)}
+        </span>
+        <span
+          css={`
+            ${textStyle('label2')}
+            display: block;
+            color: ${secondaryColor};
+          `}
+        >
+          {icon && <img src={icon} alt="juror-icon" />}
+          {statusLabel}
+        </span>
       </div>
-      <Balances />
-    </Box>
+    </div>
   )
 }
