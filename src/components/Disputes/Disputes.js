@@ -22,6 +22,7 @@ const useSelectedDispute = disputes => {
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   const disputes = useDisputesSubscription()
+  console.log('disputes reduced ', disputes)
   const connectedAccount = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
