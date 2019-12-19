@@ -23,7 +23,7 @@ export default function Balance({
         css={`
           display: flex;
           align-items: flex-start;
-          padding: ${2 * GU}px 0;
+          padding-bottom: ${2 * GU}px;
         `}
       >
         <div
@@ -39,6 +39,8 @@ export default function Balance({
               display: block;
             `}
             src={mainIcon}
+            height={3 * GU}
+            width={3 * GU}
           />
         </div>
         <div>

@@ -1,13 +1,26 @@
 import React from 'react'
-import { Box, GU, Split, useViewport } from '@aragon/ui'
+import { Box, GU, Split, useLayout, useTheme } from '@aragon/ui'
 import Profile from './Profile'
-import MyWallet from './MyWallet'
 
 import { balances } from '../../mock-data'
+import Balance from './Balance'
+import Information from './AccountInformation'
+
+import walletIcon from '../../assets/wallet.svg'
+import inactiveANJIcon from '../../assets/anj-inactive.svg'
+import activeANJIcon from '../../assets/anj-active.svg'
+
+import {
+  ACCOUNT_STATUS_ACTIVE,
+  // ACCOUNT_STATUS_INACTIVE,
+} from '../../dispute-status-type'
 
 function BalanceModule({ active, connectedAccount }) {
-  // const theme = useTheme()
-  const { below } = useViewport()
+  const theme = useTheme()
+  const { name: layout } = useLayout()
+  const oneColumn = layout === 'small' || layout === 'medium'
+
+  const status = ACCOUNT_STATUS_ACTIVE
 
   return (
     <Split
@@ -17,34 +30,44 @@ function BalanceModule({ active, connectedAccount }) {
             css={`
               border: 0;
             `}
-            padding={24}
+            padding={3 * GU}
           >
-            <div>Information</div>
+            <Information status={status} />
           </Box>
           <div
             css={`
-              display: flex;
+              display: ${oneColumn ? 'block' : 'flex'};
             `}
           >
             <Box
-              padding={24}
+              padding={3 * GU}
               css={`
                 flex-basis: 50%;
                 margin-top: ${2 * GU}px;
-                margin-right: ${2 * GU}px;
+                margin-right: ${oneColumn ? 0 : `${2 * GU}px`};
                 border: 0;
               `}
             >
-              <div>inactive</div>
+              <Balance
+                {...balances.inactive}
+                label="Inactive"
+                mainIcon={inactiveANJIcon}
+                mainIconBackground="#FEF3F1"
+              />
             </Box>
             <Box
-              padding={24}
+              padding={3 * GU}
               css={`
                 flex-basis: 50%;
                 border: 0;
               `}
             >
-              <div>active</div>
+              <Balance
+                {...balances.active}
+                label="Active"
+                mainIcon={activeANJIcon}
+                mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
+              />
             </Box>
           </div>
         </React.Fragment>
@@ -57,11 +80,23 @@ function BalanceModule({ active, connectedAccount }) {
             border: 0;
           `}
         >
-          <Profile active account={connectedAccount} />
-          <MyWallet {...balances.wallet} />
+          <Profile status={status} account={connectedAccount} />
+          <div
+            css={`
+              padding: ${3 * GU}px;
+              margin-top: ${2 * GU}px;
+            `}
+          >
+            <Balance
+              {...balances.wallet}
+              label="My wallet"
+              mainIcon={walletIcon}
+              mainIconBackground="#FEF3F1"
+            />
+          </div>
         </Box>
       }
-      invert={below('large') ? 'vertical' : 'horizontal'}
+      invert={oneColumn ? 'vertical' : 'horizontal'}
     />
   )
 }

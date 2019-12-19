@@ -6,14 +6,17 @@ import {
   ACCOUNT_STATUS_INACTIVE,
 } from '../../dispute-status-type'
 
+import inactiveJurorIcon from '../../assets/juror-inactive.svg'
+import activeJurorIcon from '../../assets/juror-active.svg'
+
 const getProfileAttributes = (status, theme) => {
   if (status === ACCOUNT_STATUS_ACTIVE)
     return {
-      background: 'linear-gradient(35deg, #ff8888 -75%, #ffb36d 105%)', // TODO: replace for  theme.accentEnd and   theme.accentStart
-      primaryColor: theme.accentContent, // TODO: replace for theme.accentContent
-      secondaryColor: theme.accentContent, // TODO: replace for theme.accentContent
+      background: `linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`,
+      primaryColor: theme.accentContent,
+      secondaryColor: theme.accentContent,
       statusLabel: 'ACTIVE JUROR',
-      icon: null,
+      icon: activeJurorIcon,
     }
 
   if (status === ACCOUNT_STATUS_INACTIVE)
@@ -22,7 +25,7 @@ const getProfileAttributes = (status, theme) => {
       primaryColor: theme.content,
       secondaryColor: theme.contentSecondary,
       statusLabel: 'INACTIVE JUROR',
-      icon: null,
+      icon: inactiveJurorIcon,
     }
 
   return {
@@ -33,7 +36,7 @@ const getProfileAttributes = (status, theme) => {
   }
 }
 
-export default function ProfileHeader({ account, status }) {
+function Profile({ account, status }) {
   const theme = useTheme()
   const {
     background,
@@ -65,12 +68,14 @@ export default function ProfileHeader({ account, status }) {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+          height: ${6 * GU}px;
         `}
       >
         <span
           css={`
-            ${textStyle('body1')}
+            ${textStyle('title4')}
             color: ${primaryColor};
+            line-height: 1.2;
           `}
         >
           {shortenAddress(account)}
@@ -78,14 +83,25 @@ export default function ProfileHeader({ account, status }) {
         <span
           css={`
             ${textStyle('label2')}
-            display: block;
+            display: flex;
             color: ${secondaryColor};
+            line-height: 1.2;
           `}
         >
-          {icon && <img src={icon} alt="juror-icon" />}
+          {icon && (
+            <img
+              css={`
+                margin-right: ${0.5 * GU}px;
+              `}
+              src={icon}
+              alt="juror-icon"
+            />
+          )}
           {statusLabel}
         </span>
       </div>
     </div>
   )
 }
+
+export default Profile
