@@ -1,49 +1,68 @@
-import React from 'react'
-
-import { Bar, CardLayout, DateRangePicker, DropDown, GU } from '@aragon/ui'
-
+import React, { useState } from 'react'
+import { Bar, CardLayout, GU } from '@aragon/ui'
+import * as DisputesTypes from './types'
 import DisputeCard from './DisputeCard'
+import DisputeFilters from './DisputeFilters'
+import dayjs from '../Lib/dayjs'
 
-function DisputeList({ disputes, selectDispute, statusTypes, phaseTypes }) {
-  // const theme = useTheme()
+const INITIAL_DATE_RANGE = { start: null, end: null }
+const DISPUTES_STATUS_TYPES = [
+  DisputesTypes.Status.Open,
+  DisputesTypes.Status.Closed,
+]
+const DISPUTES_STATUS_STRING = DISPUTES_STATUS_TYPES.map(
+  DisputesTypes.convertToString
+)
+
+const DISPUTES_PHASE_TYPES = [
+  DisputesTypes.Phase.EvidenceSubmission,
+  DisputesTypes.Phase.JuryDrafting,
+  DisputesTypes.Phase.VotingPeriod,
+  DisputesTypes.Phase.AppealRuling,
+  DisputesTypes.Phase.ConfirmAppeal,
+  DisputesTypes.Phase.ClaimRewards,
+]
+const DISPUTES_PHASE_STRING = DISPUTES_PHASE_TYPES.map(
+  DisputesTypes.convertToString
+)
+
+const getFilteredDisputes = ({ disputes, selectedDateRange }) => {
+  return disputes.filter(
+    ({ createdAt }) =>
+      !selectedDateRange.start ||
+      !selectedDateRange.end ||
+      dayjs(createdAt).isBetween(
+        dayjs(selectedDateRange.start).startOf('day'),
+        dayjs(selectedDateRange.end).endOf('day'),
+        '[]'
+      )
+  )
+}
+
+function DisputeList({ disputes, selectDispute }) {
+  const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
+
+  const handleSelectedDateRangeChange = range => {
+    setSelectedDateRange(range)
+  }
+
+  const filteredDisputes = getFilteredDisputes({
+    disputes,
+    selectedDateRange,
+  })
+
   return (
     <div>
       <Bar>
-        <div
-          css={`
-            height: ${8 * GU}px;
-            display: grid;
-            grid-template-columns: auto auto 1fr auto;
-            grid-gap: ${1 * GU}px;
-            align-items: center;
-            padding: 0 ${3 * GU}px;
-          `}
-        >
-          <DropDown
-            header="Phase"
-            placeholder="Phase"
-            // selected={disputeStatusFilter}
-            // onChange={handleDisputeStatusFilterChange}
-            items={phaseTypes}
-            width="128px"
-          />
-          <DropDown
-            header="Status"
-            placeholder="Status"
-            // selected={disputeStatusFilter}
-            // onChange={handleDisputeStatusFilterChange}
-            items={statusTypes}
-            width="128px"
-          />
-          <DateRangePicker
-          // startDate={disputeDateRangeFilter.start}
-          // endDate={disputeDateRangeFilter.end}
-          // onChange={handleDisputeDateRangeFilterChange}
-          />
-        </div>
+        <DisputeFilters
+          phaseTypes={DISPUTES_PHASE_STRING}
+          statusTypes={DISPUTES_STATUS_STRING}
+          dateRangeFilter={selectedDateRange}
+          onDateRangeChange={handleSelectedDateRangeChange}
+        />
       </Bar>
-      <CardLayout columnWidthMin={30 * GU} rowHeight={307}>
-        {disputes.map(dispute => {
+      <CardLayout columnWidthMin={30 * GU} rowHeight={272}>
+        {filteredDisputes.map(dispute => {
           return (
             <DisputeCard
               key={dispute.id}

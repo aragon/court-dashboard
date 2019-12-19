@@ -27,8 +27,9 @@ function Balances() {
           >
             Wallet balance
           </span>
-          {balances.wallet.map(balance => (
+          {balances.wallet.map((balance, index) => (
             <Balance
+              key={index}
               symbol={balance.tokenSymbol}
               amount={balance.amount}
               value={balance.value}
@@ -47,8 +48,9 @@ function Balances() {
           >
             Staked balance
           </span>
-          {balances.staked.map(balance => (
+          {balances.staked.map((balance, index) => (
             <Balance
+              key={index}
               symbol={balance.tokenSymbol}
               amount={balance.amount}
               value={balance.value}
@@ -76,8 +78,9 @@ function Balances() {
           >
             Active balance
           </span>
-          {balances.active.map(balance => (
+          {balances.active.map((balance, index) => (
             <Balance
+              key={index}
               symbol={balance.tokenSymbol}
               amount={balance.amount}
               value={balance.value}
@@ -105,8 +108,9 @@ function Balances() {
           >
             Rewards
           </span>
-          {balances.rewards.map(balance => (
+          {balances.rewards.map((balance, index) => (
             <Balance
+              key={index}
               symbol={balance.tokenSymbol}
               amount={balance.amount}
               value={balance.value}

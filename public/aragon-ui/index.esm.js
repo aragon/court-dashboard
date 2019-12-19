@@ -1,5 +1,5 @@
 import _styled, { css, keyframes, createGlobalStyle } from 'styled-components';
-import React, { useContext, useState, useMemo, useEffect, useCallback, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useMemo, useContext, useEffect, useCallback, useRef, useImperativeHandle, forwardRef } from 'react';
 import ReactDOM from 'react-dom';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -1561,6 +1561,418 @@ function textStyle(name) {
   return textStyleToCss(style);
 }
 
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+var classCallCheck = _classCallCheck;
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+var createClass = _createClass;
+
+var _typeof_1 = createCommonjsModule(function (module) {
+function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
+
+function _typeof(obj) {
+  if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
+    module.exports = _typeof = function _typeof(obj) {
+      return _typeof2(obj);
+    };
+  } else {
+    module.exports = _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
+    };
+  }
+
+  return _typeof(obj);
+}
+
+module.exports = _typeof;
+});
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+
+var assertThisInitialized = _assertThisInitialized;
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (_typeof_1(call) === "object" || typeof call === "function")) {
+    return call;
+  }
+
+  return assertThisInitialized(self);
+}
+
+var possibleConstructorReturn = _possibleConstructorReturn;
+
+var getPrototypeOf = createCommonjsModule(function (module) {
+function _getPrototypeOf(o) {
+  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  };
+  return _getPrototypeOf(o);
+}
+
+module.exports = _getPrototypeOf;
+});
+
+var setPrototypeOf = createCommonjsModule(function (module) {
+function _setPrototypeOf(o, p) {
+  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+module.exports = _setPrototypeOf;
+});
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) setPrototypeOf(subClass, superClass);
+}
+
+var inherits = _inherits;
+
+function _isNativeFunction(fn) {
+  return Function.toString.call(fn).indexOf("[native code]") !== -1;
+}
+
+var isNativeFunction = _isNativeFunction;
+
+var construct = createCommonjsModule(function (module) {
+function isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function _construct(Parent, args, Class) {
+  if (isNativeReflectConstruct()) {
+    module.exports = _construct = Reflect.construct;
+  } else {
+    module.exports = _construct = function _construct(Parent, args, Class) {
+      var a = [null];
+      a.push.apply(a, args);
+      var Constructor = Function.bind.apply(Parent, a);
+      var instance = new Constructor();
+      if (Class) setPrototypeOf(instance, Class.prototype);
+      return instance;
+    };
+  }
+
+  return _construct.apply(null, arguments);
+}
+
+module.exports = _construct;
+});
+
+var wrapNativeSuper = createCommonjsModule(function (module) {
+function _wrapNativeSuper(Class) {
+  var _cache = typeof Map === "function" ? new Map() : undefined;
+
+  module.exports = _wrapNativeSuper = function _wrapNativeSuper(Class) {
+    if (Class === null || !isNativeFunction(Class)) return Class;
+
+    if (typeof Class !== "function") {
+      throw new TypeError("Super expression must either be null or a function");
+    }
+
+    if (typeof _cache !== "undefined") {
+      if (_cache.has(Class)) return _cache.get(Class);
+
+      _cache.set(Class, Wrapper);
+    }
+
+    function Wrapper() {
+      return construct(Class, arguments, getPrototypeOf(this).constructor);
+    }
+
+    Wrapper.prototype = Object.create(Class.prototype, {
+      constructor: {
+        value: Wrapper,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    return setPrototypeOf(Wrapper, Class);
+  };
+
+  return _wrapNativeSuper(Class);
+}
+
+module.exports = _wrapNativeSuper;
+});
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+}
+
+var arrayWithoutHoles = _arrayWithoutHoles;
+
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+var iterableToArray = _iterableToArray;
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance");
+}
+
+var nonIterableSpread = _nonIterableSpread;
+
+function _toConsumableArray(arr) {
+  return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
+}
+
+var toConsumableArray = _toConsumableArray;
+
+var RGB_HEX_RE = /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
+function rgbFromRgbInt(rgbInt) {
+  return {
+    r: Math.floor(rgbInt / Math.pow(256, 2)),
+    g: Math.floor(rgbInt / 256 % 256),
+    b: Math.floor(rgbInt % 256)
+  };
+}
+
+function normalizeHexColor(value) {
+  var matches = value && typeof value === 'string' ? value.match(RGB_HEX_RE) : null;
+
+  if (matches === null) {
+    throw new Error("color(): the value must be a valid CSS hexadecimal color. Received: ".concat(value));
+  }
+
+  var hexColor = matches[1].toUpperCase();
+
+  if (hexColor.length === 3) {
+    return toConsumableArray(hexColor).map(function (c) {
+      return c + c;
+    }).join('');
+  }
+
+  return hexColor;
+}
+
+var Color =
+/*#__PURE__*/
+function (_String) {
+  inherits(Color, _String);
+
+  function Color(value) {
+    var _this;
+
+    classCallCheck(this, Color);
+
+    _this = possibleConstructorReturn(this, getPrototypeOf(Color).call(this, value));
+    var hexColor = normalizeHexColor(value);
+
+    var _rgbFromRgbInt = rgbFromRgbInt(parseInt(hexColor, 16)),
+        r = _rgbFromRgbInt.r,
+        g = _rgbFromRgbInt.g,
+        b = _rgbFromRgbInt.b;
+
+    _this.r = r;
+    _this.g = g;
+    _this.b = b;
+    _this.hexColor = hexColor;
+    return _this;
+  }
+
+  createClass(Color, [{
+    key: "toString",
+    value: function toString() {
+      return this.toCssRgb();
+    }
+  }, {
+    key: "valueOf",
+    value: function valueOf() {
+      return this.toCssRgb();
+    }
+  }, {
+    key: "toArray",
+    value: function toArray() {
+      return [this.r, this.g, this.b];
+    }
+  }, {
+    key: "toObject",
+    value: function toObject() {
+      var r = this.r,
+          g = this.g,
+          b = this.b;
+      return {
+        r: r,
+        g: g,
+        b: b
+      };
+    }
+  }, {
+    key: "alpha",
+    value: function alpha(_alpha) {
+      return this.toCssRgb({
+        alpha: _alpha
+      });
+    }
+  }, {
+    key: "toCssRgb",
+    value: function toCssRgb() {
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref$alpha = _ref.alpha,
+          alpha = _ref$alpha === void 0 ? 1 : _ref$alpha;
+
+      if (alpha === 1) {
+        return "#".concat(this.hexColor);
+      }
+
+      alpha = Math.max(0, Math.min(1, alpha));
+      return "rgba(".concat(this.r, ", ").concat(this.g, ", ").concat(this.b, ", ").concat(alpha, ")");
+    }
+  }]);
+
+  return Color;
+}(wrapNativeSuper(String));
+
+function color(value) {
+  return new Color(value);
+}
+
+// Forward some props of an instance to a child element.
+//
+// Usage example:
+//
+//   <Child {...forwardProps(this, ['name', 'style'])}>
+//
+function forwardProps(instance, names) {
+  return names.reduce(function (props, name) {
+    if (instance.props[name]) {
+      props[name] = instance.props[name];
+    }
+
+    return props;
+  }, {});
+} // Forward the props useful to extend the styles  of the main child of a
+// component, using either styled() or the style attribute. Additionnal names
+// can be passed as a second parameter.
+
+function stylingProps(instance) {
+  var names = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  return forwardProps(instance, ['style', 'className'].concat(toConsumableArray(names)));
+}
+
+function initContainsComponent() {
+  var ContainsContext = React.createContext({
+    contains: false
+  });
+  return {
+    // Wrap the parent component with this provider.
+
+    /* eslint-disable react/prop-types */
+    Provider: function Provider(_ref) {
+      var children = _ref.children;
+
+      var _useState = useState(0),
+          _useState2 = slicedToArray(_useState, 2),
+          count = _useState2[0],
+          setCount = _useState2[1];
+
+      var contextValue = useMemo(function () {
+        return {
+          updateCount: function updateCount(diff) {
+            setCount(function (count) {
+              return count + diff;
+            });
+          },
+          contains: count > 0
+        };
+      }, [count]);
+      return React.createElement(ContainsContext.Provider, {
+        value: contextValue
+      }, children);
+    },
+
+    /* eslint-enable react/prop-types */
+    // Call this from the parent component (returns a boolean)
+    useContains: function useContains() {
+      return useContext(ContainsContext).contains;
+    },
+    // Call this from the child component
+    useRegister: function useRegister() {
+      var _useContext = useContext(ContainsContext),
+          updateCount = _useContext.updateCount;
+
+      useEffect(function () {
+        if (!updateCount) {
+          return;
+        }
+
+        updateCount(1);
+        return function () {
+          updateCount(-1);
+        }; // We don't want this effect to ever re-run
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
+    }
+  };
+}
+
+var unselectable = function unselectable() {
+  return "\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n";
+}; // Transforms a number to be used as a CSS value, with the `px` suffix appended to it. If not a number, the value is returned directly.
+
+function cssPx(value) {
+  return typeof value === 'number' ? value + 'px' : value;
+}
+
 var dayjs_min = createCommonjsModule(function (module, exports) {
 !function(t,n){module.exports=n();}(commonjsGlobal,function(){var t="millisecond",n="second",e="minute",r="hour",i="day",s="week",u="month",a="quarter",o="year",h=/^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/,f=/\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,c=function(t,n,e){var r=String(t);return !r||r.length>=n?t:""+Array(n+1-r.length).join(e)+t},d={s:c,z:function(t){var n=-t.utcOffset(),e=Math.abs(n),r=Math.floor(e/60),i=e%60;return (n<=0?"+":"-")+c(r,2,"0")+":"+c(i,2,"0")},m:function(t,n){var e=12*(n.year()-t.year())+(n.month()-t.month()),r=t.clone().add(e,u),i=n-r<0,s=t.clone().add(e+(i?-1:1),u);return Number(-(e+(n-r)/(i?r-s:s-r))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(h){return {M:u,y:o,w:s,d:i,h:r,m:e,s:n,ms:t,Q:a}[h]||String(h||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},$={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},l="en",m={};m[l]=$;var y=function(t){return t instanceof v},M=function(t,n,e){var r;if(!t)return l;if("string"==typeof t)m[t]&&(r=t),n&&(m[t]=n,r=t);else{var i=t.name;m[i]=t,r=i;}return e||(l=r),r},g=function(t,n,e){if(y(t))return t.clone();var r=n?"string"==typeof n?{format:n,pl:e}:n:{};return r.date=t,new v(r)},D=d;D.l=M,D.i=y,D.w=function(t,n){return g(t,{locale:n.$L,utc:n.$u})};var v=function(){function c(t){this.$L=this.$L||M(t.locale,null,!0),this.parse(t);}var d=c.prototype;return d.parse=function(t){this.$d=function(t){var n=t.date,e=t.utc;if(null===n)return new Date(NaN);if(D.u(n))return new Date;if(n instanceof Date)return new Date(n);if("string"==typeof n&&!/Z$/i.test(n)){var r=n.match(h);if(r)return e?new Date(Date.UTC(r[1],r[2]-1,r[3]||1,r[4]||0,r[5]||0,r[6]||0,r[7]||0)):new Date(r[1],r[2]-1,r[3]||1,r[4]||0,r[5]||0,r[6]||0,r[7]||0)}return new Date(n)}(t),this.init();},d.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},d.$utils=function(){return D},d.isValid=function(){return !("Invalid Date"===this.$d.toString())},d.isSame=function(t,n){var e=g(t);return this.startOf(n)<=e&&e<=this.endOf(n)},d.isAfter=function(t,n){return g(t)<this.startOf(n)},d.isBefore=function(t,n){return this.endOf(n)<g(t)},d.$g=function(t,n,e){return D.u(t)?this[n]:this.set(e,t)},d.year=function(t){return this.$g(t,"$y",o)},d.month=function(t){return this.$g(t,"$M",u)},d.day=function(t){return this.$g(t,"$W",i)},d.date=function(t){return this.$g(t,"$D","date")},d.hour=function(t){return this.$g(t,"$H",r)},d.minute=function(t){return this.$g(t,"$m",e)},d.second=function(t){return this.$g(t,"$s",n)},d.millisecond=function(n){return this.$g(n,"$ms",t)},d.unix=function(){return Math.floor(this.valueOf()/1e3)},d.valueOf=function(){return this.$d.getTime()},d.startOf=function(t,a){var h=this,f=!!D.u(a)||a,c=D.p(t),d=function(t,n){var e=D.w(h.$u?Date.UTC(h.$y,n,t):new Date(h.$y,n,t),h);return f?e:e.endOf(i)},$=function(t,n){return D.w(h.toDate()[t].apply(h.toDate(),(f?[0,0,0,0]:[23,59,59,999]).slice(n)),h)},l=this.$W,m=this.$M,y=this.$D,M="set"+(this.$u?"UTC":"");switch(c){case o:return f?d(1,0):d(31,11);case u:return f?d(1,m):d(0,m+1);case s:var g=this.$locale().weekStart||0,v=(l<g?l+7:l)-g;return d(f?y-v:y+(6-v),m);case i:case"date":return $(M+"Hours",0);case r:return $(M+"Minutes",1);case e:return $(M+"Seconds",2);case n:return $(M+"Milliseconds",3);default:return this.clone()}},d.endOf=function(t){return this.startOf(t,!1)},d.$set=function(s,a){var h,f=D.p(s),c="set"+(this.$u?"UTC":""),d=(h={},h[i]=c+"Date",h.date=c+"Date",h[u]=c+"Month",h[o]=c+"FullYear",h[r]=c+"Hours",h[e]=c+"Minutes",h[n]=c+"Seconds",h[t]=c+"Milliseconds",h)[f],$=f===i?this.$D+(a-this.$W):a;if(f===u||f===o){var l=this.clone().set("date",1);l.$d[d]($),l.init(),this.$d=l.set("date",Math.min(this.$D,l.daysInMonth())).toDate();}else d&&this.$d[d]($);return this.init(),this},d.set=function(t,n){return this.clone().$set(t,n)},d.get=function(t){return this[D.p(t)]()},d.add=function(t,a){var h,f=this;t=Number(t);var c=D.p(a),d=function(n){var e=g(f);return D.w(e.date(e.date()+Math.round(n*t)),f)};if(c===u)return this.set(u,this.$M+t);if(c===o)return this.set(o,this.$y+t);if(c===i)return d(1);if(c===s)return d(7);var $=(h={},h[e]=6e4,h[r]=36e5,h[n]=1e3,h)[c]||1,l=this.valueOf()+t*$;return D.w(l,this)},d.subtract=function(t,n){return this.add(-1*t,n)},d.format=function(t){var n=this;if(!this.isValid())return "Invalid Date";var e=t||"YYYY-MM-DDTHH:mm:ssZ",r=D.z(this),i=this.$locale(),s=this.$H,u=this.$m,a=this.$M,o=i.weekdays,h=i.months,c=function(t,r,i,s){return t&&(t[r]||t(n,e))||i[r].substr(0,s)},d=function(t){return D.s(s%12||12,t,"0")},$=i.meridiem||function(t,n,e){var r=t<12?"AM":"PM";return e?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:D.s(a+1,2,"0"),MMM:c(i.monthsShort,a,h,3),MMMM:h[a]||h(this,e),D:this.$D,DD:D.s(this.$D,2,"0"),d:String(this.$W),dd:c(i.weekdaysMin,this.$W,o,2),ddd:c(i.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:D.s(s,2,"0"),h:d(1),hh:d(2),a:$(s,u,!0),A:$(s,u,!1),m:String(u),mm:D.s(u,2,"0"),s:String(this.$s),ss:D.s(this.$s,2,"0"),SSS:D.s(this.$ms,3,"0"),Z:r};return e.replace(f,function(t,n){return n||l[t]||r.replace(":","")})},d.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},d.diff=function(t,h,f){var c,d=D.p(h),$=g(t),l=6e4*($.utcOffset()-this.utcOffset()),m=this-$,y=D.m(this,$);return y=(c={},c[o]=y/12,c[u]=y,c[a]=y/3,c[s]=(m-l)/6048e5,c[i]=(m-l)/864e5,c[r]=m/36e5,c[e]=m/6e4,c[n]=m/1e3,c)[d]||m,f?y:D.a(y)},d.daysInMonth=function(){return this.endOf(u).$D},d.$locale=function(){return m[this.$L]},d.locale=function(t,n){if(!t)return this.$L;var e=this.clone();return e.$L=M(t,n,!0),e},d.clone=function(){return D.w(this.toDate(),this)},d.toDate=function(){return new Date(this.$d)},d.toJSON=function(){return this.isValid()?this.toISOString():null},d.toISOString=function(){return this.$d.toISOString()},d.toString=function(){return this.$d.toUTCString()},c}();return g.prototype=v.prototype,g.extend=function(t,n){return t(n,v,g),g},g.locale=M,g.isDayjs=y,g.unix=function(t){return g(1e3*t)},g.en=m[l],g.Ls=m,g});
 });
@@ -1685,6 +2097,55 @@ var formatIntegerRange = function formatIntegerRange() {
 
   return count.toString();
 };
+
+// This pair of component + hook can be used to know that a component is in the
+
+var insideContexts = new Map(); // Creates the required context if it doesn’t exist.
+
+function getContext(name) {
+  if (!insideContexts.has(name)) {
+    insideContexts.set(name, React.createContext({
+      inside: false,
+      data: null
+    }));
+  }
+
+  return insideContexts.get(name);
+} // Use this component to declare a new “inside context”, by name.
+
+
+function Inside(_ref) {
+  var children = _ref.children,
+      data = _ref.data,
+      name = _ref.name;
+  var Context = getContext(name);
+  return React.createElement(Context.Provider, {
+    value: {
+      inside: true,
+      data: data
+    }
+  }, children);
+}
+
+Inside.propTypes = {
+  children: propTypes.node,
+  data: propTypes.any,
+  name: propTypes.string.isRequired
+}; // Use this hook to know if a given component is somewhere
+// in the tree of an <Inside> declared with the same name.
+
+function useInside(name) {
+  var _useContext = useContext(getContext(name)),
+      inside = _useContext.inside,
+      data = _useContext.data;
+
+  return [inside, data];
+}
+
+var KEY_ESC = 27;
+var KEY_UP = 38;
+var KEY_DOWN = 40;
+var KEY_ENTER = 13;
 
 var sha3 = createCommonjsModule(function (module) {
 /**
@@ -2530,609 +2991,16 @@ function tokenIconUrl() {
   return "".concat(TRUST_WALLET_BASE_URL, "/assets/").concat(address, "/logo.png");
 }
 
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
-      arr2[i] = arr[i];
-    }
-
-    return arr2;
-  }
-}
-
-var arrayWithoutHoles = _arrayWithoutHoles;
-
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-}
-
-var iterableToArray = _iterableToArray;
-
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
-}
-
-var nonIterableSpread = _nonIterableSpread;
-
-function _toConsumableArray(arr) {
-  return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
-}
-
-var toConsumableArray = _toConsumableArray;
-
-// Forward some props of an instance to a child element.
-//
-// Usage example:
-//
-//   <Child {...forwardProps(this, ['name', 'style'])}>
-//
-function forwardProps(instance, names) {
-  return names.reduce(function (props, name) {
-    if (instance.props[name]) {
-      props[name] = instance.props[name];
-    }
-
-    return props;
-  }, {});
-} // Forward the props useful to extend the styles  of the main child of a
-// component, using either styled() or the style attribute. Additionnal names
-// can be passed as a second parameter.
-
-function stylingProps(instance) {
-  var names = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  return forwardProps(instance, ['style', 'className'].concat(toConsumableArray(names)));
-}
-
-var unselectable = function unselectable() {
-  return "\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n";
-}; // Transforms a number to be used as a CSS value, with the `px` suffix appended to it. If not a number, the value is returned directly.
-
-function cssPx(value) {
-  return typeof value === 'number' ? value + 'px' : value;
-}
-
-// This pair of component + hook can be used to know that a component is in the
-
-var insideContexts = new Map(); // Creates the required context if it doesn’t exist.
-
-function getContext(name) {
-  if (!insideContexts.has(name)) {
-    insideContexts.set(name, React.createContext({
-      inside: false,
-      data: null
-    }));
-  }
-
-  return insideContexts.get(name);
-} // Use this component to declare a new “inside context”, by name.
-
-
-function Inside(_ref) {
-  var children = _ref.children,
-      data = _ref.data,
-      name = _ref.name;
-  var Context = getContext(name);
-  return React.createElement(Context.Provider, {
-    value: {
-      inside: true,
-      data: data
-    }
-  }, children);
-}
-
-Inside.propTypes = {
-  children: propTypes.node,
-  data: propTypes.any,
-  name: propTypes.string.isRequired
-}; // Use this hook to know if a given component is somewhere
-// in the tree of an <Inside> declared with the same name.
-
-function useInside(name) {
-  var _useContext = useContext(getContext(name)),
-      inside = _useContext.inside,
-      data = _useContext.data;
-
-  return [inside, data];
-}
-
-var KEY_ESC = 27;
-var KEY_UP = 38;
-var KEY_DOWN = 40;
-var KEY_ENTER = 13;
-
-function initContainsComponent() {
-  var ContainsContext = React.createContext({
-    contains: false
-  });
-  return {
-    // Wrap the parent component with this provider.
-
-    /* eslint-disable react/prop-types */
-    Provider: function Provider(_ref) {
-      var children = _ref.children;
-
-      var _useState = useState(0),
-          _useState2 = slicedToArray(_useState, 2),
-          count = _useState2[0],
-          setCount = _useState2[1];
-
-      var contextValue = useMemo(function () {
-        return {
-          updateCount: function updateCount(diff) {
-            setCount(function (count) {
-              return count + diff;
-            });
-          },
-          contains: count > 0
-        };
-      }, [count]);
-      return React.createElement(ContainsContext.Provider, {
-        value: contextValue
-      }, children);
-    },
-
-    /* eslint-enable react/prop-types */
-    // Call this from the parent component (returns a boolean)
-    useContains: function useContains() {
-      return useContext(ContainsContext).contains;
-    },
-    // Call this from the child component
-    useRegister: function useRegister() {
-      var _useContext = useContext(ContainsContext),
-          updateCount = _useContext.updateCount;
-
-      useEffect(function () {
-        if (!updateCount) {
-          return;
-        }
-
-        updateCount(1);
-        return function () {
-          updateCount(-1);
-        }; // We don't want this effect to ever re-run
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
-    }
-  };
-}
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-var classCallCheck = _classCallCheck;
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
-
-var createClass = _createClass;
-
-var _typeof_1 = createCommonjsModule(function (module) {
-function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
-
-function _typeof(obj) {
-  if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
-    module.exports = _typeof = function _typeof(obj) {
-      return _typeof2(obj);
-    };
-  } else {
-    module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
-    };
-  }
-
-  return _typeof(obj);
-}
-
-module.exports = _typeof;
-});
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-var assertThisInitialized = _assertThisInitialized;
-
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof_1(call) === "object" || typeof call === "function")) {
-    return call;
-  }
-
-  return assertThisInitialized(self);
-}
-
-var possibleConstructorReturn = _possibleConstructorReturn;
-
-var getPrototypeOf = createCommonjsModule(function (module) {
-function _getPrototypeOf(o) {
-  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  return _getPrototypeOf(o);
-}
-
-module.exports = _getPrototypeOf;
-});
-
-var setPrototypeOf = createCommonjsModule(function (module) {
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-module.exports = _setPrototypeOf;
-});
-
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) setPrototypeOf(subClass, superClass);
-}
-
-var inherits = _inherits;
-
-function _isNativeFunction(fn) {
-  return Function.toString.call(fn).indexOf("[native code]") !== -1;
-}
-
-var isNativeFunction = _isNativeFunction;
-
-var construct = createCommonjsModule(function (module) {
-function isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-
-  try {
-    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function _construct(Parent, args, Class) {
-  if (isNativeReflectConstruct()) {
-    module.exports = _construct = Reflect.construct;
-  } else {
-    module.exports = _construct = function _construct(Parent, args, Class) {
-      var a = [null];
-      a.push.apply(a, args);
-      var Constructor = Function.bind.apply(Parent, a);
-      var instance = new Constructor();
-      if (Class) setPrototypeOf(instance, Class.prototype);
-      return instance;
-    };
-  }
-
-  return _construct.apply(null, arguments);
-}
-
-module.exports = _construct;
-});
-
-var wrapNativeSuper = createCommonjsModule(function (module) {
-function _wrapNativeSuper(Class) {
-  var _cache = typeof Map === "function" ? new Map() : undefined;
-
-  module.exports = _wrapNativeSuper = function _wrapNativeSuper(Class) {
-    if (Class === null || !isNativeFunction(Class)) return Class;
-
-    if (typeof Class !== "function") {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    if (typeof _cache !== "undefined") {
-      if (_cache.has(Class)) return _cache.get(Class);
-
-      _cache.set(Class, Wrapper);
-    }
-
-    function Wrapper() {
-      return construct(Class, arguments, getPrototypeOf(this).constructor);
-    }
-
-    Wrapper.prototype = Object.create(Class.prototype, {
-      constructor: {
-        value: Wrapper,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    return setPrototypeOf(Wrapper, Class);
-  };
-
-  return _wrapNativeSuper(Class);
-}
-
-module.exports = _wrapNativeSuper;
-});
-
-var RGB_HEX_RE = /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-
-function rgbFromRgbInt(rgbInt) {
-  return {
-    r: Math.floor(rgbInt / Math.pow(256, 2)),
-    g: Math.floor(rgbInt / 256 % 256),
-    b: Math.floor(rgbInt % 256)
-  };
-}
-
-function normalizeHexColor(value) {
-  var matches = value ? value.match(RGB_HEX_RE) : null;
-
-  if (matches === null) {
-    throw new Error("color(): the value must be a valid CSS hexadecimal color. Received: ".concat(value));
-  }
-
-  var hexColor = matches[1].toUpperCase();
-
-  if (hexColor.length === 3) {
-    return toConsumableArray(hexColor).map(function (c) {
-      return c + c;
-    }).join('');
-  }
-
-  return hexColor;
-}
-
-var Color =
-/*#__PURE__*/
-function (_String) {
-  inherits(Color, _String);
-
-  function Color(value) {
-    var _this;
-
-    classCallCheck(this, Color);
-
-    _this = possibleConstructorReturn(this, getPrototypeOf(Color).call(this, value));
-    var hexColor = normalizeHexColor(value);
-
-    var _rgbFromRgbInt = rgbFromRgbInt(parseInt(hexColor, 16)),
-        r = _rgbFromRgbInt.r,
-        g = _rgbFromRgbInt.g,
-        b = _rgbFromRgbInt.b;
-
-    _this.r = r;
-    _this.g = g;
-    _this.b = b;
-    _this.hexColor = hexColor;
-    return _this;
-  }
-
-  createClass(Color, [{
-    key: "toString",
-    value: function toString() {
-      return this.toCssRgb();
-    }
-  }, {
-    key: "valueOf",
-    value: function valueOf() {
-      return this.toCssRgb();
-    }
-  }, {
-    key: "toArray",
-    value: function toArray() {
-      return [this.r, this.g, this.b];
-    }
-  }, {
-    key: "toObject",
-    value: function toObject() {
-      var r = this.r,
-          g = this.g,
-          b = this.b;
-      return {
-        r: r,
-        g: g,
-        b: b
-      };
-    }
-  }, {
-    key: "alpha",
-    value: function alpha(_alpha) {
-      return this.toCssRgb({
-        alpha: _alpha
-      });
-    }
-  }, {
-    key: "toCssRgb",
-    value: function toCssRgb() {
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref$alpha = _ref.alpha,
-          alpha = _ref$alpha === void 0 ? 1 : _ref$alpha;
-
-      if (alpha === 1) {
-        return "#".concat(this.hexColor);
-      }
-
-      alpha = Math.max(0, Math.min(1, alpha));
-      return "rgba(".concat(this.r, ", ").concat(this.g, ", ").concat(this.b, ", ").concat(alpha, ")");
-    }
-  }]);
-
-  return Color;
-}(wrapNativeSuper(String));
-
-function color(value) {
-  return new Color(value);
-}
-
-var colors = {
-  // base
-  White: '#FFFFFF',
-  // greyscale
-  GreyBasic: '#DDE4E9',
-  GreyLight: '#C4CDD5',
-  Grey: '#C8D7EA',
-  GreyMedium: '#637381',
-  GreyDark: '#212B36',
-  // primary colors
-  AragonBlue: '#08BEE5',
-  AragonBlueLight: '#95ECFF',
-  AragonBlueLighter: '#EBFAFD',
-  AragonBlueDark: '#0792AF',
-  AragonTurquoise: '#3FE8E0',
-  AragonTurquoiseLight: '#9CF7F3',
-  AragonTurquoiseDark: '#26B4AD',
-  // secondary colors
-  ArcticBlueLight: '#F9FAFC',
-  ArcticBlue: '#F1F3F7',
-  ArcticBlueDark: '#ABBECF',
-  ArcticBlueDarker: '#8FA4B5',
-  Purple: '#7C80F2',
-  PurpleLight: '#CCBDF4',
-  PurpleDark: '#4D22DF',
-  BlueLight: '#9DBEFF',
-  Blue: '#3E7BF6',
-  BlueDark: '#3361EB',
-  GrassGreenLight: '#CADFAB',
-  GrassGreen: '#9BC75A',
-  GrassGreenDark: '#749C47',
-  YellowLight: '#FEF4A8',
-  Yellow: '#F7D858',
-  YellowDark: '#F2C14F',
-  CoralLight: '#FCC2AA',
-  Coral: '#F08658',
-  CoralDark: '#D26C41',
-  BrownLight: '#D8BCB1',
-  Brown: '#876559',
-  BrownDark: '#564038',
-  // functionality colors
-  MintGreenLight: '#87F1CB',
-  MintGreen: '#2CC68F',
-  MintGreenDark: '#1B8962',
-  OrangeLight: '#FFD48C',
-  Orange: '#F5A623',
-  OrangeDark: '#C7871E',
-  RedLight: '#FFB1B1',
-  Red: '#FF6969',
-  RedDark: '#CA4141'
-};
-
-var light = {
-  _name: 'light',
-  background: colors.ArcticBlueLight,
-  border: colors.GreyBasic,
-  overlay: colors.White,
-  content: colors.GreyDark,
-  contentSecondary: colors.GreyMedium,
-  surface: colors.White,
-  surfaceContent: colors.GreyDark,
-  surfaceContentSecondary: colors.GreyMedium,
-  surfaceIcon: colors.ArcticBlueDarker,
-  surfaceUnder: colors.ArcticBlue,
-  surfaceOpened: colors.ArcticBlueDark,
-  surfaceSelected: colors.ArcticBlueLight,
-  surfaceHighlight: colors.ArcticBlueLight,
-  surfacePressed: colors.ArcticBlueLight,
-  surfaceInteractive: colors.White,
-  feedbackSurface: colors.ArcticBlueLight,
-  feedbackSurfaceContent: colors.GreyDark,
-  feedbackSurfaceContentSecondary: colors.GreyMedium,
-  warning: colors.Orange,
-  warningSurface: '#FFF1DA',
-  warningSurfaceContent: colors.OrangeDark,
-  info: colors.AragonBlue,
-  infoSurface: colors.AragonBlueLighter,
-  infoSurfaceContent: colors.AragonBlueDark,
-  help: colors.Purple,
-  helpContent: colors.White,
-  helpSurface: colors.White,
-  helpSurfaceContent: colors.GreyDark,
-  negative: colors.Red,
-  negativeContent: colors.White,
-  negativeSurface: '#FFE8E8',
-  negativeSurfaceContent: colors.RedDark,
-  positive: colors.MintGreen,
-  positiveContent: colors.White,
-  positiveSurface: '#D8FFF1',
-  positiveSurfaceContent: colors.MintGreenDark,
-  badge: colors.AragonBlueLighter,
-  badgeContent: colors.GreyDark,
-  badgePressed: colors.ArcticBlueLight,
-  tagIdentifier: '#EDE6FF',
-  tagIdentifierContent: colors.PurpleDark,
-  tagNew: '#D8FFF1',
-  tagNewContent: colors.MintGreen,
-  tagIndicator: colors.AragonBlueLighter,
-  tagIndicatorContent: colors.AragonBlue,
-  tagActivity: colors.AragonBlue,
-  tagActivityContent: colors.White,
-  hint: colors.ArcticBlueDarker,
-  link: colors.Blue,
-  focus: colors.Blue,
-  selected: colors.AragonBlue,
-  selectedContent: colors.White,
-  selectedDisabled: colors.GreyLight,
-  disabled: colors.ArcticBlue,
-  disabledContent: colors.GreyMedium,
-  disabledIcon: colors.ArcticBlueDarker,
-  control: colors.ArcticBlueLight,
-  controlBorder: colors.GreyBasic,
-  controlBorderPressed: colors.ArcticBlueDark,
-  controlDisabled: colors.ArcticBlue,
-  controlSurface: colors.ArcticBlueLight,
-  controlUnder: colors.GreyBasic,
-  accent: colors.AragonBlue,
-  accentStart: colors.AragonBlue,
-  accentEnd: colors.AragonTurquoise,
-  accentContent: colors.White,
-  floating: '#30404F',
-  floatingContent: colors.White,
-  green: colors.GrassGreen,
-  yellow: colors.Yellow,
-  red: colors.Coral,
-  blue: colors.Blue,
-  brown: colors.Brown,
-  purple: colors.Purple,
-  // Deprecated
-  error: colors.Red,
-  success: colors.MintGreen
-};
-
 var dark = {
   _name: 'dark',
+  _appearance: 'dark',
   background: '#28334c',
   border: '#2c3a58',
   overlay: '#35425e',
-  content: colors.White,
+  content: '#FFFFFF',
   contentSecondary: '#7c99d6',
   surface: '#35425e',
-  surfaceContent: colors.White,
+  surfaceContent: '#FFFFFF',
   surfaceContentSecondary: '#7c99d6',
   surfaceIcon: '#6683c3',
   surfaceUnder: '#2d3954',
@@ -3142,26 +3010,26 @@ var dark = {
   surfacePressed: '#3f4e6d',
   surfaceInteractive: '#405071',
   feedbackSurface: '#4c5d82',
-  feedbackSurfaceContent: colors.GreyDark,
-  feedbackSurfaceContentSecondary: colors.GreyMedium,
+  feedbackSurfaceContent: '#212B36',
+  feedbackSurfaceContentSecondary: '#637381',
   warning: '#ffa410',
   warningSurface: '#656569',
   warningSurfaceContent: '#ffa410',
   info: '#00d2ff',
   infoSurface: '#415279',
   infoSurfaceContent: '#18d4fb',
-  help: colors.Purple,
-  helpContent: colors.White,
-  helpSurface: colors.White,
-  helpSurfaceContent: colors.GreyDark,
-  negative: colors.Red,
-  negativeContent: colors.White,
+  help: '#7C80F2',
+  helpContent: '#FFFFFF',
+  helpSurface: '#FFFFFF',
+  helpSurfaceContent: '#212B36',
+  negative: '#FF6969',
+  negativeContent: '#FFFFFF',
   negativeSurface: '#655c72',
   negativeSurfaceContent: '#ff5454',
   positive: '#2cc68f',
-  positiveContent: colors.White,
+  positiveContent: '#FFFFFF',
   positiveSurface: '#35585e',
-  positiveSurfaceContent: colors.MintGreenDark,
+  positiveSurfaceContent: '#1B8962',
   badge: '#415279',
   badgeContent: '#ffffff',
   badgePressed: '#4c5d82',
@@ -3172,13 +3040,13 @@ var dark = {
   tagIndicator: '#415279',
   tagIndicatorContent: '#00d3ff',
   tagActivity: '#00d2ff',
-  tagActivityContent: colors.White,
+  tagActivityContent: '#FFFFFF',
   hint: '#6683c3',
   link: '#0ca5ff',
   focus: '#0ca5ff',
   selected: '#00d2ff',
-  selectedContent: colors.White,
-  selectedDisabled: colors.GreyDark,
+  selectedContent: '#FFFFFF',
+  selectedDisabled: '#212B36',
   disabled: '#3f4e6f',
   disabledContent: '#8497bf',
   disabledIcon: '#6683c3',
@@ -3186,44 +3054,153 @@ var dark = {
   controlBorder: '#2c3a58',
   controlBorderPressed: '#65779a',
   controlDisabled: '#3f4e6f',
-  controlSurface: colors.ArcticBlueLight,
-  controlUnder: colors.ArcticBlue,
+  controlSurface: '#F9FAFC',
+  controlUnder: '#F1F3F7',
   accent: '#00d2ff',
   accentStart: '#00d2ff',
   accentEnd: '#0aece2',
-  accentContent: colors.White,
+  accentContent: '#FFFFFF',
   floating: '#1c2539',
-  floatingContent: colors.White,
-  green: colors.GrassGreen,
-  yellow: colors.Yellow,
-  red: colors.Coral,
-  blue: colors.Blue,
-  brown: colors.Brown,
-  purple: colors.Purple,
-  // Deprecated
-  error: colors.Red,
+  floatingContent: '#FFFFFF',
+  green: '#9BC75A',
+  yellow: '#F7D858',
+  red: '#F08658',
+  blue: '#3E7BF6',
+  brown: '#876559',
+  purple: '#7C80F2',
+  // deprecated
+  error: '#FF6969',
   success: '#2cc68f'
+};
+
+var light = {
+  _name: 'light',
+  _appearance: 'light',
+  background: '#F9FAFC',
+  border: '#DDE4E9',
+  overlay: '#FFFFFF',
+  content: '#212B36',
+  contentSecondary: '#637381',
+  surface: '#FFFFFF',
+  surfaceContent: '#212B36',
+  surfaceContentSecondary: '#637381',
+  surfaceIcon: '#8FA4B5',
+  surfaceUnder: '#F1F3F7',
+  surfaceOpened: '#ABBECF',
+  surfaceSelected: '#F9FAFC',
+  surfaceHighlight: '#F9FAFC',
+  surfacePressed: '#F9FAFC',
+  surfaceInteractive: '#FFFFFF',
+  feedbackSurface: '#F9FAFC',
+  feedbackSurfaceContent: '#212B36',
+  feedbackSurfaceContentSecondary: '#637381',
+  warning: '#F5A623',
+  warningSurface: '#FFF1DA',
+  warningSurfaceContent: '#C7871E',
+  info: '#08BEE5',
+  infoSurface: '#EBFAFD',
+  infoSurfaceContent: '#0792AF',
+  help: '#7C80F2',
+  helpContent: '#FFFFFF',
+  helpSurface: '#FFFFFF',
+  helpSurfaceContent: '#212B36',
+  negative: '#FF6969',
+  negativeContent: '#FFFFFF',
+  negativeSurface: '#FFE8E8',
+  negativeSurfaceContent: '#CA4141',
+  positive: '#2CC68F',
+  positiveContent: '#FFFFFF',
+  positiveSurface: '#D8FFF1',
+  positiveSurfaceContent: '#1B8962',
+  badge: '#EBFAFD',
+  badgeContent: '#212B36',
+  badgePressed: '#F9FAFC',
+  tagIdentifier: '#EDE6FF',
+  tagIdentifierContent: '#4D22DF',
+  tagNew: '#D8FFF1',
+  tagNewContent: '#2CC68F',
+  tagIndicator: '#EBFAFD',
+  tagIndicatorContent: '#08BEE5',
+  tagActivity: '#08BEE5',
+  tagActivityContent: '#FFFFFF',
+  hint: '#8FA4B5',
+  link: '#3E7BF6',
+  focus: '#3E7BF6',
+  selected: '#08BEE5',
+  selectedContent: '#FFFFFF',
+  selectedDisabled: '#C4CDD5',
+  disabled: '#F1F3F7',
+  disabledContent: '#637381',
+  disabledIcon: '#8FA4B5',
+  control: '#F9FAFC',
+  controlBorder: '#DDE4E9',
+  controlBorderPressed: '#ABBECF',
+  controlDisabled: '#F1F3F7',
+  controlSurface: '#F9FAFC',
+  controlUnder: '#DDE4E9',
+  accent: '#08BEE5',
+  accentStart: '#08BEE5',
+  accentEnd: '#3FE8E0',
+  accentContent: '#FFFFFF',
+  floating: '#30404F',
+  floatingContent: '#FFFFFF',
+  green: '#9BC75A',
+  yellow: '#F7D858',
+  red: '#F08658',
+  blue: '#3E7BF6',
+  brown: '#876559',
+  purple: '#7C80F2',
+  // deprecated
+  error: '#FF6969',
+  success: '#2CC68F'
 };
 
 function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$1(source, true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$1(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+// The appearance can be either “dark” or “light”.
+
+var APPEARANCES = ['dark', 'light'];
 var EMBEDDED_THEMES = {
   dark: dark,
   light: light
 };
-var DEFAULT_THEME = 'light';
-var RESERVED_KEYS = ['_name'];
+var THEME_DEFAULT = 'light';
+var RESERVED_KEYS = ['_appearance', '_name'];
+var COLOR_FALLBACK = '#FF00FF';
 
 function getTheme(theme) {
+  if (!validateTheme(theme)) {
+    warn('Theme invalid:', theme);
+    warn("Using the theme \u201C".concat(THEME_DEFAULT, "\u201D."));
+    return EMBEDDED_THEMES[THEME_DEFAULT];
+  }
+
   if (typeof theme === 'string' && EMBEDDED_THEMES[theme]) {
     return EMBEDDED_THEMES[theme];
   }
 
-  return theme;
+  if (theme === EMBEDDED_THEMES[theme._name]) {
+    return theme;
+  }
+
+  var baseTheme = EMBEDDED_THEMES[theme._appearance === 'dark' ? 'dark' : 'light'];
+  return _objectSpread$1({}, baseTheme, {}, theme);
 }
 
-var ThemeContext = React.createContext(convertThemeColors(getTheme(DEFAULT_THEME)));
+var ThemeContext = React.createContext(convertThemeColors(getTheme(THEME_DEFAULT)));
+
+function convertThemeColor(name, value) {
+  if (RESERVED_KEYS.includes(name)) {
+    return value;
+  }
+
+  try {
+    return color(value);
+  } catch (err) {
+    return color(COLOR_FALLBACK);
+  }
+}
 
 function convertThemeColors(theme) {
   return Object.entries(theme).reduce(function (theme, _ref) {
@@ -3231,18 +3208,23 @@ function convertThemeColors(theme) {
         name = _ref2[0],
         value = _ref2[1];
 
-    var convertedValue = RESERVED_KEYS.includes(name) ? value : color(value || '#FF00FF');
+    var convertedValue = convertThemeColor(name, value);
     return _objectSpread$1({}, theme, defineProperty({}, name, convertedValue));
   }, {});
 }
 
-function useTheme() {
-  return useContext(ThemeContext);
+function validateTheme(theme) {
+  return typeof theme === 'string' && EMBEDDED_THEMES[theme] || theme && theme._name && APPEARANCES.includes(theme._appearance);
 }
 
 function Theme(_ref3) {
   var theme = _ref3.theme,
       children = _ref3.children;
+
+  if (theme === undefined) {
+    theme = THEME_DEFAULT;
+  }
+
   var themeConverted = useMemo(function () {
     return convertThemeColors(getTheme(theme));
   }, [theme]);
@@ -3252,9 +3234,16 @@ function Theme(_ref3) {
 }
 
 Theme.propTypes = {
-  theme: propTypes.oneOfType([propTypes.object, propTypes.string]).isRequired,
-  children: propTypes.node
+  children: propTypes.node,
+  theme: propTypes.oneOfType([propTypes.object, propTypes.string])
 };
+
+function useTheme() {
+  return useContext(ThemeContext);
+}
+
+Theme.THEME_DEFAULT = THEME_DEFAULT;
+Theme.EMBEDDED_THEMES = EMBEDDED_THEMES;
 
 /**
  * Checks if `value` is the
@@ -4114,57 +4103,6 @@ Bar.propTypes = {
   secondary: propTypes.node
 };
 Bar.PADDING = BAR_PADDING;
-
-/*
- * MainTheme is meant to be used by the <Main /> component. It trades the
- * genericity of `<Theme />` for the idea of a “main theme”, allowing to change
- * the mode of this main theme from anywhere, including from a sub (non main) theme.
- */
-
-var MainThemeContext = React.createContext({});
-
-function useThemeMode() {
-  var _useContext = useContext(MainThemeContext),
-      theme = _useContext.theme,
-      setTheme = _useContext.setTheme;
-
-  var themeMode = useMemo(function () {
-    return {
-      set: function set(name) {
-        setTheme(name);
-      },
-      toggle: function toggle() {
-        setTheme(function (name) {
-          return name === 'light' ? 'dark' : 'light';
-        });
-      },
-      mode: theme === 'dark' ? 'dark' : 'light'
-    };
-  }, [theme, setTheme]);
-  return themeMode;
-}
-
-function MainTheme(_ref) {
-  var children = _ref.children;
-
-  var _useState = useState('light'),
-      _useState2 = slicedToArray(_useState, 2),
-      theme = _useState2[0],
-      setTheme = _useState2[1];
-
-  return React.createElement(MainThemeContext.Provider, {
-    value: {
-      theme: theme,
-      setTheme: setTheme
-    }
-  }, React.createElement(Theme, {
-    theme: theme
-  }, children));
-}
-
-MainTheme.propTypes = {
-  children: propTypes.node
-};
 
 var _StyledDiv$2 = _styled.div.withConfig({
   displayName: "Box___StyledDiv",
@@ -7459,7 +7397,7 @@ function (_AnimatedObjectWithCh) {
 }(AnimatedObjectWithChildren);
 
 // http://www.w3.org/TR/css3-color/#svg-color
-var colors$1 = {
+var colors = {
   transparent: 0x00000000,
   aliceblue: 0xf0f8ffff,
   antiquewhite: 0xfaebd7ff,
@@ -7735,7 +7673,7 @@ function normalizeColor(color) {
 
 
   if (match = hex6.exec(color)) return parseInt(match[1] + 'ff', 16) >>> 0;
-  if (colors$1.hasOwnProperty(color)) return colors$1[color];
+  if (colors.hasOwnProperty(color)) return colors[color];
 
   if (match = rgb.exec(color)) {
     return (parse255(match[1]) << 24 | // r
@@ -7854,7 +7792,7 @@ var stringShapeRegex = /[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?/g; // C
 
 var colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/gi; // Covers color names (transparent, blue, etc.)
 
-var colorNamesRegex = new RegExp("(" + Object.keys(colors$1).join('|') + ")", 'g');
+var colorNamesRegex = new RegExp("(" + Object.keys(colors).join('|') + ")", 'g');
 /**
  * Supports string shapes by extracting numbers so new values can be computed,
  * and recombines those values into new strings of the same shape.  Supports
@@ -8329,7 +8267,7 @@ injectCreateAnimatedStyle(function (style) {
   return new AnimatedStyle(style);
 });
 injectInterpolation(createInterpolation);
-injectColorNames(colors$1);
+injectColorNames(colors);
 injectBugfixes(fixAuto);
 injectApplyAnimatedValues(function (instance, props) {
   if (instance.nodeType && instance.setAttribute !== undefined) {
@@ -21477,10 +21415,11 @@ var _StyledScrollView = _styled(ScrollView).withConfig({
 })(["height:100vh"]);
 
 function Main$3(_ref) {
-  var children = _ref.children,
-      assetsUrl = _ref.assetsUrl,
+  var assetsUrl = _ref.assetsUrl,
+      children = _ref.children,
       layout = _ref.layout,
-      scrollView = _ref.scrollView;
+      scrollView = _ref.scrollView,
+      theme = _ref.theme;
   var containsAppView = useContainsAppView();
 
   if (layout === undefined) {
@@ -21496,8 +21435,10 @@ function Main$3(_ref) {
   content = scrollView ? // The main ScrollView is set to 100vh by default (best for Aragon apps)
   // Disable `scrollView` and insert your own if needed.
   React.createElement(_StyledScrollView, null, content) : content;
-  return React.createElement(MainTheme, null, React.createElement(Root.Provider, null, React.createElement(Viewport.Provider, null, React.createElement(PublicUrl.Provider, {
+  return React.createElement(Root.Provider, null, React.createElement(Viewport.Provider, null, React.createElement(PublicUrl.Provider, {
     url: ensureTrailingSlash(assetsUrl)
+  }, React.createElement(Theme, {
+    theme: theme
   }, React.createElement(BaseStyles$1, null), React.createElement(ToastHubProvider, null, content)))));
 }
 
@@ -21505,7 +21446,8 @@ Main$3.propTypes = {
   assetsUrl: propTypes.string,
   children: propTypes.node,
   layout: propTypes.bool,
-  scrollView: propTypes.bool
+  scrollView: propTypes.bool,
+  theme: Theme.propTypes.theme
 };
 Main$3.defaultProps = {
   assetsUrl: './aragon-ui/'
@@ -22118,7 +22060,7 @@ function (_AnimatedObjectWithCh) {
 }(AnimatedObjectWithChildren$1);
 
 // http://www.w3.org/TR/css3-color/#svg-color
-var colors$2 = {
+var colors$1 = {
   transparent: 0x00000000,
   aliceblue: 0xf0f8ffff,
   antiquewhite: 0xfaebd7ff,
@@ -22394,7 +22336,7 @@ function normalizeColor$1(color) {
 
 
   if (match = hex6$1.exec(color)) return parseInt(match[1] + 'ff', 16) >>> 0;
-  if (colors$2.hasOwnProperty(color)) return colors$2[color];
+  if (colors$1.hasOwnProperty(color)) return colors$1[color];
 
   if (match = rgb$1.exec(color)) {
     return (parse255$1(match[1]) << 24 | // r
@@ -22513,7 +22455,7 @@ var stringShapeRegex$1 = /[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?/g; //
 
 var colorRegex$1 = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/gi; // Covers color names (transparent, blue, etc.)
 
-var colorNamesRegex$1 = new RegExp("(" + Object.keys(colors$2).join('|') + ")", 'g');
+var colorNamesRegex$1 = new RegExp("(" + Object.keys(colors$1).join('|') + ")", 'g');
 /**
  * Supports string shapes by extracting numbers so new values can be computed,
  * and recombines those values into new strings of the same shape.  Supports
@@ -22906,7 +22848,7 @@ injectCreateAnimatedStyle$1(function (style) {
   return new AnimatedStyle$1(style);
 });
 injectInterpolation$1(createInterpolation$1);
-injectColorNames$1(colors$2);
+injectColorNames$1(colors$1);
 injectApplyAnimatedValues$1(function (instance, props) {
   if (instance.nodeType && instance.setAttribute !== undefined) {
     var style = props.style,
@@ -25412,7 +25354,7 @@ var _groups = groups(aragon),
     themeDark = _groups.themeDark,
     theme = _groups.theme,
     brand = _groups.brand,
-    colors$3 = _groups.colors;
+    colors$2 = _groups.colors;
 
 function _templateObject4$3() {
   var data = taggedTemplateLiteral(["\n  display: flex;\n  margin-bottom: -1px;\n  padding: 5px 0 3px;\n  border-bottom: 4px solid ", ";\n"]);
@@ -27056,5 +26998,5 @@ var AutoCompleteSelected$1 = React.forwardRef(function (props, ref) {
   }));
 });
 
-export { Accordion, AddressField, AppBadge, AppBar$1 as AppBar, AppView, BREAKPOINTS, BackButton, Badge, BadgeNumber, Bar, BaseStyles$1 as BaseStyles, Box, ButtonWithRef as Button, ButtonBaseWithFocus as ButtonBase, ButtonIcon, ButtonText, Card, CardLayout, CheckBoxWithTheme as Checkbox, CircleGraph, ContextMenu, ContextMenuItem, Countdown, DEFAULT_FONT_FAMILY, DataView, DateRangePicker, DiscButton, Distribution, DropDown, EmptyStateCard, EscapeOutside, EthIdenticon, ExternalLink, Field, FloatIndicator, FocusVisible, GU, Header, Help, IconCirclePlus as IconAdd, IconAddUser, IconAlert, IconAlignCenter, IconAlignJustify, IconAlignLeft, IconAlignRight, IconGrid as IconApps, IconAragon, IconArrowDown, IconArrowLeft, IconArrowRight, IconArrowUp, IconAtSign, IconCaution as IconAttention, IconFile as IconBlank, IconBlock, IconBookmark, IconInfo as IconBylaw, IconCalendar, IconCanvas, IconCaution, IconCenter, IconChart, IconChat, IconCheck, IconChip, IconCircleCheck, IconCircleMinus, IconCirclePlus, IconClock, IconCross as IconClose, IconCloudDownload, IconCloudUpload, IconCoin, IconConfiguration, IconConnect, IconConnection, IconCopy, IconCross, IconDashedSquare, IconDown, IconDownload, IconEdit, IconEllipsis, IconWarning as IconError, IconEthereum, IconExternal, IconFile, IconFilter, IconFlag, IconFolder, IconCoin as IconFundraising, IconGraph, IconGraph2, IconGrid, IconGroup, IconHash, IconHeart, IconHide, IconHome, IconAddUser as IconIdentity, IconImage, IconInfo, IconLabel, IconLayers, IconLeft, IconLink, IconLocation, IconLock, IconMail, IconMaximize, IconMenu, IconMinimize, IconMinus, IconMove, IconNoPicture, IconAlert as IconNotifications, IconInfo as IconPermissions, IconPicture, IconPlus, IconPower, IconPrint, IconProhibited, IconQuestion, IconRefresh, IconCircleMinus as IconRemove, IconRemoveUser, IconRight, IconRotateLeft, IconRotateRight, IconSearch, IconSettings, IconShare, IconSquare, IconSquareMinus, IconSquarePlus, IconStar, IconStarFilled, IconTarget, IconClock as IconTime, IconToken, IconTrash, IconUnlock, IconUp, IconUpload, IconUser, IconView, IconVote, IconWallet, IconWarning, IconWorld, IconWrite, IconZoomIn, IconZoomOut, IdentityBadge, ImageExists, Info, Inside, KEY_DOWN, KEY_ENTER, KEY_ESC, KEY_UP, Layout, LineChart, Link, LinkBase, LoadingRing, MONOSPACE_FONT_FAMILY, Main$4 as Main, MainTheme, Modal, NavigationBar, Pagination, PartitionBar, Popover, ProgressBar, PublicUrl, RADIUS, Radio, Radio as RadioButton, RadioGroup, RadioList, Redraw, RedrawFromDate, Root, RootPortal, SafeLink, ScrollView, SearchInput, SidePanel, SidePanelSeparator, SidePanelSplit, Slider$1 as Slider, Split, Switch, SyncIndicator, TEXT_STYLES, TabBarLegacyCompatibility as TabBar, Table, TableCell, TableHeader, StyledTableRow as TableRow, Tabs, Tag, Text, TextCopy, WrapperTextInput as TextInput, Theme, Timer$1 as Timer, Toast, ToastHubProvider as ToastHub, TokenBadge, TransactionBadge, TransactionProgress, Viewport, AutoComplete$1 as _AutoComplete, AutoCompleteSelected$1 as _AutoCompleteSelected, addressesEqual, blockExplorerUrl, brand, breakpoint, colors$3 as colors, cssPx, devOnly, difference, eachDayOfInterval, font, formatHtmlDatetime, formatIntegerRange, forwardProps, identity, initContainsComponent, isAddress, isTransaction, log, monospace, noop, observe, pick, shortenAddress, shortenTransaction, springs, stylingProps, textStyle, theme, themeDark, tokenIconUrl, unselectable, useArrowKeysFocus, useClickOutside, useContainsAppView, useImageExists, useInside, useKeyDown, useLayout, useOnBlur, useRoot, useSidePanel, useSidePanelFocusOnReady, useTheme, useThemeMode, useToast, useViewport, warn, warnOnce };
+export { Accordion, AddressField, AppBadge, AppBar$1 as AppBar, AppView, BREAKPOINTS, BackButton, Badge, BadgeNumber, Bar, BaseStyles$1 as BaseStyles, Box, ButtonWithRef as Button, ButtonBaseWithFocus as ButtonBase, ButtonIcon, ButtonText, Card, CardLayout, CheckBoxWithTheme as Checkbox, CircleGraph, ContextMenu, ContextMenuItem, Countdown, DEFAULT_FONT_FAMILY, DataView, DateRangePicker, DiscButton, Distribution, DropDown, EmptyStateCard, EscapeOutside, EthIdenticon, ExternalLink, Field, FloatIndicator, FocusVisible, GU, Header, Help, IconCirclePlus as IconAdd, IconAddUser, IconAlert, IconAlignCenter, IconAlignJustify, IconAlignLeft, IconAlignRight, IconGrid as IconApps, IconAragon, IconArrowDown, IconArrowLeft, IconArrowRight, IconArrowUp, IconAtSign, IconCaution as IconAttention, IconFile as IconBlank, IconBlock, IconBookmark, IconInfo as IconBylaw, IconCalendar, IconCanvas, IconCaution, IconCenter, IconChart, IconChat, IconCheck, IconChip, IconCircleCheck, IconCircleMinus, IconCirclePlus, IconClock, IconCross as IconClose, IconCloudDownload, IconCloudUpload, IconCoin, IconConfiguration, IconConnect, IconConnection, IconCopy, IconCross, IconDashedSquare, IconDown, IconDownload, IconEdit, IconEllipsis, IconWarning as IconError, IconEthereum, IconExternal, IconFile, IconFilter, IconFlag, IconFolder, IconCoin as IconFundraising, IconGraph, IconGraph2, IconGrid, IconGroup, IconHash, IconHeart, IconHide, IconHome, IconAddUser as IconIdentity, IconImage, IconInfo, IconLabel, IconLayers, IconLeft, IconLink, IconLocation, IconLock, IconMail, IconMaximize, IconMenu, IconMinimize, IconMinus, IconMove, IconNoPicture, IconAlert as IconNotifications, IconInfo as IconPermissions, IconPicture, IconPlus, IconPower, IconPrint, IconProhibited, IconQuestion, IconRefresh, IconCircleMinus as IconRemove, IconRemoveUser, IconRight, IconRotateLeft, IconRotateRight, IconSearch, IconSettings, IconShare, IconSquare, IconSquareMinus, IconSquarePlus, IconStar, IconStarFilled, IconTarget, IconClock as IconTime, IconToken, IconTrash, IconUnlock, IconUp, IconUpload, IconUser, IconView, IconVote, IconWallet, IconWarning, IconWorld, IconWrite, IconZoomIn, IconZoomOut, IdentityBadge, ImageExists, Info, Inside, KEY_DOWN, KEY_ENTER, KEY_ESC, KEY_UP, Layout, LineChart, Link, LinkBase, LoadingRing, MONOSPACE_FONT_FAMILY, Main$4 as Main, Modal, NavigationBar, Pagination, PartitionBar, Popover, ProgressBar, PublicUrl, RADIUS, Radio, Radio as RadioButton, RadioGroup, RadioList, Redraw, RedrawFromDate, Root, RootPortal, SafeLink, ScrollView, SearchInput, SidePanel, SidePanelSeparator, SidePanelSplit, Slider$1 as Slider, Split, Switch, SyncIndicator, TEXT_STYLES, TabBarLegacyCompatibility as TabBar, Table, TableCell, TableHeader, StyledTableRow as TableRow, Tabs, Tag, Text, TextCopy, WrapperTextInput as TextInput, Theme, Timer$1 as Timer, Toast, ToastHubProvider as ToastHub, TokenBadge, TransactionBadge, TransactionProgress, Viewport, AutoComplete$1 as _AutoComplete, AutoCompleteSelected$1 as _AutoCompleteSelected, addressesEqual, blockExplorerUrl, brand, breakpoint, color, colors$2 as colors, cssPx, devOnly, difference, eachDayOfInterval, font, formatHtmlDatetime, formatIntegerRange, forwardProps, identity, initContainsComponent, isAddress, isTransaction, log, monospace, noop, observe, pick, shortenAddress, shortenTransaction, springs, stylingProps, textStyle, theme, themeDark, tokenIconUrl, unselectable, useArrowKeysFocus, useClickOutside, useContainsAppView, useImageExists, useInside, useKeyDown, useLayout, useOnBlur, useRoot, useSidePanel, useSidePanelFocusOnReady, useTheme, useToast, useViewport, warn, warnOnce };
 //# sourceMappingURL=index.esm.js.map

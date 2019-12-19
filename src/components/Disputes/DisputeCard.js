@@ -9,8 +9,7 @@ import DisputePhase from './DisputePhase'
 
 function DisputeCard({ dispute, selectDispute }) {
   const theme = useTheme()
-  const { id, metadata, rounds } = dispute
-  const phase = rounds && rounds[rounds.length - 1].state
+  const { id, metadata, currentPhase } = dispute
 
   return (
     <CardItem onClick={() => selectDispute(id)}>
@@ -48,11 +47,11 @@ function DisputeCard({ dispute, selectDispute }) {
             height: ${27 * 3}px; // 27px * 3 = line-height * 3 lines
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
           `}
         />
       </div>
-      <DisputePhase phase={phase} />
+      <DisputePhase phase={currentPhase} />
     </CardItem>
   )
 }

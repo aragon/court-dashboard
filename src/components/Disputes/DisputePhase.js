@@ -58,6 +58,7 @@ function DisputePhase({ phase }) {
       <div
         css={`
           margin-left: -${0.5 * GU}px;
+          margin-bottom: ${2 * GU}px;
         `}
       >
         <Timer end={endDate} />
