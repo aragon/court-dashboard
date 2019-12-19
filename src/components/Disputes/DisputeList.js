@@ -33,7 +33,6 @@ const getFilteredDisputes = ({
   selectedStatus,
   selectedPhase,
 }) => {
-  console.log('selected Filter Phase', selectedPhase)
   return disputes.filter(
     ({ createdAt, reducedState, currentPhase }) =>
       (selectedPhase === UNSELECTED_FILTER ||
@@ -59,8 +58,6 @@ function DisputeList({ disputes, selectDispute }) {
     setSelectedDateRange(range)
   }
   const handlePhaseChange = React.useCallback(index => {
-    console.log('INDEXXXX ', index)
-    console.log('Dispute phase type', DISPUTES_PHASE_TYPES[index])
     return setSelectedPhase(index)
   }, [])
 
@@ -78,10 +75,6 @@ function DisputeList({ disputes, selectDispute }) {
     selectedPhase,
   })
 
-  const find = disputes.map(
-    ({ currentPhase }) => currentPhase === DISPUTES_PHASE_TYPES[0]
-  )
-  console.log('FIND ', find)
   return (
     <div>
       <Bar>
