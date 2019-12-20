@@ -53,6 +53,10 @@ function BalanceModule({ active, connectedAccount }) {
                 label="Inactive"
                 mainIcon={inactiveANJIcon}
                 mainIconBackground="#FEF3F1"
+                actions={[
+                  { label: 'Withdraw', onClick: null },
+                  { label: 'Activate', mode: 'strong', onClick: null },
+                ]}
               />
             </Box>
             <Box
@@ -67,6 +71,7 @@ function BalanceModule({ active, connectedAccount }) {
                 label="Active"
                 mainIcon={activeANJIcon}
                 mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
+                actions={[{ label: 'Deactivate', onClick: null }]}
               />
             </Box>
           </div>
@@ -92,6 +97,7 @@ function BalanceModule({ active, connectedAccount }) {
               label="My wallet"
               mainIcon={walletIcon}
               mainIconBackground="#FEF3F1"
+              actions={[{ label: 'Activate', mode: 'strong', onClick: null }]}
             />
           </div>
         </Box>
