@@ -1,5 +1,13 @@
 import React from 'react'
-import { Box, GU, Text, textStyle, IdentityBadge, useTheme } from '@aragon/ui'
+import {
+  Box,
+  GU,
+  IdentityBadge,
+  Text,
+  textStyle,
+  TransactionBadge,
+  useTheme,
+} from '@aragon/ui'
 import IconCourt from '../../assets/courtIcon.svg'
 import DisputeStatus from './DisputeStatus'
 import DisputeActions from './DisputeActions'
@@ -11,7 +19,7 @@ const DisputeInfo = ({ dispute }) => {
     metadata,
     // status,
     subject,
-    // termDate,
+    txHash,
   } = dispute
 
   return (
@@ -70,7 +78,7 @@ const DisputeInfo = ({ dispute }) => {
                 >
                   Dispute #{id}
                 </Text>
-                <IdentityBadge entity={subject.id} badgeOnly />
+                <TransactionBadge transaction={txHash} />
               </div>
             </div>
           </div>

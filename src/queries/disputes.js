@@ -4,6 +4,7 @@ export const AllDisputes = gql`
   subscription {
     disputes(orderBy: createdAt, orderDirection: desc) {
       id
+      txHash
       createTermId
       possibleRulings
       finalRuling
@@ -68,6 +69,7 @@ export const JurorDrafts = gql`
           number
           dispute {
             id
+            txHash
             createTermId
             possibleRulings
             finalRuling

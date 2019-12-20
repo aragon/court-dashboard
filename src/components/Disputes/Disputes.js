@@ -5,6 +5,7 @@ import DisputeList from './DisputeList'
 import ANJIcon from '../../assets/anjButton.svg'
 import useDisputesSubscription from './hooks/useDisputesSubscription'
 import useJurorDraftQuery from './hooks/useJurorDraftQuery'
+import useCourtSubscription from './hooks/useCourtSubscription'
 
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
@@ -22,10 +23,13 @@ const useSelectedDispute = disputes => {
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   const disputes = useDisputesSubscription()
+  console.log('DISPUTES SUBS ', disputes)
   const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
+  const court = useCourtSubscription()
 
+  console.log('COURT ', court)
   const handleBack = useCallback(() => {
     selectDispute(-1)
   }, [selectDispute])
