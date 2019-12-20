@@ -65,6 +65,31 @@ const DisputeActions = React.memo(({ dispute }) => {
       </React.Fragment>
     )
   }
+
+  if (currentPhase === DisputesTypes.Phase.JuryDrafting) {
+    return (
+      <React.Fragment>
+        <div>
+          <div
+            css={`
+              display: flex;
+              width: 100%;
+              margin-bottom: ${1.5 * GU}px;
+            `}
+          >
+            <Button mode="strong" wide disabled={false} onClick={() => {}}>
+              Draft jury
+            </Button>
+          </div>
+
+          <Info>
+            The evidence submission period is closed. Anyone can now trigger the
+            drafting of jury and earn some rewards.
+          </Info>
+        </div>
+      </React.Fragment>
+    )
+  }
 })
 
 const VotingButton = styled(Button)`
@@ -75,5 +100,11 @@ const VotingButton = styled(Button)`
     margin-right: 0px;
   }
 `
+// const DraftButton = styled(Button)`
+//   ${textStyle('body2')};
+//   width: 100%;
+//   margin-right: ${1 * GU}px;
+//   background: ;
+// `
 
 export default DisputeActions
