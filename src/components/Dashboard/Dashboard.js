@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Header, Split } from '@aragon/ui'
 
-import ProfileHeader from './ProfileHeader'
+import BalanceModule from './BalanceModule'
 import DashboardStats from './DashboardStats'
 import TaskTable from './TaskTable'
 import { tasks } from '../../mock-data'
@@ -17,7 +17,7 @@ function Dashboard() {
         primary="Dashboard"
         secondary={<Button label="Buy ANJ" mode="strong" />}
       />
-      <ProfileHeader active />
+      <BalanceModule connectedAccount={connectedAccount} active />
       <Split
         primary={
           <TaskTable tasks={tasks} connectedAccount={connectedAccount} />

@@ -29,7 +29,8 @@
     ],
     "react/jsx-fragments": 0,
     "react/jsx-key": 0,
-    "react-hooks/rules-of-hooks": "error",
+    "react/jsx-handler-names": 0,
+    "react-hooks/rules-of-hooks": "warn",
     "react-hooks/exhaustive-deps": "warn",
     "linebreak-style": ["error", "unix"]
   }
