@@ -1,15 +1,8 @@
 import React from 'react'
-import {
-  Box,
-  Button,
-  GU,
-  Text,
-  textStyle,
-  IdentityBadge,
-  useTheme,
-} from '@aragon/ui'
+import { Box, GU, Text, textStyle, IdentityBadge, useTheme } from '@aragon/ui'
 import IconCourt from '../../assets/courtIcon.svg'
 import DisputeStatus from './DisputeStatus'
+import DisputeActions from './DisputeActions'
 
 const DisputeInfo = ({ dispute }) => {
   const theme = useTheme()
@@ -94,7 +87,6 @@ const DisputeInfo = ({ dispute }) => {
             <DisputeStatus dispute={dispute} />
           </div>
         </div>
-
         <div
           css={`
             display: grid;
@@ -144,17 +136,7 @@ const DisputeInfo = ({ dispute }) => {
             </div>
           </div>
         </div>
-
-        <Button
-          mode="strong"
-          onClick={() => {}}
-          wide
-          css={`
-            background: ${theme.surfaceContentSecondary};
-          `}
-        >
-          Vote
-        </Button>
+        <DisputeActions dispute={dispute} />
       </section>
     </Box>
   )

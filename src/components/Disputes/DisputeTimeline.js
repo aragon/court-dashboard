@@ -12,7 +12,7 @@ function DisputeTimeline() {
   return (
     <div>
       <Stepper
-        lineColor={theme.surfaceIcon}
+        lineColor="#FFCDC5"
         lineTop={15}
         css={`
           padding: ${3 * GU}px 0;
@@ -27,7 +27,9 @@ function DisputeTimeline() {
               stepPoint={
                 <div
                   css={`
-                    background: ${active ? theme.surfaceIcon : '#ECEFF4'};
+                    background: ${active
+                      ? 'linear-gradient(51.69deg, #FFB36D -0.55%, #FF8888 88.44%)'
+                      : '#FFE2D7'};
                     border-radius: 80%;
                     padding: 10px;
                     position: relative;

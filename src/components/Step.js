@@ -1,13 +1,13 @@
 import React from 'react'
-import { GU, useTheme } from '@aragon/ui'
+import { GU } from '@aragon/ui'
 
 export default function Step({ stepPoint, content, active }) {
-  const theme = useTheme()
+  // const theme = useTheme()
 
   return (
     <div
       css={`
-        background: ${active ? theme.surfaceSelected : ''};
+        background: ${active ? '#FFF6F5' : ''};
       `}
     >
       <div
