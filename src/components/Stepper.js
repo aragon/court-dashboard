@@ -10,7 +10,6 @@ function Stepper({
   children,
   ...props
 }) {
-  console.log('line color ', lineColor)
   const stepVerticalPadding = 1.5 * GU
   const stepHorizontalPadding = 3 * GU
   return (

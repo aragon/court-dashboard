@@ -6,8 +6,6 @@ import styled from 'styled-components'
 
 const DisputeActions = React.memo(({ dispute }) => {
   const { currentPhase, rounds } = dispute
-  console.log('EVENT ', currentPhase)
-  console.log('PHASE ', DisputesTypes.Phase.VotingPeriod)
   const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
 
   if (currentPhase === DisputesTypes.Phase.Evidence) {

@@ -5,9 +5,11 @@ import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
 import dayjs from '../Lib/dayjs'
 
+const ALL_FILTER = 0
 const UNSELECTED_FILTER = -1
 const INITIAL_DATE_RANGE = { start: null, end: null }
 const DISPUTES_STATUS_TYPES = [
+  DisputesTypes.Phase.All,
   DisputesTypes.Status.Open,
   DisputesTypes.Status.Closed,
 ]
@@ -16,6 +18,7 @@ const DISPUTES_STATUS_STRING = DISPUTES_STATUS_TYPES.map(
 )
 
 const DISPUTES_PHASE_TYPES = [
+  DisputesTypes.Phase.All,
   DisputesTypes.Phase.Evidence,
   DisputesTypes.Phase.JuryDrafting,
   DisputesTypes.Phase.VotingPeriod,
@@ -36,6 +39,7 @@ const getFilteredDisputes = ({
   return disputes.filter(
     ({ createdAt, reducedState, currentPhase }) =>
       (selectedPhase === UNSELECTED_FILTER ||
+        selectedPhase === ALL_FILTER ||
         currentPhase === DISPUTES_PHASE_TYPES[selectedPhase]) &&
       (!selectedDateRange.start ||
         !selectedDateRange.end ||
@@ -45,6 +49,7 @@ const getFilteredDisputes = ({
           '[]'
         )) &&
       (selectedStatus === UNSELECTED_FILTER ||
+        selectedStatus === ALL_FILTER ||
         reducedState === DISPUTES_STATUS_TYPES[selectedStatus])
   )
 }

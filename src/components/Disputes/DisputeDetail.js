@@ -7,8 +7,6 @@ import DisputeTimeline from './DisputeTimeline'
 import { hexToAscii, toDate } from '../Lib/web3'
 
 function DisputeDetail({ dispute, onBack }) {
-  console.log('DISPUTE ', dispute)
-
   const { subject } = dispute
 
   const evidences = subject.evidence
@@ -21,7 +19,6 @@ function DisputeDetail({ dispute, onBack }) {
       })
     : []
 
-  console.log('evidences ', evidences)
   return (
     <React.Fragment>
       <Bar>

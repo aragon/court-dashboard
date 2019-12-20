@@ -102,6 +102,11 @@ export default function Balance({
                 mode={action.mode}
                 onClick={action.onClick} // eslint-disable-line
                 wide
+                css={`
+                  &:first-child {
+                    margin-right: ${GU}px;
+                  }
+                `}
               />
             )
           })}

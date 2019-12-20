@@ -9,8 +9,6 @@ function DisputeEvidences({ evidences }) {
     <React.Fragment>
       {evidences.map((evidence, index) => {
         const { createdAt, submitter, data } = evidence
-        console.log('createdAt ', createdAt)
-        console.log('submitter ', submitter)
         return (
           <Accordion
             key={index}

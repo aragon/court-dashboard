@@ -1,6 +1,6 @@
 import { useQuery } from 'urql'
-import { JurorDrafts } from '../../../queries/disputes'
-import { reduceDispute } from '../reducer'
+import { JurorDrafts } from '../queries/disputes'
+import { reduceDispute } from '../components/Disputes/reducer'
 
 export default function useJurorDraftQuery(juror) {
   const [result] = useQuery({

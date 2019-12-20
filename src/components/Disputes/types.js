@@ -4,6 +4,7 @@ export const Status = {
 }
 
 export const Phase = {
+  All: Symbol('All'),
   Invalid: Symbol('Invalid'),
   Adjudicating: Symbol('Adjudicating'),
   Ruled: Symbol('Ruled'),
@@ -18,6 +19,7 @@ export const Phase = {
 const stringMapping = {
   [Status.Open]: 'Open',
   [Status.Closed]: 'Closed',
+  [Phase.All]: 'All',
   [Phase.Evidence]: 'Evidence submission',
   [Phase.JuryDrafting]: 'Jury drafting',
   [Phase.VotingPeriod]: 'Voting period',
@@ -28,6 +30,7 @@ const stringMapping = {
 }
 
 const symbolMapping = {
+  All: Phase.All,
   Invalid: Phase.Invalid,
   Committing: Phase.VotingPeriod,
   Drafting: Phase.JuryDrafting,
