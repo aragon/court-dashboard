@@ -12,6 +12,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "styled-components": "^4.4.1",
+    "subscriptions-transport-ws": "^0.9.16",
     "urql": "^1.6.3"
   },
   "scripts": {
@@ -39,6 +40,7 @@
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-react": "^7.7.4",
+    "@urql/devtools": "^0.1.2",
     "babel-eslint": "^10.0.3",
     "babel-plugin-styled-components": "^1.10.6",
     "customize-cra": "^0.9.1",
