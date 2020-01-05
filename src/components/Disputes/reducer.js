@@ -15,7 +15,7 @@ export const reduceDispute = (dispute, courtSettings) => {
 }
 
 export function getPhaseAndTransition(dispute, courtSettings, now) {
-  const { createTermId, state, id } = dispute
+  const { createTermId, state } = dispute
   const { termDuration, terms, evidenceTerms } = courtSettings
   const disputeCreateTerm = terms.find(term => term.id === createTermId)
   const disputeCreateDateTime = toDate(disputeCreateTerm.startTime)

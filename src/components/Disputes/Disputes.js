@@ -6,7 +6,6 @@ import ANJIcon from '../../assets/anjButton.svg'
 // import useDisputesSubscription from '../../hooks/useDisputesSubscription'
 import useDisputes from '../../hooks/useDisputes'
 import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
-import { useCourtSettings } from '../../court-settings-manager'
 
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)

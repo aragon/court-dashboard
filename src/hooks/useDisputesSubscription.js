@@ -13,6 +13,7 @@ export default function useDisputesSubscription() {
     /** Here we are reducing all the response againg because the response is not returning only the new elements or modified elements
      So we don't have a way to know if some item was updated or not. The first argument is where the previouse subscription response comes
      */
+    console.log('response ', response)
     return setDisputes(
       response.disputes.map(dispute => reduceDispute(dispute, courtSettings))
     )
