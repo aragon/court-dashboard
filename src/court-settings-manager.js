@@ -1,18 +1,45 @@
 import React, { useContext } from 'react'
-import { useCourtSubscription } from './hooks/useCourtSubscription'
+import useCourtSubscription from './hooks/useCourtSubscription'
 
-const SettingsContext = React.createContext({
+const CourtSettingsContext = React.createContext({
   currentTerm: 0,
+  termDuration: 0,
+  terms: 0,
+  evidenceTerms: 0,
+  commitTerms: 0,
+  revealTerms: 0,
+  appealTerms: 0,
+  appealConfirmationTerms: 0,
 })
 
-export const useSettings = () => useContext(SettingsContext)
+export const useCourtSettings = () => useContext(CourtSettingsContext)
 
-export function SettingsProvider({ children }) {
+export function CourtsettingsProvider({ children }) {
   const court = useCourtSubscription()
-  const { currentTerm } = court
+  const {
+    currentTerm,
+    termDuration,
+    terms,
+    evidenceTerms,
+    commitTerms,
+    revealTerms,
+    appealTerms,
+    appealConfirmationTerms,
+  } = court
   return (
-    <SettingsContext.Provider value={{ currentTerm }}>
+    <CourtSettingsContext.Provider
+      value={{
+        currentTerm,
+        termDuration,
+        terms,
+        evidenceTerms,
+        commitTerms,
+        revealTerms,
+        appealTerms,
+        appealConfirmationTerms,
+      }}
+    >
       {children}
-    </SettingsContext.Provider>
+    </CourtSettingsContext.Provider>
   )
 }

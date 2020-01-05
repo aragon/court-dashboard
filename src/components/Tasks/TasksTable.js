@@ -10,7 +10,7 @@ import {
   theme,
   useViewport,
 } from '@aragon/ui'
-import dayjs from '../Lib/dayjs'
+import dayjs from '../../lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import TasksFilters from './TasksFilters'
 

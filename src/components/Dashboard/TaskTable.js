@@ -9,9 +9,9 @@ import {
   theme,
   useViewport,
 } from '@aragon/ui'
-import dayjs from '../Lib/dayjs'
+import dayjs from '../../lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
-import { addressesEqual } from '../Lib/web3'
+import { addressesEqual } from '../../lib/web3'
 
 const ENTRIES_PER_PAGE = 5
 const INITIAL_DATE_RANGE = { start: null, end: null }

@@ -4,7 +4,8 @@ import { BackButton, Bar, Box, Split } from '@aragon/ui'
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
-import { hexToAscii, toDate } from '../Lib/web3'
+import { hexToAscii, toDate } from '../../lib/web3'
+import NoEvidence from './NoEvidence'
 
 function DisputeDetail({ dispute, onBack }) {
   const { subject } = dispute
@@ -29,7 +30,11 @@ function DisputeDetail({ dispute, onBack }) {
         primary={
           <React.Fragment>
             <DisputeInfo dispute={dispute} />
-            {evidences.length > 0 && <DisputeEvidences evidences={evidences} />}
+            {evidences.length > 0 ? (
+              <DisputeEvidences evidences={evidences} />
+            ) : (
+              <NoEvidence />
+            )}
           </React.Fragment>
         }
         secondary={

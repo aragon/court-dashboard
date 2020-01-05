@@ -1,7 +1,7 @@
 import React from 'react'
 import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
 import FolderIcon from '../../assets/folderIcon.svg'
-import dayjs from '../Lib/dayjs'
+import dayjs from '../../lib/dayjs'
 
 function DisputeEvidences({ evidences }) {
   const theme = useTheme()

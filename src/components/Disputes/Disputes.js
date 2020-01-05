@@ -3,9 +3,10 @@ import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
 import ANJIcon from '../../assets/anjButton.svg'
-import useDisputesSubscription from '../../hooks/useDisputesSubscription'
+// import useDisputesSubscription from '../../hooks/useDisputesSubscription'
+import useDisputes from '../../hooks/useDisputes'
 import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
-import useCourtSubscription from '../../hooks/useCourtSubscription'
+import { useCourtSettings } from '../../court-settings-manager'
 
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
@@ -22,13 +23,12 @@ const useSelectedDispute = disputes => {
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
-  const disputes = useDisputesSubscription()
+  // const { currentTerm } = useCourtSettings()
+  const [disputes] = useDisputes()
   const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
-  const court = useCourtSubscription()
 
-  console.log('court ', court)
   const handleBack = useCallback(() => {
     selectDispute(-1)
   }, [selectDispute])

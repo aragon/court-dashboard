@@ -1,17 +1,15 @@
 import React from 'react'
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import { Main } from '@aragon/ui'
-
 import theme from './theme-court'
-
 import MainView from './MainView'
 import ErrorPage from './ErrorPage'
-
 import Dashboard from './components/Dashboard/Dashboard'
 import Tasks from './components/Tasks/Tasks'
 import Disputes from './components/Disputes/Disputes'
+import { CourtsettingsProvider } from './court-settings-manager'
 
-function App() {
+const App = () => {
   return (
     <BrowserRouter>
       <Main layout={false} theme={theme}>
@@ -29,4 +27,10 @@ function App() {
   )
 }
 
-export default App
+export default function Court() {
+  return (
+    <CourtsettingsProvider>
+      <App />
+    </CourtsettingsProvider>
+  )
+}

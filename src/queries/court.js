@@ -6,42 +6,14 @@ export const CourtConfig = gql`
       id
       termDuration
       currentTerm
-      feeToken {
-        id
-        symbol
-        name
-        decimals
-      }
-      anjToken {
-        id
-        symbol
-        name
-        decimals
-      }
-      jurorFee
-      draftFee
-      settleFee
       evidenceTerms
       commitTerms
       revealTerms
       appealTerms
       appealConfirmationTerms
-      penaltyPct
-      finalRoundReduction
-      firstRoundJurorsNumber
-      appealStepFactor
-      maxRegularAppealRounds
-      finalRoundLockTerms
-      appealCollateralFactor
-      appealConfirmCollateralFactor
-      minActiveBalance
-      fundsGovernor
-      configGovernor
-      modulesGovernor
-      modules {
+      terms {
         id
-        address
-        type
+        startTime
       }
     }
   }
