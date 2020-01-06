@@ -5,23 +5,39 @@ import BalanceModule from './BalanceModule'
 import DashboardStats from './DashboardStats'
 import TaskTable from './TaskTable'
 import { tasks } from '../../mock-data'
+import { useConnectedAccount } from '../../providers/Wallet'
+import Welcome from './Welcome'
+
+import ANJIcon from '../../assets/anjButton.svg'
 
 function Dashboard() {
-  // TODO - only for testing we need to use the  connected account
-  // const connectedAccount = useConnectedAccount()
-  const connectedAccount = '0x593e1F9809658d0c92e9f092cF01Aad7D0d734f3'
+  const connectedAccount = useConnectedAccount()
 
   return (
     <React.Fragment>
       <Header
         primary="Dashboard"
-        secondary={<Button label="Buy ANJ" mode="strong" />}
-      />
-      <BalanceModule connectedAccount={connectedAccount} active />
-      <Split
-        primary={
-          <TaskTable tasks={tasks} connectedAccount={connectedAccount} />
+        secondary={
+          <Button
+            icon={
+              <img
+                src={ANJIcon}
+                css={`
+                  width: 14px;
+                  height: 16px;
+                `}
+              />
+            }
+            label="Buy ANJ"
+            display="all"
+            mode="strong"
+          />
         }
+      />
+      {connectedAccount ? <BalanceModule /> : <Welcome />}
+
+      <Split
+        primary={<TaskTable tasks={tasks} />}
         secondary={<DashboardStats />}
       />
     </React.Fragment>

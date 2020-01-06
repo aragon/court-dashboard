@@ -6,12 +6,13 @@ import userIcon from '../../assets/user.svg'
 import gavelIcon from '../../assets/gavel.svg'
 
 import {
-  ACCOUNT_STATUS_ACTIVE,
+  ACCOUNT_STATUS_JUROR_ACTIVE,
   // ACCOUNT_STATUS_INACTIVE,
-} from '../../dispute-status-type'
+} from '../../types/account-status-types'
+import { formatTokenAmount } from '../../lib/math-utils'
 
-const getInformationAttributes = (status, drafted, theme) => {
-  if (status === ACCOUNT_STATUS_ACTIVE) {
+const getInformationAttributes = (status, drafted, minActiveBalance, theme) => {
+  if (status === ACCOUNT_STATUS_JUROR_ACTIVE) {
     if (!drafted) {
       return {
         icon: userIcon,
@@ -29,7 +30,7 @@ const getInformationAttributes = (status, drafted, theme) => {
         title: 'You have been drafted',
         titleColor: 'rgb(38,195,149)',
         paragraph:
-          'You can start reviwing the evidence and then commit your vote ',
+          'You can start reviewing the evidence and then commit your vote',
       }
     }
   }
@@ -37,11 +38,15 @@ const getInformationAttributes = (status, drafted, theme) => {
   return {
     icon: anjSpringIcon,
     title: 'Active ANJ to be an active juror',
-    paragraph: 'You must activate at least 10.000 ANJ to be drafted as a juror',
+    paragraph: `You must activate at least ${formatTokenAmount(
+      minActiveBalance,
+      false,
+      18 // TODO: get from court config
+    )}  ANJ to be drafted as a juror`,
   }
 }
 
-function AccountInformation({ status, drafted }) {
+function AccountInformation({ status, minActiveBalance, drafted }) {
   const theme = useTheme()
   const {
     icon,
@@ -49,7 +54,7 @@ function AccountInformation({ status, drafted }) {
     titleColor,
     paragraph,
     iconBackground,
-  } = getInformationAttributes(status, drafted, theme)
+  } = getInformationAttributes(status, drafted, minActiveBalance, theme)
 
   const iconBackgroundStyle = iconBackground
     ? `   

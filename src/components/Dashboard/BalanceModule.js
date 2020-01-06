@@ -1,26 +1,60 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Box, GU, Split, useLayout, useTheme } from '@aragon/ui'
-import Profile from './Profile'
 
-import { balances } from '../../mock-data'
+import Profile from './Profile'
 import Balance from './Balance'
 import Information from './AccountInformation'
 
+import useJurorBalances from '../../hooks/useJurorBalances'
+import useANJMovements from '../../hooks/useANJMovements'
+import useANJRate from '../../hooks/useANJRate'
+import { useAccountStatus } from '../../hooks/useAccountStatus'
+import { useCourtConfig } from '../../providers/CourtConfig'
+
+// TODO: import icons from aragon-ui when available
 import walletIcon from '../../assets/wallet.svg'
 import inactiveANJIcon from '../../assets/anj-inactive.svg'
 import activeANJIcon from '../../assets/anj-active.svg'
+import { useConnectedAccount } from '../../providers/Wallet'
 
-import {
-  ACCOUNT_STATUS_ACTIVE,
-  // ACCOUNT_STATUS_INACTIVE,
-} from '../../dispute-status-type'
-
-function BalanceModule({ active, connectedAccount }) {
+function BalanceModule() {
   const theme = useTheme()
   const { name: layout } = useLayout()
+  const { minActiveBalance, anjToken } = useCourtConfig()
+  const connectedAccount = useConnectedAccount()
+
   const oneColumn = layout === 'small' || layout === 'medium'
 
-  const status = ACCOUNT_STATUS_ACTIVE
+  const { balances, movements } = useJurorBalances(connectedAccount) // TODO: handle errors and fetching
+
+  const balancesKey = Object.values(balances).join('')
+  const anjRate = useANJRate()
+
+  const status = useAccountStatus(balances, minActiveBalance)
+  const convertedBalances = useMemo(
+    () =>
+      Object.keys(balances).reduce((acc, key) => {
+        const amount = balances[key]
+        const adjustedAmount = amount / Math.pow(10, anjToken.decimals)
+        return {
+          ...acc,
+          [key]: {
+            amount: adjustedAmount,
+            convertedAmount: adjustedAmount * anjRate,
+          },
+        }
+      }, {}),
+    [balancesKey, anjRate] // eslint-disable-line
+  )
+
+  console.log('converted balance', convertedBalances)
+  console.log('movements', movements)
+
+  const {
+    walletMovement,
+    inactiveBalanceMovement,
+    activeBalanceMovement,
+  } = useANJMovements(movements, anjToken.decimals)
 
   return (
     <Split
@@ -32,7 +66,7 @@ function BalanceModule({ active, connectedAccount }) {
             `}
             padding={3 * GU}
           >
-            <Information status={status} />
+            <Information status={status} minActiveBalance={minActiveBalance} />
           </Box>
           <div
             css={`
@@ -49,14 +83,16 @@ function BalanceModule({ active, connectedAccount }) {
               `}
             >
               <Balance
-                {...balances.inactive}
+                {...convertedBalances.availableBalance}
                 label="Inactive"
                 mainIcon={inactiveANJIcon}
                 mainIconBackground="#FEF3F1"
                 actions={[
+                  // TODO: Memoize array
                   { label: 'Withdraw', onClick: null },
                   { label: 'Activate', mode: 'strong', onClick: null },
                 ]}
+                activity={inactiveBalanceMovement}
               />
             </Box>
             <Box
@@ -67,11 +103,12 @@ function BalanceModule({ active, connectedAccount }) {
               `}
             >
               <Balance
-                {...balances.active}
+                {...convertedBalances.activeBalance}
                 label="Active"
                 mainIcon={activeANJIcon}
                 mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
-                actions={[{ label: 'Deactivate', onClick: null }]}
+                actions={[{ label: 'Deactivate', onClick: null }]} // TODO: Memoize array
+                activity={activeBalanceMovement}
               />
             </Box>
           </div>
@@ -93,11 +130,12 @@ function BalanceModule({ active, connectedAccount }) {
             `}
           >
             <Balance
-              {...balances.wallet}
+              {...convertedBalances.walletBalance}
               label="My wallet"
               mainIcon={walletIcon}
               mainIconBackground="#FEF3F1"
-              actions={[{ label: 'Activate', mode: 'strong', onClick: null }]}
+              actions={[{ label: 'Activate', mode: 'strong', onClick: null }]} // TODO: Memoize array
+              activity={walletMovement}
             />
           </div>
         </Box>

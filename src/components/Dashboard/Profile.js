@@ -2,15 +2,15 @@ import React from 'react'
 import { EthIdenticon, GU, useTheme, textStyle } from '@aragon/ui'
 import { shortenAddress } from '../../web3-utils'
 import {
-  ACCOUNT_STATUS_ACTIVE,
-  ACCOUNT_STATUS_INACTIVE,
-} from '../../dispute-status-type'
+  ACCOUNT_STATUS_JUROR_ACTIVE,
+  ACCOUNT_STATUS_JUROR_INACTIVE,
+} from '../../types/account-status-types'
 
 import inactiveJurorIcon from '../../assets/juror-inactive.svg'
 import activeJurorIcon from '../../assets/juror-active.svg'
 
 const getProfileAttributes = (status, theme) => {
-  if (status === ACCOUNT_STATUS_ACTIVE)
+  if (status === ACCOUNT_STATUS_JUROR_ACTIVE)
     return {
       background: `linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`,
       primaryColor: theme.accentContent,
@@ -19,7 +19,7 @@ const getProfileAttributes = (status, theme) => {
       icon: activeJurorIcon,
     }
 
-  if (status === ACCOUNT_STATUS_INACTIVE)
+  if (status === ACCOUNT_STATUS_JUROR_INACTIVE)
     return {
       background: 'linear-gradient(208deg, #FFFAF1 -3%, #FFEBEB 216%)',
       primaryColor: theme.content,

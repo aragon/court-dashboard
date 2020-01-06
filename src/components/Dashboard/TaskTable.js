@@ -9,9 +9,10 @@ import {
   theme,
   useViewport,
 } from '@aragon/ui'
-import dayjs from '../Lib/dayjs'
+import dayjs from '../../lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
-import { addressesEqual } from '../Lib/web3'
+import { addressesEqual } from '../../lib/web3'
+import { useConnectedAccount } from '../../providers/Wallet'
 
 const ENTRIES_PER_PAGE = 5
 const INITIAL_DATE_RANGE = { start: null, end: null }
@@ -30,10 +31,11 @@ const getFilteredTasks = ({ tasks, connectedAccount, selectedDateRange }) => {
   )
 }
 
-const TaskTable = ({ tasks, connectedAccount }) => {
+const TaskTable = ({ tasks }) => {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [page, setPage] = useState(0)
   const { below } = useViewport()
+  const connectedAccount = useConnectedAccount()
   const compactMode = below('medium')
 
   const handleSelectedDateRangeChange = range => {

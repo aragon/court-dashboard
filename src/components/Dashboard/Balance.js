@@ -1,17 +1,42 @@
 import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import ANJIcon from '../../assets/anj.svg'
+import { formatTokenAmount } from '../../lib/math-utils'
+import {
+  movementDirection,
+  convertToString,
+} from '../../types/anj-movement-types'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
-export default function Balance({
+const splitAmount = amount => {
+  const [integer, fractional] = formatTokenAmount(amount).split('.')
+  return (
+    <span>
+      <span className="integer">{integer}</span>
+      {fractional && (
+        <span
+          css={`
+            font-size: 16px;
+          `}
+        >
+          .{fractional}
+        </span>
+      )}
+    </span>
+  )
+}
+
+const Balance = React.memo(function Balance({
   label,
   amount,
-  value,
+  convertedAmount,
   mainIcon,
   mainIconBackground,
   activity,
   actions,
 }) {
   const theme = useTheme()
+  const { anjToken } = useCourtConfig()
 
   return (
     <div>
@@ -47,10 +72,10 @@ export default function Balance({
           <div>
             <span
               css={`      
-            ${textStyle('body2')}
-            color: ${theme.contentSecondary};
-            display:block;
-          `}
+                ${textStyle('body2')}
+                color: ${theme.contentSecondary};
+                display:block;
+              `}
             >
               {label}
             </span>
@@ -61,16 +86,16 @@ export default function Balance({
                 display: block;
               `}
             >
-              {amount} <img src={ANJIcon} />
+              {splitAmount(amount.toFixed(2))} <img src={ANJIcon} />
             </span>{' '}
             <span
               css={`
-            ${textStyle('body4')}
-            color: ${theme.contentSecondary};
-            display:block;
-          `}
+                ${textStyle('body4')}
+                color: ${theme.contentSecondary};
+                display:block;
+              `}
             >
-              $ {value}
+              $ {formatTokenAmount(convertedAmount.toFixed(2))}
             </span>
           </div>
         </div>
@@ -82,7 +107,7 @@ export default function Balance({
         `}
       >
         {activity ? (
-          <span>Recent activity</span>
+          <LatestActivity activity={activity} tokenSymbol={anjToken.symbol} />
         ) : (
           <span>No recent 24h activity</span>
         )}
@@ -91,7 +116,9 @@ export default function Balance({
       {amount > '0' && (
         <div
           css={`
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+            grid-column-gap: 8px;
           `}
         >
           {actions.map((action, index) => {
@@ -109,4 +136,34 @@ export default function Balance({
       )}
     </div>
   )
+})
+
+const LatestActivity = ({ activity, tokenSymbol }) => {
+  const theme = useTheme()
+  const isIncoming = activity.direction === movementDirection.Incoming
+  const displaySign =
+    activity.direction === movementDirection.Incoming ||
+    activity.direction === movementDirection.Outgoing
+
+  let color
+  if (displaySign) color = isIncoming ? theme.positive : theme.negative
+
+  return (
+    <span>
+      <span
+        css={`
+          color: ${color};
+        `}
+      >{`
+      ${formatTokenAmount(
+        activity.amount,
+        isIncoming,
+        0,
+        displaySign
+      )} ${tokenSymbol}`}</span>{' '}
+      {convertToString(activity.type)}
+    </span>
+  )
 }
+
+export default Balance
