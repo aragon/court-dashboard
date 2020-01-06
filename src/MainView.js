@@ -8,11 +8,16 @@ const NAV_BAR_WIDTH = 25 * GU
 function MainView({ children }) {
   const { width: vw } = useViewport()
   return (
-    <>
+    <div
+      css={`
+        height: 100vh;
+      `}
+    >
       <Header />
       <div
         css={`
           display: flex;
+          height: 100%;
         `}
       >
         <div
@@ -26,6 +31,7 @@ function MainView({ children }) {
         <div
           css={`
             flex-grow: 1;
+            overflow: auto;
           `}
         >
           <div
@@ -37,7 +43,7 @@ function MainView({ children }) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
