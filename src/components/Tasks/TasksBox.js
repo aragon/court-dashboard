@@ -6,9 +6,9 @@ function TasksBox() {
   const { below } = useViewport()
   const compactMode = below('medium')
   const tasks = [
-    { status: 'active', amount: 34 },
-    { status: 'completed', amount: 21 },
-    { status: 'archived', amount: 67 },
+    { status: 'Open', amount: 34 },
+    { status: 'Completed', amount: 21 },
+    { status: 'Incomplete', amount: 67 },
   ]
 
   return (
@@ -20,7 +20,7 @@ function TasksBox() {
             * scrollbar would briefly appear on top of everything (including the
             * sidepanel overlay).
             */
-          min-height: 112px;
+          min-height: 70px;
           transform: translate3d(0, 0, 0);
           overflow-x: auto;
         `}

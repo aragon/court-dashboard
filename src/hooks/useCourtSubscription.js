@@ -5,6 +5,7 @@ import { CourtConfig } from '../queries/court'
 export default function useCourtSubscription() {
   const [court, setCourt] = useState([])
   const handleSubscription = (lastResponse = [], response) => {
+    console.log('response court ', response)
     return setCourt(response.courtConfig)
   }
   useSubscription(

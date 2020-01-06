@@ -41,32 +41,30 @@ function Disputes() {
       <Header
         primary="Disputes"
         secondary={
-          !selectedDispute && (
-            <Button
-              icon={
-                <div
+          <Button
+            icon={
+              <div
+                css={`
+                  display: flex;
+                  height: ${GU * 3}px;
+                  width: ${GU * 3}px;
+                  margin-right: -6px;
+                `}
+              >
+                <img
+                  src={ANJIcon}
                   css={`
-                    display: flex;
-                    height: ${GU * 3}px;
-                    width: ${GU * 3}px;
-                    margin-right: -6px;
+                    margin: auto;
+                    width: 14px;
+                    height: 16px;
                   `}
-                >
-                  <img
-                    src={ANJIcon}
-                    css={`
-                      margin: auto;
-                      width: 14px;
-                      height: 16px;
-                    `}
-                  />
-                </div>
-              }
-              label="Buy ANJ"
-              display="all"
-              mode="strong"
-            />
-          )
+                />
+              </div>
+            }
+            label="Buy ANJ"
+            display="all"
+            mode="strong"
+          />
         }
       />
       {selectedDispute ? (

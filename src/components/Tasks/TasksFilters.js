@@ -12,8 +12,8 @@ const TasksFilters = ({ dateRangeFilter, onDateRangeChange }) => {
       `}
     >
       <DropDown
-        placeholder="All Tasks"
-        header="All Tasks"
+        placeholder="Actions"
+        header="Actions"
         items={[]}
         onChange={() => {}}
         width="128px"
@@ -21,13 +21,6 @@ const TasksFilters = ({ dateRangeFilter, onDateRangeChange }) => {
       <DropDown
         placeholder="Status"
         header="Status"
-        items={[]}
-        onChange={() => {}}
-        width="128px"
-      />
-      <DropDown
-        placeholder="Priority"
-        header="Priority"
         items={[]}
         onChange={() => {}}
         width="128px"

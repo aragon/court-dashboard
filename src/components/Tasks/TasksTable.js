@@ -2,9 +2,7 @@ import React, { useMemo, useState } from 'react'
 import {
   ContextMenu,
   DataView,
-  DropDown,
   GU,
-  IconApps,
   Link,
   textStyle,
   theme,
@@ -80,31 +78,6 @@ const TaskTable = ({ tasks }) => {
             >
               Upcoming tasks
             </div>
-
-            <div css="text-align: right;">
-              <DropDown
-                placeholder={
-                  <div
-                    css={`
-                      display: flex;
-                    `}
-                  >
-                    <IconApps />
-                    <span
-                      css={`
-                        ${textStyle('body2')}
-                      `}
-                    >
-                      Actions
-                    </span>
-                  </div>
-                }
-                header="Actions"
-                items={[]}
-                onChange={() => {}}
-                width="162px"
-              />
-            </div>
           </div>
           {!compactMode && (
             <TasksFilters
@@ -114,9 +87,9 @@ const TaskTable = ({ tasks }) => {
           )}
         </>
       }
-      fields={['Task', 'Dispute', 'Priority', 'Assigned to juror', 'Due date']}
+      fields={['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']}
       entries={sortedTasks}
-      renderEntry={({ taskName, disputeId, priority, juror, dueDate }) => {
+      renderEntry={({ taskName, disputeId, juror, status, dueDate }) => {
         const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
         const hoursAndSec = dayjs(dueDate).format('HH:mm')
         return [
@@ -127,15 +100,15 @@ const TaskTable = ({ tasks }) => {
           >
             {taskName}
           </span>,
-          <Link>#{disputeId}</Link>,
+          <Link>Dispute #{disputeId}</Link>,
+          <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
           <span
             css={`
               ${textStyle('body2')}
             `}
           >
-            {priority}
+            {status}
           </span>,
-          <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
           <div key={5}>{`${dayjs(formattedDate).format(
             'DD/MM/YY'
           )} at ${hoursAndSec} - Term `}</div>,
@@ -147,7 +120,6 @@ const TaskTable = ({ tasks }) => {
           <ContextMenuItem /> */}
         </ContextMenu>
       )}
-      onSelectEntries={() => {}}
     />
   )
 }
