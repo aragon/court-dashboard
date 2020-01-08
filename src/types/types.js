@@ -15,6 +15,7 @@ export const Phase = {
   AppealRuling: Symbol('Appealing'),
   ConfirmAppeal: Symbol('ConfirmingAppeal'),
   ClaimRewards: Symbol('Claim rewards'),
+  Ended: Symbol('Ended'),
 }
 
 const stringMapping = {
@@ -29,6 +30,7 @@ const stringMapping = {
   [Phase.ConfirmAppeal]: 'Confirm appeal',
   [Phase.ClaimRewards]: 'Claim rewards',
   [Phase.Invalid]: 'Invalid',
+  [Phase.Ended]: 'Ended',
 }
 
 const symbolMapping = {
