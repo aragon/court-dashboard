@@ -1,5 +1,5 @@
 import React from 'react'
-import { convertToString } from './types'
+import { convertToString } from '../../types/types'
 
 import { GU, textStyle, Timer } from '@aragon/ui'
 

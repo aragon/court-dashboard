@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Bar, CardLayout, GU } from '@aragon/ui'
-import * as DisputesTypes from './types'
+import * as DisputesTypes from '../../types/types'
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
 import dayjs from '../../lib/dayjs'

@@ -24,6 +24,7 @@ function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   // const { currentTerm } = useCourtSettings()
   const [disputes] = useDisputes()
+  console.log('Disputes!!! ', disputes)
   const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)

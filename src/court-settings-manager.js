@@ -30,13 +30,13 @@ export function CourtsettingsProvider({ children }) {
     <CourtSettingsContext.Provider
       value={{
         currentTerm,
-        termDuration,
+        termDuration: parseInt(termDuration),
         terms,
-        evidenceTerms,
-        commitTerms,
-        revealTerms,
-        appealTerms,
-        appealConfirmationTerms,
+        evidenceTerms: parseInt(evidenceTerms),
+        commitTerms: parseInt(commitTerms),
+        revealTerms: parseInt(revealTerms),
+        appealTerms: parseInt(appealTerms),
+        appealConfirmationTerms: parseInt(appealConfirmationTerms),
       }}
     >
       {children}

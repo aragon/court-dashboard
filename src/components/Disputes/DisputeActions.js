@@ -1,5 +1,5 @@
 import React from 'react'
-import * as DisputesTypes from './types'
+import * as DisputesTypes from '../../types/types'
 import { addressesEqual } from '../../lib/web3'
 import { Button, Info, textStyle, GU } from '@aragon/ui'
 import styled from 'styled-components'
