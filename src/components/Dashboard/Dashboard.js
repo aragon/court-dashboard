@@ -30,7 +30,6 @@ function Dashboard() {
             }
             label="Buy ANJ"
             display="all"
-            mode="strong"
           />
         }
       />

@@ -13,13 +13,16 @@ import {
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { devtoolsExchange } from '@urql/devtools'
 
-const subscriptionClient = new SubscriptionClient(
-  'ws://127.0.0.1:8001/subgraphs/name/aragon/aragon-court-rpc',
-  {}
-)
+import endpoints from './endpoints'
+
+const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
+
+console.log(GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS)
+
+const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {})
 
 const client = createClient({
-  url: 'http://127.0.0.1:8000/subgraphs/name/aragon/aragon-court-rpc',
+  url: GRAPH_API_ENDPOINT_HTTP,
   exchanges: [
     debugExchange,
     devtoolsExchange,
@@ -30,7 +33,6 @@ const client = createClient({
     }),
   ],
 })
-
 ReactDOM.render(
   <Provider value={client}>
     <App />

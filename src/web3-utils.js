@@ -1,3 +1,5 @@
+import { DEFAULT_CHAIN_NAME } from './environment'
+
 /**
  * Shorten an Ethereum address. `charsLength` allows to change the number of
  * characters on both sides of the ellipsis.
@@ -24,4 +26,18 @@ export function shortenAddress(address, charsLength = 4) {
     '…' +
     address.slice(-charsLength)
   )
+}
+
+export function getNetworkName(chainId) {
+  chainId = String(chainId)
+
+  if (chainId === '1') return 'mainnet'
+  if (chainId === '3') return 'ropsten'
+  if (chainId === '4') return 'rinkeby'
+
+  return DEFAULT_CHAIN_NAME
+}
+
+export function isLocalNetwork(chainId) {
+  return getNetworkName(chainId) === DEFAULT_CHAIN_NAME
 }

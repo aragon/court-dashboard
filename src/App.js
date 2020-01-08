@@ -10,18 +10,19 @@ import ErrorPage from './ErrorPage'
 import Dashboard from './components/Dashboard/Dashboard'
 import Tasks from './components/Tasks/Tasks'
 import Disputes from './components/Disputes/Disputes'
+import Web3ConnectProvider from './providers/Web3'
 import { CourtConfigProvider } from './providers/CourtConfig'
-import { WalletProvider } from './providers/Wallet'
+
 import AppLoader from './components/AppLoader'
 
 function App() {
   return (
     <BrowserRouter>
       <Main layout={false} theme={theme} scrollView={false}>
-        <MainView>
+        <Web3ConnectProvider>
           <CourtConfigProvider>
-            <WalletProvider>
-              <AppLoader>
+            <AppLoader>
+              <MainView>
                 <Switch>
                   <Redirect exact from="/" to="/dashboard" />
                   <Route path="/dashboard" component={Dashboard} />
@@ -29,10 +30,10 @@ function App() {
                   <Route exact path="/disputes" component={Disputes} />
                   <Route component={ErrorPage} />
                 </Switch>
-              </AppLoader>
-            </WalletProvider>
+              </MainView>
+            </AppLoader>
           </CourtConfigProvider>
-        </MainView>
+        </Web3ConnectProvider>
       </Main>
     </BrowserRouter>
   )
