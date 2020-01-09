@@ -12,7 +12,7 @@ import {
 import dayjs from '../../lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { addressesEqual } from '../../lib/web3'
-import { useConnectedAccount } from '../../providers/Wallet'
+import { useConnectedAccount } from '../../providers/Web3'
 
 const ENTRIES_PER_PAGE = 5
 const INITIAL_DATE_RANGE = { start: null, end: null }

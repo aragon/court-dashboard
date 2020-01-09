@@ -15,7 +15,8 @@ import { useCourtConfig } from '../../providers/CourtConfig'
 import walletIcon from '../../assets/wallet.svg'
 import inactiveANJIcon from '../../assets/anj-inactive.svg'
 import activeANJIcon from '../../assets/anj-active.svg'
-import { useConnectedAccount } from '../../providers/Wallet'
+
+import { useConnectedAccount } from '../../providers/Web3'
 
 function BalanceModule() {
   const theme = useTheme()

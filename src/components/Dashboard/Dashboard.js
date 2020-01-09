@@ -5,10 +5,10 @@ import BalanceModule from './BalanceModule'
 import DashboardStats from './DashboardStats'
 import TaskTable from './TaskTable'
 import { tasks } from '../../mock-data'
-import { useConnectedAccount } from '../../providers/Wallet'
 import Welcome from './Welcome'
 
 import ANJIcon from '../../assets/anjButton.svg'
+import { useConnectedAccount } from '../../providers/Web3'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
@@ -29,6 +29,7 @@ function Dashboard() {
               />
             }
             label="Buy ANJ"
+            mode="strong"
             display="all"
           />
         }

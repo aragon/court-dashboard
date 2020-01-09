@@ -21,8 +21,8 @@ function App() {
       <Main layout={false} theme={theme} scrollView={false}>
         <Web3ConnectProvider>
           <CourtConfigProvider>
-            <AppLoader>
-              <MainView>
+            <MainView>
+              <AppLoader>
                 <Switch>
                   <Redirect exact from="/" to="/dashboard" />
                   <Route path="/dashboard" component={Dashboard} />
@@ -30,8 +30,8 @@ function App() {
                   <Route exact path="/disputes" component={Disputes} />
                   <Route component={ErrorPage} />
                 </Switch>
-              </MainView>
-            </AppLoader>
+              </AppLoader>
+            </MainView>
           </CourtConfigProvider>
         </Web3ConnectProvider>
       </Main>
