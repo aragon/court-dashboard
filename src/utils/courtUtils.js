@@ -1,11 +1,11 @@
 function getFirstTermDate(courtSettings) {
   const { terms } = courtSettings
-  return terms[0].startTime
+  return terms[0].startTime * 1000
 }
 
-export function getTermStartDate(term, courtSettings) {
+export function getTermStartTime(term, courtSettings) {
   const { termDuration } = courtSettings
-  const termsSeconds = term * termDuration
+  const termMs = term * termDuration
 
-  return getFirstTermDate(courtSettings) + termsSeconds
+  return getFirstTermDate(courtSettings) + termMs
 }

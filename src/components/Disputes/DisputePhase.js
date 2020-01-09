@@ -1,4 +1,5 @@
 import React from 'react'
+import dayjs from '../../lib/dayjs'
 import { convertToString } from '../../types/types'
 
 import { GU, textStyle, Timer } from '@aragon/ui'
@@ -61,7 +62,7 @@ function DisputePhase({ phase, nextTransition }) {
           margin-bottom: ${2 * GU}px;
         `}
       >
-        <Timer end={nextTransition} />
+        <Timer end={dayjs(nextTransition)} />
       </div>
     </div>
   )

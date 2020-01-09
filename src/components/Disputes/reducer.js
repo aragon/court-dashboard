@@ -9,5 +9,8 @@ export const reduceDispute = (dispute, courtSettings) => {
       dispute.state === DisputesTypes.Phase.Ruled
         ? DisputesTypes.Status.Closed
         : DisputesTypes.Status.Open,
+    rounds: dispute.rounds.map(round => {
+      return { ...round, createdAt: parseInt(round.createdAt) * 1000 }
+    }),
   }
 }

@@ -1,44 +1,36 @@
 import { getTermStartTime } from './courtUtils'
-import { toDate } from '../lib/web3'
+// import { toDate } from '../lib/web3'
 import dayjs from '../lib/dayjs'
 import * as DisputesTypes from '../types/types'
 
 const juryDraftingTerms = 3
 
 export function getDisputeTimeLine(dispute, courtSettings) {
-  const { createTermId, state, lastRoundId } = dispute
-  const disputeCreationDate = getTermStartTime(createTermId)
-  const { termDuration, terms, evidenceTerms } = courtSettings
-  const roundPhases = [
-    DisputesTypes.Phase.JuryDrafting,
-    DisputesTypes.Phase.VotingPeriod,
-    DisputesTypes.Phase.RevealVote,
-    DisputesTypes.Phase.AppealRuling,
-    DisputesTypes.Phase.ConfirmAppeal,
-  ]
+  const { createdAt } = dispute
+  const { termDuration, evidenceTerms } = courtSettings
 
-  const disputeStartTime = getTermStartTime(createTermId)
-  const currentPhase = getPhaseAndTransition(dispute, courtSettings, new Date())
+  const phaseAndTime = getPhaseAndTransition(dispute, courtSettings, new Date())
 
   const timeLine = {
     created: {
       phase: 'Dispute Created', // create Symbol
-      endTime: disputeCreationDate,
+      endTime: createdAt,
     },
     evidence: {
       phase: DisputesTypes.Phase.Evidence,
-      endTime: disputeStartTime + termDuration * evidenceTerms,
-      active: currentPhase.currentPhase === DisputesTypes.Phase.Evidence,
+      endTime: createdAt + termDuration * evidenceTerms,
+      active: phaseAndTime.currentPhase === DisputesTypes.Phase.Evidence,
     },
-    // rounds: dispute.rounds.map(round => ),
+    rounds: dispute.rounds.map(round =>
+      getRoundPhasesAndTime(courtSettings, round, phaseAndTime)
+    ),
   }
-  // Check if the dispute phase is included on roundPhases array and use getRoundPhasesAndTime function to get the end date of each one iterating by rounds
+  return timeLine
 }
 
 export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
-  const { createTermId, state } = dispute
-
-  const now = dayjs(nowDate).unix()
+  const { state, createdAt } = dispute
+  const now = dayjs(nowDate).unix() * 1000
 
   let currentPhase
   let nextTransition
@@ -50,13 +42,11 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
     return { currentPhase, ruling }
   }
 
-  const { termDuration, terms, evidenceTerms } = courtSettings
-  const disputeCreateDateTime = getTermStartTime(createTermId)
+  const { termDuration, evidenceTerms } = courtSettings
 
   // Evidence submission
   if (state === DisputesTypes.Phase.Evidence) {
-    const evidenceSubmissionEndTime =
-      disputeCreateDateTime + termDuration * evidenceTerms
+    const evidenceSubmissionEndTime = createdAt + termDuration * evidenceTerms
 
     if (now > evidenceSubmissionEndTime) {
       currentPhase = DisputesTypes.Phase.JuryDrafting
@@ -66,6 +56,7 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
       currentPhase = state
       nextTransition = evidenceSubmissionEndTime
     }
+
     return { currentPhase, nextTransition }
   }
 
@@ -177,7 +168,7 @@ function getAdjudicationPhase(
   return { phase: DisputesTypes.Phase.Ended }
 }
 
-function getRoundPhasesAndTime(courtSettings, disputeDraftTermDateTime) {
+function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
   const {
     termDuration,
     commitTerms,
@@ -186,35 +177,48 @@ function getRoundPhasesAndTime(courtSettings, disputeDraftTermDateTime) {
     appealConfirmationTerms,
   } = courtSettings
 
-  return [
+  const { draftTermId, delayedTerms, number: roundId, createdAt } = round
+
+  const disputeDraftTermTime = getTermStartTime(
+    draftTermId + delayedTerms,
+    courtSettings
+  )
+
+  const roundPhasesAndTime = [
+    {
+      phase: DisputesTypes.Phase.JuryDrafting,
+      endTime: createdAt + termDuration * juryDraftingTerms,
+      active: DisputesTypes.Phase.JuryDrafting === currentPhase.currentPhase,
+    },
     {
       phase: DisputesTypes.Phase.VotingPeriod,
-      endTime: dayjs(disputeDraftTermDateTime).add(
-        termDuration * commitTerms,
-        'second'
-      ),
+      endTime: disputeDraftTermTime + termDuration * commitTerms,
+      active: DisputesTypes.Phase.VotingPeriod === currentPhase.currentPhase,
     },
     {
       phase: DisputesTypes.Phase.RevealVote,
-      endTime: dayjs(disputeDraftTermDateTime).add(
-        termDuration * (commitTerms + revealTerms),
-        'second'
-      ),
+      endTime:
+        disputeDraftTermTime + termDuration * (commitTerms + revealTerms),
+      active: DisputesTypes.Phase.RevealVote === currentPhase.currentPhase,
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
-      endTime: dayjs(disputeDraftTermDateTime).add(
+      endTime:
+        disputeDraftTermTime +
         termDuration * (commitTerms + revealTerms + appealTerms),
-        'second'
-      ),
+      active: DisputesTypes.Phase.AppealRuling === currentPhase.currentPhase,
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime: dayjs(disputeDraftTermDateTime).add(
+      endTime:
+        disputeDraftTermTime +
         termDuration *
           (commitTerms + revealTerms + appealTerms + appealConfirmationTerms),
-        'second'
-      ),
+      active: DisputesTypes.Phase.ConfirmAppeal === currentPhase.currentPhase,
     },
   ]
+
+  return roundId < currentPhase.roundId
+    ? roundPhasesAndTime
+    : roundPhasesAndTime.slice(0, 4)
 }

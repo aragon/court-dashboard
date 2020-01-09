@@ -11,8 +11,13 @@ import {
 import IconCourt from '../../assets/courtIcon.svg'
 import DisputeStatus from './DisputeStatus'
 import DisputeActions from './DisputeActions'
+import { getDisputeTimeLine } from '../../utils/disputeUtils'
+import { useCourtSettings } from '../../court-settings-manager'
 
 const DisputeInfo = ({ dispute }) => {
+  const courtSettings = useCourtSettings()
+  const disputeTimeLine = getDisputeTimeLine(dispute, courtSettings)
+  console.log('TIMELINEEEE ', disputeTimeLine)
   const theme = useTheme()
   const {
     id,
