@@ -7,7 +7,7 @@ import {
 } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { providers as EthersProviders } from 'ethers'
-import { getNetworkName } from '../web3-utils'
+import { getNetworkName } from '../lib/web3'
 import environment from '../environment'
 
 const { Web3Provider: EthersWeb3Provider } = EthersProviders
