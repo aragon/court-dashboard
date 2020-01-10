@@ -29,7 +29,7 @@ function Stepper({
           }
         }
 
-        & > :not(:last-child) > :first-child ::after {
+        & > div > div > :not(:last-child) > :first-child ::after {
           background: ${lineColor};
           content: '';
           height: calc(100% + ${stepVerticalPadding}px + ${lineExtraHeight}px);

@@ -20,6 +20,7 @@ import Step from '../Step'
 // import { useCourtSettings } from '../../court-settings-manager'
 // import { convertToString } from '../../types/types'
 import * as DisputesTypes from '../../types/types'
+import styled from 'styled-components'
 
 function DisputeTimeline({ dispute }) {
   const theme = useTheme()
@@ -83,10 +84,8 @@ function DisputeTimeline({ dispute }) {
             return getStep(item, index, theme)
           } else {
             return item.map((round, roundIndex) => {
-              console.log('roundIndex ', roundIndex)
-              console.log('roundsLength ', roundsLength)
               // ADD <= instead of <
-              if (roundIndex < roundsLength - 1) {
+              if (roundIndex <= roundsLength - 1) {
                 return round.map((roundItem, phaseIndex) => {
                   return getStep(roundItem, phaseIndex, theme)
                 })
@@ -101,31 +100,38 @@ function DisputeTimeline({ dispute }) {
                           width: 100%;
                         `}
                       >
-                        <Accordion
-                          key={roundIndex}
-                          items={[
-                            [
-                              <span
-                                css={`
-                                  margin-left: ${GU * 1.5}px;
-                                `}
-                              >
-                                Round 1
-                              </span>,
-                              <Stepper
-                                lineColor="#FFCDC5"
-                                lineTop={15}
-                                css={`
-                                  padding: ${3 * GU}px 0;
-                                `}
-                              >
-                                {round.map((roundItem, phaseIndex) => {
-                                  return getStep(roundItem, phaseIndex, theme)
-                                })}
-                              </Stepper>,
-                            ],
-                          ]}
-                        />
+                        <StyledAccordion>
+                          <Accordion
+                            key={roundIndex}
+                            items={[
+                              [
+                                <span
+                                  css={`
+                                    margin-left: ${GU * 1.5}px;
+                                  `}
+                                >
+                                  Round 1
+                                </span>,
+                                <Stepper
+                                  lineColor="#FFCDC5"
+                                  lineTop={15}
+                                  css={`
+                                    padding: ${3 * GU}px 0;
+                                  `}
+                                >
+                                  {round.map((roundItem, phaseIndex) => {
+                                    return getStep(
+                                      roundItem,
+                                      phaseIndex,
+                                      theme,
+                                      roundStepContainerCss
+                                    )
+                                  })}
+                                </Stepper>,
+                              ],
+                            ]}
+                          />
+                        </StyledAccordion>
                       </div>
                     }
                     displayPoint={false}
@@ -140,7 +146,7 @@ function DisputeTimeline({ dispute }) {
   )
 }
 
-function getStep(item, index, theme) {
+function getStep(item, index, theme, css) {
   return (
     <Step
       key={index}
@@ -196,6 +202,7 @@ function getStep(item, index, theme) {
         </div>
       }
       displayPoint
+      css={css}
     />
   )
 }
@@ -229,3 +236,10 @@ function getPhaseIcon(phase, active, theme) {
 }
 
 export default DisputeTimeline
+
+const StyledAccordion = styled.div`
+  & > div:first-child {
+    border-radius: 0px;
+  }
+`
+const roundStepContainerCss = `margin-left: 0px;`

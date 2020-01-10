@@ -10,7 +10,10 @@ import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
 
-  const selectDispute = disputeId => setSelectedDisputeId(disputeId)
+  const selectDispute = useCallback(
+    disputeId => setSelectedDisputeId(disputeId),
+    []
+  )
 
   const selectedDispute = useMemo(
     () => disputes.find(dispute => dispute.id === selectedDisputeId) || null,
@@ -24,7 +27,6 @@ function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   // const { currentTerm } = useCourtSettings()
   const [disputes] = useDisputes()
-  console.log('Disputes!!! ', disputes)
   const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)

@@ -7,7 +7,8 @@ import DisputeTimeline from './DisputeTimeline'
 import { hexToAscii, toDate } from '../../lib/web3'
 import NoEvidence from './NoEvidence'
 
-function DisputeDetail({ dispute, onBack }) {
+const DisputeDetail = React.memo(({ dispute, onBack }) => {
+  console.log('DISPUTE DETAIL  ', dispute)
   const { subject } = dispute
 
   const evidences = subject.evidence
@@ -47,6 +48,6 @@ function DisputeDetail({ dispute, onBack }) {
       />
     </React.Fragment>
   )
-}
+})
 
 export default DisputeDetail
