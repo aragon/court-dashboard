@@ -85,36 +85,50 @@ function DisputeTimeline({ dispute }) {
             return item.map((round, roundIndex) => {
               console.log('roundIndex ', roundIndex)
               console.log('roundsLength ', roundsLength)
+              // ADD <= instead of <
               if (roundIndex < roundsLength - 1) {
                 return round.map((roundItem, phaseIndex) => {
                   return getStep(roundItem, phaseIndex, theme)
                 })
               } else {
                 return (
-                  <Accordion
+                  <Step
                     key={roundIndex}
-                    items={[
-                      [
-                        <span
-                          css={`
-                            margin-left: ${GU * 1.5}px;
-                          `}
-                        >
-                          Round 1
-                        </span>,
-                        <Stepper
-                          lineColor="#FFCDC5"
-                          lineTop={15}
-                          css={`
-                            padding: ${3 * GU}px 0;
-                          `}
-                        >
-                          {round.map((roundItem, phaseIndex) => {
-                            return getStep(roundItem, phaseIndex, theme)
-                          })}
-                        </Stepper>,
-                      ],
-                    ]}
+                    active={false}
+                    content={
+                      <div
+                        css={`
+                          width: 100%;
+                        `}
+                      >
+                        <Accordion
+                          key={roundIndex}
+                          items={[
+                            [
+                              <span
+                                css={`
+                                  margin-left: ${GU * 1.5}px;
+                                `}
+                              >
+                                Round 1
+                              </span>,
+                              <Stepper
+                                lineColor="#FFCDC5"
+                                lineTop={15}
+                                css={`
+                                  padding: ${3 * GU}px 0;
+                                `}
+                              >
+                                {round.map((roundItem, phaseIndex) => {
+                                  return getStep(roundItem, phaseIndex, theme)
+                                })}
+                              </Stepper>,
+                            ],
+                          ]}
+                        />
+                      </div>
+                    }
+                    displayPoint={false}
                   />
                 )
               }
@@ -181,6 +195,7 @@ function getStep(item, index, theme) {
           )}
         </div>
       }
+      displayPoint
     />
   )
 }

@@ -11,14 +11,14 @@ function Stepper({
   ...props
 }) {
   const stepVerticalPadding = 1.5 * GU
-  const stepHorizontalPadding = 3 * GU
+  // const stepHorizontalPadding = 3 * GU
   return (
     <div
       css={`
         & > * {
           display: flex;
           align-items: stretch;
-          padding: ${stepVerticalPadding}px ${stepHorizontalPadding}px;
+          padding: ${stepVerticalPadding}px 0px;
 
           &:first-child {
             padding-top: 0;
