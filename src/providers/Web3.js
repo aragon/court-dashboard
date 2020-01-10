@@ -23,7 +23,6 @@ export function useWeb3Connect() {
   const activate = useCallback(
     async type => {
       const connector = WEB3_REACT_CONNECTORS.get(type)
-      console.log('connector', connector)
       if (connector) {
         try {
           await web3ReactContext.activate(connector, null, true)

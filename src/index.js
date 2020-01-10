@@ -16,8 +16,6 @@ import endpoints from './endpoints'
 
 const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
 
-console.log(GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS)
-
 const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {})
 
 const client = createClient({

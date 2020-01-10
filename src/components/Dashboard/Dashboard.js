@@ -12,7 +12,6 @@ function Dashboard() {
   // const connectedAccount = useConnectedAccount()
 
   const web3 = useWeb3Connect()
-  console.log(web3)
   const connectedAccount = '0x593e1F9809658d0c92e9f092cF01Aad7D0d734f3'
 
   return (
