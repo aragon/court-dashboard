@@ -11,7 +11,11 @@ import { useCourtConfig } from '../../providers/CourtConfig'
 const splitAmount = amount => {
   const [integer, fractional] = formatTokenAmount(amount).split('.')
   return (
-    <span>
+    <span
+      css={`
+        margin-right: 5px;
+      `}
+    >
       <span className="integer">{integer}</span>
       {fractional && (
         <span
@@ -79,15 +83,15 @@ const Balance = React.memo(function Balance({
             >
               {label}
             </span>
-            <span
+            <div
               css={`
                 ${textStyle('title3')}
                 line-height: 1.2;
-                display: block;
+                display: flex;
               `}
             >
               {splitAmount(amount.toFixed(2))} <img src={ANJIcon} />
-            </span>{' '}
+            </div>{' '}
             <span
               css={`
                 ${textStyle('body4')}

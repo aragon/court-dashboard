@@ -9,7 +9,7 @@ import Welcome from './Welcome'
 
 import ANJIcon from '../../assets/anjButton.svg'
 import { useConnectedAccount } from '../../providers/Web3'
-import { useDashboardLogic, getRequestModeString } from '../../dashboard-logic'
+import { getRequestModeString, useDashboardLogic } from '../../dashboard-logic'
 import ActivateANJ from './panels/ActivateANJ'
 
 function Dashboard() {
@@ -22,6 +22,8 @@ function Dashboard() {
     panelState,
     requests,
   } = useDashboardLogic()
+
+  console.log(actions)
 
   return (
     <React.Fragment>
@@ -50,6 +52,7 @@ function Dashboard() {
           movements={movements}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
+          onRequestStakeActivate={requests.stakeActivateANJ}
           onRequestWithdraw={requests.withdrawANJ}
         />
       ) : (
@@ -71,10 +74,7 @@ function Dashboard() {
             margin-top: ${2 * GU}px;
           `}
         >
-          <ActivateANJ
-            onActivateANJ={actions.activateANJ}
-            requiresApproval={mode}
-          />
+          <ActivateANJ activateANJ={actions.activateANJ} />
         </div>
       </SidePanel>
     </React.Fragment>

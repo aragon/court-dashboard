@@ -11,11 +11,13 @@ import { useSidePanel } from './hooks/useSidePanel'
 export const REQUEST_MODE = {
   ACTIVATE: Symbol('ACTIVATE'),
   DEACTIVATE: Symbol('DEACTIVATE'),
+  STAKE_ACTIVATE: Symbol('STAKE_ACTIVATE'),
   WITHDRAW: Symbol('WITHDRAW'),
 }
 
 const stringMapping = {
   [REQUEST_MODE.ACTIVATE]: 'Activate ANJ',
+  [REQUEST_MODE.STAKE_ACTIVATE]: 'Activate ANJ',
   [REQUEST_MODE.DEACTIVATE]: 'Deactivate ANJ',
   [REQUEST_MODE.WITHDRAW]: 'Withdraw ANJ',
 }
@@ -48,16 +50,20 @@ export function usePanelRequestActions(request) {
     request(REQUEST_MODE.DEACTIVATE)
   }, [request])
 
+  const stakeActivateANJ = useCallback(() => {
+    request(REQUEST_MODE.STAKE_ACTIVATE)
+  }, [request])
+
   const withdrawANJ = useCallback(() => {
     request(REQUEST_MODE.WITHDRAW)
   }, [request])
 
-  return { activateANJ, deactivateANJ, withdrawANJ }
+  return { activateANJ, deactivateANJ, stakeActivateANJ, withdrawANJ }
 }
 
 export function useDashboardLogic() {
   const { anjToken } = useCourtConfig()
-  const { activateANJ } = useCourtActions()
+  const { activateANJ, stakeActivateANJ } = useCourtActions()
   const connectedAccount = useConnectedAccount()
 
   const { balances, movements } = useJurorBalances(
@@ -75,7 +81,8 @@ export function useDashboardLogic() {
   } = useANJMovements(movements, anjToken.decimals)
 
   const actions = {
-    activateANJ,
+    activateANJ:
+      mode === REQUEST_MODE.STAKE_ACTIVATE ? stakeActivateANJ : activateANJ,
   }
 
   return {

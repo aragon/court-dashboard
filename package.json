@@ -31,7 +31,8 @@
     "build:ropsten": "REACT_APP_CHAIN_ID=3 react-app-rewired build",
     "build:rinkeby": "REACT_APP_CHAIN_ID=4 react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "sync-assets": "copy-aragon-ui-assets ./public"
   },
   "eslintConfig": {
     "extends": "react-app"

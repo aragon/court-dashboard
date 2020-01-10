@@ -1,11 +1,10 @@
 import { DEFAULT_CHAIN_NAME } from '../environment'
 
 import sha3 from 'js-sha3'
-export { sha3 }
 const { keccak_256: keccak256 } = sha3
 
 export function getFunctionSignature(func) {
-  return sha3(func).slice(0, 10)
+  return `0x${keccak256(func).slice(0, 8)}`
 }
 
 function toChecksumAddress(address) {

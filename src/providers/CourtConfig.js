@@ -22,7 +22,6 @@ function CourtConfigProvider({ children }) {
   // TODO: handle possible errors
   const courtConfig = result.data && result.data.courtConfig
 
-  console.log('courtC', courtConfig)
   return (
     <CourtConfigContext.Provider value={courtConfig}>
       {children}

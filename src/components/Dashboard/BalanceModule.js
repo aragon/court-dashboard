@@ -47,6 +47,7 @@ const BalanceModule = React.memo(
     movements,
     onRequestActivate,
     onRequestDeactivate,
+    onRequestStakeActivate,
     onRequestWithdraw,
   }) => {
     const theme = useTheme()
@@ -156,7 +157,7 @@ const BalanceModule = React.memo(
                   {
                     label: 'Activate',
                     mode: 'strong',
-                    onClick: onRequestActivate,
+                    onClick: onRequestStakeActivate,
                   },
                 ]} // TODO: Memoize array
                 activity={walletMovement}

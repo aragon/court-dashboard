@@ -6,11 +6,13 @@ export const CourtConfig = gql`
       currentTerm
       termDuration
       feeToken {
+        id
         name
         symbol
         decimals
       }
       anjToken {
+        id
         name
         symbol
         decimals

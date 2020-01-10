@@ -5,7 +5,7 @@ import { fromDecimals, toDecimals } from '../../../lib/math-utils'
 
 const MAX_INPUT_DECIMAL_BASE = 6
 
-export default function ActivateANJ({ activateANJ, requiresApproval }) {
+export default function ActivateANJ({ activateANJ }) {
   const { minActiveBalance, anjToken } = useCourtConfig()
   const minActiveBalanceFormatted = fromDecimals(
     minActiveBalance,
@@ -27,10 +27,10 @@ export default function ActivateANJ({ activateANJ, requiresApproval }) {
     event.preventDefault()
 
     try {
-      if (requiresApproval) {
-        const approveTx = await 5 // TODO: make approval
-        await approveTx.wait()
-      }
+      // if (requiresApproval) {
+      //   const approveTx = await approveANJTransfer()
+      //   await approveTx.wait()
+      // }
       const tx = await activateANJ(toDecimals(amount, anjToken.decimals))
       await tx.wait()
     } catch (err) {
