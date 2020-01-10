@@ -17,6 +17,7 @@ export const Phase = {
   ClaimRewards: Symbol('Claim rewards'),
   Ended: Symbol('Ended'),
   ExecuteRuling: Symbol('Execute Ruling'),
+  Created: Symbol('Dispute created'),
 }
 
 const stringMapping = {
@@ -33,6 +34,7 @@ const stringMapping = {
   [Phase.Invalid]: 'Invalid',
   [Phase.Ended]: 'Ended',
   [Phase.ExecuteRuling]: 'Execute Ruling',
+  [Phase.Created]: 'Dispute created',
 }
 
 const symbolMapping = {
@@ -42,8 +44,12 @@ const symbolMapping = {
   Revealing: Phase.RevealVote,
   Drafting: Phase.JuryDrafting,
   Adjudicating: Phase.Adjudicating,
+  Appeal: Phase.AppealRuling,
+  ConfirmAppeal: Phase.ConfirmAppeal,
   Ruled: Phase.Ruled,
   Evidence: Phase.Evidence,
+  ExecuteRuling: Phase.ExecuteRuling,
+  Created: Phase.Created,
 }
 
 export function convertFromString(str) {

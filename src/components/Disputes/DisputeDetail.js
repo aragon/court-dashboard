@@ -40,7 +40,7 @@ function DisputeDetail({ dispute, onBack }) {
         secondary={
           <React.Fragment>
             <Box heading="Dispute timeline" padding={0}>
-              <DisputeTimeline />
+              <DisputeTimeline dispute={dispute} />
             </Box>
           </React.Fragment>
         }

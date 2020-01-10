@@ -9,7 +9,7 @@ import DisputePhase from './DisputePhase'
 
 function DisputeCard({ dispute, selectDispute }) {
   const theme = useTheme()
-  const { id, metadata, currentPhase, nextTransition } = dispute
+  const { id, metadata, phase, nextTransition } = dispute
 
   return (
     <CardItem onClick={() => selectDispute(id)}>
@@ -51,7 +51,7 @@ function DisputeCard({ dispute, selectDispute }) {
           `}
         />
       </div>
-      <DisputePhase phase={currentPhase} nextTransition={nextTransition} />
+      <DisputePhase phase={phase} nextTransition={nextTransition} />
     </CardItem>
   )
 }

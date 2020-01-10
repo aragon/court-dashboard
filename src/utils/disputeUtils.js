@@ -16,7 +16,7 @@ export function getDisputeTimeLine(dispute, courtSettings) {
 
   const timeLine = [
     {
-      phase: 'Dispute Created', // create Symbol
+      phase: DisputesTypes.Phase.Created, // create Symbol
       endTime: createdAt,
     },
     {
