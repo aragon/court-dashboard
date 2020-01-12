@@ -8,7 +8,6 @@ import { hexToAscii, toDate } from '../../lib/web3'
 import NoEvidence from './NoEvidence'
 
 const DisputeDetail = React.memo(({ dispute, onBack }) => {
-  console.log('DISPUTE DETAIL  ', dispute)
   const { subject } = dispute
 
   const evidences = subject.evidence

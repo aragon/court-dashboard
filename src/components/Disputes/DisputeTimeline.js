@@ -25,7 +25,6 @@ import styled from 'styled-components'
 function DisputeTimeline({ dispute }) {
   const theme = useTheme()
   const roundsLength = dispute.rounds.length
-  console.log('roundsLengthhhhh ', roundsLength)
 
   // const courtSettings = useCourtSettings()
   // const disputeTimeLine = getDisputeTimeLine(dispute, courtSettings)
@@ -111,7 +110,6 @@ function DisputeTimeline({ dispute }) {
     return item
   })
 
-  console.log('reverseTimeLine ', reverseTimeLine)
   return (
     <div>
       <Stepper
@@ -276,7 +274,6 @@ function getPhaseIcon(phase, active, theme) {
 }
 
 function getRoundPill(roundId) {
-  console.log('RoundId ', roundId)
   let label
 
   if (roundId === 0) {
