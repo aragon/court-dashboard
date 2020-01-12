@@ -16,10 +16,10 @@ export const REQUEST_MODE = {
 }
 
 const stringMapping = {
-  [REQUEST_MODE.ACTIVATE]: 'Activate ANJ',
-  [REQUEST_MODE.STAKE_ACTIVATE]: 'Activate ANJ',
-  [REQUEST_MODE.DEACTIVATE]: 'Deactivate ANJ',
-  [REQUEST_MODE.WITHDRAW]: 'Withdraw ANJ',
+  [REQUEST_MODE.ACTIVATE]: 'Activate',
+  [REQUEST_MODE.STAKE_ACTIVATE]: 'Activate',
+  [REQUEST_MODE.DEACTIVATE]: 'Deactivate',
+  [REQUEST_MODE.WITHDRAW]: 'Withdraw',
 }
 
 export function getRequestModeString(mode) {
@@ -42,6 +42,7 @@ export function usePanelRequestMode(requestPanelOpen) {
 
 // Requests to set new mode and open side panel
 export function usePanelRequestActions(request) {
+  // TODO: Should we implement only one request function to recieve the request mode ?
   const activateANJ = useCallback(() => {
     request(REQUEST_MODE.ACTIVATE)
   }, [request])
@@ -63,11 +64,17 @@ export function usePanelRequestActions(request) {
 
 export function useDashboardLogic() {
   const { anjToken } = useCourtConfig()
-  const { activateANJ, stakeActivateANJ } = useCourtActions()
+  const {
+    activateANJ,
+    deactivateANJ,
+    stakeActivateANJ,
+    withdrawANJ,
+  } = useCourtActions()
+
   const connectedAccount = useConnectedAccount()
 
   const { balances, movements } = useJurorBalances(
-    connectedAccount ? connectedAccount.toLocaleLowerCase() : ''
+    connectedAccount ? connectedAccount.toLowerCase() : ''
   )
 
   const panelState = useSidePanel()
@@ -83,6 +90,8 @@ export function useDashboardLogic() {
   const actions = {
     activateANJ:
       mode === REQUEST_MODE.STAKE_ACTIVATE ? stakeActivateANJ : activateANJ,
+    deactivateANJ,
+    withdrawANJ,
   }
 
   return {

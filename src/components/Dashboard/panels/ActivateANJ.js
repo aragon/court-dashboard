@@ -1,58 +1,60 @@
-import React, { useCallback, useState } from 'react'
-import { Button, Field, TextInput } from '@aragon/ui'
+import React, { useCallback } from 'react'
+import BN from 'bn.js'
+
 import { useCourtConfig } from '../../../providers/CourtConfig'
+import ANJForm from './ANJForm'
 import { fromDecimals, toDecimals } from '../../../lib/math-utils'
 
-const MAX_INPUT_DECIMAL_BASE = 6
+const INVALID_AMOUNT_ERROR = Symbol('IVALID_AMOUNT')
 
-export default function ActivateANJ({ activateANJ }) {
-  const { minActiveBalance, anjToken } = useCourtConfig()
+const ActivateANJ = React.memo(function ActivateANJ({
+  onActivateANJ,
+  activeBalance,
+  walletBalance,
+  onDone,
+  panelOpened,
+}) {
+  const { anjToken, minActiveBalance } = useCourtConfig()
+
   const minActiveBalanceFormatted = fromDecimals(
     minActiveBalance,
     anjToken.decimals
   )
 
-  const [amount, setAmount] = useState(minActiveBalanceFormatted)
-  const minStep = fromDecimals(
-    '1',
-    Math.min(anjToken.decimals, MAX_INPUT_DECIMAL_BASE)
+  const activeBalanceBN = new BN(activeBalance)
+  const minActiveBalanceBN = new BN(minActiveBalance)
+
+  const validation = useCallback(
+    amount => {
+      const amountBN = new BN(toDecimals(amount, anjToken.decimals))
+
+      if (activeBalanceBN.add(amountBN).lt(minActiveBalanceBN))
+        return INVALID_AMOUNT_ERROR
+
+      return null
+    },
+    [activeBalanceBN, anjToken.decimals, minActiveBalanceBN]
   )
 
-  // Change amount handler
-  const handleAmountChange = useCallback(event => {
-    setAmount(event.target.value)
-  }, [])
-
-  const handleSubmit = async event => {
-    event.preventDefault()
-
-    try {
-      // if (requiresApproval) {
-      //   const approveTx = await approveANJTransfer()
-      //   await approveTx.wait()
-      // }
-      const tx = await activateANJ(toDecimals(amount, anjToken.decimals))
-      await tx.wait()
-    } catch (err) {
-      console.log('Error activating tokens: ', err) // TODO: How should we handle errors ?
+  const errorToMessage = error => {
+    if (error === INVALID_AMOUNT_ERROR) {
+      return `You must have at least ${minActiveBalanceFormatted} activated`
     }
+
+    // TODO: Do validations for max amount depending of wallet balance or inactive Balance
+
+    return ''
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Field label="Amount">
-        <TextInput
-          type="number"
-          name="amount"
-          wide
-          onChange={handleAmountChange}
-          value={amount}
-          min={minActiveBalanceFormatted}
-          step={minStep}
-          required
-        />
-      </Field>
-      <Button label="Activate" mode="strong" type="submit" wide />
-    </form>
+    <ANJForm
+      onSubmit={onActivateANJ}
+      onDone={onDone}
+      panelOpened={panelOpened}
+      validateForm={validation}
+      errorToMessage={errorToMessage}
+    />
   )
-}
+})
+
+export default ActivateANJ

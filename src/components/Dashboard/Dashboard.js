@@ -9,8 +9,14 @@ import Welcome from './Welcome'
 
 import ANJIcon from '../../assets/anjButton.svg'
 import { useConnectedAccount } from '../../providers/Web3'
-import { getRequestModeString, useDashboardLogic } from '../../dashboard-logic'
+import {
+  getRequestModeString,
+  useDashboardLogic,
+  REQUEST_MODE,
+} from '../../dashboard-logic'
 import ActivateANJ from './panels/ActivateANJ'
+import DeactivateANJ from './panels/DeactivateANJ'
+import WithdrawANJ from './panels/WithdrawANJ'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
@@ -22,8 +28,6 @@ function Dashboard() {
     panelState,
     requests,
   } = useDashboardLogic()
-
-  console.log(actions)
 
   return (
     <React.Fragment>
@@ -64,7 +68,7 @@ function Dashboard() {
         secondary={<DashboardStats />}
       />
       <SidePanel
-        title={getRequestModeString(mode)}
+        title={`${getRequestModeString(mode)} ANJ`}
         opened={panelState.visible}
         onClose={panelState.requestClose}
         onTransitionEnd={panelState.endTransition}
@@ -73,12 +77,50 @@ function Dashboard() {
           css={`
             margin-top: ${2 * GU}px;
           `}
-        >
-          <ActivateANJ activateANJ={actions.activateANJ} />
-        </div>
+        />
+        <PanelComponent
+          mode={mode}
+          actions={actions}
+          balances={balances}
+          onDone={panelState.requestClose}
+          panelOpened={panelState.opened}
+        />
       </SidePanel>
     </React.Fragment>
   )
+}
+
+const PanelComponent = ({ mode, actions, balances, ...props }) => {
+  const { activateANJ, deactivateANJ, withdrawANJ } = actions
+  const { walletBalance, activeBalance, inactiveBalance } = balances
+
+  switch (mode) {
+    case REQUEST_MODE.DEACTIVATE:
+      return (
+        <DeactivateANJ
+          activeBalance={activeBalance}
+          onDeactivateANJ={deactivateANJ}
+          {...props}
+        />
+      )
+    case REQUEST_MODE.WITHDRAW:
+      return (
+        <WithdrawANJ
+          inactiveBalance={inactiveBalance}
+          onWithdrawANJ={withdrawANJ}
+          {...props}
+        />
+      )
+    default:
+      return (
+        <ActivateANJ
+          activeBalance={activeBalance}
+          walletBalance={walletBalance}
+          onActivateANJ={activateANJ}
+          {...props}
+        />
+      )
+  }
 }
 
 export default Dashboard

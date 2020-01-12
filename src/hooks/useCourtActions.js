@@ -10,7 +10,7 @@ import tokenAbi from '../abi/ERC20.json'
 import { getFunctionSignature } from '../lib/web3'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-console.log(ACTIVATE_SELECTOR)
+const GAS_LIMIT = 300000 // Should be relative to every tx ?
 
 function useJurorRegistryContract() {
   const { modules } = useCourtConfig()
@@ -41,7 +41,14 @@ export function useANJActions() {
   // activate ANJ directly from available balance
   const activateANJ = useCallback(
     amount => {
-      return jurorRegistryContract.activate(amount, { gasLimit: 1000000 })
+      return jurorRegistryContract.activate(amount, { gasLimit: GAS_LIMIT })
+    },
+    [jurorRegistryContract]
+  )
+
+  const deactivateANJ = useCallback(
+    amount => {
+      return jurorRegistryContract.deactivate(amount, { gasLimit: GAS_LIMIT })
     },
     [jurorRegistryContract]
   )
@@ -53,13 +60,22 @@ export function useANJActions() {
         jurorRegistryContract.address,
         amount,
         ACTIVATE_SELECTOR,
-        { gasLimit: 1000000 }
+        { gasLimit: GAS_LIMIT }
       )
     },
     [anjTokenContract, jurorRegistryContract]
   )
 
-  return { activateANJ, stakeActivateANJ }
+  const withdrawANJ = useCallback(
+    amount => {
+      return jurorRegistryContract.unstake(amount, '0x', {
+        gasLimit: GAS_LIMIT,
+      })
+    },
+    [jurorRegistryContract]
+  )
+
+  return { activateANJ, deactivateANJ, stakeActivateANJ, withdrawANJ }
 }
 
 export function useCourtActions() {

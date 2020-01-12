@@ -69,7 +69,13 @@ const BalanceModule = React.memo(
     return (
       <Split
         primary={
-          <React.Fragment>
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+            `}
+          >
             <Box
               css={`
                 border: 0;
@@ -84,6 +90,7 @@ const BalanceModule = React.memo(
             <div
               css={`
                 display: ${oneColumn ? 'block' : 'flex'};
+                flex-grow: 1;
               `}
             >
               <Box
@@ -131,7 +138,7 @@ const BalanceModule = React.memo(
                 />
               </Box>
             </div>
-          </React.Fragment>
+          </div>
         }
         secondary={
           <Box
@@ -139,6 +146,7 @@ const BalanceModule = React.memo(
             css={`
               overflow: hidden;
               border: 0;
+              height: 100%;
             `}
           >
             <Profile status={status} account={connectedAccount} />
