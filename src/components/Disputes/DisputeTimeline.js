@@ -11,9 +11,9 @@ import {
   // IconSearch,
   IconVote,
   IconWrite,
+  Timer,
 } from '@aragon/ui'
-
-// import { timeline } from '../../mock-data'
+import dayjs from '../../lib/dayjs'
 import Stepper from '../Stepper'
 import Step from '../Step'
 // import { getDisputeTimeLine } from '../../utils/disputeUtils'
@@ -25,7 +25,8 @@ import styled from 'styled-components'
 function DisputeTimeline({ dispute }) {
   const theme = useTheme()
   const roundsLength = dispute.rounds.length
-  // const current = 4
+  console.log('roundsLengthhhhh ', roundsLength)
+
   // const courtSettings = useCourtSettings()
   // const disputeTimeLine = getDisputeTimeLine(dispute, courtSettings)
 
@@ -45,49 +46,90 @@ function DisputeTimeline({ dispute }) {
           phase: DisputesTypes.convertFromString('Drafting'),
           endTime: 1578529225000,
           active: false,
+          roundId: 0,
         },
         {
           phase: DisputesTypes.convertFromString('Committing'),
           endTime: 1578529225000,
           active: false,
+          roundId: 0,
         },
         {
           phase: DisputesTypes.convertFromString('Revealing'),
           endTime: 1578529225000,
           active: false,
+          roundId: 0,
         },
         {
           phase: DisputesTypes.convertFromString('Appeal'),
           endTime: 1578529225000,
           active: false,
+          roundId: 0,
         },
         {
           phase: DisputesTypes.convertFromString('ConfirmAppeal'),
           endTime: 1578529225000,
+          active: false,
+          roundId: 0,
+        },
+      ],
+      [
+        {
+          phase: DisputesTypes.convertFromString('Drafting'),
+          endTime: 1578539235000,
+          active: false,
+          roundId: 1,
+        },
+        {
+          phase: DisputesTypes.convertFromString('Committing'),
+          endTime: 1578539235000,
+          active: false,
+          roundId: 1,
+        },
+        {
+          phase: DisputesTypes.convertFromString('Revealing'),
+          endTime: 1578539235000,
+          active: false,
+          roundId: 1,
+        },
+        {
+          phase: DisputesTypes.convertFromString('Appeal'),
+          endTime: 1578539235000,
           active: true,
+          roundId: 1,
         },
       ],
     ],
   ]
 
+  const reverseTimeLine = disputeTimeLine.reverse().map(item => {
+    if (Array.isArray(item)) {
+      return item.reverse().map(roundPhase => {
+        return roundPhase.reverse()
+      })
+    }
+    return item
+  })
+
+  console.log('reverseTimeLine ', reverseTimeLine)
   return (
     <div>
       <Stepper
         lineColor="#FFCDC5"
-        lineTop={15}
+        lineTop={13}
         css={`
-          padding: ${3 * GU}px 0;
+          padding-bottom: ${3 * GU}px;
         `}
       >
-        {disputeTimeLine.map((item, index) => {
+        {reverseTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
-            return getStep(item, index, theme)
+            return getStep(item, roundsLength, index, theme)
           } else {
             return item.map((round, roundIndex) => {
               // ADD <= instead of <
-              if (roundIndex <= roundsLength - 1) {
+              if (roundIndex === 0) {
                 return round.map((roundItem, phaseIndex) => {
-                  return getStep(roundItem, phaseIndex, theme)
+                  return getStep(roundItem, roundsLength, phaseIndex, theme)
                 })
               } else {
                 return (
@@ -110,11 +152,11 @@ function DisputeTimeline({ dispute }) {
                                     margin-left: ${GU * 1.5}px;
                                   `}
                                 >
-                                  Round 1
+                                  {getRoundPill(round[0].roundId)}
                                 </span>,
                                 <Stepper
                                   lineColor="#FFCDC5"
-                                  lineTop={15}
+                                  lineTop={13}
                                   css={`
                                     padding: ${3 * GU}px 0;
                                   `}
@@ -122,6 +164,7 @@ function DisputeTimeline({ dispute }) {
                                   {round.map((roundItem, phaseIndex) => {
                                     return getStep(
                                       roundItem,
+                                      roundsLength,
                                       phaseIndex,
                                       theme,
                                       roundStepContainerCss
@@ -146,7 +189,7 @@ function DisputeTimeline({ dispute }) {
   )
 }
 
-function getStep(item, index, theme, css) {
+function getStep(item, roundId, index, theme, css) {
   return (
     <Step
       key={index}
@@ -169,36 +212,28 @@ function getStep(item, index, theme, css) {
       }
       content={
         <div>
-          <div>
-            <span css={textStyle('body1')}>
-              {DisputesTypes.convertToString(item.phase)}
-            </span>
-          </div>
-          <div>
-            <span
-              css={`
-                color: ${theme.contentSecondary};
-                opacity: 0.6;
-              `}
-            >
-              {item.endTime}
-            </span>
-          </div>
-          {item.active && (
+          <div
+            css={`
+              margin-bottom: ${3 * GU}px;
+            `}
+          >
+            <div>
+              <span css={textStyle('body1')}>
+                {DisputesTypes.getPhaseStringForStatus(item.phase, item.active)}
+              </span>
+            </div>
             <div>
               <span
                 css={`
-                  ${textStyle('label3')}
-                  text-transform: Uppercase;
-                  background: rgba(200, 215, 234, 0.4);
-                  border-radius: 100px;
-                  padding: 5px 10px;
+                  color: ${theme.contentSecondary};
+                  opacity: 0.6;
                 `}
               >
-                current
+                {getDisplayTime(item)}
               </span>
             </div>
-          )}
+            {item.active && getRoundPill(item.roundId)}
+          </div>
         </div>
       }
       displayPoint
@@ -228,11 +263,61 @@ function getPhaseIcon(phase, active, theme) {
   }
 
   if (phase === DisputesTypes.Phase.AppealRuling) {
-    return <IconWrite color={active ? '#fff' : theme.surfaceIcon} />
+    return (
+      <IconWrite
+        color={active ? '#fff' : theme.surfaceIcon}
+        background="#fff"
+      />
+    )
   }
   if (phase === DisputesTypes.Phase.ConfirmAppeal) {
     return <IconWrite color={active ? '#fff' : theme.surfaceIcon} />
   }
+}
+
+function getRoundPill(roundId) {
+  console.log('RoundId ', roundId)
+  let label
+
+  if (roundId === 0) {
+    label = 'Round One'
+  }
+  if (roundId === 1) {
+    label = 'Round Two'
+  }
+  if (roundId === 2) {
+    label = 'Round Three'
+  }
+
+  return (
+    <span
+      css={`
+        padding: 1px 16px;
+        border-radius: 100px;
+        background: linear-gradient(
+          13.81deg,
+          rgba(255, 179, 109, 0.3) -0.55%,
+          rgba(255, 136, 136, 0.3) 88.44%
+        );
+        text-transform: uppercase;
+        font-size: 12px;
+        color: #e9756c;
+        margin-top: 2px;
+      `}
+    >
+      {label}
+    </span>
+  )
+}
+
+function getDisplayTime(timeLineItem) {
+  const { endTime, active } = timeLineItem
+
+  if (active) {
+    return <Timer end={dayjs(endTime)} />
+  }
+
+  return dayjs(endTime).format('DD/MM/YY')
 }
 
 export default DisputeTimeline

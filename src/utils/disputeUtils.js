@@ -221,17 +221,20 @@ function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
       phase: DisputesTypes.Phase.JuryDrafting,
       endTime: createdAt + termDuration * juryDraftingTerms,
       active: DisputesTypes.Phase.JuryDrafting === currentPhase.phase,
+      roundId: roundId,
     },
     {
       phase: DisputesTypes.Phase.VotingPeriod,
       endTime: disputeDraftTermTime + termDuration * commitTerms,
       active: DisputesTypes.Phase.VotingPeriod === currentPhase.phase,
+      roundId: roundId,
     },
     {
       phase: DisputesTypes.Phase.RevealVote,
       endTime:
         disputeDraftTermTime + termDuration * (commitTerms + revealTerms),
       active: DisputesTypes.Phase.RevealVote === currentPhase.phase,
+      roundId: roundId,
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
@@ -239,6 +242,7 @@ function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
         disputeDraftTermTime +
         termDuration * (commitTerms + revealTerms + appealTerms),
       active: DisputesTypes.Phase.AppealRuling === currentPhase.phase,
+      roundId: roundId,
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
@@ -247,6 +251,7 @@ function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
         termDuration *
           (commitTerms + revealTerms + appealTerms + appealConfirmationTerms),
       active: DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
+      roundId: roundId,
     },
   ]
 

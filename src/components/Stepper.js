@@ -29,7 +29,7 @@ function Stepper({
           }
         }
 
-        & > div > div > :not(:last-child) > :first-child ::after {
+        & > :not(:last-child) > div > :first-child ::after {
           background: ${lineColor};
           content: '';
           height: calc(100% + ${stepVerticalPadding}px + ${lineExtraHeight}px);
@@ -37,7 +37,7 @@ function Stepper({
           position: absolute;
           top: ${lineTop}px;
           left: calc(50% - (${lineWidth}px / 2));
-          z-index: 1;
+          z-index: -1;
         }
       `}
       {...props}

@@ -37,6 +37,23 @@ const stringMapping = {
   [Phase.Created]: 'Dispute created',
 }
 
+const endedStringMapping = {
+  [Status.Open]: 'Open',
+  [Status.Closed]: 'Closed',
+  [Phase.All]: 'All',
+  [Phase.Evidence]: 'Evidence submitted',
+  [Phase.JuryDrafting]: 'Jury drafted',
+  [Phase.VotingPeriod]: 'Voting period',
+  [Phase.RevealVote]: 'Vote revealed',
+  [Phase.AppealRuling]: 'Appeal confirmed',
+  [Phase.ConfirmAppeal]: 'Confirm appeal',
+  [Phase.ClaimRewards]: 'Claim rewards',
+  [Phase.Invalid]: 'Invalid',
+  [Phase.Ended]: 'Ended',
+  [Phase.ExecuteRuling]: 'Ruling Executed',
+  [Phase.Created]: 'Dispute created',
+}
+
 const symbolMapping = {
   All: Phase.All,
   Invalid: Phase.Invalid,
@@ -58,4 +75,12 @@ export function convertFromString(str) {
 
 export function convertToString(symbol) {
   return stringMapping[symbol]
+}
+
+export function getPhaseStringForStatus(symbol, active) {
+  if (active) {
+    return stringMapping[symbol]
+  } else {
+    return endedStringMapping[symbol]
+  }
 }
