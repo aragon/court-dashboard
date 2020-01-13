@@ -1,11 +1,10 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { useSubscription } from 'urql'
-import { CourtConfig as CourtConfigSubscription } from '../queries/court'
 
 import environment from '../environment'
 import { getNetworkName } from '../web3-utils'
 import { networks } from '../networks'
+import { useCourtSubscription } from '../hooks/useCourt'
 
 const CHAIN_ID = environment('CHAIN_ID')
 const CourtConfigContext = React.createContext()
@@ -13,13 +12,7 @@ const CourtConfigContext = React.createContext()
 function CourtConfigProvider({ children }) {
   const courtAddress = networks[getNetworkName(CHAIN_ID)].court
 
-  const [result] = useSubscription({
-    query: CourtConfigSubscription,
-    variables: { id: courtAddress.toLocaleLowerCase() },
-  })
-
-  // TODO: handle possible errors
-  const courtConfig = result.data && result.data.courtConfig
+  const courtConfig = useCourtSubscription(courtAddress.toLowerCase())
 
   return (
     <CourtConfigContext.Provider value={courtConfig}>
