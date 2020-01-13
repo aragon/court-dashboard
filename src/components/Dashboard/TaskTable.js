@@ -12,6 +12,7 @@ import {
 import dayjs from '../../lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { addressesEqual } from '../../lib/web3-utils'
+
 import { useConnectedAccount } from '../../providers/Web3'
 
 const ENTRIES_PER_PAGE = 5
@@ -37,6 +38,8 @@ const TaskTable = ({ tasks }) => {
   const { below } = useViewport()
   const connectedAccount = useConnectedAccount()
   const compactMode = below('medium')
+
+  const connectedAccount = useConnectedAccount()
 
   const handleSelectedDateRangeChange = range => {
     setPage(0)
