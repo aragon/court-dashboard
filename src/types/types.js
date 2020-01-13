@@ -15,6 +15,9 @@ export const Phase = {
   AppealRuling: Symbol('Appealing'),
   ConfirmAppeal: Symbol('ConfirmingAppeal'),
   ClaimRewards: Symbol('Claim rewards'),
+  Ended: Symbol('Ended'),
+  ExecuteRuling: Symbol('Execute Ruling'),
+  Created: Symbol('Dispute created'),
 }
 
 const stringMapping = {
@@ -29,6 +32,26 @@ const stringMapping = {
   [Phase.ConfirmAppeal]: 'Confirm appeal',
   [Phase.ClaimRewards]: 'Claim rewards',
   [Phase.Invalid]: 'Invalid',
+  [Phase.Ended]: 'Ended',
+  [Phase.ExecuteRuling]: 'Execute Ruling',
+  [Phase.Created]: 'Dispute created',
+}
+
+const endedStringMapping = {
+  [Status.Open]: 'Open',
+  [Status.Closed]: 'Closed',
+  [Phase.All]: 'All',
+  [Phase.Evidence]: 'Evidence submitted',
+  [Phase.JuryDrafting]: 'Jury drafted',
+  [Phase.VotingPeriod]: 'Voting period',
+  [Phase.RevealVote]: 'Vote revealed',
+  [Phase.AppealRuling]: 'Appeal confirmed',
+  [Phase.ConfirmAppeal]: 'Confirm appeal',
+  [Phase.ClaimRewards]: 'Claim rewards',
+  [Phase.Invalid]: 'Invalid',
+  [Phase.Ended]: 'Ended',
+  [Phase.ExecuteRuling]: 'Ruling Executed',
+  [Phase.Created]: 'Dispute created',
 }
 
 const symbolMapping = {
@@ -38,8 +61,12 @@ const symbolMapping = {
   Revealing: Phase.RevealVote,
   Drafting: Phase.JuryDrafting,
   Adjudicating: Phase.Adjudicating,
+  Appeal: Phase.AppealRuling,
+  ConfirmAppeal: Phase.ConfirmAppeal,
   Ruled: Phase.Ruled,
   Evidence: Phase.Evidence,
+  ExecuteRuling: Phase.ExecuteRuling,
+  Created: Phase.Created,
 }
 
 export function convertFromString(str) {
@@ -48,4 +75,12 @@ export function convertFromString(str) {
 
 export function convertToString(symbol) {
   return stringMapping[symbol]
+}
+
+export function getPhaseStringForStatus(symbol, active) {
+  if (active) {
+    return stringMapping[symbol]
+  } else {
+    return endedStringMapping[symbol]
+  }
 }

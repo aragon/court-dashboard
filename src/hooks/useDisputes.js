@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import useNow from './useNow'
 import useDisputeSubscription from './useDisputesSubscription'
-import { getPhaseAndTransition } from '../components/Disputes/reducer'
+import { getPhaseAndTransition } from '../utils/disputeUtils'
 import { useCourtSettings } from '../court-settings-manager'
-import { convertToString } from '../components/Disputes/types'
+import { convertToString } from '../types/types'
 
 export default function useDisputes() {
   const courtSettings = useCourtSettings()

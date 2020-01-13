@@ -10,7 +10,10 @@ import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
 
-  const selectDispute = disputeId => setSelectedDisputeId(disputeId)
+  const selectDispute = useCallback(
+    disputeId => setSelectedDisputeId(disputeId),
+    []
+  )
 
   const selectedDispute = useMemo(
     () => disputes.find(dispute => dispute.id === selectedDisputeId) || null,
