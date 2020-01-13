@@ -11,7 +11,7 @@ import {
 } from '@aragon/ui'
 import dayjs from '../../lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
-import { addressesEqual } from '../../lib/web3'
+import { addressesEqual } from '../../lib/web3-utils'
 import { useConnectedAccount } from '../../providers/Web3'
 
 const ENTRIES_PER_PAGE = 5

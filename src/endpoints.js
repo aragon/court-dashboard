@@ -1,5 +1,5 @@
 import environment from './environment'
-import { isLocalNetwork, getNetworkName } from './lib/web3'
+import { isLocalNetwork, getNetworkName } from './lib/web3-utils'
 
 const CHAIN_ID = environment('CHAIN_ID')
 

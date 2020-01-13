@@ -1,4 +1,6 @@
 import { useCallback } from 'react'
+import { useSubscription } from 'urql'
+import { CourtConfig as CourtConfigSubscription } from '../queries/court'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -7,7 +9,7 @@ import { useContract } from '../web3-contracts'
 import jurorRegistryAbi from '../abi/JurorRegistry.json'
 import tokenAbi from '../abi/ERC20.json'
 
-import { getFunctionSignature } from '../lib/web3'
+import { getFunctionSignature } from '../lib/web3-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 500000 // Should be relative to every tx ?
@@ -34,7 +36,7 @@ function useANJTokenContract() {
   return useContract(anjTokenAddress, tokenAbi)
 }
 
-export function useANJActions() {
+function useANJActions() {
   const jurorRegistryContract = useJurorRegistryContract()
   const anjTokenContract = useANJTokenContract()
 
@@ -84,4 +86,16 @@ export function useCourtActions() {
   return {
     ...anjActions,
   }
+}
+
+export function useCourtSubscription(courtAddress) {
+  const [result] = useSubscription({
+    query: CourtConfigSubscription,
+    variables: { id: courtAddress },
+  })
+
+  // TODO: handle possible errors
+  const courtConfig = result.data && result.data.courtConfig
+
+  return courtConfig
 }

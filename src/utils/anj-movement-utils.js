@@ -26,5 +26,3 @@ export const activeBalanceMovements = [
   { type: anjMovementTypes.Unlock, direction: movementDirection.Incoming },
   { type: anjMovementTypes.Slash, direction: movementDirection.Outgoing },
 ]
-
-// TODO: use a Map instead

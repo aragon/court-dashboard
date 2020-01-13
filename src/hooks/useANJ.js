@@ -81,7 +81,7 @@ function getFilteredMovements(movements) {
 }
 
 function isMovementOf(movements, movementType) {
-  return movements.map(movement => movement.type).includes(movementType)
+  return movements.some(movement => movement.type === movementType)
 }
 
 function convertMovement(movements, movement, decimals) {

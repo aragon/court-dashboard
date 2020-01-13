@@ -15,6 +15,7 @@ export const Juror = gql`
       lockedBalance
       availableBalance
       deactivationBalance
+      withdrawalsLockTermId
       movements(
         orderBy: createdAt
         orderDirection: desc

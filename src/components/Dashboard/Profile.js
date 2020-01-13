@@ -1,6 +1,6 @@
 import React from 'react'
 import { EthIdenticon, GU, useTheme, textStyle } from '@aragon/ui'
-import { shortenAddress } from '../../lib/web3'
+import { shortenAddress } from '../../lib/web3-utils'
 import {
   ACCOUNT_STATUS_JUROR_ACTIVE,
   ACCOUNT_STATUS_JUROR_INACTIVE,

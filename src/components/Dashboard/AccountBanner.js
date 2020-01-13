@@ -10,8 +10,16 @@ import {
   // ACCOUNT_STATUS_INACTIVE,
 } from '../../types/account-status-types'
 import { formatTokenAmount } from '../../lib/math-utils'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
-const getInformationAttributes = (status, drafted, minActiveBalance, theme) => {
+const getInformationAttributes = (
+  status,
+  drafted,
+  minActiveBalance,
+  decimals,
+  theme
+) => {
+  // TODO: Finish all possible states
   if (status === ACCOUNT_STATUS_JUROR_ACTIVE) {
     if (!drafted) {
       return {
@@ -41,20 +49,27 @@ const getInformationAttributes = (status, drafted, minActiveBalance, theme) => {
     paragraph: `You must activate at least ${formatTokenAmount(
       minActiveBalance,
       false,
-      18 // TODO: get from court config
+      decimals
     )}  ANJ to be drafted as a juror`,
   }
 }
 
-function AccountInformation({ status, minActiveBalance, drafted }) {
+function AccountBanner({ status, minActiveBalance, drafted }) {
   const theme = useTheme()
+  const { anjToken } = useCourtConfig()
   const {
     icon,
     title,
     titleColor,
     paragraph,
     iconBackground,
-  } = getInformationAttributes(status, drafted, minActiveBalance, theme)
+  } = getInformationAttributes(
+    status,
+    drafted,
+    minActiveBalance,
+    anjToken.decimals,
+    theme
+  )
 
   const iconBackgroundStyle = iconBackground
     ? `   
@@ -115,4 +130,4 @@ function AccountInformation({ status, minActiveBalance, drafted }) {
   )
 }
 
-export default AccountInformation
+export default AccountBanner

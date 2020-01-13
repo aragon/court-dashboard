@@ -3,7 +3,7 @@ import { Box, GU, Split, useLayout, useTheme } from '@aragon/ui'
 
 import Profile from './Profile'
 import Balance from './Balance'
-import Information from './AccountInformation'
+import Information from './AccountBanner'
 
 import { useANJRate } from '../../hooks/useANJ'
 import { useCourtConfig } from '../../providers/CourtConfig'

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import { useCourtActions } from './hooks/useCourtActions'
+import { useCourtActions } from './hooks/useCourt'
 import { useSidePanel } from './hooks/useSidePanel'
 
 export const REQUEST_MODE = {
