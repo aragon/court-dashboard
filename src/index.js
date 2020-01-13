@@ -21,7 +21,6 @@ const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {})
 
 const client = createClient({
   url: GRAPH_API_ENDPOINT_HTTP,
-  suspense: true,
   exchanges: [
     debugExchange,
     devtoolsExchange,
