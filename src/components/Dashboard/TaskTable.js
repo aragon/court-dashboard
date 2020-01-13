@@ -12,6 +12,7 @@ import {
 import dayjs from '../Lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { addressesEqual } from '../Lib/web3'
+import { useConnectedAccount } from '../../providers/Web3'
 
 const ENTRIES_PER_PAGE = 5
 const INITIAL_DATE_RANGE = { start: null, end: null }
@@ -30,11 +31,13 @@ const getFilteredTasks = ({ tasks, connectedAccount, selectedDateRange }) => {
   )
 }
 
-const TaskTable = ({ tasks, connectedAccount }) => {
+const TaskTable = ({ tasks }) => {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [page, setPage] = useState(0)
   const { below } = useViewport()
   const compactMode = below('medium')
+
+  const connectedAccount = useConnectedAccount()
 
   const handleSelectedDateRangeChange = range => {
     setPage(0)

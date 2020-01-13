@@ -8,11 +8,7 @@ import { tasks } from '../../mock-data'
 import { useWeb3Connect } from '../../providers/Web3'
 
 function Dashboard() {
-  // TODO - only for testing we need to use the  connected account
-  // const connectedAccount = useConnectedAccount()
-
   const web3 = useWeb3Connect()
-  const connectedAccount = '0x593e1F9809658d0c92e9f092cF01Aad7D0d734f3'
 
   return (
     <React.Fragment>
@@ -28,9 +24,7 @@ function Dashboard() {
       />
       <ProfileHeader active />
       <Split
-        primary={
-          <TaskTable tasks={tasks} connectedAccount={connectedAccount} />
-        }
+        primary={<TaskTable tasks={tasks} />}
         secondary={<DashboardStats />}
       />
     </React.Fragment>
