@@ -7,6 +7,7 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
   onDone,
   panelOpened,
 }) {
+  // TODO: Validation checks and possible errors
   const validation = useCallback(amount => {
     return null
   }, [])
@@ -19,6 +20,7 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
   }
   return (
     <ANJForm
+      actionLabel="Withdraw"
       onSubmit={onWithdrawANJ}
       onDone={onDone}
       panelOpened={panelOpened}

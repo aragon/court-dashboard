@@ -7,6 +7,7 @@ const DeactivateANJ = React.memo(function DeactivateANJ({
   onDone,
   panelOpened,
 }) {
+  // TODO: Validation checks and possible errors
   const validation = useCallback(amount => {
     return null
   }, [])
@@ -19,6 +20,7 @@ const DeactivateANJ = React.memo(function DeactivateANJ({
   }
   return (
     <ANJForm
+      actionLabel="Deactivate"
       onSubmit={onDeactivateANJ}
       onDone={onDone}
       panelOpened={panelOpened}

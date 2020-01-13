@@ -48,6 +48,7 @@ const ActivateANJ = React.memo(function ActivateANJ({
 
   return (
     <ANJForm
+      actionLabel="Activate"
       onSubmit={onActivateANJ}
       onDone={onDone}
       panelOpened={panelOpened}

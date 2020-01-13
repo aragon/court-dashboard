@@ -6,6 +6,7 @@ import DashboardStats from './DashboardStats'
 import TaskTable from './TaskTable'
 import { tasks } from '../../mock-data'
 import Welcome from './Welcome'
+import { BalancesProvider, useBalances } from './BalancesProvider'
 
 import ANJIcon from '../../assets/anjButton.svg'
 import { useConnectedAccount } from '../../providers/Web3'
@@ -20,14 +21,8 @@ import WithdrawANJ from './panels/WithdrawANJ'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
-  const {
-    actions,
-    balances,
-    mode,
-    movements,
-    panelState,
-    requests,
-  } = useDashboardLogic()
+  const { actions, mode, panelState, requests } = useDashboardLogic()
+  const { balances, movements } = useBalances()
 
   return (
     <React.Fragment>
@@ -123,4 +118,10 @@ const PanelComponent = ({ mode, actions, balances, ...props }) => {
   }
 }
 
-export default Dashboard
+export default function DashboardWithSubscritpion({ props }) {
+  return (
+    <BalancesProvider>
+      <Dashboard {...props} />
+    </BalancesProvider>
+  )
+}

@@ -8,6 +8,7 @@ const NO_ERROR = Symbol('NO_ERROR')
 const MAX_INPUT_DECIMAL_BASE = 3
 
 function ANJForm({
+  actionLabel,
   onDone,
   onSubmit,
   panelOpened,
@@ -70,7 +71,7 @@ function ANJForm({
           required
         />
       </Field>
-      <Button label="Activate" mode="strong" type="submit" wide />
+      <Button label={actionLabel} mode="strong" type="submit" wide />
       {errorMessage && <span>{errorMessage}</span>}
     </form>
   )

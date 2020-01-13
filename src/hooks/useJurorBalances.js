@@ -15,7 +15,7 @@ function useANJBalance(jurorId) {
 
 function useJuror(jurorId) {
   // get 24hs from current time
-  const yesterday = Math.ceil(Date.now() / 1000) - DAY_IN_SECONDS
+  const yesterday = Math.ceil(Date.now() / 1000) - DAY_IN_SECONDS // TODO: Move to math-utils
   const [result] = useSubscription({
     query: Juror,
     variables: { id: jurorId.toLowerCase(), from: yesterday },

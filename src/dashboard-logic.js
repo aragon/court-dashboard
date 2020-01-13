@@ -1,10 +1,5 @@
 import { useCallback, useState } from 'react'
 
-import { useCourtConfig } from './providers/CourtConfig'
-import { useConnectedAccount } from './providers/Web3'
-
-import useJurorBalances from './hooks/useJurorBalances'
-import { useANJMovements } from './hooks/useANJ'
 import { useCourtActions } from './hooks/useCourtActions'
 import { useSidePanel } from './hooks/useSidePanel'
 
@@ -63,7 +58,6 @@ export function usePanelRequestActions(request) {
 }
 
 export function useDashboardLogic() {
-  const { anjToken } = useCourtConfig()
   const {
     activateANJ,
     deactivateANJ,
@@ -71,21 +65,9 @@ export function useDashboardLogic() {
     withdrawANJ,
   } = useCourtActions()
 
-  const connectedAccount = useConnectedAccount()
-
-  const { balances, movements } = useJurorBalances(
-    connectedAccount ? connectedAccount.toLowerCase() : ''
-  )
-
   const panelState = useSidePanel()
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
-
-  const {
-    walletMovement,
-    inactiveBalanceMovement,
-    activeBalanceMovement,
-  } = useANJMovements(movements, anjToken.decimals)
 
   const actions = {
     activateANJ:
@@ -96,13 +78,7 @@ export function useDashboardLogic() {
 
   return {
     actions,
-    balances,
     mode,
-    movements: {
-      walletMovement,
-      inactiveBalanceMovement,
-      activeBalanceMovement,
-    },
     panelState,
     requests,
   }

@@ -10,7 +10,7 @@ import tokenAbi from '../abi/ERC20.json'
 import { getFunctionSignature } from '../lib/web3'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 300000 // Should be relative to every tx ?
+const GAS_LIMIT = 500000 // Should be relative to every tx ?
 
 function useJurorRegistryContract() {
   const { modules } = useCourtConfig()
