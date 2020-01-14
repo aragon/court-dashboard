@@ -39,7 +39,6 @@ const TaskTable = ({ tasks }) => {
   const connectedAccount = useConnectedAccount()
   const compactMode = below('medium')
 
-  const connectedAccount = useConnectedAccount()
 
   const handleSelectedDateRangeChange = range => {
     setPage(0)
