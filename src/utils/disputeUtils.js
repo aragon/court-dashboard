@@ -69,7 +69,7 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
   let phase
   let nextTransition
   const lastRound = dispute.rounds[dispute.lastRoundId]
-  const { number, draftTermId, delayedTerms } = lastRound
+  const { number } = lastRound
 
   // Ruled
   if (state === DisputesTypes.Phase.Ruled) {
@@ -108,16 +108,10 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
 
   // Adjudicating
   if (state === DisputesTypes.Phase.Adjudicating) {
-    const draftTermEndTime = getTermStartTime(
-      draftTermId + delayedTerms,
-      courtSettings
-    )
-
     const currentAdjudicationPhase = getAdjudicationPhase(
       dispute,
       lastRound,
       now,
-      draftTermEndTime,
       courtSettings
     )
 
@@ -125,13 +119,7 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
   }
 }
 
-function getAdjudicationPhase(
-  dispute,
-  round,
-  now,
-  draftTermEndTime,
-  courtSettings
-) {
+function getAdjudicationPhase(dispute, round, now, courtSettings) {
   const {
     termDuration,
     commitTerms,
@@ -141,6 +129,12 @@ function getAdjudicationPhase(
     maxRegularAppealRounds,
   } = courtSettings
   const numberOfRounds = dispute.rounds.length
+  const { draftTermId, delayedTerms } = round
+
+  const draftTermEndTime = getTermStartTime(
+    draftTermId + delayedTerms,
+    courtSettings
+  )
 
   // If given term is before the reveal start term of the last round, then jurors are still allowed to commit votes for the last round
   const revealTermStartTime = draftTermEndTime + commitTerms * termDuration

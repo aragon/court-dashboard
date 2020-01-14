@@ -194,31 +194,31 @@ export const timeline = [
 
 export const tasks = [
   {
-    taskName: 'Finish reviewing evidence',
+    taskName: 'Commit Vote',
     disputeId: 12,
     status: 'open',
     juror: '0x593e1F9809658d0c92e9f092cF01Aad7D0d734f3',
-    dueDate: 1575391948390,
+    dueDate: 1578928467000,
   },
   {
     taskName: 'Reveal vote',
     disputeId: 15,
-    status: 'complete',
+    status: 'open',
     juror: '0x099278297012066d61c9505132b3Aa71F625E414',
-    dueDate: 1575592000000,
+    dueDate: 1578928467000,
   },
   {
-    taskName: 'Start reviewing evidence',
+    taskName: 'Commit Vote',
     disputeId: 20,
-    status: 'incomplete',
+    status: 'open',
     juror: '0x593e1F9809658d0c92e9f092cF01Aad7D0d734f3',
-    dueDate: 1576393000000,
+    dueDate: 1578928467000,
   },
   {
     taskName: 'Commit vote',
     disputeId: 14,
-    status: 'incomplete',
+    status: 'open',
     juror: '0x099278297012066d61c9505132b3Aa71F625E414',
-    dueDate: 1575394000000,
+    dueDate: 1578928467000,
   },
 ]

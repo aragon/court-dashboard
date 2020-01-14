@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Header, GU } from '@aragon/ui'
+import { Button, GU, Header, Tabs } from '@aragon/ui'
 import ANJIcon from '../../assets/anjButton.svg'
 
 import TaskBox from './TasksBox'
@@ -39,6 +39,29 @@ const Tasks = () => {
         }
       />
       <TaskBox />
+      <div
+        css={`
+          margin-top: ${2 * GU}px;
+        `}
+      >
+        <Tabs
+          css={`
+            margin-bottom: 0px;
+          `}
+          items={[
+            <div>
+              <span>All Tasks </span>
+              {/* <Tag limitDigits={4} label={disputes.length} size="small" /> */}
+            </div>,
+            <div>
+              <span>My Tasks </span>
+              {/* <Tag limitDigits={4} label={jurorDisputes.length} size="small" /> */}
+            </div>,
+          ]}
+          selected={0}
+          onChange={() => {}}
+        />
+      </div>
       <TaskTable tasks={tasks} />
     </>
   )

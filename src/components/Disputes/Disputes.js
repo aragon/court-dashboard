@@ -99,7 +99,7 @@ function Disputes() {
           </div>
           <div
             css={`
-              margin-top: -${GU * 1}px;
+              margin-top: 0px;
               width: 100%;
             `}
           >

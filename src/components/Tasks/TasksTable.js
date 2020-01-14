@@ -11,6 +11,8 @@ import {
 import dayjs from '../../lib/dayjs'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import TasksFilters from './TasksFilters'
+import TaskStatus from './TaskStatus'
+import TaskDueDate from './TaskDueDate'
 
 const INITIAL_DATE_RANGE = { start: null, end: null }
 
@@ -90,8 +92,8 @@ const TaskTable = ({ tasks }) => {
       fields={['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']}
       entries={sortedTasks}
       renderEntry={({ taskName, disputeId, juror, status, dueDate }) => {
-        const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
-        const hoursAndSec = dayjs(dueDate).format('HH:mm')
+        // const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
+        // const hoursAndSec = dayjs(dueDate).format('HH:mm')
         return [
           <span
             css={`
@@ -102,16 +104,9 @@ const TaskTable = ({ tasks }) => {
           </span>,
           <Link>Dispute #{disputeId}</Link>,
           <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
-          <span
-            css={`
-              ${textStyle('body2')}
-            `}
-          >
-            {status}
-          </span>,
-          <div key={5}>{`${dayjs(formattedDate).format(
-            'DD/MM/YY'
-          )} at ${hoursAndSec} - Term `}</div>,
+
+          <TaskStatus status={status} />,
+          <TaskDueDate dueDate={dueDate} />,
         ]
       }}
       renderEntryActions={() => (
@@ -125,3 +120,7 @@ const TaskTable = ({ tasks }) => {
 }
 
 export default TaskTable
+
+/** <div key={5}>{`${dayjs(formattedDate).format(
+            'DD/MM/YY'
+          )} at ${hoursAndSec} - Term `}</div> */
