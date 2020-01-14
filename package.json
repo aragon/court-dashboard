@@ -24,7 +24,7 @@
     "start:rpc": "REACT_APP_CHAIN_ID=1337 react-app-rewired start",
     "start:mainnet": "REACT_APP_CHAIN_ID=1 react-app-rewired start",
     "start:rinkeby": "REACT_APP_CHAIN_ID=4 react-app-rewired start",
-    "start:ropsten": "REACT_APP_CHAIN_ID=4 react-app-rewired start",
+    "start:ropsten": "REACT_APP_CHAIN_ID=3 react-app-rewired start",
     "build": "npm run build:rpc",
     "build:rpc": "REACT_APP_CHAIN_ID=1337 react-app-rewired build",
     "build:mainnet": "REACT_APP_CHAIN_ID=1 react-app-rewired build",
