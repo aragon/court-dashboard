@@ -10,6 +10,6 @@ export function getNetworkName(chainId) {
   return DEFAULT_LOCAL_CHAIN
 }
 
-export function isLocalNetwork(chainId) {
+export function isLocalOrUnknownNetwork(chainId) {
   return getNetworkName(chainId) === DEFAULT_LOCAL_CHAIN
 }

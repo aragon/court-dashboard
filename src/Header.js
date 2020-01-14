@@ -1,9 +1,11 @@
 import React from 'react'
-import { Button } from '@aragon/ui'
+import { Button, useTheme } from '@aragon/ui'
 import { useWeb3Connect } from './providers/Web3'
 
 function Header() {
   const { account, activate } = useWeb3Connect()
+
+  const theme = useTheme()
 
   return (
     <div
@@ -37,8 +39,8 @@ function Header() {
           {account ? (
             <span
               css={`
-                background-color: #54c497;
-                color: white;
+                background-color: ${theme.background};
+                color: ${theme.content};
                 padding: 3px 10px;
                 border-radius: 5px;
               `}

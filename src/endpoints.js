@@ -1,5 +1,5 @@
 import environment from './environment'
-import { isLocalNetwork, getNetworkName } from './web3-utils'
+import { isLocalOrUnknownNetwork, getNetworkName } from './web3-utils'
 
 const CHAIN_ID = environment('CHAIN_ID')
 
@@ -13,7 +13,7 @@ const GRAPH_API_BASE_WS = 'wss://api.thegraph.com'
 const GRAPH_API_PATH = '/subgraphs/name/aragon/aragon-court'
 
 function getAPIBase() {
-  return isLocalNetwork(CHAIN_ID)
+  return isLocalOrUnknownNetwork(CHAIN_ID)
     ? [GRAPH_API_BASE_HTTP_LOCAL, GRAPH_API_BASE_WS_LOCAL]
     : [GRAPH_API_BASE_HTTP, GRAPH_API_BASE_WS]
 }
