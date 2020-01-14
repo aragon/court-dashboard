@@ -65,20 +65,4 @@ const CardItem = styled(Card)`
   border: 0;
 `
 
-// const DisputeDetails = styled.div`
-//   line-height: 27px;
-
-//   & > div {
-//     display: flex;
-//     justify-content: space-between;
-//     align-items: center;
-
-//     & > span:first-child {
-//       ${textStyle('label2')}
-//       font-weight: 300;
-//       color: ${({ labelColor }) => labelColor};
-//     }
-//   }
-// `
-
 export default DisputeCard
