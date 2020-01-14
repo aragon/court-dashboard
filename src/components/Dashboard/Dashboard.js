@@ -85,7 +85,7 @@ function Dashboard() {
   )
 }
 
-const PanelComponent = ({ mode, actions, balances, ...props }) => {
+function PanelComponent({ mode, actions, balances, ...props }) {
   const { activateANJ, deactivateANJ, withdrawANJ } = actions
   const { walletBalance, activeBalance, inactiveBalance } = balances
 
