@@ -3,7 +3,6 @@ import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
 import ANJIcon from '../../assets/anjButton.svg'
-// import useDisputesSubscription from '../../hooks/useDisputesSubscription'
 import useDisputes from '../../hooks/useDisputes'
 import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
 
@@ -25,7 +24,6 @@ const useSelectedDispute = disputes => {
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
-  // const { currentTerm } = useCourtSettings()
   const [disputes] = useDisputes()
   const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)

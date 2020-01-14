@@ -4,11 +4,9 @@ import {
   GU,
   textStyle,
   useTheme,
-  // IconCoin,
   IconFolder,
   IconFlag,
   IconGroup,
-  // IconSearch,
   IconVote,
   IconWrite,
   Timer,
@@ -16,90 +14,17 @@ import {
 import dayjs from '../../lib/dayjs'
 import Stepper from '../Stepper'
 import Step from '../Step'
-// import { getDisputeTimeLine } from '../../utils/disputeUtils'
-// import { useCourtSettings } from '../../court-settings-manager'
-// import { convertToString } from '../../types/types'
 import * as DisputesTypes from '../../types/types'
 import styled from 'styled-components'
+import { useCourtSettings } from '../../court-settings-manager'
+import { getDisputeTimeLine } from '../../utils/disputeUtils'
 
 function DisputeTimeline({ dispute }) {
   const theme = useTheme()
   const roundsLength = dispute.rounds.length
 
-  // const courtSettings = useCourtSettings()
-  // const disputeTimeLine = getDisputeTimeLine(dispute, courtSettings)
-
-  const disputeTimeLine = [
-    {
-      phase: DisputesTypes.convertFromString('Created'),
-      endTime: 1578529045000,
-    },
-    {
-      phase: DisputesTypes.convertFromString('Evidence'),
-      endTime: 1578530305000,
-      active: false,
-    },
-    [
-      [
-        {
-          phase: DisputesTypes.convertFromString('Drafting'),
-          endTime: 1578529225000,
-          active: false,
-          roundId: 0,
-        },
-        {
-          phase: DisputesTypes.convertFromString('Committing'),
-          endTime: 1578529225000,
-          active: false,
-          roundId: 0,
-        },
-        {
-          phase: DisputesTypes.convertFromString('Revealing'),
-          endTime: 1578529225000,
-          active: false,
-          roundId: 0,
-        },
-        {
-          phase: DisputesTypes.convertFromString('Appeal'),
-          endTime: 1578529225000,
-          active: false,
-          roundId: 0,
-        },
-        {
-          phase: DisputesTypes.convertFromString('ConfirmAppeal'),
-          endTime: 1578529225000,
-          active: false,
-          roundId: 0,
-        },
-      ],
-      [
-        {
-          phase: DisputesTypes.convertFromString('Drafting'),
-          endTime: 1578539235000,
-          active: false,
-          roundId: 1,
-        },
-        {
-          phase: DisputesTypes.convertFromString('Committing'),
-          endTime: 1578539235000,
-          active: false,
-          roundId: 1,
-        },
-        {
-          phase: DisputesTypes.convertFromString('Revealing'),
-          endTime: 1578539235000,
-          active: false,
-          roundId: 1,
-        },
-        {
-          phase: DisputesTypes.convertFromString('Appeal'),
-          endTime: 1578539235000,
-          active: true,
-          roundId: 1,
-        },
-      ],
-    ],
-  ]
+  const courtSettings = useCourtSettings()
+  const disputeTimeLine = getDisputeTimeLine(dispute, courtSettings)
 
   const reverseTimeLine = disputeTimeLine.reverse().map(item => {
     if (Array.isArray(item)) {
@@ -124,7 +49,6 @@ function DisputeTimeline({ dispute }) {
             return getStep(item, roundsLength, index, theme)
           } else {
             return item.map((round, roundIndex) => {
-              // ADD <= instead of <
               if (roundIndex === 0) {
                 return round.map((roundItem, phaseIndex) => {
                   return getStep(roundItem, roundsLength, phaseIndex, theme)
@@ -241,6 +165,7 @@ function getStep(item, roundId, index, theme, css) {
 }
 
 function getPhaseIcon(phase, active, theme) {
+  // TODO - change this for the new icons
   if (phase === DisputesTypes.Phase.Created) {
     return <IconFlag color={active ? '#fff' : theme.surfaceIcon} />
   }

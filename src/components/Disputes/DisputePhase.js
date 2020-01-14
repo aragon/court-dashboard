@@ -6,8 +6,6 @@ import { GU, textStyle, Timer } from '@aragon/ui'
 
 function DisputePhase({ phase, nextTransition }) {
   const stringPhase = convertToString(phase)
-  // const DAY_IN_MS = 1000 * 60 * 60 * 24
-  // const endDate = new Date(Date.now() + 0.5 * DAY_IN_MS)
   return (
     <div
       css={`

@@ -8,11 +8,11 @@ export default function useJurorDraftQuery(juror) {
     variables: { id: juror },
   })
 
-  return !result.fetching && !result.error
-    ? result.data.juror
-      ? result.data.juror.drafts.map(draft =>
-          reduceDispute(draft.round.dispute)
-        )
-      : []
+  if (result.fetching || result.error) {
+    return []
+  }
+
+  return result.data.juror
+    ? result.data.juror.drafts.map(draft => reduceDispute(draft.round.dispute))
     : []
 }

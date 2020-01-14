@@ -11,7 +11,6 @@ function Stepper({
   ...props
 }) {
   const stepVerticalPadding = 1.5 * GU
-  // const stepHorizontalPadding = 3 * GU
   return (
     <div
       css={`

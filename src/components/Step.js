@@ -8,7 +8,6 @@ export default function Step({
   displayPoint,
   ...props
 }) {
-  // const theme = useTheme()
   if (displayPoint) {
     return (
       <div

@@ -14,13 +14,7 @@ import DisputeActions from './DisputeActions'
 
 const DisputeInfo = ({ dispute }) => {
   const theme = useTheme()
-  const {
-    id,
-    metadata,
-    // status,
-    subject,
-    txHash,
-  } = dispute
+  const { id, metadata, subject, txHash } = dispute
 
   return (
     <Box>
@@ -138,7 +132,7 @@ const DisputeInfo = ({ dispute }) => {
               `}
             >
               <IdentityBadge
-                // connectedAccount={addressesEqual(creator, connectedAccount)}
+                // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- add connected account
                 entity={subject.id}
               />
             </div>

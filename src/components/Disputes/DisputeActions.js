@@ -98,11 +98,4 @@ const VotingButton = styled(Button)`
     margin-right: 0px;
   }
 `
-// const DraftButton = styled(Button)`
-//   ${textStyle('body2')};
-//   width: 100%;
-//   margin-right: ${1 * GU}px;
-//   background: ;
-// `
-
 export default DisputeActions
