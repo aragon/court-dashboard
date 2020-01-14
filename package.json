@@ -22,7 +22,7 @@
   "scripts": {
     "start": "npm run sync-assets && react-app-rewired start",
     "start:rpc": "REACT_APP_CHAIN_ID=1337 npm run start ",
-    "start:mainnet": " REACT_APP_CHAIN_ID=1 npm run start",
+    "start:mainnet": "REACT_APP_CHAIN_ID=1 npm run start",
     "start:ropsten": "REACT_APP_CHAIN_ID=3 npm run start",
     "start:rinkeby": "REACT_APP_CHAIN_ID=4 npm run start",
     "build": "npm run sync-assets && react-app-rewired build",
