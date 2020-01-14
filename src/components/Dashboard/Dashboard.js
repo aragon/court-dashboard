@@ -118,7 +118,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
   }
 }
 
-export default function DashboardWithSubscritpion({ props }) {
+export default function DashboardWithSubscritpion(props) {
   return (
     <BalancesProvider>
       <Dashboard {...props} />
