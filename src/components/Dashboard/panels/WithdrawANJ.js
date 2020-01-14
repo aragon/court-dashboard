@@ -12,12 +12,13 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
     return null
   }, [])
 
-  const errorToMessage = err => {
+  const errorToMessage = useCallback(err => {
     if (err) {
       console.log(err)
     }
     return ''
-  }
+  }, [])
+
   return (
     <ANJForm
       actionLabel="Withdraw"

@@ -12,12 +12,13 @@ const DeactivateANJ = React.memo(function DeactivateANJ({
     return null
   }, [])
 
-  const errorToMessage = err => {
+  const errorToMessage = useCallback(err => {
     if (err) {
       console.log(err)
     }
     return ''
-  }
+  }, [])
+
   return (
     <ANJForm
       actionLabel="Deactivate"

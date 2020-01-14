@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { useConnectedAccount } from '../../providers/Web3'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import useJurorBalances from '../../hooks/useJurorBalances'
-import { useANJMovements } from '../../hooks/useANJ'
+import { useANJMovements } from '../../hooks/useANJMovements'
 
 const BalancesContext = React.createContext()
 

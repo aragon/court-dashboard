@@ -1,15 +1,17 @@
 import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import ANJIcon from '../../assets/anj.svg'
-import { formatTokenAmount } from '../../lib/math-utils'
+import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
 import {
   movementDirection,
   convertToString,
 } from '../../types/anj-movement-types'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
+import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
+
 const splitAmount = amount => {
-  const [integer, fractional] = formatTokenAmount(amount).split('.')
+  const [integer, fractional] = amount.split('.')
   return (
     <span
       css={`
@@ -33,14 +35,17 @@ const splitAmount = amount => {
 const Balance = React.memo(function Balance({
   label,
   amount,
-  convertedAmount,
   mainIcon,
   mainIconBackground,
   activity,
   actions,
 }) {
   const theme = useTheme()
-  const { anjToken } = useCourtConfig()
+  const {
+    anjToken: { symbol, decimals },
+  } = useCourtConfig()
+
+  const convertedAmount = useBalanceToUsd(symbol, decimals, amount) // TODO: Change to symbol once price available
 
   return (
     <div>
@@ -88,10 +93,12 @@ const Balance = React.memo(function Balance({
                 ${textStyle('title3')}
                 line-height: 1.2;
                 display: flex;
+                align-items: center;
               `}
             >
-              {splitAmount(amount.toFixed(2))} <img src={ANJIcon} />
-            </div>{' '}
+              {splitAmount(formatUnits(amount, { digits: decimals }))}
+              <img height="20px" width="18px" src={ANJIcon} />
+            </div>
             <span
               css={`
                 ${textStyle('body4')}
@@ -99,7 +106,7 @@ const Balance = React.memo(function Balance({
                 display:block;
               `}
             >
-              $ {formatTokenAmount(convertedAmount.toFixed(2))}
+              $ {convertedAmount}
             </span>
           </div>
         </div>
@@ -111,17 +118,20 @@ const Balance = React.memo(function Balance({
         `}
       >
         {activity ? (
-          <LatestActivity activity={activity} tokenSymbol={anjToken.symbol} />
+          <LatestActivity activity={activity} tokenSymbol={symbol} />
         ) : (
           <span>No recent 24h activity</span>
         )}
       </div>
 
-      {amount > '0' && (
+      {amount.gt(0) && (
         <div
           css={`
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+            grid-template-columns: repeat(
+              auto-fit,
+              minmax(calc(50% - 8px), 1fr)
+            );
             grid-column-gap: 8px;
           `}
         >
@@ -131,7 +141,7 @@ const Balance = React.memo(function Balance({
                 key={index}
                 label={action.label}
                 mode={action.mode}
-                onClick={action.onClick} // eslint-disable-line
+                onClick={action.onClick}
                 wide
               />
             )
@@ -142,8 +152,9 @@ const Balance = React.memo(function Balance({
   )
 })
 
-const LatestActivity = ({ activity, tokenSymbol }) => {
+const LatestActivity = ({ activity }) => {
   const theme = useTheme()
+  const { anjToken } = useCourtConfig()
   const isIncoming = activity.direction === movementDirection.Incoming
   const displaySign =
     activity.direction === movementDirection.Incoming ||
@@ -162,9 +173,9 @@ const LatestActivity = ({ activity, tokenSymbol }) => {
       ${formatTokenAmount(
         activity.amount,
         isIncoming,
-        0,
+        anjToken.decimals,
         displaySign
-      )} ${tokenSymbol}`}</span>{' '}
+      )} ${anjToken.symbol}`}</span>{' '}
       {convertToString(activity.type)}
     </span>
   )

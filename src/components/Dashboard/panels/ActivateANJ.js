@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react'
-import BN from 'bn.js'
 
 import { useCourtConfig } from '../../../providers/CourtConfig'
 import ANJForm from './ANJForm'
-import { fromDecimals, toDecimals } from '../../../lib/math-utils'
+import { formatUnits, parseUnits } from '../../../lib/math-utils'
 
 const INVALID_AMOUNT_ERROR = Symbol('IVALID_AMOUNT')
 
@@ -16,35 +15,34 @@ const ActivateANJ = React.memo(function ActivateANJ({
 }) {
   const { anjToken, minActiveBalance } = useCourtConfig()
 
-  const minActiveBalanceFormatted = fromDecimals(
-    minActiveBalance,
-    anjToken.decimals
-  )
-
-  const activeBalanceBN = new BN(activeBalance)
-  const minActiveBalanceBN = new BN(minActiveBalance)
+  const minActiveBalanceFormatted = formatUnits(minActiveBalance, {
+    digits: anjToken.decimals,
+  })
 
   const validation = useCallback(
     amount => {
-      const amountBN = new BN(toDecimals(amount, anjToken.decimals))
+      const amountBN = parseUnits(amount, anjToken.decimals)
 
-      if (activeBalanceBN.add(amountBN).lt(minActiveBalanceBN))
+      if (activeBalance.add(amountBN).lt(minActiveBalance))
         return INVALID_AMOUNT_ERROR
 
       return null
     },
-    [activeBalanceBN, anjToken.decimals, minActiveBalanceBN]
+    [activeBalance, anjToken.decimals, minActiveBalance]
   )
 
-  const errorToMessage = error => {
-    if (error === INVALID_AMOUNT_ERROR) {
-      return `You must have at least ${minActiveBalanceFormatted} activated`
-    }
+  const errorToMessage = useCallback(
+    error => {
+      if (error === INVALID_AMOUNT_ERROR) {
+        return `You must have at least ${minActiveBalanceFormatted} activated`
+      }
 
-    // TODO: Do validations for max amount depending of wallet balance or inactive Balance
+      // TODO: Do validations for max amount depending of wallet balance or inactive Balance
 
-    return ''
-  }
+      return ''
+    },
+    [minActiveBalanceFormatted]
+  )
 
   return (
     <ANJForm

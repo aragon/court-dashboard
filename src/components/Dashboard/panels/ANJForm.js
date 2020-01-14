@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Field, TextInput } from '@aragon/ui'
-import { fromDecimals, toDecimals } from '../../../lib/math-utils'
+import React, { useCallback, useMemo, useState } from 'react'
+import { Button, Field, TextInput, useSidePanelFocusOnReady } from '@aragon/ui'
+
+import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 
 const NO_ERROR = Symbol('NO_ERROR')
@@ -11,23 +12,20 @@ function ANJForm({
   actionLabel,
   onDone,
   onSubmit,
-  panelOpened,
   validateForm,
   errorToMessage,
 }) {
   const [amount, setAmount] = useState({ value: '0', error: NO_ERROR })
   const { anjToken } = useCourtConfig()
-  const inputRef = useRef(null)
+  const inputRef = useSidePanelFocusOnReady()
 
-  const minStep = fromDecimals(
-    '1',
-    Math.min(anjToken.decimals, MAX_INPUT_DECIMAL_BASE)
+  const minStep = useMemo(
+    () =>
+      formatUnits(bigNum(1), {
+        digits: Math.min(anjToken.decimals, MAX_INPUT_DECIMAL_BASE),
+      }),
+    [anjToken.decimals]
   )
-
-  // Focus input when panel opened
-  useEffect(() => {
-    if (panelOpened) inputRef.current.focus()
-  }, [panelOpened])
 
   // Change amount handler
   const handleAmountChange = useCallback(event => {
@@ -46,7 +44,7 @@ function ANJForm({
     }
 
     try {
-      const tx = await onSubmit(toDecimals(amount.value, anjToken.decimals))
+      const tx = await onSubmit(parseUnits(amount.value, anjToken.decimals))
       await tx.wait()
     } catch (err) {
       console.log('Error submitting tx: ', err) // TODO: How should we handle errors ?

@@ -1,6 +1,6 @@
-import { DEFAULT_CHAIN_NAME } from '../environment'
-
 import sha3 from 'js-sha3'
+import { DEFAULT_LOCAL_CHAIN } from '../environment'
+
 const { keccak_256: keccak256 } = sha3
 
 export function getFunctionSignature(func) {
@@ -75,9 +75,9 @@ export function getNetworkName(chainId) {
   if (chainId === '3') return 'ropsten'
   if (chainId === '4') return 'rinkeby'
 
-  return DEFAULT_CHAIN_NAME
+  return DEFAULT_LOCAL_CHAIN
 }
 
-export function isLocalNetwork(chainId) {
-  return getNetworkName(chainId) === DEFAULT_CHAIN_NAME
+export function isLocalOrUnknownNetwork(chainId) {
+  return getNetworkName(chainId) === DEFAULT_LOCAL_CHAIN
 }

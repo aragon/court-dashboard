@@ -5,6 +5,7 @@ import environment from '../environment'
 import { getNetworkName } from '../lib/web3-utils'
 import { networks } from '../networks'
 import { useCourtSubscription } from '../hooks/useCourt'
+import { bigNum } from '../lib/math-utils'
 
 const CHAIN_ID = environment('CHAIN_ID')
 const CourtConfigContext = React.createContext()
@@ -14,8 +15,15 @@ function CourtConfigProvider({ children }) {
 
   const courtConfig = useCourtSubscription(courtAddress.toLowerCase())
 
+  const convertedCourtConfig = courtConfig
+    ? {
+        ...courtConfig,
+        minActiveBalance: bigNum(courtConfig.minActiveBalance),
+      }
+    : null
+
   return (
-    <CourtConfigContext.Provider value={courtConfig}>
+    <CourtConfigContext.Provider value={convertedCourtConfig}>
       {children}
     </CourtConfigContext.Provider>
   )

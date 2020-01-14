@@ -78,7 +78,6 @@ function Dashboard() {
           actions={actions}
           balances={balances}
           onDone={panelState.requestClose}
-          panelOpened={panelState.opened}
         />
       </SidePanel>
     </React.Fragment>

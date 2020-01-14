@@ -9,7 +9,7 @@ import {
   ACCOUNT_STATUS_JUROR_ACTIVE,
   // ACCOUNT_STATUS_INACTIVE,
 } from '../../types/account-status-types'
-import { formatTokenAmount } from '../../lib/math-utils'
+import { formatUnits } from '../../lib/math-utils'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 const getInformationAttributes = (
@@ -24,9 +24,9 @@ const getInformationAttributes = (
     if (!drafted) {
       return {
         icon: userIcon,
-        iconBackground: 'rgb(38,195,149, 0.2)', // TODO: use theme
+        iconBackground: theme.positive.alpha(0.2),
         title: 'You are elegible to be drafted',
-        titleColor: 'rgb(38,195,149)',
+        titleColor: theme.positive,
         paragraph: 'You are eligible to be drafted starting from the next term',
       }
     }
@@ -34,9 +34,9 @@ const getInformationAttributes = (
     if (drafted) {
       return {
         icon: gavelIcon,
-        iconBackground: 'rgb(38,195,149, 0.2)', // TODO: use theme
+        iconBackground: theme.positive.alpha(0.2),
         title: 'You have been drafted',
-        titleColor: 'rgb(38,195,149)',
+        titleColor: theme.positive,
         paragraph:
           'You can start reviewing the evidence and then commit your vote',
       }
@@ -46,11 +46,9 @@ const getInformationAttributes = (
   return {
     icon: anjSpringIcon,
     title: 'Active ANJ to be an active juror',
-    paragraph: `You must activate at least ${formatTokenAmount(
-      minActiveBalance,
-      false,
-      decimals
-    )}  ANJ to be drafted as a juror`,
+    paragraph: `You must activate at least ${formatUnits(minActiveBalance, {
+      digits: decimals,
+    })}  ANJ to be drafted as a juror`,
   }
 }
 

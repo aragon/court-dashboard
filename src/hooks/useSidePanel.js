@@ -7,18 +7,9 @@ export function useSidePanel() {
   const requestOpen = useCallback(() => {
     setVisible(true)
     setOpened(false)
-  }, [setVisible, setOpened])
+  }, [])
 
-  const endTransition = useCallback(
-    opened => {
-      if (opened) {
-        setOpened(true)
-      } else {
-        setOpened(false)
-      }
-    },
-    [setOpened]
-  )
+  const endTransition = setOpened
 
   const requestClose = useCallback(() => {
     setVisible(false)
