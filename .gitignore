@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 
+/public/aragon-ui
 
 # testing
 /coverage
