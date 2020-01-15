@@ -1,6 +1,4 @@
 import { useCallback } from 'react'
-import { useSubscription } from 'urql'
-import { CourtConfig as CourtConfigSubscription } from '../queries/court'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -86,16 +84,4 @@ export function useCourtActions() {
   return {
     ...anjActions,
   }
-}
-
-export function useCourtSubscription(courtAddress) {
-  const [result] = useSubscription({
-    query: CourtConfigSubscription,
-    variables: { id: courtAddress },
-  })
-
-  // TODO: handle possible errors
-  const courtConfig = result.data && result.data.courtConfig
-
-  return courtConfig
 }

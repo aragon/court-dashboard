@@ -6,7 +6,7 @@ import DashboardStats from './DashboardStats'
 import TaskTable from './TaskTable'
 import { tasks } from '../../mock-data'
 import Welcome from './Welcome'
-import { BalancesProvider, useBalances } from './BalancesProvider'
+import { BalancesProvider } from './BalancesProvider'
 
 import ANJIcon from '../../assets/anjButton.svg'
 import { useConnectedAccount } from '../../providers/Web3'
@@ -21,8 +21,14 @@ import WithdrawANJ from './panels/WithdrawANJ'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
-  const { actions, mode, panelState, requests } = useDashboardLogic()
-  const { balances, movements } = useBalances()
+  const {
+    actions,
+    balances,
+    mode,
+    panelState,
+    requests,
+    loading,
+  } = useDashboardLogic()
 
   return (
     <React.Fragment>
@@ -45,10 +51,9 @@ function Dashboard() {
           />
         }
       />
-      {connectedAccount ? (
+      {connectedAccount && !loading ? (
         <BalanceModule
           balances={balances}
-          movements={movements}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
           onRequestStakeActivate={requests.stakeActivateANJ}
@@ -92,7 +97,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     case REQUEST_MODE.DEACTIVATE:
       return (
         <DeactivateANJ
-          activeBalance={activeBalance}
+          activeBalance={activeBalance.amount}
           onDeactivateANJ={deactivateANJ}
           {...props}
         />
@@ -100,7 +105,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     case REQUEST_MODE.WITHDRAW:
       return (
         <WithdrawANJ
-          inactiveBalance={inactiveBalance}
+          inactiveBalance={inactiveBalance.amount}
           onWithdrawANJ={withdrawANJ}
           {...props}
         />
@@ -108,8 +113,8 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     default:
       return (
         <ActivateANJ
-          activeBalance={activeBalance}
-          walletBalance={walletBalance}
+          activeBalance={activeBalance.amount}
+          walletBalance={walletBalance.amount}
           onActivateANJ={activateANJ}
           {...props}
         />

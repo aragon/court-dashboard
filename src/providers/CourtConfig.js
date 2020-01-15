@@ -2,9 +2,11 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 
 import environment from '../environment'
-import { getNetworkName } from '../lib/web3-utils'
 import { networks } from '../networks'
-import { useCourtSubscription } from '../hooks/useCourt'
+
+import { useCourtSubscription } from '../hooks/subscription-hooks'
+
+import { getNetworkName } from '../lib/web3-utils'
 import { bigNum } from '../lib/math-utils'
 
 const CHAIN_ID = environment('CHAIN_ID')

@@ -18,25 +18,21 @@ import { useConnectedAccount } from '../../providers/Web3'
 const BalanceModule = React.memo(
   ({
     balances,
-    movements,
     onRequestActivate,
     onRequestDeactivate,
     onRequestStakeActivate,
     onRequestWithdraw,
   }) => {
+    console.log('tra')
     const theme = useTheme()
     const { name: layout } = useLayout()
     const connectedAccount = useConnectedAccount()
     const { minActiveBalance } = useCourtConfig()
 
-    const {
-      walletMovement,
-      inactiveBalanceMovement,
-      activeBalanceMovement,
-    } = movements
-
     const oneColumn = layout === 'small' || layout === 'medium'
     const status = getAccountStatus(balances, minActiveBalance)
+
+    const { walletBalance, activeBalance, inactiveBalance } = balances
 
     return (
       <Split
@@ -75,7 +71,7 @@ const BalanceModule = React.memo(
                 `}
               >
                 <Balance
-                  amount={balances.availableBalance}
+                  amount={inactiveBalance.amount}
                   label="Inactive"
                   mainIcon={inactiveANJIcon}
                   mainIconBackground="#FEF3F1"
@@ -88,7 +84,7 @@ const BalanceModule = React.memo(
                       onClick: onRequestActivate,
                     },
                   ]}
-                  activity={inactiveBalanceMovement}
+                  activity={inactiveBalance.latestMovement}
                 />
               </Box>
               <Box
@@ -99,14 +95,14 @@ const BalanceModule = React.memo(
                 `}
               >
                 <Balance
-                  amount={balances.activeBalance}
+                  amount={activeBalance.amount}
                   label="Active"
                   mainIcon={activeANJIcon}
                   mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
                   actions={[
                     { label: 'Deactivate', onClick: onRequestDeactivate },
                   ]} // TODO: Memoize array
-                  activity={activeBalanceMovement}
+                  activity={activeBalance.latestMovement}
                 />
               </Box>
             </div>
@@ -129,7 +125,7 @@ const BalanceModule = React.memo(
               `}
             >
               <Balance
-                amount={balances.walletBalance}
+                amount={walletBalance.amount}
                 label="My wallet"
                 mainIcon={walletIcon}
                 mainIconBackground="#FEF3F1"
@@ -140,7 +136,7 @@ const BalanceModule = React.memo(
                     onClick: onRequestStakeActivate,
                   },
                 ]} // TODO: Memoize array
-                activity={walletMovement}
+                activity={walletBalance.latestMovement}
               />
             </div>
           </Box>

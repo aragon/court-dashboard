@@ -3,6 +3,7 @@ export const ANJMovement = {
   Unstake: Symbol('UNSTAKE'),
   Activation: Symbol('ACTIVATION'),
   Deactivation: Symbol('DEACTIVATION'),
+  DeactivationProcess: Symbol('DEACTIVATION_PROCESS'),
   Lock: Symbol('LOCK'),
   Unlock: Symbol('UNLOCK'),
   Reward: Symbol('REWARD'),
@@ -20,6 +21,7 @@ const stringMapping = {
   [ANJMovement.Unstake]: 'Unstaked',
   [ANJMovement.Activation]: 'Activated',
   [ANJMovement.Deactivation]: 'Deactivated',
+  [ANJMovement.DeactivationProcess]: 'Deactivation process',
   [ANJMovement.Lock]: 'Locked',
   [ANJMovement.Unlock]: 'Unlocked',
   [ANJMovement.Reward]: 'Rewards',
@@ -30,4 +32,8 @@ export function convertToString(symbol) {
   return stringMapping[symbol]
 }
 
-export default ANJMovement
+export const ANJBalance = {
+  Wallet: Symbol('WALLET'),
+  Inactive: Symbol('INACTIVE'),
+  Active: Symbol('ACTIVE'),
+}

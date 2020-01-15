@@ -2,10 +2,7 @@ import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import ANJIcon from '../../assets/anj.svg'
 import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
-import {
-  movementDirection,
-  convertToString,
-} from '../../types/anj-movement-types'
+import { movementDirection, convertToString } from '../../types/anj-types'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'

@@ -2,6 +2,8 @@ import { useSubscription } from 'urql'
 import dayjs from 'dayjs'
 
 import { ANJBalance, Juror } from '../queries/balances'
+import { CourtConfig } from '../queries/court'
+
 import { bigNum } from '../lib/math-utils'
 
 const NO_AMOUNT = bigNum(0)
@@ -31,7 +33,7 @@ function useJuror(jurorId) {
   return { ...result, data }
 }
 
-export default function useJurorBalances(jurorId) {
+export function useJurorBalancesSubscription(jurorId) {
   // My wallet balance
   const {
     data: anjBalanceData,
@@ -54,9 +56,7 @@ export default function useJurorBalances(jurorId) {
     walletBalance: anjBalanceData ? bigNum(anjBalanceData.amount) : NO_AMOUNT,
     activeBalance: jurorData ? bigNum(jurorData.activeBalance) : NO_AMOUNT,
     lockedBalance: jurorData ? bigNum(jurorData.lockedBalance) : NO_AMOUNT,
-    availableBalance: jurorData
-      ? bigNum(jurorData.availableBalance)
-      : NO_AMOUNT,
+    inactiveBalance: jurorData ? bigNum(jurorData.availableBalance) : NO_AMOUNT,
     deactivationBalance: jurorData
       ? bigNum(jurorData.deactivationBalance)
       : NO_AMOUNT,
@@ -70,4 +70,16 @@ export default function useJurorBalances(jurorId) {
     : []
 
   return { balances, movements, fetching, errors }
+}
+
+export function useCourtSubscription(courtAddress) {
+  const [result] = useSubscription({
+    query: CourtConfig,
+    variables: { id: courtAddress },
+  })
+
+  // TODO: handle possible errors
+  const courtConfig = result.data && result.data.courtConfig
+
+  return courtConfig
 }

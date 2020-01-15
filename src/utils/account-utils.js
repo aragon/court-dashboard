@@ -7,7 +7,8 @@ import {
 export function getAccountStatus(balances, minActiveBalance) {
   const { activeBalance } = balances
 
-  if (activeBalance.gte(minActiveBalance)) return ACCOUNT_STATUS_JUROR_ACTIVE
+  if (activeBalance.amount.gte(minActiveBalance))
+    return ACCOUNT_STATUS_JUROR_ACTIVE
 
   if (!isANJHolder(balances)) return ACCOUNT_STATUS_ANONYMUS
 
@@ -16,7 +17,7 @@ export function getAccountStatus(balances, minActiveBalance) {
 
 function isANJHolder(balances) {
   return Object.values(balances).reduce(
-    (isHolder, balance) => isHolder || balance.gt(0),
+    (isHolder, balance) => isHolder || balance.amount.gt(0),
     false
   )
 }

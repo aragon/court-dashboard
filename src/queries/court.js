@@ -36,6 +36,10 @@ export const CourtConfig = gql`
         type
         address
       }
+      terms {
+        id
+        startTime
+      }
     }
   }
 `
