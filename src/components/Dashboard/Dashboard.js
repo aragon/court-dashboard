@@ -48,6 +48,8 @@ function Dashboard() {
             label="Buy ANJ"
             mode="strong"
             display="all"
+            href="https://anj.aragon.org/"
+            target="_blank"
           />
         }
       />

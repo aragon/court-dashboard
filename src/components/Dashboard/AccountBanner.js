@@ -1,27 +1,26 @@
 import React from 'react'
-import { GU, textStyle, useTheme } from '@aragon/ui'
+import { GU, Help, textStyle, useTheme } from '@aragon/ui'
 
 import anjSpringIcon from '../../assets/anj-spring.svg'
 import userIcon from '../../assets/user.svg'
 import gavelIcon from '../../assets/gavel.svg'
 
-import {
-  ACCOUNT_STATUS_JUROR_ACTIVE,
-  // ACCOUNT_STATUS_INACTIVE,
-} from '../../types/account-status-types'
+import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits } from '../../lib/math-utils'
 import { useCourtConfig } from '../../providers/CourtConfig'
+import JurorProbability from './JurorProbability'
 
-const getInformationAttributes = (
+const getBannerAttributes = (
   status,
   drafted,
+  isFirstTimeActivating,
   minActiveBalance,
   decimals,
   theme
 ) => {
   // TODO: Finish all possible states
   if (status === ACCOUNT_STATUS_JUROR_ACTIVE) {
-    if (!drafted) {
+    if (isFirstTimeActivating) {
       return {
         icon: userIcon,
         iconBackground: theme.positive.alpha(0.2),
@@ -41,6 +40,37 @@ const getInformationAttributes = (
           'You can start reviewing the evidence and then commit your vote',
       }
     }
+
+    const draftingProbability = 'High'
+
+    return {
+      // probability:
+      title: (
+        <div
+          css={`
+            display: flex;
+            align-items: center;
+          `}
+        >
+          <span css="margin-right: 8px">
+            <span
+              css={`
+                color: ${theme.accent};
+              `}
+            >
+              {draftingProbability} probability{' '}
+            </span>
+            to be drafted
+          </span>
+          <Help hint="How is the probability calculated?">
+            Probability of being drafted depends on the total ANJ you have
+            activated and the total ANJ activated for a given term
+          </Help>
+        </div>
+      ),
+      paragraph:
+        'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute',
+    }
   }
 
   return {
@@ -52,18 +82,33 @@ const getInformationAttributes = (
   }
 }
 
-function AccountBanner({ status, minActiveBalance, drafted }) {
+function AccountBanner({
+  status,
+  minActiveBalance,
+  activeBalance,
+  drafted,
+  isFirstTimeActivating,
+}) {
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
+
+  const {
+    amount: activeAmount,
+    amountNotEffective: activeAmountNotEffective,
+  } = activeBalance
+
+  const activeBalanceAtCurrentTerm = activeAmount.sub(activeAmountNotEffective)
+
   const {
     icon,
     title,
     titleColor,
     paragraph,
     iconBackground,
-  } = getInformationAttributes(
+  } = getBannerAttributes(
     status,
     drafted,
+    isFirstTimeActivating,
     minActiveBalance,
     anjToken.decimals,
     theme
@@ -88,16 +133,22 @@ function AccountBanner({ status, minActiveBalance, drafted }) {
           margin-right: ${1.5 * GU}px;
         `}
       >
-        <div css={iconBackgroundStyle}>
-          <img
-            css={`
-              display: block;
-            `}
-            height={iconBackground ? 3 * GU : 6 * GU}
-            src={icon}
-            alt="info-icon"
+        {icon ? (
+          <div css={iconBackgroundStyle}>
+            <img
+              css={`
+                display: block;
+              `}
+              height={iconBackground ? 3 * GU : 6 * GU}
+              src={icon}
+              alt="info-icon"
+            />
+          </div>
+        ) : (
+          <JurorProbability
+            activeBalanceAtCurrentTerm={activeBalanceAtCurrentTerm}
           />
-        </div>
+        )}
       </div>
       <div
         css={`

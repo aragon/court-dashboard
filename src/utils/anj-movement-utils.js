@@ -3,7 +3,6 @@ import {
   ANJBalance as anjBalanceTypes,
   movementDirection,
 } from '../types/anj-types'
-import { getTermStartDate } from './court-utils'
 
 // The intention here is to know which movements types should correspond with each balance
 export const acceptedMovementsPerBalance = new Map([
@@ -64,14 +63,8 @@ export function getMovementDirection(acceptedMovements, movementType) {
   return direction
 }
 
-export function isMovementEffective(movement, now, { terms, termDuration }) {
+export function isMovementEffective(movement, currentTermId) {
   if (!movement.effectiveTermId) return true
 
-  const effectiveTermStartDate = getTermStartDate(
-    movement.effectiveTermId,
-    terms,
-    termDuration
-  )
-
-  return effectiveTermStartDate <= now
+  return parseInt(movement.effectiveTermId, 10) <= currentTermId
 }

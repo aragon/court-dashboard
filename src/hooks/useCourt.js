@@ -1,13 +1,15 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
+import useInterval from './useInterval'
 
 import jurorRegistryAbi from '../abi/JurorRegistry.json'
 import tokenAbi from '../abi/ERC20.json'
 
 import { getFunctionSignature } from '../lib/web3-utils'
+import { bigNum } from '../lib/math-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 500000 // Should be relative to every tx ?
@@ -15,8 +17,12 @@ const GAS_LIMIT = 500000 // Should be relative to every tx ?
 function useJurorRegistryContract() {
   const { modules } = useCourtConfig()
 
-  const jurorRegistryModule = modules.find(
-    mod => CourtModuleType[mod.type] === CourtModuleType.JurorsRegistry
+  const jurorRegistryModule = useMemo(
+    () =>
+      modules.find(
+        mod => CourtModuleType[mod.type] === CourtModuleType.JurorsRegistry
+      ),
+    [modules]
   )
 
   const jurorRegistryAddress = jurorRegistryModule
@@ -84,4 +90,21 @@ export function useCourtActions() {
   return {
     ...anjActions,
   }
+}
+
+export function useTotalActiveBalancePolling(termId) {
+  const POLL_EVERY = 1000
+
+  const jurorRegistryContract = useJurorRegistryContract()
+  const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
+
+  const fetchTotalActiveBalance = useCallback(() => {
+    jurorRegistryContract
+      .totalActiveBalanceAt(termId)
+      .then(balance => setTotalActiveBalance(balance))
+  }, [jurorRegistryContract, termId])
+
+  useInterval(fetchTotalActiveBalance, POLL_EVERY, true)
+
+  return totalActiveBalance
 }

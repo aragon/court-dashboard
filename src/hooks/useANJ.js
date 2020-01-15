@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import useNow from './useNow'
+import { useClock } from '../providers/Clock'
 
 import {
   ANJMovement as anjMovementTypes,
@@ -13,25 +13,68 @@ import {
 } from '../utils/anj-movement-utils'
 
 import { useBalances } from '../components/Dashboard/BalancesProvider'
-import { useCourtConfig } from '../providers/CourtConfig'
+import { bigNum } from '../lib/math-utils'
 
 export function useANJBalances() {
   const { balances, movements } = useBalances()
 
-  return useLatestMovements(balances, movements)
+  const convertedMovements = useConvertedMovements(movements)
+
+  const walletBalance = useBalanceWithMovements(
+    balances.walletBalance,
+    convertedMovements,
+    anjBalanceTypes.Wallet
+  )
+
+  const inactiveBalance = useBalanceWithMovements(
+    balances.inactiveBalance,
+    convertedMovements,
+    anjBalanceTypes.Inactive
+  )
+
+  const activeBalance = useBalanceWithMovements(
+    balances.activeBalance,
+    convertedMovements,
+    anjBalanceTypes.Active
+  )
+
+  const lockedBalance = useMemo(() => {
+    return { amount: balances.lockedBalance }
+  }, [balances.lockedBalance])
+
+  const deactivationBalance = useMemo(() => {
+    return { amount: balances.deactivationBalance }
+  }, [balances.deactivationBalance])
+
+  // Since we pass the whole object through props to components, we should memoize it
+  return useMemo(
+    () => ({
+      walletBalance,
+      inactiveBalance,
+      activeBalance,
+      lockedBalance,
+      deactivationBalance,
+    }),
+    [
+      activeBalance,
+      deactivationBalance,
+      inactiveBalance,
+      lockedBalance,
+      walletBalance,
+    ]
+  )
 }
 
 // Asummes movements in descending order of creation
-function useLatestMovements(balances, movements) {
-  const now = useNow()
-  const courtConfig = useCourtConfig()
+function useConvertedMovements(movements) {
+  const { currentTermId } = useClock()
 
   const effectiveStates = movements.map(mov =>
-    isMovementEffective(mov, now, courtConfig)
+    isMovementEffective(mov, currentTermId)
   )
   const effectiveStatesKey = effectiveStates.join('')
 
-  const convertedMovements = useMemo(
+  return useMemo(
     () =>
       movements.map((mov, i) => ({
         ...mov,
@@ -39,39 +82,31 @@ function useLatestMovements(balances, movements) {
       })),
     [effectiveStatesKey, movements] //eslint-disable-line
   )
-
-  const walletBalance = useBalanceWithLatestMovement(
-    balances.walletBalance,
-    convertedMovements,
-    anjBalanceTypes.Wallet
-  )
-
-  const inactiveBalance = useBalanceWithLatestMovement(
-    balances.inactiveBalance,
-    convertedMovements,
-    anjBalanceTypes.Inactive
-  )
-
-  const activeBalance = useBalanceWithLatestMovement(
-    balances.activeBalance,
-    convertedMovements,
-    anjBalanceTypes.Active
-  )
-
-  // Since we pass the whole object through props to components, we should memoize it
-  return useMemo(() => ({ walletBalance, inactiveBalance, activeBalance }), [
-    activeBalance,
-    inactiveBalance,
-    walletBalance,
-  ])
 }
 
-// Returns balance with latest movement (in case of any)
-function useBalanceWithLatestMovement(balance, movements, balanceType) {
+// Calculates the latest movement for each balance
+// In case the balance is the active, we must also calculate all non effective movements to get the effective active balance at current term
+function useBalanceWithMovements(balance, movements, balanceType) {
   const acceptedMovements = acceptedMovementsPerBalance.get(balanceType)
   const filteredMovements = useFilteredMovements(movements, acceptedMovements)
 
   return useMemo(() => {
+    // To calculate the effective active balance  we must get all non effective activation movements
+    // We need to do this since the active balance from the graph already has included this not yet effective movement amounts
+    // Note that this assumes the termDuration is less than 24hrs
+    let amountNotEffective = bigNum(0)
+
+    // TODO: Implement a more generic way
+    if (balanceType === anjBalanceTypes.Active) {
+      amountNotEffective = movements
+        .filter(
+          mov =>
+            !mov.isEffective &&
+            anjMovementTypes[mov.type] === anjMovementTypes.Activation
+        )
+        .reduce((acc, mov) => acc.add(mov.amount), amountNotEffective)
+    }
+
     let latestMovement = filteredMovements.shift()
     let newBalance = balance
 
@@ -104,9 +139,10 @@ function useBalanceWithLatestMovement(balance, movements, balanceType) {
 
     return {
       amount: newBalance,
+      amountNotEffective,
       latestMovement: convertMovement(acceptedMovements, latestMovement),
     }
-  }, [acceptedMovements, balance, balanceType, filteredMovements])
+  }, [acceptedMovements, balance, balanceType, filteredMovements, movements])
 }
 
 function useFilteredMovements(movements, acceptedMovements) {

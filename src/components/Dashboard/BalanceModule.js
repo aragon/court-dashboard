@@ -3,7 +3,7 @@ import { Box, GU, Split, useLayout, useTheme } from '@aragon/ui'
 
 import Profile from './Profile'
 import Balance from './Balance'
-import Information from './AccountBanner'
+import AccountBanner from './AccountBanner'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
 
@@ -50,9 +50,10 @@ const BalanceModule = React.memo(
               `}
               padding={3 * GU}
             >
-              <Information
+              <AccountBanner
                 status={status}
                 minActiveBalance={minActiveBalance}
+                activeBalance={activeBalance}
               />
             </Box>
             <div
@@ -76,7 +77,6 @@ const BalanceModule = React.memo(
                   mainIcon={inactiveANJIcon}
                   mainIconBackground="#FEF3F1"
                   actions={[
-                    // TODO: Memoize array
                     { label: 'Withdraw', onClick: onRequestWithdraw },
                     {
                       label: 'Activate',
@@ -101,7 +101,7 @@ const BalanceModule = React.memo(
                   mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
                   actions={[
                     { label: 'Deactivate', onClick: onRequestDeactivate },
-                  ]} // TODO: Memoize array
+                  ]}
                   activity={activeBalance.latestMovement}
                 />
               </Box>
@@ -135,7 +135,7 @@ const BalanceModule = React.memo(
                     mode: 'strong',
                     onClick: onRequestStakeActivate,
                   },
-                ]} // TODO: Memoize array
+                ]}
                 activity={walletBalance.latestMovement}
               />
             </div>

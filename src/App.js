@@ -10,6 +10,7 @@ import { CourtConfigProvider } from './providers/CourtConfig'
 
 import AppLoader from './components/AppLoader'
 import Routes from './Routes'
+import { ClockProvider } from './providers/Clock'
 
 function App() {
   return (
@@ -17,11 +18,13 @@ function App() {
       <Main layout={false} theme={theme} scrollView={false}>
         <Web3ConnectProvider>
           <CourtConfigProvider>
-            <MainView>
-              <AppLoader>
-                <Routes />
-              </AppLoader>
-            </MainView>
+            <ClockProvider>
+              <MainView>
+                <AppLoader>
+                  <Routes />
+                </AppLoader>
+              </MainView>
+            </ClockProvider>
           </CourtConfigProvider>
         </Web3ConnectProvider>
       </Main>
