@@ -25,16 +25,23 @@ export function getDisputeTimeLine(dispute, courtSettings) {
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.Evidence,
     },
   ]
-  const rounds = dispute.rounds.map(round =>
-    getRoundPhasesAndTime(courtSettings, round, currentPhaseAndTime)
-  )
-  if (rounds.length === 0) {
-    return timeLine
+
+  if (
+    currentPhaseAndTime.phase === DisputesTypes.Phase.Adjudicating ||
+    currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards ||
+    currentPhaseAndTime.phase === DisputesTypes.Phase.JuryDrafting
+  ) {
+    const rounds = dispute.rounds.map(round =>
+      getRoundPhasesAndTime(courtSettings, round, currentPhaseAndTime)
+    )
+    if (rounds.length === 0) {
+      return timeLine
+    }
+
+    timeLine.push(rounds)
   }
 
-  timeLine.push(rounds)
-
-  if (DisputesTypes.Phase.ExecuteRuling === currentPhaseAndTime.phase) {
+  if (currentPhaseAndTime.phase === DisputesTypes.Phase.ExecuteRuling) {
     timeLine.push({
       phase: DisputesTypes.Phase.ExecuteRuling,
       active: DisputesTypes.Phase.ExecuteRuling === currentPhaseAndTime.phase,
@@ -43,9 +50,7 @@ export function getDisputeTimeLine(dispute, courtSettings) {
     return timeLine
   }
 
-  if (
-    DisputesTypes.Phase.ClaimRewards === currentPhaseAndTime.phase.ClaimRewards
-  ) {
+  if (currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards) {
     timeLine.push({
       phase: DisputesTypes.Phase.ClaimRewards,
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards,
@@ -151,7 +156,7 @@ export function getAdjudicationPhase(dispute, round, now, courtSettings) {
   // If the max number of appeals has been reached, then the last round is the final round and can be considered ended
   const maxAppealReached = numberOfRounds > maxRegularAppealRounds
   if (maxAppealReached) {
-    return { phase: DisputesTypes.Phase.ExecuteRuling }
+    return { phase: DisputesTypes.Phase.ExecuteRuling, maxAppealReached: true }
   }
 
   // If the last round was not appealed yet, check if the confirmation period has started or not
@@ -167,7 +172,10 @@ export function getAdjudicationPhase(dispute, round, now, courtSettings) {
         nextTransition: appealConfirmationTermStartTime,
       }
     } else {
-      return { phase: DisputesTypes.Phase.ExecuteRuling }
+      return {
+        phase: DisputesTypes.Phase.ExecuteRuling,
+        appealed: false,
+      }
     }
   }
 
@@ -185,10 +193,14 @@ export function getAdjudicationPhase(dispute, round, now, courtSettings) {
   }
 
   // If non of the above conditions have been met, the last round is considered ended
-  return { phase: DisputesTypes.Phase.ExecuteRuling }
+  return {
+    phase: DisputesTypes.Phase.ExecuteRuling,
+    appealed: true,
+  }
 }
 
 function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
+  console.log('GET ROUND PHASES AND TIME ')
   const {
     termDuration,
     commitTerms,
@@ -246,8 +258,23 @@ function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
     phase => phase.phase === currentPhase.phase
   )
 
-  if (roundId < currentPhase.roundId || currentPhaseIndex === -1) {
+  if (roundId < currentPhase.roundId) {
     return roundPhasesAndTime
+  }
+
+  if (currentPhase.phase === DisputesTypes.Phase.ExecuteRuling) {
+    // It is the last possible round the last phase of the round is Reveal
+    if (currentPhase.maxAppealReached === true) {
+      return roundPhasesAndTime.slice(0, 4)
+    }
+    // If it was not appealed not show the Confirm appeal
+    if (currentPhase.appealed === false) {
+      return roundPhasesAndTime.slice(0, 5)
+    }
+    // round ended What happen if the appeal is not confirmed?
+    if (currentPhase.appealed === true) {
+      return roundPhasesAndTime
+    }
   }
 
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
