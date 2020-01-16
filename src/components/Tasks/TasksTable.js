@@ -3,13 +3,14 @@ import {
   ContextMenu,
   DataView,
   GU,
+  IdentityBadge,
   Link,
   textStyle,
   theme,
   useViewport,
 } from '@aragon/ui'
 import dayjs from '../../lib/dayjs'
-import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
+// import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import TasksFilters from './TasksFilters'
 import TaskStatus from './TaskStatus'
 import TaskDueDate from './TaskDueDate'
@@ -18,7 +19,7 @@ const INITIAL_DATE_RANGE = { start: null, end: null }
 
 const getFilteredTasks = ({ tasks, selectedDateRange }) => {
   return tasks.filter(
-    ({ taskName, disputeId, priority, juror, dueDate }) =>
+    ({ taskName, disputeId, juror, dueDate }) =>
       !selectedDateRange.start ||
       !selectedDateRange.end ||
       dayjs(dueDate).isBetween(
@@ -91,7 +92,7 @@ const TaskTable = ({ tasks }) => {
       }
       fields={['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']}
       entries={sortedTasks}
-      renderEntry={({ taskName, disputeId, juror, status, dueDate }) => {
+      renderEntry={({ phase, disputeId, juror, status, dueDate }) => {
         // const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
         // const hoursAndSec = dayjs(dueDate).format('HH:mm')
         return [
@@ -100,10 +101,10 @@ const TaskTable = ({ tasks }) => {
               ${textStyle('body2')}
             `}
           >
-            {taskName}
+            {phase}
           </span>,
           <Link>Dispute #{disputeId}</Link>,
-          <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
+          <IdentityBadge entity={juror} />,
 
           <TaskStatus status={status} />,
           <TaskDueDate dueDate={dueDate} />,

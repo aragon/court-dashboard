@@ -1,29 +1,27 @@
 import gql from 'graphql-tag'
 
 export const AllRounds = gql`
-  query {
-    adjudicationRounds(
-      where: { state: Invalid }
-      orderBy: createdAt
-      orderDirection: asc
-    ) {
-      id
+  subscription {
+    adjudicationRounds(orderBy: createdAt, orderDirection: asc) {
       number
       state
       createdAt
-      dispute {
-        id
-        state
-        rounds
-      }
+      draftTermId
+      delayedTerms
       jurors {
         id
+        commitment
+        outcome
         juror {
           id
         }
-
-        commitment
-        outcome
+      }
+      dispute {
+        id
+        state
+        rounds {
+          id
+        }
       }
     }
   }

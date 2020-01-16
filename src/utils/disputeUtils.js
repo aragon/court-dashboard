@@ -25,26 +25,20 @@ export function getDisputeTimeLine(dispute, courtSettings) {
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.Evidence,
     },
   ]
-
   const rounds = dispute.rounds.map(round =>
     getRoundPhasesAndTime(courtSettings, round, currentPhaseAndTime)
   )
-
   if (rounds.length === 0) {
     return timeLine
   }
 
   timeLine.push(rounds)
 
-  if (
-    DisputesTypes.Phase.ExecuteRuling ===
-    currentPhaseAndTime.phase.ExecuteRuling
-  ) {
+  if (DisputesTypes.Phase.ExecuteRuling === currentPhaseAndTime.phase) {
     timeLine.push({
       phase: DisputesTypes.Phase.ExecuteRuling,
-      active:
-        DisputesTypes.Phase.ExecuteRuling ===
-        currentPhaseAndTime.phase.ExecuteRuling,
+      active: DisputesTypes.Phase.ExecuteRuling === currentPhaseAndTime.phase,
+      roundId: currentPhaseAndTime.roundId,
     })
     return timeLine
   }
@@ -55,6 +49,7 @@ export function getDisputeTimeLine(dispute, courtSettings) {
     timeLine.push({
       phase: DisputesTypes.Phase.ClaimRewards,
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards,
+      roundId: currentPhaseAndTime.roundId,
     })
     return timeLine
   }
@@ -114,12 +109,11 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
       now,
       courtSettings
     )
-
     return { ...currentAdjudicationPhase, roundId: number }
   }
 }
 
-function getAdjudicationPhase(dispute, round, now, courtSettings) {
+export function getAdjudicationPhase(dispute, round, now, courtSettings) {
   const {
     termDuration,
     commitTerms,
@@ -132,7 +126,7 @@ function getAdjudicationPhase(dispute, round, now, courtSettings) {
   const { draftTermId, delayedTerms } = round
 
   const draftTermEndTime = getTermStartTime(
-    draftTermId + delayedTerms,
+    parseInt(draftTermId) + parseInt(delayedTerms),
     courtSettings
   )
 
@@ -206,7 +200,7 @@ function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
   const { draftTermId, delayedTerms, number: roundId, createdAt } = round
 
   const disputeDraftTermTime = getTermStartTime(
-    draftTermId + delayedTerms,
+    parseInt(draftTermId) + parseInt(delayedTerms),
     courtSettings
   )
 
@@ -248,13 +242,32 @@ function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
       roundId: roundId,
     },
   ]
-
-  if (roundId < currentPhase.roundId) {
-    return roundPhasesAndTime
-  }
   const currentPhaseIndex = roundPhasesAndTime.findIndex(
     phase => phase.phase === currentPhase.phase
   )
 
+  if (roundId < currentPhase.roundId || currentPhaseIndex === -1) {
+    return roundPhasesAndTime
+  }
+
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
+}
+
+export function getCommitEndTime(round, courtSettings) {
+  const { termDuration, commitTerms } = courtSettings
+
+  const { draftTermId, delayedTerms } = round
+
+  const disputeDraftTermTime = getTermStartTime(
+    parseInt(draftTermId) + parseInt(delayedTerms),
+    courtSettings
+  )
+  return disputeDraftTermTime + termDuration * commitTerms
+}
+
+export function getRevealEndTime(round, courtSettings) {
+  const { termDuration, revealTerms } = courtSettings
+  const commitEndTime = getCommitEndTime(round, courtSettings)
+
+  return commitEndTime + revealTerms * termDuration
 }

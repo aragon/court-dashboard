@@ -4,9 +4,25 @@ import ANJIcon from '../../assets/anjButton.svg'
 
 import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
-import { tasks } from '../../mock-data'
+// mport { tasks } from '../../mock-data'
+import useRounds from '../../hooks/useRounds'
 
 const Tasks = () => {
+  const [tasks] = useRounds()
+  // const tasks = rounds.map(round => {
+  //   return round.jurors.map(juror => {
+  //     return {
+  //       id: round.id,
+  //       state: round.state,
+  //       createdAt: round.createdAt,
+  //       taskName: round.phase,
+  //       dueDate: round.nextTransition,
+  //       juror: juror.juror.id,
+  //       disputeId: round.dispute.id,
+  //     }
+  //   })
+  // })
+
   return (
     <>
       <Header

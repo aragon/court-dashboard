@@ -7,7 +7,6 @@ import { convertToString } from '../types/types'
 
 export default function useDisputes() {
   const courtSettings = useCourtSettings()
-  console.log('Court sett ', courtSettings)
   const disputes = useDisputeSubscription()
   const now = useNow()
 
