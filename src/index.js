@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
-
 import {
   createClient,
   Provider,
@@ -12,14 +11,14 @@ import {
 } from 'urql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { devtoolsExchange } from '@urql/devtools'
+import endpoints from './endpoints'
 
-const subscriptionClient = new SubscriptionClient(
-  'wss://api.thegraph.com/subgraphs/name/aragon/aragon-court-rinkeby',
-  {}
-)
+const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
+
+const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {})
 
 const client = createClient({
-  url: 'https://api.thegraph.com/subgraphs/name/aragon/aragon-court-rinkeby',
+  url: GRAPH_API_ENDPOINT_HTTP,
   exchanges: [
     debugExchange,
     devtoolsExchange,
@@ -30,7 +29,6 @@ const client = createClient({
     }),
   ],
 })
-
 ReactDOM.render(
   <Provider value={client}>
     <App />

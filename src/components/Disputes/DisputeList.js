@@ -3,7 +3,7 @@ import { Bar, CardLayout, GU } from '@aragon/ui'
 import * as DisputesTypes from './types'
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
-import dayjs from '../Lib/dayjs'
+import dayjs from '../../lib/dayjs'
 
 const UNSELECTED_FILTER = -1
 const INITIAL_DATE_RANGE = { start: null, end: null }
