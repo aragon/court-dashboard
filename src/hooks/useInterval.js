@@ -19,8 +19,8 @@ function useInterval(callback, delay, runBeforeInterval) {
       if (runBeforeInterval) tick(cancelled.current)
       const id = setInterval(tick, delay)
       return () => {
-        cancelled.current = true
         clearInterval(id)
+        cancelled.current = true
       }
     }
   }, [delay, runBeforeInterval])

@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { useConnectedAccount } from '../../providers/Web3'
 import { useJurorBalancesSubscription } from '../../hooks/subscription-hooks'
-import { useFirstTimeActivation } from '../../hooks/query-hooks'
 
 const BalancesContext = React.createContext()
 
@@ -25,15 +24,7 @@ const WithSubscription = ({ Provider, connectedAccount, children }) => {
   const account = connectedAccount.toLowerCase()
   const { balances, movements } = useJurorBalancesSubscription(account)
 
-  const firstActivation = useFirstTimeActivation(account, {
-    pause: false,
-    interval: 1000,
-  })
-  return (
-    <Provider value={{ balances, movements, firstActivation }}>
-      {children}
-    </Provider>
-  )
+  return <Provider value={{ balances, movements }}>{children}</Provider>
 }
 
 function useBalances() {

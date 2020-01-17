@@ -6,7 +6,7 @@ import { useClock } from '../providers/Clock'
 // Useful component to validate the different transitions
 // ONLY FOR DEVELOPMENT
 export default function Clock() {
-  const { currentTermId, currentTermEndTime } = useClock()
+  const { currentTermId, currentTermEndDate } = useClock()
   return (
     <div
       css={`
@@ -28,7 +28,7 @@ export default function Clock() {
         </span>
       </span>
       <span>Ends in </span>
-      <Timer format="ms" end={new Date(currentTermEndTime * 1000)} />
+      <Timer format="ms" end={currentTermEndDate} />
     </div>
   )
 }

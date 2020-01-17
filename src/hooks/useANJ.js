@@ -15,6 +15,8 @@ import {
 
 import { useBalances } from '../components/Dashboard/BalancesProvider'
 import { bigNum } from '../lib/math-utils'
+import { useFirstANJActivation } from './query-hooks'
+import { useConnectedAccount } from '../providers/Web3'
 
 export function useANJBalances() {
   const { balances, movements } = useBalances()
@@ -167,4 +169,28 @@ function convertMovement(acceptedMovements, movement) {
     amount: movement.amount,
     direction,
   }
+}
+
+/**
+ *
+ * @param {*} options query options
+ * @return {Boolean} true if account's first ANJ activation happened on current term
+ */
+export function useJurorFirstTimeANJActivation(options) {
+  const connectedAccount = useConnectedAccount()
+  const { currentTermId } = useClock()
+  const firstANJActivation = useFirstANJActivation(
+    connectedAccount.toLowerCase(),
+    options
+  )
+
+  if (!firstANJActivation) return false
+
+  const firstANJActivationTerm = parseInt(
+    firstANJActivation.effectiveTermId,
+    10
+  )
+
+  // Activation is effective on next term from when the activation was performed
+  return firstANJActivationTerm === currentTermId + 1
 }

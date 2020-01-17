@@ -23,8 +23,8 @@ function ClockProvider({ children }) {
   const clock = useMemo(
     () => ({
       currentTermId,
-      currentTermStartTime: termStartTime,
-      currentTermEndTime: termEndTime,
+      currentTermStartDate: new Date(termStartTime * 1000),
+      currentTermEndDate: new Date(termEndTime * 1000),
     }),
     [currentTermId, termEndTime, termStartTime]
   )

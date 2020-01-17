@@ -14,6 +14,7 @@ import anjSpringIcon from '../../assets/anj-spring.svg'
 import userIcon from '../../assets/user.svg'
 import gavelIcon from '../../assets/gavel.svg'
 import { getProbabilityText } from '../../utils/account-utils'
+import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 
 const getBannerAttributes = (
   status,
@@ -24,6 +25,7 @@ const getBannerAttributes = (
   theme
 ) => {
   if (status === ACCOUNT_STATUS_JUROR_ACTIVE) {
+    // NOTE: This one could not be included in the final version
     if (drafted) {
       return {
         icon: gavelIcon,
@@ -42,6 +44,7 @@ const getBannerAttributes = (
         title: 'You are elegible to be drafted',
         titleColor: theme.positive,
         paragraph: 'You are eligible to be drafted starting from the next term',
+        showTimer: true,
       }
     }
 
@@ -57,20 +60,18 @@ const getBannerAttributes = (
   }
 }
 
-function AccountBanner({
-  status,
-  minActiveBalance,
-  activeBalance,
-  drafted,
-  isFirstTimeActivating,
-}) {
+function AccountBanner({ status, minActiveBalance, activeBalance, drafted }) {
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
 
+  const isFirstTimeActivating = useJurorFirstTimeANJActivation({
+    pause: drafted || status !== ACCOUNT_STATUS_JUROR_ACTIVE,
+  })
+
   const attributes = getBannerAttributes(
     status,
-    false,
-    false,
+    drafted,
+    isFirstTimeActivating,
     minActiveBalance,
     anjToken.decimals,
     theme
@@ -79,7 +80,14 @@ function AccountBanner({
   if (attributes.showProbability)
     return <BannerWithProbability activeBalance={activeBalance} />
 
-  const { icon, title, titleColor, paragraph, iconBackground } = attributes
+  const {
+    icon,
+    title,
+    titleColor,
+    paragraph,
+    iconBackground,
+    showTimer,
+  } = attributes
 
   const iconBackgroundStyle = iconBackground
     ? `   
@@ -108,6 +116,7 @@ function AccountBanner({
           title={title}
           titleColor={titleColor}
           paragraph={paragraph}
+          showTimer={showTimer}
         />
       }
     />

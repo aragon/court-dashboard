@@ -30,7 +30,7 @@ export const Juror = gql`
   }
 `
 
-export const FirstActivationMovement = gql`
+export const FirstANJActivationMovement = gql`
   query Juror($id: ID!) {
     juror(id: $id) {
       movements(

@@ -78,7 +78,7 @@ export function useJurorBalancesSubscription(jurorId) {
   return { balances, movements, fetching, errors }
 }
 
-export function useCourtSubscription(courtAddress) {
+export function useCourtConfigSubscription(courtAddress) {
   const [result] = useSubscription({
     query: CourtConfig,
     variables: { id: courtAddress },

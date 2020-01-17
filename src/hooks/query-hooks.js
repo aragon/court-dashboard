@@ -1,13 +1,14 @@
 import { useQuery } from 'urql'
-import { FirstActivationMovement } from '../queries/balances'
+import { FirstANJActivationMovement } from '../queries/balances'
 
-export function useFirstTimeActivation(jurorId, { pause, interval }) {
+export function useFirstANJActivation(jurorId, { pause = false }) {
   const [result] = useQuery({
-    query: FirstActivationMovement,
+    query: FirstANJActivationMovement,
     variables: { id: jurorId },
     pause,
-    // pollInterval: interval,
   })
 
-  console.log('query activation', result)
+  const { juror } = result.data || {}
+
+  return juror ? juror.movements[0] : null
 }

@@ -224,7 +224,7 @@ const LatestActivity = ({ activity }) => {
           >
             Why{' '}
           </span>
-          <Help />
+          <Help hint="This is a hint">This is a hint</Help>
         </div>
       )}
     </div>
