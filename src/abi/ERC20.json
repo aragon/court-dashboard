@@ -1,0 +1,3 @@
+[
+  "function approveAndCall(address _owner, uint256 _amount, bytes _extraData) returns (bool success)"
+]

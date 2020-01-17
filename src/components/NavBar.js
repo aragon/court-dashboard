@@ -2,9 +2,9 @@ import React from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ButtonBase, GU, useTheme, textStyle } from '@aragon/ui'
 
-import menuIcon from './assets/menu.svg'
-import dashboardMenuIcon from './assets/dashboardMenuIcon.svg'
-import tasksMenuIcon from './assets/tasksMenuIcon.svg'
+import dashboardMenuIcon from '../assets/dashboardMenuIcon.svg'
+import menuIcon from '../assets/menu.svg'
+import tasksMenuIcon from '../assets/tasksMenuIcon.svg'
 
 function NavBar() {
   const theme = useTheme()

@@ -1,6 +1,5 @@
 import React from 'react'
 import { useTheme } from '@aragon/ui'
-
 import { Status } from './types'
 
 const getStatusAttributes = (dispute, theme) => {
