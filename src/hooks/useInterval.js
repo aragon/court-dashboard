@@ -8,15 +8,20 @@ function useInterval(callback, delay, runBeforeInterval) {
     savedCallback.current = callback
   }, [callback])
 
+  const cancelled = useRef(false)
   // Set up the interval.
   useEffect(() => {
-    function tick() {
-      savedCallback.current()
+    function tick(cancel) {
+      savedCallback.current(cancel)
     }
+
     if (delay !== null) {
-      if (runBeforeInterval) tick()
+      if (runBeforeInterval) tick(cancelled.current)
       const id = setInterval(tick, delay)
-      return () => clearInterval(id)
+      return () => {
+        cancelled.current = true
+        clearInterval(id)
+      }
     }
   }, [delay, runBeforeInterval])
 }

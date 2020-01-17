@@ -10,6 +10,7 @@ const NO_AMOUNT = bigNum(0)
 
 function useANJBalance(jurorId) {
   const [result] = useSubscription({
+    skip: true,
     query: ANJBalance,
     variables: { id: jurorId },
   })
@@ -39,27 +40,32 @@ export function useJurorBalancesSubscription(jurorId) {
     data: anjBalanceData,
     error: anjBalanceError,
     fetching: anjBalanceFetching,
-  } = useANJBalance(jurorId.toLowerCase())
+  } = useANJBalance(jurorId)
 
-  // Active, inactive balance
+  // Active, inactive, locked balance
   const {
     data: jurorData,
     error: jurorError,
     fetching: jurorFetching,
-  } = useJuror(jurorId.toLowerCase())
+  } = useJuror(jurorId)
 
   const fetching = anjBalanceFetching || jurorFetching
   const errors = [anjBalanceError, jurorError].filter(err => err)
 
+  const { amount: walletBalance = NO_AMOUNT } = anjBalanceData || {}
+  const {
+    activeBalance = NO_AMOUNT,
+    lockedBalance = NO_AMOUNT,
+    availableBalance = NO_AMOUNT,
+    deactivationBalance = NO_AMOUNT,
+  } = jurorData || {}
+
   const balances = {
-    // TODO: find cleaner way
-    walletBalance: anjBalanceData ? bigNum(anjBalanceData.amount) : NO_AMOUNT,
-    activeBalance: jurorData ? bigNum(jurorData.activeBalance) : NO_AMOUNT,
-    lockedBalance: jurorData ? bigNum(jurorData.lockedBalance) : NO_AMOUNT,
-    inactiveBalance: jurorData ? bigNum(jurorData.availableBalance) : NO_AMOUNT,
-    deactivationBalance: jurorData
-      ? bigNum(jurorData.deactivationBalance)
-      : NO_AMOUNT,
+    walletBalance: bigNum(walletBalance),
+    activeBalance: bigNum(activeBalance),
+    lockedBalance: bigNum(lockedBalance),
+    inactiveBalance: bigNum(availableBalance),
+    deactivationBalance: bigNum(deactivationBalance),
   }
 
   const movements = jurorData
@@ -79,7 +85,7 @@ export function useCourtSubscription(courtAddress) {
   })
 
   // TODO: handle possible errors
-  const courtConfig = result.data && result.data.courtConfig
+  const { courtConfig } = result.data || {}
 
   return courtConfig
 }

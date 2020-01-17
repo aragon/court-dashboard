@@ -4,6 +4,8 @@ import {
   ACCOUNT_STATUS_JUROR_INACTIVE,
 } from '../types/account-status-types'
 
+const HIGH_PROBABILITY_BASE = 0.1
+
 export function getAccountStatus(balances, minActiveBalance) {
   const { activeBalance } = balances
 
@@ -20,4 +22,8 @@ function isANJHolder(balances) {
     (isHolder, balance) => isHolder || balance.amount.gt(0),
     false
   )
+}
+
+export function getProbabilityText(probability) {
+  return probability >= HIGH_PROBABILITY_BASE ? 'High' : 'Low'
 }

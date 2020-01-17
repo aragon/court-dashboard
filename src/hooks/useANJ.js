@@ -10,6 +10,7 @@ import {
   isMovementOf,
   getMovementDirection,
   isMovementEffective,
+  getTotalNotEffectiveByType,
 } from '../utils/anj-movement-utils'
 
 import { useBalances } from '../components/Dashboard/BalancesProvider'
@@ -91,38 +92,32 @@ function useBalanceWithMovements(balance, movements, balanceType) {
   const filteredMovements = useFilteredMovements(movements, acceptedMovements)
 
   return useMemo(() => {
-    // To calculate the effective active balance  we must get all non effective activation movements
-    // We need to do this since the active balance from the graph already has included this not yet effective movement amounts
+    // We need to calulate the total not effective amount for the activa and inacitve balance
+    // Note that we don't this for the wallet balance since all corresponding movements are done effective at the same
     // Note that this assumes the termDuration is less than 24hrs
-    let amountNotEffective = bigNum(0)
-
-    // TODO: Implement a more generic way
+    let movementType
     if (balanceType === anjBalanceTypes.Active) {
-      amountNotEffective = movements
-        .filter(
-          mov =>
-            !mov.isEffective &&
-            anjMovementTypes[mov.type] === anjMovementTypes.Activation
-        )
-        .reduce((acc, mov) => acc.add(mov.amount), amountNotEffective)
+      movementType = anjMovementTypes.Activation
+    } else if (balanceType === anjBalanceTypes.Inactive) {
+      movementType = anjMovementTypes.Deactivation
     }
 
+    let amountNotEffective = bigNum(0)
+
+    if (movementType)
+      amountNotEffective = getTotalNotEffectiveByType(movements, movementType)
+
+    // Get the latest movement
+    // NOTE: This could be changed in the future for the aggregate of all 24hrs movements
     let latestMovement = filteredMovements.shift()
-    let newBalance = balance
 
     if (latestMovement) {
       const latestMovementType = anjMovementTypes[latestMovement.type]
 
       // If the latest movement for the inactive balance is a deactivation, we must check that the deactivation is effective
       if (latestMovementType === anjMovementTypes.Deactivation) {
-        if (latestMovement.isEffective) {
-          if (balanceType === anjBalanceTypes.Inactive) {
-            // In case it's effective we'll update the inactive balance
-            // Note that this means that the deactivation request has not been processed
-            newBalance = newBalance.add(latestMovement.amount)
-          }
-        } else {
-          // In case the deactivation is not effective, we'll get the second latest movement for the inactive balance and not update the total inactive
+        if (!latestMovement.isEffective) {
+          // In case the deactivation is not effective, we'll get the second latest movement for the inactive balance
           if (balanceType === anjBalanceTypes.Inactive) {
             latestMovement = filteredMovements.shift()
           } else {
@@ -138,7 +133,7 @@ function useBalanceWithMovements(balance, movements, balanceType) {
     }
 
     return {
-      amount: newBalance,
+      amount: balance,
       amountNotEffective,
       latestMovement: convertMovement(acceptedMovements, latestMovement),
     }

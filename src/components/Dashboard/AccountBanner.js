@@ -1,14 +1,19 @@
 import React from 'react'
-import { GU, Help, textStyle, useTheme } from '@aragon/ui'
+import { CircleGraph, GU, Help, useTheme } from '@aragon/ui'
+
+import { useCourtConfig } from '../../providers/CourtConfig'
+import { useTotalActiveBalancePolling } from '../../hooks/useCourt'
+import { useClock } from '../../providers/Clock'
+
+import AccountBannerInfo from './AccountBannerInfo'
+
+import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
+import { formatUnits } from '../../lib/math-utils'
 
 import anjSpringIcon from '../../assets/anj-spring.svg'
 import userIcon from '../../assets/user.svg'
 import gavelIcon from '../../assets/gavel.svg'
-
-import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
-import { formatUnits } from '../../lib/math-utils'
-import { useCourtConfig } from '../../providers/CourtConfig'
-import JurorProbability from './JurorProbability'
+import { getProbabilityText } from '../../utils/account-utils'
 
 const getBannerAttributes = (
   status,
@@ -18,18 +23,7 @@ const getBannerAttributes = (
   decimals,
   theme
 ) => {
-  // TODO: Finish all possible states
   if (status === ACCOUNT_STATUS_JUROR_ACTIVE) {
-    if (isFirstTimeActivating) {
-      return {
-        icon: userIcon,
-        iconBackground: theme.positive.alpha(0.2),
-        title: 'You are elegible to be drafted',
-        titleColor: theme.positive,
-        paragraph: 'You are eligible to be drafted starting from the next term',
-      }
-    }
-
     if (drafted) {
       return {
         icon: gavelIcon,
@@ -41,36 +35,17 @@ const getBannerAttributes = (
       }
     }
 
-    const draftingProbability = 'High'
-
-    return {
-      // probability:
-      title: (
-        <div
-          css={`
-            display: flex;
-            align-items: center;
-          `}
-        >
-          <span css="margin-right: 8px">
-            <span
-              css={`
-                color: ${theme.accent};
-              `}
-            >
-              {draftingProbability} probability{' '}
-            </span>
-            to be drafted
-          </span>
-          <Help hint="How is the probability calculated?">
-            Probability of being drafted depends on the total ANJ you have
-            activated and the total ANJ activated for a given term
-          </Help>
-        </div>
-      ),
-      paragraph:
-        'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute',
+    if (isFirstTimeActivating) {
+      return {
+        icon: userIcon,
+        iconBackground: theme.positive.alpha(0.2),
+        title: 'You are elegible to be drafted',
+        titleColor: theme.positive,
+        paragraph: 'You are eligible to be drafted starting from the next term',
+      }
     }
+
+    return { showProbability: true }
   }
 
   return {
@@ -92,36 +67,54 @@ function AccountBanner({
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
 
-  const {
-    amount: activeAmount,
-    amountNotEffective: activeAmountNotEffective,
-  } = activeBalance
-
-  const activeBalanceAtCurrentTerm = activeAmount.sub(activeAmountNotEffective)
-
-  const {
-    icon,
-    title,
-    titleColor,
-    paragraph,
-    iconBackground,
-  } = getBannerAttributes(
+  const attributes = getBannerAttributes(
     status,
-    drafted,
-    isFirstTimeActivating,
+    false,
+    false,
     minActiveBalance,
     anjToken.decimals,
     theme
   )
 
+  if (attributes.showProbability)
+    return <BannerWithProbability activeBalance={activeBalance} />
+
+  const { icon, title, titleColor, paragraph, iconBackground } = attributes
+
   const iconBackgroundStyle = iconBackground
     ? `   
-      background: ${iconBackground};
-      height: ${6 * GU}px;
-      padding: ${1.5 * GU}px;
-      border-radius: 50%;`
+    background: ${iconBackground};
+    height: ${6 * GU}px;
+    padding: ${1.5 * GU}px;
+    border-radius: 50%;`
     : ''
 
+  return (
+    <Wrapper
+      mainIcon={
+        <div css={iconBackgroundStyle}>
+          <img
+            css={`
+              display: block;
+            `}
+            height={iconBackground ? 3 * GU : 6 * GU}
+            src={icon}
+            alt="info-icon"
+          />
+        </div>
+      }
+      information={
+        <AccountBannerInfo
+          title={title}
+          titleColor={titleColor}
+          paragraph={paragraph}
+        />
+      }
+    />
+  )
+}
+
+const Wrapper = ({ mainIcon, information }) => {
   return (
     <div
       css={`
@@ -133,49 +126,68 @@ function AccountBanner({
           margin-right: ${1.5 * GU}px;
         `}
       >
-        {icon ? (
-          <div css={iconBackgroundStyle}>
-            <img
-              css={`
-                display: block;
-              `}
-              height={iconBackground ? 3 * GU : 6 * GU}
-              src={icon}
-              alt="info-icon"
-            />
-          </div>
-        ) : (
-          <JurorProbability
-            activeBalanceAtCurrentTerm={activeBalanceAtCurrentTerm}
-          />
-        )}
+        {mainIcon}
       </div>
-      <div
-        css={`
-          display: flex;
-          flex-direction: column;
-          justify-content: space-around;
-          height: ${6 * GU}px;
-        `}
-      >
-        <span
-          css={`
-            ${textStyle('title4')}
-            color: ${titleColor};
-          `}
-        >
-          {title}
-        </span>
-        <span
-          css={`
-            color: ${theme.contentSecondary};
-            display: block;
-          `}
-        >
-          {paragraph}
-        </span>
-      </div>
+      {information}
     </div>
+  )
+}
+
+const BannerWithProbability = ({ activeBalance }) => {
+  const theme = useTheme()
+  const { currentTermId } = useClock()
+
+  // Calculate juror's active balance and total active balance for current term
+  const {
+    amount: activeAmount,
+    amountNotEffective: activeAmountNotEffective,
+  } = activeBalance
+  const activeBalanceCurrentTerm = activeAmount.sub(activeAmountNotEffective)
+  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
+    currentTermId
+  )
+
+  // We must parse amounts to Numbers since BN doesn't support decimals
+  const activeBalanceNum = parseInt(activeBalanceCurrentTerm, 10)
+  const totalActiveBalanceNum = parseInt(totalActiveBalanceCurrentTerm, 10)
+
+  // Calculate probability
+  const draftingProbability =
+    totalActiveBalanceNum > 0 ? activeBalanceNum / totalActiveBalanceNum : 0
+  const probabilityText = getProbabilityText(draftingProbability)
+
+  const title = (
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+      `}
+    >
+      <span css="margin-right: 8px">
+        <span
+          css={`
+            color: ${theme.accent};
+          `}
+        >
+          {probabilityText} probability{' '}
+        </span>
+        to be drafted
+      </span>
+      <Help hint="How is the probability calculated?">
+        Probability of being drafted depends on the total ANJ you have activated
+        and the total ANJ activated for a given term
+      </Help>
+    </div>
+  )
+
+  const paragraph =
+    'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute'
+
+  return (
+    <Wrapper
+      mainIcon={<CircleGraph value={draftingProbability} size={6 * GU} />}
+      information={<AccountBannerInfo title={title} paragraph={paragraph} />}
+    />
   )
 }
 

@@ -8,6 +8,9 @@ const contractsCache = new Map()
 export function useContract(address, abi, signer = true) {
   const { ethersProvider } = useWeb3Connect()
 
+  // We need this value as a dependency of memo for uses cases when the  user changes account
+  const accountSigner = ethersProvider && ethersProvider.getSigner()
+
   return useMemo(() => {
     if (!address || !ethersProvider) {
       return null
@@ -21,11 +24,11 @@ export function useContract(address, abi, signer = true) {
     const contract = new EthersContract(
       address,
       abi,
-      signer ? ethersProvider.getSigner() : ethersProvider
+      signer ? accountSigner : ethersProvider
     )
 
     contractsCache.set(address, contract)
 
     return contract
-  }, [abi, address, ethersProvider, signer])
+  }, [abi, accountSigner, address, ethersProvider, signer])
 }

@@ -6,7 +6,6 @@ import { useClock } from '../providers/Clock'
 // Useful component to validate the different transitions
 // ONLY FOR DEVELOPMENT
 export default function Clock() {
-  console.log('tra clock')
   const { currentTermId, currentTermEndTime } = useClock()
   return (
     <div

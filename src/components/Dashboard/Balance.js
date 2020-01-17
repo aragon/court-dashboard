@@ -1,11 +1,13 @@
 import React from 'react'
-import { Button, GU, textStyle, useTheme } from '@aragon/ui'
+import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
 import ANJIcon from '../../assets/anj.svg'
 import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
 import { movementDirection, convertToString } from '../../types/anj-types'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
+
+import lockIcon from '../../assets/lock.svg'
 
 const splitAmount = amount => {
   const [integer, fractional] = amount.split('.')
@@ -157,24 +159,75 @@ const LatestActivity = ({ activity }) => {
     activity.direction === movementDirection.Incoming ||
     activity.direction === movementDirection.Outgoing
 
-  let color
+  let color = theme.contentSecondary
+  // If sign shouldn't be displayed it means it's a Locked movement
   if (displaySign) color = isIncoming ? theme.positive : theme.negative
 
   return (
-    <span>
-      <span
+    <div
+      css={`
+        display: flex;
+        justify-content: space-between;
+      `}
+    >
+      <div
         css={`
-          color: ${color};
+          display: flex;
+          align-items: center;
         `}
-      >{`
-      ${formatTokenAmount(
-        activity.amount,
-        isIncoming,
-        anjToken.decimals,
-        displaySign
-      )} ${anjToken.symbol}`}</span>{' '}
-      {convertToString(activity.type)}
-    </span>
+      >
+        {!displaySign && (
+          <img
+            src={lockIcon}
+            alt="lock"
+            width="12px"
+            height="14px"
+            css={`
+              margin-right: ${0.5 * GU}px;
+            `}
+          />
+        )}
+        <span
+          css={`
+            color: ${color};
+            margin-right: ${0.5 * GU}px;
+          `}
+        >
+          {formatTokenAmount(
+            activity.amount,
+            isIncoming,
+            anjToken.decimals,
+            displaySign
+          )}{' '}
+          {anjToken.symbol}
+        </span>
+        <span
+          css={`
+            color: ${theme.content};
+          `}
+        >
+          {convertToString(activity.type)}
+        </span>
+      </div>
+      {!displaySign && (
+        <div
+          css={`
+            display: flex;
+            align-items: center;
+          `}
+        >
+          <span
+            css={`
+              color: ${theme.help};
+              margin-right: ${0.5 * GU}px;
+            `}
+          >
+            Why{' '}
+          </span>
+          <Help />
+        </div>
+      )}
+    </div>
   )
 }
 

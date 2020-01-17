@@ -98,11 +98,14 @@ export function useTotalActiveBalancePolling(termId) {
   const jurorRegistryContract = useJurorRegistryContract()
   const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
 
-  const fetchTotalActiveBalance = useCallback(() => {
-    jurorRegistryContract
-      .totalActiveBalanceAt(termId)
-      .then(balance => setTotalActiveBalance(balance))
-  }, [jurorRegistryContract, termId])
+  const fetchTotalActiveBalance = useCallback(
+    cancelled => {
+      jurorRegistryContract.totalActiveBalanceAt(termId).then(balance => {
+        if (!cancelled) setTotalActiveBalance(balance)
+      })
+    },
+    [jurorRegistryContract, termId]
+  )
 
   useInterval(fetchTotalActiveBalance, POLL_EVERY, true)
 

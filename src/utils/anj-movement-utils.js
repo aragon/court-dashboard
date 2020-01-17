@@ -3,6 +3,7 @@ import {
   ANJBalance as anjBalanceTypes,
   movementDirection,
 } from '../types/anj-types'
+import { bigNum } from '../lib/math-utils'
 
 // The intention here is to know which movements types should correspond with each balance
 export const acceptedMovementsPerBalance = new Map([
@@ -67,4 +68,12 @@ export function isMovementEffective(movement, currentTermId) {
   if (!movement.effectiveTermId) return true
 
   return parseInt(movement.effectiveTermId, 10) <= currentTermId
+}
+
+export function getTotalNotEffectiveByType(movements, movementType) {
+  return movements
+    .filter(
+      mov => !mov.isEffective && anjMovementTypes[mov.type] === movementType
+    )
+    .reduce((acc, mov) => acc.add(mov.amount), bigNum(0))
 }

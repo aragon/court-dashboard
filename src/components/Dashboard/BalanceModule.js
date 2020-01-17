@@ -23,7 +23,6 @@ const BalanceModule = React.memo(
     onRequestStakeActivate,
     onRequestWithdraw,
   }) => {
-    console.log('tra')
     const theme = useTheme()
     const { name: layout } = useLayout()
     const connectedAccount = useConnectedAccount()
@@ -32,7 +31,16 @@ const BalanceModule = React.memo(
     const oneColumn = layout === 'small' || layout === 'medium'
     const status = getAccountStatus(balances, minActiveBalance)
 
-    const { walletBalance, activeBalance, inactiveBalance } = balances
+    const {
+      walletBalance,
+      activeBalance,
+      inactiveBalance,
+      deactivationBalance,
+    } = balances
+
+    const effectiveInactiveBalance = inactiveBalance.amount
+      .add(deactivationBalance.amount)
+      .sub(inactiveBalance.amountNotEffective)
 
     return (
       <Split
@@ -72,7 +80,7 @@ const BalanceModule = React.memo(
                 `}
               >
                 <Balance
-                  amount={inactiveBalance.amount}
+                  amount={effectiveInactiveBalance}
                   label="Inactive"
                   mainIcon={inactiveANJIcon}
                   mainIconBackground="#FEF3F1"
