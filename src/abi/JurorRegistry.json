@@ -1,0 +1,5 @@
+[
+  "function activate(uint256 _amount) external",
+  "function deactivate(uint256 _amount) external",
+  "function unstake(uint256 _amount, bytes _data) external"
+]

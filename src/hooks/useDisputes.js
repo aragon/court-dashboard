@@ -1,17 +1,17 @@
 import { useMemo } from 'react'
 import useNow from './useNow'
 import useDisputeSubscription from './useDisputesSubscription'
-import { getPhaseAndTransition } from '../utils/disputeUtils'
-import { useCourtSettings } from '../court-settings-manager'
+import { getPhaseAndTransition } from '../utils/dispute-utils'
+import { useCourtConfig } from '../providers/CourtConfig'
 import { convertToString } from '../types/types'
 
 export default function useDisputes() {
-  const courtSettings = useCourtSettings()
+  const courtConfig = useCourtConfig()
   const disputes = useDisputeSubscription()
   const now = useNow()
 
   const disputesPhases = disputes.map(d =>
-    getPhaseAndTransition(d, courtSettings, now)
+    getPhaseAndTransition(d, courtConfig, now)
   )
   const disputesPhasesKey = disputesPhases
     .map(v => convertToString(v[Object.keys(v)[0]]))

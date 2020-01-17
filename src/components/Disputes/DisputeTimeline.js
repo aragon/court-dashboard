@@ -16,15 +16,15 @@ import Stepper from '../Stepper'
 import Step from '../Step'
 import * as DisputesTypes from '../../types/types'
 import styled from 'styled-components'
-import { useCourtSettings } from '../../court-settings-manager'
-import { getDisputeTimeLine } from '../../utils/disputeUtils'
+import { useCourtConfig } from '../../providers/CourtConfig'
+import { getDisputeTimeLine } from '../../utils/dispute-utils'
 
 function DisputeTimeline({ dispute }) {
   const theme = useTheme()
   const roundsLength = dispute.rounds.length
 
-  const courtSettings = useCourtSettings()
-  const disputeTimeLine = getDisputeTimeLine(dispute, courtSettings)
+  const courtConfig = useCourtConfig()
+  const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
   const reverseTimeLine = disputeTimeLine.reverse().map(item => {
     if (Array.isArray(item)) {

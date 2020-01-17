@@ -1,16 +1,16 @@
-import { getTermStartTime } from './courtUtils'
+import { getTermStartTime } from './court-utils'
 import dayjs from '../lib/dayjs'
 import * as DisputesTypes from '../types/types'
 
 const juryDraftingTerms = 3
 
-export function getDisputeTimeLine(dispute, courtSettings) {
+export function getDisputeTimeLine(dispute, courtConfig) {
   const { createdAt } = dispute
-  const { termDuration, evidenceTerms } = courtSettings
+  const { termDuration, evidenceTerms } = courtConfig
 
   const currentPhaseAndTime = getPhaseAndTransition(
     dispute,
-    courtSettings,
+    courtConfig,
     new Date()
   )
 
@@ -27,7 +27,7 @@ export function getDisputeTimeLine(dispute, courtSettings) {
   ]
 
   const rounds = dispute.rounds.map(round =>
-    getRoundPhasesAndTime(courtSettings, round, currentPhaseAndTime)
+    getRoundPhasesAndTime(courtConfig, round, currentPhaseAndTime)
   )
 
   if (rounds.length === 0) {
@@ -62,7 +62,7 @@ export function getDisputeTimeLine(dispute, courtSettings) {
   return timeLine
 }
 
-export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
+export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   const { state, createdAt } = dispute
   const now = dayjs(nowDate).unix() * 1000
 
@@ -78,7 +78,7 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
     return { phase, ruling, roundId: number }
   }
 
-  const { termDuration, evidenceTerms } = courtSettings
+  const { termDuration, evidenceTerms } = courtConfig
 
   // Evidence submission
   if (state === DisputesTypes.Phase.Evidence) {
@@ -110,7 +110,7 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
   if (state === DisputesTypes.Phase.Adjudicating) {
     const draftTermEndTime = getTermStartTime(
       draftTermId + delayedTerms,
-      courtSettings
+      courtConfig
     )
 
     const currentAdjudicationPhase = getAdjudicationPhase(
@@ -118,7 +118,7 @@ export function getPhaseAndTransition(dispute, courtSettings, nowDate) {
       lastRound,
       now,
       draftTermEndTime,
-      courtSettings
+      courtConfig
     )
 
     return { ...currentAdjudicationPhase, roundId: number }
@@ -130,7 +130,7 @@ function getAdjudicationPhase(
   round,
   now,
   draftTermEndTime,
-  courtSettings
+  courtConfig
 ) {
   const {
     termDuration,
@@ -139,7 +139,7 @@ function getAdjudicationPhase(
     appealTerms,
     appealConfirmTerms,
     maxRegularAppealRounds,
-  } = courtSettings
+  } = courtConfig
   const numberOfRounds = dispute.rounds.length
 
   // If given term is before the reveal start term of the last round, then jurors are still allowed to commit votes for the last round
@@ -200,20 +200,20 @@ function getAdjudicationPhase(
   return { phase: DisputesTypes.Phase.ExecuteRuling }
 }
 
-function getRoundPhasesAndTime(courtSettings, round, currentPhase) {
+function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   const {
     termDuration,
     commitTerms,
     revealTerms,
     appealTerms,
     appealConfirmationTerms,
-  } = courtSettings
+  } = courtConfig
 
   const { draftTermId, delayedTerms, number: roundId, createdAt } = round
 
   const disputeDraftTermTime = getTermStartTime(
     draftTermId + delayedTerms,
-    courtSettings
+    courtConfig
   )
 
   const roundPhasesAndTime = [

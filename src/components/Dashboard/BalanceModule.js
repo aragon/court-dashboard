@@ -1,110 +1,154 @@
 import React from 'react'
 import { Box, GU, Split, useLayout, useTheme } from '@aragon/ui'
+
 import Profile from './Profile'
-
-import { balances } from '../../mock-data'
 import Balance from './Balance'
-import Information from './AccountInformation'
+import Information from './AccountBanner'
 
+import { useCourtConfig } from '../../providers/CourtConfig'
+
+// TODO: import icons from aragon-ui when available
 import walletIcon from '../../assets/wallet.svg'
 import inactiveANJIcon from '../../assets/anj-inactive.svg'
 import activeANJIcon from '../../assets/anj-active.svg'
 
-import {
-  ACCOUNT_STATUS_ACTIVE,
-  // ACCOUNT_STATUS_INACTIVE,
-} from '../../dispute-status-type'
+import { getAccountStatus } from '../../utils/account-utils'
+import { useConnectedAccount } from '../../providers/Web3'
 
-function BalanceModule({ active, connectedAccount }) {
-  const theme = useTheme()
-  const { name: layout } = useLayout()
-  const oneColumn = layout === 'small' || layout === 'medium'
+const BalanceModule = React.memo(
+  ({
+    balances,
+    movements,
+    onRequestActivate,
+    onRequestDeactivate,
+    onRequestStakeActivate,
+    onRequestWithdraw,
+  }) => {
+    const theme = useTheme()
+    const { name: layout } = useLayout()
+    const connectedAccount = useConnectedAccount()
+    const { minActiveBalance } = useCourtConfig()
 
-  const status = ACCOUNT_STATUS_ACTIVE
+    const {
+      walletMovement,
+      inactiveBalanceMovement,
+      activeBalanceMovement,
+    } = movements
 
-  return (
-    <Split
-      primary={
-        <React.Fragment>
-          <Box
-            css={`
-              border: 0;
-            `}
-            padding={3 * GU}
-          >
-            <Information status={status} />
-          </Box>
+    const oneColumn = layout === 'small' || layout === 'medium'
+    const status = getAccountStatus(balances, minActiveBalance)
+
+    return (
+      <Split
+        primary={
           <div
             css={`
-              display: ${oneColumn ? 'block' : 'flex'};
+              display: flex;
+              flex-direction: column;
+              height: 100%;
             `}
           >
             <Box
-              padding={3 * GU}
               css={`
-                flex-basis: 50%;
-                margin-top: ${2 * GU}px;
-                margin-right: ${oneColumn ? 0 : `${2 * GU}px`};
                 border: 0;
+              `}
+              padding={3 * GU}
+            >
+              <Information
+                status={status}
+                minActiveBalance={minActiveBalance}
+              />
+            </Box>
+            <div
+              css={`
+                display: ${oneColumn ? 'block' : 'flex'};
+                flex-grow: 1;
+              `}
+            >
+              <Box
+                padding={3 * GU}
+                css={`
+                  flex-basis: 50%;
+                  margin-top: ${2 * GU}px;
+                  margin-right: ${oneColumn ? 0 : `${2 * GU}px`};
+                  border: 0;
+                `}
+              >
+                <Balance
+                  amount={balances.availableBalance}
+                  label="Inactive"
+                  mainIcon={inactiveANJIcon}
+                  mainIconBackground="#FEF3F1"
+                  actions={[
+                    // TODO: Memoize array
+                    { label: 'Withdraw', onClick: onRequestWithdraw },
+                    {
+                      label: 'Activate',
+                      mode: 'strong',
+                      onClick: onRequestActivate,
+                    },
+                  ]}
+                  activity={inactiveBalanceMovement}
+                />
+              </Box>
+              <Box
+                padding={3 * GU}
+                css={`
+                  flex-basis: 50%;
+                  border: 0;
+                `}
+              >
+                <Balance
+                  amount={balances.activeBalance}
+                  label="Active"
+                  mainIcon={activeANJIcon}
+                  mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
+                  actions={[
+                    { label: 'Deactivate', onClick: onRequestDeactivate },
+                  ]} // TODO: Memoize array
+                  activity={activeBalanceMovement}
+                />
+              </Box>
+            </div>
+          </div>
+        }
+        secondary={
+          <Box
+            padding={0}
+            css={`
+              overflow: hidden;
+              border: 0;
+              height: 100%;
+            `}
+          >
+            <Profile status={status} account={connectedAccount} />
+            <div
+              css={`
+                padding: ${3 * GU}px;
+                margin-top: ${2 * GU}px;
               `}
             >
               <Balance
-                {...balances.inactive}
-                label="Inactive"
-                mainIcon={inactiveANJIcon}
+                amount={balances.walletBalance}
+                label="My wallet"
+                mainIcon={walletIcon}
                 mainIconBackground="#FEF3F1"
                 actions={[
-                  { label: 'Withdraw', onClick: null },
-                  { label: 'Activate', mode: 'strong', onClick: null },
-                ]}
+                  {
+                    label: 'Activate',
+                    mode: 'strong',
+                    onClick: onRequestStakeActivate,
+                  },
+                ]} // TODO: Memoize array
+                activity={walletMovement}
               />
-            </Box>
-            <Box
-              padding={3 * GU}
-              css={`
-                flex-basis: 50%;
-                border: 0;
-              `}
-            >
-              <Balance
-                {...balances.active}
-                label="Active"
-                mainIcon={activeANJIcon}
-                mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
-                actions={[{ label: 'Deactivate', onClick: null }]}
-              />
-            </Box>
-          </div>
-        </React.Fragment>
-      }
-      secondary={
-        <Box
-          padding={0}
-          css={`
-            overflow: hidden;
-            border: 0;
-          `}
-        >
-          <Profile status={status} account={connectedAccount} />
-          <div
-            css={`
-              padding: ${3 * GU}px;
-              margin-top: ${2 * GU}px;
-            `}
-          >
-            <Balance
-              {...balances.wallet}
-              label="My wallet"
-              mainIcon={walletIcon}
-              mainIconBackground="#FEF3F1"
-              actions={[{ label: 'Activate', mode: 'strong', onClick: null }]}
-            />
-          </div>
-        </Box>
-      }
-      invert={oneColumn ? 'vertical' : 'horizontal'}
-    />
-  )
-}
+            </div>
+          </Box>
+        }
+        invert={oneColumn ? 'vertical' : 'horizontal'}
+      />
+    )
+  }
+)
 
 export default BalanceModule
