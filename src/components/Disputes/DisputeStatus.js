@@ -5,7 +5,7 @@ import {
   DISPUTE_STATUS_OPEN,
   DISPUTE_STATUS_APPEAL,
   DISPUTE_STATUS_CLOSED,
-} from '../../dispute-status-type'
+} from '../../types/dispute-status-types'
 
 const getStatusAttributes = (dispute, theme) => {
   if (dispute.status === DISPUTE_STATUS_OPEN) {
