@@ -1,8 +1,12 @@
 import gql from 'graphql-tag'
 
-export const AllRounds = gql`
+export const OpenRounds = gql`
   subscription {
-    adjudicationRounds(orderBy: createdAt, orderDirection: asc) {
+    adjudicationRounds(
+      where: { state: Commiting }
+      orderBy: createdAt
+      orderDirection: asc
+    ) {
       number
       state
       createdAt

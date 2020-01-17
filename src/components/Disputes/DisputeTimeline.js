@@ -156,6 +156,8 @@ function DisputeTimeline({ dispute }) {
     return item
   })
 
+  console.log('REVERSEEEE ', reverseTimeLine)
+
   return (
     <div>
       <Stepper

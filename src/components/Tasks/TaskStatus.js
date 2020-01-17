@@ -8,7 +8,7 @@ function TaskStatus({ status }) {
 }
 
 function getStatusIcon(status) {
-  if (status === 'open') {
+  if (status === true) {
     return (
       <>
         <div css="width: 15px; height:15px; border-radius:2px; border: 1.5px solid #F5A623;" />

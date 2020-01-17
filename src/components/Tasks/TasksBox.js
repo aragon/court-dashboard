@@ -2,13 +2,13 @@ import React from 'react'
 import { Box, GU, useViewport } from '@aragon/ui'
 import TaskAmounts from './TasksAmounts'
 
-function TasksBox() {
+function TasksBox({ openTasks, completedTasks, incompleteTasks }) {
   const { below } = useViewport()
   const compactMode = below('medium')
   const tasks = [
-    { status: 'Open', amount: 34 },
-    { status: 'Completed', amount: 21 },
-    { status: 'Incomplete', amount: 67 },
+    { status: 'Open', amount: openTasks },
+    { status: 'Completed', amount: completedTasks },
+    { status: 'Incomplete', amount: incompleteTasks },
   ]
 
   return (

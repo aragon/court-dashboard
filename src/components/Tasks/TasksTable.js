@@ -31,6 +31,7 @@ const getFilteredTasks = ({ tasks, selectedDateRange }) => {
 }
 
 const TaskTable = ({ tasks }) => {
+  console.log('TASKSSSS ', tasks)
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [page, setPage] = useState(0)
   const { below } = useViewport()
@@ -58,6 +59,8 @@ const TaskTable = ({ tasks }) => {
       ),
     [filteredTasks]
   )
+
+  console.log('SORTEEEEEEEED ', sortedTasks)
 
   return (
     <DataView
@@ -92,7 +95,7 @@ const TaskTable = ({ tasks }) => {
       }
       fields={['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']}
       entries={sortedTasks}
-      renderEntry={({ phase, disputeId, juror, status, dueDate }) => {
+      renderEntry={({ phase, disputeId, juror, open, dueDate }) => {
         // const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
         // const hoursAndSec = dayjs(dueDate).format('HH:mm')
         return [
@@ -106,7 +109,7 @@ const TaskTable = ({ tasks }) => {
           <Link>Dispute #{disputeId}</Link>,
           <IdentityBadge entity={juror} />,
 
-          <TaskStatus status={status} />,
+          <TaskStatus status={open} />,
           <TaskDueDate dueDate={dueDate} />,
         ]
       }}

@@ -45,7 +45,7 @@ const endedStringMapping = {
   [Phase.JuryDrafting]: 'Jury drafted',
   [Phase.VotingPeriod]: 'Voting period',
   [Phase.RevealVote]: 'Vote revealed',
-  [Phase.AppealRuling]: 'Appeal confirmed',
+  [Phase.AppealRuling]: 'Appeal ruling',
   [Phase.ConfirmAppeal]: 'Confirm appeal',
   [Phase.ClaimRewards]: 'Claim rewards',
   [Phase.Invalid]: 'Invalid',

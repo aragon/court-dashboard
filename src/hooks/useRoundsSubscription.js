@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSubscription } from 'urql'
-import { AllRounds } from '../queries/rounds'
+import { OpenRounds } from '../queries/rounds'
 
 export default function useRoundsSubscription() {
   const [rounds, setRounds] = useState([])
@@ -14,7 +14,7 @@ export default function useRoundsSubscription() {
   }
   useSubscription(
     {
-      query: AllRounds,
+      query: OpenRounds,
     },
     handleSubscription
   )

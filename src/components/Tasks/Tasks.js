@@ -8,20 +8,11 @@ import TaskTable from './TasksTable'
 import useRounds from '../../hooks/useRounds'
 
 const Tasks = () => {
-  const [tasks] = useRounds()
-  // const tasks = rounds.map(round => {
-  //   return round.jurors.map(juror => {
-  //     return {
-  //       id: round.id,
-  //       state: round.state,
-  //       createdAt: round.createdAt,
-  //       taskName: round.phase,
-  //       dueDate: round.nextTransition,
-  //       juror: juror.juror.id,
-  //       disputeId: round.dispute.id,
-  //     }
-  //   })
-  // })
+  const [tasks, openTasks] = useRounds()
+  console.log('TASKS TASKSS ', tasks)
+  console.log('TASKS openTasks ', openTasks)
+  const completedTasks = 0
+  const incompleteTasks = 0
 
   return (
     <>
@@ -54,7 +45,11 @@ const Tasks = () => {
           />
         }
       />
-      <TaskBox />
+      <TaskBox
+        openTasks={openTasks}
+        completedTasks={completedTasks}
+        incompleteTasks={incompleteTasks}
+      />
       <div
         css={`
           margin-top: ${2 * GU}px;
