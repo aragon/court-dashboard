@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, useTheme } from '@aragon/ui'
-import { useWeb3Connect } from './providers/Web3'
+import { useWeb3Connect } from '../providers/Web3'
 
 function Header() {
   const { account, activate } = useWeb3Connect()

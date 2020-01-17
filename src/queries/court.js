@@ -6,11 +6,13 @@ export const CourtConfig = gql`
       currentTerm
       termDuration
       feeToken {
+        id
         name
         symbol
         decimals
       }
       anjToken {
+        id
         name
         symbol
         decimals
@@ -30,6 +32,10 @@ export const CourtConfig = gql`
       appealCollateralFactor
       appealConfirmCollateralFactor
       minActiveBalance
+      modules {
+        type
+        address
+      }
     }
   }
 `

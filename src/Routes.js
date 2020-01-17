@@ -1,0 +1,20 @@
+import React from 'react'
+import { Redirect, Route, Switch } from 'react-router-dom'
+
+import ErrorPage from './components/ErrorPage'
+
+import Dashboard from './components/Dashboard/Dashboard'
+import Tasks from './components/Tasks/Tasks'
+import Disputes from './components/Disputes/Disputes'
+
+export default function Routes() {
+  return (
+    <Switch>
+      <Redirect exact from="/" to="/dashboard" />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route exact path="/tasks" component={Tasks} />
+      <Route exact path="/disputes" component={Disputes} />
+      <Route component={ErrorPage} />
+    </Switch>
+  )
+}

@@ -1,18 +1,15 @@
 import React from 'react'
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import { Main } from '@aragon/ui'
 
 import theme from './theme-court'
 
-import MainView from './MainView'
-import ErrorPage from './ErrorPage'
-
-import Dashboard from './components/Dashboard/Dashboard'
-import Tasks from './components/Tasks/Tasks'
-import Disputes from './components/Disputes/Disputes'
+import MainView from './components/MainView'
 import Web3ConnectProvider from './providers/Web3'
 import { CourtConfigProvider } from './providers/CourtConfig'
+
 import AppLoader from './components/AppLoader'
+import Routes from './Routes'
 
 function App() {
   return (
@@ -20,17 +17,11 @@ function App() {
       <Main layout={false} theme={theme} scrollView={false}>
         <Web3ConnectProvider>
           <CourtConfigProvider>
-            <AppLoader>
-              <MainView>
-                <Switch>
-                  <Redirect exact from="/" to="/dashboard" />
-                  <Route path="/dashboard" component={Dashboard} />
-                  <Route exact path="/tasks" component={Tasks} />
-                  <Route exact path="/disputes" component={Disputes} />
-                  <Route component={ErrorPage} />
-                </Switch>
-              </MainView>
-            </AppLoader>
+            <MainView>
+              <AppLoader>
+                <Routes />
+              </AppLoader>
+            </MainView>
           </CourtConfigProvider>
         </Web3ConnectProvider>
       </Main>
