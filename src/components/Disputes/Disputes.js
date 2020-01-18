@@ -5,6 +5,7 @@ import DisputeList from './DisputeList'
 import ANJIcon from '../../assets/anjButton.svg'
 import useDisputesSubscription from './hooks/useDisputesSubscription'
 import useJurorDraftQuery from './hooks/useJurorDraftQuery'
+import { useHistory } from 'react-router-dom'
 
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
@@ -25,6 +26,14 @@ function Disputes() {
   const connectedAccount = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
+  const history = useHistory()
+
+  const handleSelectDispute = useCallback(
+    id => {
+      history.push(`/disputes/${id}`)
+    },
+    [history]
+  )
 
   const handleBack = useCallback(() => {
     selectDispute(-1)
@@ -102,7 +111,7 @@ function Disputes() {
           >
             <DisputeList
               disputes={screenIndex === 0 ? disputes : jurorDisputes}
-              selectDispute={selectDispute}
+              onSelectDispute={handleSelectDispute}
             />
           </div>
         </>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import styled from 'styled-components'
 
 import { Card, GU, textStyle, useTheme } from '@aragon/ui'
@@ -7,12 +7,16 @@ import DisputeText from './DisputeText'
 import DisputeStatus from './DisputeStatus'
 import DisputePhase from './DisputePhase'
 
-function DisputeCard({ dispute, selectDispute }) {
+function DisputeCard({ dispute, onSelectDispute }) {
   const theme = useTheme()
   const { id, metadata, currentPhase } = dispute
 
+  const handleClick = useCallback(() => {
+    onSelectDispute(id)
+  }, [id, onSelectDispute])
+
   return (
-    <CardItem onClick={() => selectDispute(id)}>
+    <CardItem onClick={handleClick}>
       <div
         css={`
           display: flex;
