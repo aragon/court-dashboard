@@ -14,7 +14,12 @@ import Routes from './Routes'
 function App() {
   return (
     <BrowserRouter>
-      <Main layout={false} theme={theme} scrollView={false}>
+      <Main
+        assetsUrl="/aragon-ui/"
+        layout={false}
+        scrollView={false}
+        theme={theme}
+      >
         <Web3ConnectProvider>
           <CourtConfigProvider>
             <MainView>
