@@ -1,16 +1,17 @@
 import React from 'react'
-import {
-  Accordion,
-  GU,
-  textStyle,
-  useTheme,
-  IconFolder,
-  IconFlag,
-  IconGroup,
-  IconVote,
-  IconWrite,
-  Timer,
-} from '@aragon/ui'
+import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
+import IconFlagActive from '../../assets/IconFlagActive.svg'
+import IconFlagInactive from '../../assets/IconFlagInactive.svg'
+import IconFolderActive from '../../assets/IconFolderActive.svg'
+import IconFolderInactive from '../../assets/IconFolderInactive.svg'
+import IconUsersActive from '../../assets/IconUsersActive.svg'
+import IconUsersInactive from '../../assets/IconUsersInactive.svg'
+import IconVotingActive from '../../assets/IconVotingActive.svg'
+import IconVotingInactive from '../../assets/IconVotingInactive.svg'
+import IconThinkingActive from '../../assets/IconThinkingActive.svg'
+import IconThinkingInactive from '../../assets/IconThinkingInactive.svg'
+import IconRulingActive from '../../assets/IconRulingActive.svg'
+import IconRulingInactive from '../../assets/IconRulingInactive.svg'
 import dayjs from '../../lib/dayjs'
 import Stepper from '../Stepper'
 import Step from '../Step'
@@ -124,7 +125,6 @@ function getStep(item, roundId, index, theme, css) {
               ? 'linear-gradient(51.69deg, #FFB36D -0.55%, #FF8888 88.44%)'
               : '#FFE2D7'};
             border-radius: 80%;
-            padding: 10px;
             position: relative;
             z-index: 2;
             display: inline-flex;
@@ -170,34 +170,79 @@ function getStep(item, roundId, index, theme, css) {
 function getPhaseIcon(phase, active, theme) {
   // TODO - change this for the new icons
   if (phase === DisputesTypes.Phase.Created) {
-    return <IconFlag color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.Evidence) {
-    return <IconFolder color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.JuryDrafting) {
-    return <IconGroup color={active ? '#fff' : theme.surfaceIcon} />
-  }
-  if (phase === DisputesTypes.Phase.VotingPeriod) {
-    return <IconVote color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.RevealVote) {
-    return <IconVote color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.AppealRuling) {
     return (
-      <IconWrite
-        color={active ? '#fff' : theme.surfaceIcon}
-        background="#fff"
+      <img
+        css={`
+          height: ${GU * 6}px;
+        `}
+        src={active ? IconFlagActive : IconFlagInactive}
+        alt="flag-icon"
       />
     )
   }
-  if (phase === DisputesTypes.Phase.ConfirmAppeal) {
-    return <IconWrite color={active ? '#fff' : theme.surfaceIcon} />
+
+  if (phase === DisputesTypes.Phase.Evidence) {
+    return (
+      <img
+        css={`
+          height: ${GU * 6}px;
+        `}
+        src={active ? IconFolderActive : IconFolderInactive}
+        alt="flag-icon"
+      />
+    )
+  }
+
+  if (phase === DisputesTypes.Phase.JuryDrafting) {
+    return (
+      <img
+        css={`
+          height: ${GU * 6}px;
+        `}
+        src={active ? IconUsersActive : IconUsersInactive}
+        alt="flag-icon"
+      />
+    )
+  }
+  if (
+    phase === DisputesTypes.Phase.VotingPeriod ||
+    phase === DisputesTypes.Phase.RevealVote
+  ) {
+    return (
+      <img
+        css={`
+          height: ${GU * 6}px;
+        `}
+        src={active ? IconVotingActive : IconVotingInactive}
+        alt="flag-icon"
+      />
+    )
+  }
+
+  if (
+    phase === DisputesTypes.Phase.AppealRuling ||
+    phase === DisputesTypes.Phase.ConfirmAppeal
+  ) {
+    return (
+      <img
+        css={`
+          height: ${GU * 6}px;
+        `}
+        src={active ? IconThinkingActive : IconThinkingInactive}
+        alt="thinking-icon"
+      />
+    )
+  }
+  if (phase === DisputesTypes.Phase.ExecuteRuling) {
+    return (
+      <img
+        css={`
+          height: ${GU * 6}px;
+        `}
+        src={active ? IconRulingActive : IconRulingInactive}
+        alt="ruling-icon"
+      />
+    )
   }
 }
 

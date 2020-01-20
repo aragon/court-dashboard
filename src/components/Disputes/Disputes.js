@@ -5,6 +5,7 @@ import DisputeList from './DisputeList'
 import ANJIcon from '../../assets/anjButton.svg'
 import useDisputes from '../../hooks/useDisputes'
 import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
+import { useConnectedAccount } from '../../providers/Web3'
 
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
@@ -25,7 +26,7 @@ const useSelectedDispute = disputes => {
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   const [disputes] = useDisputes()
-  const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
+  const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
 

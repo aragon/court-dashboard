@@ -1,16 +1,36 @@
-import React from 'react'
-import { Button, GU, Header, Tabs } from '@aragon/ui'
+import React, { useState } from 'react'
+import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import ANJIcon from '../../assets/anjButton.svg'
 
 import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
-// mport { tasks } from '../../mock-data'
 import useRounds from '../../hooks/useRounds'
+import { useConnectedAccount } from '../../providers/Web3'
 
 const Tasks = () => {
+  const connectedAccount = useConnectedAccount()
+  console.log('connected account ', connectedAccount)
+  const [screenIndex, setScreenIndex] = useState(0)
   const [tasks, openTasks] = useRounds()
+  const jurorTasks = tasks
+    ? tasks.filter(task => task.juror === connectedAccount)
+    : []
+  console.log('Tasks ', tasks)
   const completedTasks = 0
   const incompleteTasks = 0
+
+  const handleTabChange = screenIndex => {
+    setScreenIndex(screenIndex)
+  }
+
+  const getTasksByTab = screenIndex => {
+    if (screenIndex === 0) {
+      return jurorTasks
+    }
+    if (screenIndex === 1) {
+      return tasks
+    }
+  }
 
   return (
     <>
@@ -59,19 +79,23 @@ const Tasks = () => {
           `}
           items={[
             <div>
-              <span>All Tasks </span>
-              {/* <Tag limitDigits={4} label={disputes.length} size="small" /> */}
+              <span>My Tasks </span>
+              <Tag limitDigits={4} label={jurorTasks.length} size="small" />
             </div>,
             <div>
-              <span>My Tasks </span>
-              {/* <Tag limitDigits={4} label={jurorDisputes.length} size="small" /> */}
+              <span>All Tasks </span>
+              <Tag limitDigits={4} label={openTasks} size="small" />
+            </div>,
+            <div>
+              <span>Past Tasks </span>
+              <Tag limitDigits={4} label={0} size="small" />
             </div>,
           ]}
-          selected={0}
-          onChange={() => {}}
+          selected={screenIndex}
+          onChange={handleTabChange}
         />
       </div>
-      <TaskTable tasks={tasks} />
+      <TaskTable tasks={getTasksByTab(screenIndex)} />
     </>
   )
 }

@@ -3,16 +3,18 @@ import * as DisputesTypes from '../../types/types'
 import { addressesEqual } from '../../lib/web3-utils'
 import { Button, Info, textStyle, GU } from '@aragon/ui'
 import styled from 'styled-components'
+import { useConnectedAccount } from '../../providers/Web3'
 
 const DisputeActions = React.memo(({ dispute }) => {
-  const { currentPhase, rounds } = dispute
-  const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
+  console.log('Dispute ', dispute)
+  const { phase, rounds } = dispute
+  const connectedAccount = useConnectedAccount()
 
-  if (currentPhase === DisputesTypes.Phase.Evidence) {
+  if (phase === DisputesTypes.Phase.Evidence) {
     return null
   }
 
-  if (currentPhase === DisputesTypes.Phase.VotingPeriod) {
+  if (phase === DisputesTypes.Phase.VotingPeriod) {
     const canJurorVote = rounds[rounds.length - 1].jurors.some(j =>
       addressesEqual(j.juror.id, connectedAccount)
     )
@@ -64,7 +66,8 @@ const DisputeActions = React.memo(({ dispute }) => {
     )
   }
 
-  if (currentPhase === DisputesTypes.Phase.JuryDrafting) {
+  if (phase === DisputesTypes.Phase.JuryDrafting) {
+    console.log('JURYYYYYYYYYY')
     return (
       <React.Fragment>
         <div>
