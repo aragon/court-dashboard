@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import ANJIcon from '../../assets/anjButton.svg'
-
 import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
 import useRounds from '../../hooks/useRounds'
 import { useConnectedAccount } from '../../providers/Web3'
+import { addressesEqual } from '../../lib/web3-utils'
 
 const Tasks = () => {
   const connectedAccount = useConnectedAccount()
   console.log('connected account ', connectedAccount)
   const [screenIndex, setScreenIndex] = useState(0)
   const [tasks, openTasks] = useRounds()
+  console.log('tasks ', tasks)
   const jurorTasks = tasks
-    ? tasks.filter(task => task.juror === connectedAccount)
+    ? tasks.filter(task => addressesEqual(task.juror, connectedAccount))
     : []
   console.log('Tasks ', tasks)
   const completedTasks = 0

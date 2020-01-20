@@ -130,7 +130,7 @@ function getStep(item, roundId, index, theme, css) {
             display: inline-flex;
           `}
         >
-          {getPhaseIcon(item.phase, item.active, theme)}
+          {getPhaseIcon(item.phase, item.active)}
         </div>
       }
       content={
@@ -167,7 +167,7 @@ function getStep(item, roundId, index, theme, css) {
   )
 }
 
-function getPhaseIcon(phase, active, theme) {
+function getPhaseIcon(phase, active) {
   // TODO - change this for the new icons
   if (phase === DisputesTypes.Phase.Created) {
     return (
@@ -281,9 +281,15 @@ function getRoundPill(roundId) {
 }
 
 function getDisplayTime(timeLineItem) {
-  const { endTime, active } = timeLineItem
+  const { endTime, active, phase } = timeLineItem
 
   if (active) {
+    if (
+      phase === DisputesTypes.Phase.ExecuteRuling ||
+      phase === DisputesTypes.Phase.ClaimRewards
+    ) {
+      return 'ANY TIME'
+    }
     return <Timer end={dayjs(endTime)} />
   }
 
