@@ -8,7 +8,7 @@ import { tasks } from '../../mock-data'
 import Welcome from './Welcome'
 import { DashboardStateProvider } from './DashboardStateProvider'
 
-import ANJIcon from '../../assets/anjButton.svg'
+import ANJIcon from '../../assets/IconANJButton.svg'
 import { useConnectedAccount } from '../../providers/Web3'
 import {
   getRequestModeString,

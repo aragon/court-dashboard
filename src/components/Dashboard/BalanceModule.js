@@ -8,9 +8,9 @@ import AccountBanner from './AccountBanner'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 // TODO: import icons from aragon-ui when available
-import walletIcon from '../../assets/wallet.svg'
-import inactiveANJIcon from '../../assets/anj-inactive.svg'
-import activeANJIcon from '../../assets/anj-active.svg'
+import walletIcon from '../../assets/IconWallet.svg'
+import inactiveANJIcon from '../../assets/IconANJInactive.svg'
+import activeANJIcon from '../../assets/IconANJActive.svg'
 
 import { getAccountStatus } from '../../utils/account-utils'
 import { useConnectedAccount } from '../../providers/Web3'

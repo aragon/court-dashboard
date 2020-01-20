@@ -1,8 +1,8 @@
 import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 
-import ANJIcon from '../../assets/anjButton.svg'
-import Logo from '../../assets/stroke-logo.svg'
+import ANJIcon from '../../assets/IconANJButton.svg'
+import Logo from '../../assets/Welcome.svg'
 
 export default function Welcome() {
   const theme = useTheme()

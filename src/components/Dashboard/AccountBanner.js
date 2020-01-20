@@ -1,25 +1,26 @@
 import React from 'react'
 import { CircleGraph, GU, Help, useTheme } from '@aragon/ui'
 
+import AccountBannerInfo from './AccountBannerInfo'
+
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { useTotalActiveBalancePolling } from '../../hooks/useCourt'
+import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 import { useClock } from '../../providers/Clock'
-
-import AccountBannerInfo from './AccountBannerInfo'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits, getPercentage } from '../../lib/math-utils'
-
-import anjSpringIcon from '../../assets/anj-spring.svg'
-import userIcon from '../../assets/user.svg'
-import gavelIcon from '../../assets/gavel.svg'
 import { getProbabilityText } from '../../utils/account-utils'
-import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
+
+import anjSpringIcon from '../../assets/IconANJSpring.svg'
+import userIcon from '../../assets/IconUser.svg'
+import gavelIcon from '../../assets/IconGavel.svg'
 
 const getBannerAttributes = (
   status,
   drafted,
   isFirstTimeActivating,
+
   minActiveBalance,
   decimals,
   theme

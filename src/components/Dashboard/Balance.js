@@ -1,13 +1,13 @@
 import React from 'react'
 import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
-import ANJIcon from '../../assets/anj.svg'
+import ANJIcon from '../../assets/IconANJ.svg'
 import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
 import { movementDirection, convertToString } from '../../types/anj-types'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
 
-import lockIcon from '../../assets/lock.svg'
+import lockIcon from '../../assets/IconLock.svg'
 
 const splitAmount = amount => {
   const [integer, fractional] = amount.split('.')

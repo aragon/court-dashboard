@@ -6,8 +6,8 @@ import {
   ACCOUNT_STATUS_JUROR_INACTIVE,
 } from '../../types/account-status-types'
 
-import inactiveJurorIcon from '../../assets/juror-inactive.svg'
-import activeJurorIcon from '../../assets/juror-active.svg'
+import inactiveJurorIcon from '../../assets/IconJurorInactive.svg'
+import activeJurorIcon from '../../assets/IconJurorActive.svg'
 
 const getProfileAttributes = (status, theme) => {
   if (status === ACCOUNT_STATUS_JUROR_ACTIVE)
