@@ -17,8 +17,14 @@ export const movementDirection = {
 }
 
 const stringMapping = {
-  [ANJMovement.Stake]: 'Staked',
-  [ANJMovement.Unstake]: 'Unstaked',
+  [ANJMovement.Stake]: {
+    [movementDirection.Incoming]: 'Deposit',
+    [movementDirection.Outgoing]: 'Withdraw',
+  },
+  [ANJMovement.Unstake]: {
+    [movementDirection.Incoming]: 'Deposit',
+    [movementDirection.Outgoing]: 'Withdraw',
+  },
   [ANJMovement.Activation]: 'Activated',
   [ANJMovement.Deactivation]: 'Deactivated',
   [ANJMovement.DeactivationProcess]: 'Deactivation process',
@@ -28,8 +34,9 @@ const stringMapping = {
   [ANJMovement.Slash]: 'Slashed',
 }
 
-export function convertToString(symbol) {
-  return stringMapping[symbol]
+export function convertToString(symbol, direction) {
+  const mapping = stringMapping[symbol]
+  return typeof mapping === 'object' ? mapping[direction] : mapping
 }
 
 export const ANJBalance = {

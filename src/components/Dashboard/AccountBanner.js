@@ -8,7 +8,7 @@ import { useClock } from '../../providers/Clock'
 import AccountBannerInfo from './AccountBannerInfo'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
-import { formatUnits } from '../../lib/math-utils'
+import { formatUnits, getPercentage } from '../../lib/math-utils'
 
 import anjSpringIcon from '../../assets/anj-spring.svg'
 import userIcon from '../../assets/user.svg'
@@ -156,13 +156,14 @@ const BannerWithProbability = ({ activeBalance }) => {
     currentTermId
   )
 
-  // We must parse amounts to Numbers since BN doesn't support decimals
-  const activeBalanceNum = parseInt(activeBalanceCurrentTerm, 10)
-  const totalActiveBalanceNum = parseInt(totalActiveBalanceCurrentTerm, 10)
+  const totalPercentage = getPercentage(
+    activeBalanceCurrentTerm,
+    totalActiveBalanceCurrentTerm
+  )
 
-  // Calculate probability
-  const draftingProbability =
-    totalActiveBalanceNum > 0 ? activeBalanceNum / totalActiveBalanceNum : 0
+  // Calculate probability (since the total active balance is asynconous
+  // it can happen that it has not been updated yet when the juror active balance has)
+  const draftingProbability = Math.min(1, totalPercentage / 100)
   const probabilityText = getProbabilityText(draftingProbability)
 
   const title = (

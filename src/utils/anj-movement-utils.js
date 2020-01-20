@@ -67,7 +67,7 @@ export function getMovementDirection(acceptedMovements, movementType) {
 export function isMovementEffective(movement, currentTermId) {
   if (!movement.effectiveTermId) return true
 
-  return parseInt(movement.effectiveTermId, 10) <= currentTermId
+  return movement.effectiveTermId <= currentTermId
 }
 
 export function getTotalNotEffectiveByType(movements, movementType) {

@@ -5,6 +5,7 @@ import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
 
 import { bigNum } from '../lib/math-utils'
+import { AppealsByUser } from '../queries/appeals'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -58,6 +59,7 @@ export function useJurorBalancesSubscription(jurorId) {
     lockedBalance = NO_AMOUNT,
     availableBalance = NO_AMOUNT,
     deactivationBalance = NO_AMOUNT,
+    movements = [],
   } = jurorData || {}
 
   const balances = {
@@ -68,14 +70,16 @@ export function useJurorBalancesSubscription(jurorId) {
     deactivationBalance: bigNum(deactivationBalance),
   }
 
-  const movements = jurorData
-    ? jurorData.movements.map(movement => ({
-        ...movement,
-        amount: bigNum(movement.amount),
-      }))
-    : []
-
-  return { balances, movements, fetching, errors }
+  return {
+    balances,
+    fetching,
+    errors,
+    movements: movements.map(movement => ({
+      ...movement,
+      effectiveTermId: parseInt(movement.effectiveTermId, 10),
+      amount: bigNum(movement.amount),
+    })),
+  }
 }
 
 export function useCourtConfigSubscription(courtAddress) {
@@ -88,4 +92,15 @@ export function useCourtConfigSubscription(courtAddress) {
   const { courtConfig } = result.data || {}
 
   return courtConfig
+}
+
+export function useAppealsByUser(jurorId, settled) {
+  const [result] = useSubscription({
+    query: AppealsByUser,
+    variables: { id: jurorId, settled },
+  })
+
+  const { appeals } = result.data || []
+
+  return appeals
 }

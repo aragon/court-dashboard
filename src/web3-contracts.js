@@ -1,34 +1,20 @@
 import { useMemo } from 'react'
-
 import { Contract as EthersContract } from 'ethers'
 import { useWeb3Connect } from './providers/Web3'
 
-const contractsCache = new Map()
-
 export function useContract(address, abi, signer = true) {
-  const { ethersProvider } = useWeb3Connect()
-
-  // We need this value as a dependency of memo for uses cases when the  user changes account
-  const accountSigner = ethersProvider && ethersProvider.getSigner()
+  const { account, ethersProvider } = useWeb3Connect()
 
   return useMemo(() => {
-    if (!address || !ethersProvider) {
+    // Apparaently .getSigner() returns a new object every time so we use the connected account as memo dependency
+    if (!address || !ethersProvider || !account) {
       return null
     }
 
-    // TODO: clear the cache when the provider changes
-    if (contractsCache.has(address)) {
-      return contractsCache.get(address)
-    }
-
-    const contract = new EthersContract(
+    return new EthersContract(
       address,
       abi,
-      signer ? accountSigner : ethersProvider
+      signer ? ethersProvider.getSigner() : ethersProvider
     )
-
-    contractsCache.set(address, contract)
-
-    return contract
-  }, [abi, accountSigner, address, ethersProvider, signer])
+  }, [abi, account, address, ethersProvider, signer])
 }

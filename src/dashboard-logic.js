@@ -85,6 +85,5 @@ export function useDashboardLogic() {
     mode,
     panelState,
     requests,
-    loading: !balances,
   }
 }

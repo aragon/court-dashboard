@@ -13,13 +13,13 @@ import {
   getTotalNotEffectiveByType,
 } from '../utils/anj-movement-utils'
 
-import { useBalances } from '../components/Dashboard/BalancesProvider'
+import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
 import { bigNum } from '../lib/math-utils'
 import { useFirstANJActivation } from './query-hooks'
 import { useConnectedAccount } from '../providers/Web3'
 
 export function useANJBalances() {
-  const { balances, movements } = useBalances()
+  const { balances, movements } = useDashboardState()
 
   const convertedMovements = useConvertedMovements(movements)
 

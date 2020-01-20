@@ -206,7 +206,7 @@ const LatestActivity = ({ activity }) => {
             color: ${theme.content};
           `}
         >
-          {convertToString(activity.type)}
+          {convertToString(activity.type, activity.direction)}
         </span>
       </div>
       {!displaySign && (

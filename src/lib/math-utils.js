@@ -56,3 +56,12 @@ export function formatUnits(
 
   return commas ? EthersUtils.commify(valueBeforeCommas) : valueBeforeCommas
 }
+
+export function getPercentage(value, totalValue) {
+  const PERCENT = 100
+  const PERCENT_BN = bigNum(PERCENT)
+
+  if (totalValue.lte(0)) return 0
+
+  return parseInt(value.mul(PERCENT_BN).div(totalValue), 10)
+}
