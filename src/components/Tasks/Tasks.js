@@ -9,8 +9,6 @@ import useRounds from '../../hooks/useRounds'
 
 const Tasks = () => {
   const [tasks, openTasks] = useRounds()
-  console.log('TASKS TASKSS ', tasks)
-  console.log('TASKS openTasks ', openTasks)
   const completedTasks = 0
   const incompleteTasks = 0
 

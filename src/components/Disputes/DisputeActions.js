@@ -1,6 +1,6 @@
 import React from 'react'
 import * as DisputesTypes from '../../types/types'
-import { addressesEqual } from '../../lib/web3'
+import { addressesEqual } from '../../lib/web3-utils'
 import { Button, Info, textStyle, GU } from '@aragon/ui'
 import styled from 'styled-components'
 
@@ -98,11 +98,4 @@ const VotingButton = styled(Button)`
     margin-right: 0px;
   }
 `
-// const DraftButton = styled(Button)`
-//   ${textStyle('body2')};
-//   width: 100%;
-//   margin-right: ${1 * GU}px;
-//   background: ;
-// `
-
 export default DisputeActions

@@ -1,7 +1,7 @@
 import {
   DISPUTE_STATUS_OPEN,
   DISPUTE_STATUS_CLOSED,
-} from './dispute-status-type'
+} from './types/dispute-status-types'
 
 import {
   IconCoin,

@@ -31,7 +31,6 @@ const getFilteredTasks = ({ tasks, selectedDateRange }) => {
 }
 
 const TaskTable = ({ tasks }) => {
-  console.log('TASKSSSS ', tasks)
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [page, setPage] = useState(0)
   const { below } = useViewport()
@@ -59,8 +58,6 @@ const TaskTable = ({ tasks }) => {
       ),
     [filteredTasks]
   )
-
-  console.log('SORTEEEEEEEED ', sortedTasks)
 
   return (
     <DataView

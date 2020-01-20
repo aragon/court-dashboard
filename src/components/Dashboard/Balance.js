@@ -1,17 +1,51 @@
 import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import ANJIcon from '../../assets/anj.svg'
+import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
+import {
+  movementDirection,
+  convertToString,
+} from '../../types/anj-movement-types'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
-export default function Balance({
+import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
+
+const splitAmount = amount => {
+  const [integer, fractional] = amount.split('.')
+  return (
+    <span
+      css={`
+        margin-right: 5px;
+      `}
+    >
+      <span className="integer">{integer}</span>
+      {fractional && (
+        <span
+          css={`
+            font-size: 16px;
+          `}
+        >
+          .{fractional}
+        </span>
+      )}
+    </span>
+  )
+}
+
+const Balance = React.memo(function Balance({
   label,
   amount,
-  value,
   mainIcon,
   mainIconBackground,
   activity,
   actions,
 }) {
   const theme = useTheme()
+  const {
+    anjToken: { symbol, decimals },
+  } = useCourtConfig()
+
+  const convertedAmount = useBalanceToUsd(symbol, decimals, amount) // TODO: Change to symbol once price available
 
   return (
     <div>
@@ -47,30 +81,32 @@ export default function Balance({
           <div>
             <span
               css={`      
-            ${textStyle('body2')}
-            color: ${theme.contentSecondary};
-            display:block;
-          `}
+                ${textStyle('body2')}
+                color: ${theme.contentSecondary};
+                display:block;
+              `}
             >
               {label}
             </span>
-            <span
+            <div
               css={`
                 ${textStyle('title3')}
                 line-height: 1.2;
-                display: block;
+                display: flex;
+                align-items: center;
               `}
             >
-              {amount} <img src={ANJIcon} />
-            </span>{' '}
+              {splitAmount(formatUnits(amount, { digits: decimals }))}
+              <img height="20px" width="18px" src={ANJIcon} />
+            </div>
             <span
               css={`
-            ${textStyle('body4')}
-            color: ${theme.contentSecondary};
-            display:block;
-          `}
+                ${textStyle('body4')}
+                color: ${theme.contentSecondary};
+                display:block;
+              `}
             >
-              $ {value}
+              $ {convertedAmount}
             </span>
           </div>
         </div>
@@ -82,16 +118,21 @@ export default function Balance({
         `}
       >
         {activity ? (
-          <span>Recent activity</span>
+          <LatestActivity activity={activity} tokenSymbol={symbol} />
         ) : (
           <span>No recent 24h activity</span>
         )}
       </div>
 
-      {amount > '0' && (
+      {amount.gt(0) && (
         <div
           css={`
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(
+              auto-fit,
+              minmax(calc(50% - 8px), 1fr)
+            );
+            grid-column-gap: 8px;
           `}
         >
           {actions.map((action, index) => {
@@ -100,13 +141,8 @@ export default function Balance({
                 key={index}
                 label={action.label}
                 mode={action.mode}
-                onClick={action.onClick} // eslint-disable-line
+                onClick={action.onClick}
                 wide
-                css={`
-                  &:first-child {
-                    margin-right: ${GU}px;
-                  }
-                `}
               />
             )
           })}
@@ -114,4 +150,35 @@ export default function Balance({
       )}
     </div>
   )
+})
+
+const LatestActivity = ({ activity }) => {
+  const theme = useTheme()
+  const { anjToken } = useCourtConfig()
+  const isIncoming = activity.direction === movementDirection.Incoming
+  const displaySign =
+    activity.direction === movementDirection.Incoming ||
+    activity.direction === movementDirection.Outgoing
+
+  let color
+  if (displaySign) color = isIncoming ? theme.positive : theme.negative
+
+  return (
+    <span>
+      <span
+        css={`
+          color: ${color};
+        `}
+      >{`
+      ${formatTokenAmount(
+        activity.amount,
+        isIncoming,
+        anjToken.decimals,
+        displaySign
+      )} ${anjToken.symbol}`}</span>{' '}
+      {convertToString(activity.type)}
+    </span>
+  )
 }
+
+export default Balance

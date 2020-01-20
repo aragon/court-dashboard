@@ -4,7 +4,7 @@ import { BackButton, Bar, Box, Split } from '@aragon/ui'
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
-import { hexToAscii, toDate } from '../../lib/web3'
+import { hexToAscii, toDate } from '../../lib/web3-utils'
 import NoEvidence from './NoEvidence'
 
 const DisputeDetail = React.memo(({ dispute, onBack }) => {

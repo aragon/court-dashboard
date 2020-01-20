@@ -58,7 +58,7 @@ function DisputeEvidences({ evidences }) {
                       `}
                     >
                       <IdentityBadge
-                        // connectedAccount={addressesEqual(creator, connectedAccount)}
+                        // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- ADD connnected account
                         entity={submitter}
                       />
                     </div>

@@ -1,16 +1,17 @@
 import { useMemo } from 'react'
 import useNow from './useNow'
 import useRoundsSubscription from './useRoundsSubscription'
-import { getAdjudicationPhase } from '../utils/disputeUtils'
-import { useCourtSettings } from '../court-settings-manager'
+import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/types'
+import { useCourtConfig } from '../providers/CourtConfig'
 
 export default function useRounds() {
-  const courtSettings = useCourtSettings()
+  const courtConfig = useCourtConfig()
   const rounds = useRoundsSubscription()
+  console.log('ROunds ', rounds)
   const now = useNow()
 
-  const tasks = generateTasksForOpenRounds(rounds, now, courtSettings)
+  const tasks = generateTasksForOpenRounds(rounds, now, courtConfig)
   const openTasks = tasks.length
 
   const tasksPhasesKey = tasks.map(t => t.ongoing).join('')

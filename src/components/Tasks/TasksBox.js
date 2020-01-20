@@ -10,7 +10,6 @@ function TasksBox({ openTasks, completedTasks, incompleteTasks }) {
     { status: 'Completed', amount: completedTasks },
     { status: 'Incomplete', amount: incompleteTasks },
   ]
-
   return (
     <Box heading="Overview">
       <div
@@ -37,9 +36,9 @@ function TasksBox({ openTasks, completedTasks, incompleteTasks }) {
               : ''}
           `}
         >
-          {tasks.map(({ amount, status }) => (
+          {tasks.map(({ amount, status }, index) => (
             <li
-              key={amount}
+              key={index}
               css={`
                 display: block;
                 min-width: ${20 * GU}px;
