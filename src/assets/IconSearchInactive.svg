@@ -1,0 +1,19 @@
+<svg width="557" height="557" viewBox="0 0 557 557" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 75">
+<g id="Group 70">
+<g id="Group 80">
+<path id="Oval Copy 6" fill-rule="evenodd" clip-rule="evenodd" d="M278.5 557C432.311 557 557 432.311 557 278.5C557 124.689 432.311 0 278.5 0C124.689 0 0 124.689 0 278.5C0 432.311 124.689 557 278.5 557Z" fill="#FFE2D7"/>
+<path id="Path" opacity="0.668271" fill-rule="evenodd" clip-rule="evenodd" d="M363.774 198.65V386.236C363.774 396.324 355.587 404.499 345.501 404.499H176.6C166.506 404.499 158.326 396.324 158.326 386.236V139.263C158.326 129.175 166.505 121 176.6 121H286.079L363.774 198.65Z" fill="url(#paint0_linear)"/>
+<path id="Path_2" fill-rule="evenodd" clip-rule="evenodd" d="M363.774 198.65H304.353C294.259 198.65 286.079 190.475 286.079 180.387V121L363.774 198.65Z" fill="white"/>
+<path id="Path_3" fill-rule="evenodd" clip-rule="evenodd" d="M428.116 407.627C432.675 411.899 432.91 419.059 428.642 423.622C428.473 423.803 428.297 423.979 428.116 424.148C426.045 426.465 423.082 427.784 419.975 427.769C416.797 427.82 413.749 426.501 411.608 424.148L372.035 384.77C375.206 382.395 378.227 379.825 381.08 377.075C383.806 374.345 386.303 371.393 388.542 368.249L389.447 368.928L428.116 407.627Z" fill="#FF9084" fill-opacity="0.25"/>
+<path id="Oval" fill-rule="evenodd" clip-rule="evenodd" d="M408 320C408 274.713 371.287 238 326 238C280.713 238 244 274.713 244 320C244 365.287 280.713 402 326 402C371.287 402 408 365.287 408 320ZM266 320C266 286.863 292.863 260 326 260C359.137 260 386 286.863 386 320C386 353.137 359.137 380 326 380C292.863 380 266 353.137 266 320Z" fill="white"/>
+</g>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear" x1="429.103" y1="333.625" x2="283.716" y2="199.615" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" stop-opacity="0.01"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+</defs>
+</svg>
