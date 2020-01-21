@@ -3,6 +3,8 @@ import { DEFAULT_LOCAL_CHAIN } from '../environment'
 
 const { keccak_256: keccak256 } = sha3
 
+export const soliditySha3 = keccak256
+
 export function getFunctionSignature(func) {
   return `0x${keccak256(func).slice(0, 8)}`
 }

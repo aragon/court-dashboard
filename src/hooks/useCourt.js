@@ -12,7 +12,7 @@ import disputeManagerAbi from '../abi/DisputeManager.json'
 import votingAbi from '../abi/CRVoting.json'
 
 import { getFunctionSignature } from '../lib/web3-utils'
-import { getVoteId } from '../utils/court-utils'
+import { getVoteId, hashVote } from '../utils/crvoting-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 500000 // Should be relative to every tx ?
@@ -114,7 +114,9 @@ export function useDisputeActions() {
   const commit = useCallback(
     (disputeId, roundId, commitment) => {
       const voteId = getVoteId(disputeId, roundId)
-      return votingContract.commit(voteId, commitment)
+      const hashedCommitment = hashVote(commitment)
+
+      return votingContract.commit(voteId, hashedCommitment)
     },
     [votingContract]
   )

@@ -1,6 +1,6 @@
 import { getTermStartTime } from './court-utils'
 import dayjs from '../lib/dayjs'
-import * as DisputesTypes from '../types/types'
+import * as DisputesTypes from '../types/dispute-status-types'
 
 const juryDraftingTerms = 3
 
@@ -13,8 +13,6 @@ export function getDisputeTimeLine(dispute, courtConfig) {
     courtConfig,
     new Date()
   )
-
-  console.log('currentPhaseAndTime ', currentPhaseAndTime)
 
   const timeLine = [
     {
@@ -66,9 +64,8 @@ export function getDisputeTimeLine(dispute, courtConfig) {
 }
 
 export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
-  const { state, createdAt, id } = dispute
+  const { state, createdAt } = dispute
   const now = dayjs(nowDate).unix() * 1000
-  console.log('DISPUTE ID ', id)
   let phase
   let nextTransition
   const lastRound = dispute.rounds[dispute.lastRoundId]
@@ -117,7 +114,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
       courtConfig
     )
 
-    console.log('currentAdjudicationPhase ', currentAdjudicationPhase)
     if (currentAdjudicationPhase.phase === DisputesTypes.Phase.Ended) {
       currentAdjudicationPhase = {
         ...currentAdjudicationPhase,
@@ -171,22 +167,12 @@ export function getAdjudicationPhase(dispute, round, now, courtConfig) {
 
   // If the last round was not appealed yet, check if the confirmation period has started or not
   const isLastRoundAppealed = !!round.appeal
-  console.log('appealTermStartTime ', appealTermStartTime)
   const appealConfirmationTermStartTime =
     appealTermStartTime + appealTerms * termDuration
 
-  console.log('isLastRoundAppealed ', isLastRoundAppealed)
-  console.log(
-    'appealConfirmationTermStartTime ',
-    appealConfirmationTermStartTime
-  )
-  console.log('now ', now)
-  console.log(' appealTerms * termDuration ', appealTerms * termDuration)
   if (!isLastRoundAppealed) {
-    console.log('INSIDEEEEE')
     // If given term is before the appeal confirmation start term, then the last round can still be appealed. Otherwise, it is ended.
     if (now < appealConfirmationTermStartTime) {
-      console.log('MENOOOOOOR')
       return {
         phase: DisputesTypes.Phase.AppealRuling,
         nextTransition: appealConfirmationTermStartTime,
@@ -220,7 +206,6 @@ export function getAdjudicationPhase(dispute, round, now, courtConfig) {
 }
 
 function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
-  console.log('GET ROUND PHASES AND TIME ')
   const {
     termDuration,
     commitTerms,
@@ -283,14 +268,12 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   }
 
   if (currentPhase.phase === DisputesTypes.Phase.ExecuteRuling) {
-    console.log('EXECUTE RULLINGGGGGGGGGGGG ', currentPhase)
     // It is the last possible round the last phase of the round is Reveal
     if (currentPhase.maxAppealReached === true) {
       return roundPhasesAndTime.slice(0, 4)
     }
     // If it was not appealed not show the Confirm appeal
     if (currentPhase.appealed === false) {
-      console.log('SLICEEEEEEEDD ', roundPhasesAndTime.slice(0, 5))
       return roundPhasesAndTime.slice(0, 4)
     }
     // round ended What happen if the appeal is not confirmed?

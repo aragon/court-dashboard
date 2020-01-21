@@ -1,24 +1,25 @@
 import React from 'react'
-import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
-import IconFlagActive from '../../assets/IconFlagActive.svg'
-import IconFlagInactive from '../../assets/IconFlagInactive.svg'
-import IconFolderActive from '../../assets/IconFolderActive.svg'
-import IconFolderInactive from '../../assets/IconFolderInactive.svg'
-import IconUsersActive from '../../assets/IconUsersActive.svg'
-import IconUsersInactive from '../../assets/IconUsersInactive.svg'
-import IconVotingActive from '../../assets/IconVotingActive.svg'
-import IconVotingInactive from '../../assets/IconVotingInactive.svg'
-import IconThinkingActive from '../../assets/IconThinkingActive.svg'
-import IconThinkingInactive from '../../assets/IconThinkingInactive.svg'
-import IconRulingActive from '../../assets/IconRulingActive.svg'
-import IconRulingInactive from '../../assets/IconRulingInactive.svg'
+import styled from 'styled-components'
 import dayjs from '../../lib/dayjs'
+
+import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
+
+import { useCourtConfig } from '../../providers/CourtConfig'
+
 import Stepper from '../Stepper'
 import Step from '../Step'
-import * as DisputesTypes from '../../types/types'
-import styled from 'styled-components'
-import { useCourtConfig } from '../../providers/CourtConfig'
+import {
+  IconFlag,
+  IconFolder,
+  IconUsers,
+  IconThinking,
+  IconRuling,
+  IconVoting,
+} from '../../utils/dispute-icons'
+
+import * as DisputesTypes from '../../types/dispute-status-types'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
+import { numberToWord } from '../../lib/math-utils'
 
 function DisputeTimeline({ dispute }) {
   const theme = useTheme()
@@ -34,26 +35,18 @@ function DisputeTimeline({ dispute }) {
     }
     return item
   })
-  console.log('*************************')
-  console.log('REVERSEEEE ', reverseTimeLine)
 
   return (
     <div>
-      <Stepper
-        lineColor="#FFCDC5"
-        lineTop={13}
-        css={`
-          padding-bottom: ${3 * GU}px;
-        `}
-      >
+      <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={13}>
         {reverseTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
-            return getStep(item, roundsLength, index, theme)
+            return getStep(item, index, theme)
           } else {
             return item.map((round, roundIndex) => {
               if (roundIndex === 0) {
                 return round.map((roundItem, phaseIndex) => {
-                  return getStep(roundItem, roundsLength, phaseIndex, theme)
+                  return getStep(roundItem, phaseIndex, theme)
                 })
               } else {
                 return (
@@ -73,13 +66,13 @@ function DisputeTimeline({ dispute }) {
                               [
                                 <span
                                   css={`
-                                    margin-left: ${GU * 1.5}px;
+                                    margin-left: ${1.5 * GU}px;
                                   `}
                                 >
                                   {getRoundPill(round[0].roundId)}
                                 </span>,
                                 <Stepper
-                                  lineColor="#FFCDC5"
+                                  lineColor={theme.accent.alpha(0.3)}
                                   lineTop={13}
                                   css={`
                                     padding: ${3 * GU}px 0;
@@ -113,7 +106,7 @@ function DisputeTimeline({ dispute }) {
   )
 }
 
-function getStep(item, roundId, index, theme, css) {
+function getStep(item, index, theme, css) {
   return (
     <Step
       key={index}
@@ -167,97 +160,42 @@ function getStep(item, roundId, index, theme, css) {
   )
 }
 
-function getPhaseIcon(phase, active, theme) {
-  // TODO - change this for the new icons
+function getPhaseIcon(phase, active) {
+  let icon
+
   if (phase === DisputesTypes.Phase.Created) {
-    return (
-      <img
-        css={`
-          height: ${GU * 6}px;
-        `}
-        src={active ? IconFlagActive : IconFlagInactive}
-        alt="flag-icon"
-      />
-    )
-  }
-
-  if (phase === DisputesTypes.Phase.Evidence) {
-    return (
-      <img
-        css={`
-          height: ${GU * 6}px;
-        `}
-        src={active ? IconFolderActive : IconFolderInactive}
-        alt="flag-icon"
-      />
-    )
-  }
-
-  if (phase === DisputesTypes.Phase.JuryDrafting) {
-    return (
-      <img
-        css={`
-          height: ${GU * 6}px;
-        `}
-        src={active ? IconUsersActive : IconUsersInactive}
-        alt="flag-icon"
-      />
-    )
-  }
-  if (
+    icon = IconFlag
+  } else if (phase === DisputesTypes.Phase.Evidence) {
+    icon = IconFolder
+  } else if (phase === DisputesTypes.Phase.JuryDrafting) {
+    icon = IconUsers
+  } else if (
     phase === DisputesTypes.Phase.VotingPeriod ||
     phase === DisputesTypes.Phase.RevealVote
   ) {
-    return (
-      <img
-        css={`
-          height: ${GU * 6}px;
-        `}
-        src={active ? IconVotingActive : IconVotingInactive}
-        alt="flag-icon"
-      />
-    )
-  }
-
-  if (
+    icon = IconVoting
+  } else if (
     phase === DisputesTypes.Phase.AppealRuling ||
     phase === DisputesTypes.Phase.ConfirmAppeal
   ) {
-    return (
-      <img
-        css={`
-          height: ${GU * 6}px;
-        `}
-        src={active ? IconThinkingActive : IconThinkingInactive}
-        alt="thinking-icon"
-      />
-    )
+    icon = IconThinking
+  } else {
+    icon = IconRuling
   }
-  if (phase === DisputesTypes.Phase.ExecuteRuling) {
-    return (
-      <img
-        css={`
-          height: ${GU * 6}px;
-        `}
-        src={active ? IconRulingActive : IconRulingInactive}
-        alt="ruling-icon"
-      />
-    )
-  }
+
+  return (
+    <img
+      css={`
+        height: ${GU * 6}px;
+      `}
+      src={active ? icon.active : icon.inactive}
+      alt="phase-icon"
+    />
+  )
 }
 
 function getRoundPill(roundId) {
-  let label
-
-  if (roundId === 0) {
-    label = 'Round One'
-  }
-  if (roundId === 1) {
-    label = 'Round Two'
-  }
-  if (roundId === 2) {
-    label = 'Round Three'
-  }
+  const label = `Round ${numberToWord(roundId)}`
 
   return (
     <span
@@ -290,11 +228,11 @@ function getDisplayTime(timeLineItem) {
   return dayjs(endTime).format('DD/MM/YY')
 }
 
-export default DisputeTimeline
-
 const StyledAccordion = styled.div`
   & > div:first-child {
     border-radius: 0px;
   }
 `
 const roundStepContainerCss = `margin-left: 0px;`
+
+export default DisputeTimeline

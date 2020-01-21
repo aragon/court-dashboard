@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTheme } from '@aragon/ui'
 
-import { Status } from '../../types/types'
+import { Status } from '../../types/dispute-status-types'
 
 const getStatusAttributes = (dispute, theme) => {
   if (dispute.reducedState === Status.Open) {

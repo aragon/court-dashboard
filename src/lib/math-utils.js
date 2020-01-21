@@ -56,3 +56,19 @@ export function formatUnits(
 
   return commas ? EthersUtils.commify(valueBeforeCommas) : valueBeforeCommas
 }
+
+const wordNumbers = [
+  'One',
+  'Two',
+  'Three',
+  'Four',
+  'Five',
+  'Six',
+  'Seven',
+  'Eight',
+  'Nine',
+]
+
+export function numberToWord(number) {
+  return wordNumbers[number]
+}

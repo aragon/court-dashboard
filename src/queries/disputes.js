@@ -22,6 +22,7 @@ export const AllDisputes = gql`
         }
       }
       rounds {
+        id
         state
         number
         draftTermId
@@ -37,6 +38,8 @@ export const AllDisputes = gql`
           juror {
             id
           }
+          commitment
+          outcome
         }
         appeal {
           id

@@ -1,4 +1,4 @@
-import * as DisputesTypes from '../../types/types'
+import * as DisputesTypes from '../../types/dispute-status-types'
 
 export const reduceDispute = dispute => {
   return {

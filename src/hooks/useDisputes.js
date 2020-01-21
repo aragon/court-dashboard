@@ -3,7 +3,7 @@ import useNow from './useNow'
 import useDisputeSubscription from './useDisputesSubscription'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { convertToString } from '../types/types'
+import { convertToString } from '../types/dispute-status-types'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()

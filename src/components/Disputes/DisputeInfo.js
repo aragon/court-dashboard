@@ -12,7 +12,7 @@ import IconCourt from '../../assets/courtIcon.svg'
 import DisputeStatus from './DisputeStatus'
 import DisputeActions from './DisputeActions'
 
-const DisputeInfo = ({ dispute }) => {
+const DisputeInfo = ({ dispute, onDraft, onCommit, onReveal, onLeak }) => {
   const theme = useTheme()
   const { id, metadata, subject, txHash } = dispute
 
@@ -138,7 +138,13 @@ const DisputeInfo = ({ dispute }) => {
             </div>
           </div>
         </div>
-        <DisputeActions dispute={dispute} />
+        <DisputeActions
+          dispute={dispute}
+          onDraft={onDraft}
+          onCommit={onCommit}
+          onReveal={onReveal}
+          onLeak={onLeak}
+        />
       </section>
     </Box>
   )

@@ -18,8 +18,8 @@ export default function Step({
         <div
           css={`
             display: flex;
-            margin-left: ${3 * GU}px;
-            margin-top: ${active ? 3 * GU : 0}px;
+            width: 100%;
+            padding: 0 ${2 * GU}px;
           `}
           {...props}
         >

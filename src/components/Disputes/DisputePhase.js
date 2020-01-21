@@ -1,6 +1,6 @@
 import React from 'react'
 import dayjs from '../../lib/dayjs'
-import { convertToString } from '../../types/types'
+import { convertToString } from '../../types/dispute-status-types'
 
 import { GU, textStyle, Timer } from '@aragon/ui'
 
