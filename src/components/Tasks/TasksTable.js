@@ -16,6 +16,7 @@ import TaskStatus from './TaskStatus'
 import TaskDueDate from './TaskDueDate'
 
 const INITIAL_DATE_RANGE = { start: null, end: null }
+const ENTRIES_PER_PAGE = 6
 
 const getFilteredTasks = ({ tasks, selectedDateRange }) => {
   return tasks.filter(
@@ -62,6 +63,7 @@ const TaskTable = ({ tasks }) => {
   return (
     <DataView
       page={page}
+      entriesPerPage={ENTRIES_PER_PAGE}
       onPageChange={() => {}}
       heading={
         <>
