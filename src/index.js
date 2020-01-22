@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
 import {
   createClient,
   Provider,
@@ -11,6 +10,7 @@ import {
 } from 'urql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { devtoolsExchange } from '@urql/devtools'
+import App from './App'
 import endpoints from './endpoints'
 
 const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
