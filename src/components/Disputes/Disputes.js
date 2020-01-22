@@ -1,34 +1,23 @@
-import React, { useCallback, useMemo, useState } from 'react'
-import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
+import React, { useCallback, useState } from 'react'
+import { Button, GU, Header, SidePanel, Tabs, Tag } from '@aragon/ui'
+
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
+import { DisputesStateProvider } from './DisputesStateProvider'
+
+import { useDisputesLogic } from '../../disputes-logic'
+
 import ANJIcon from '../../assets/anjButton.svg'
-import useDisputes from '../../hooks/useDisputes'
-import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
-import { useConnectedAccount } from '../../providers/Web3'
-
-const useSelectedDispute = disputes => {
-  const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
-
-  const selectDispute = useCallback(
-    disputeId => setSelectedDisputeId(disputeId),
-    []
-  )
-
-  const selectedDispute = useMemo(
-    () => disputes.find(dispute => dispute.id === selectedDisputeId) || null,
-    [disputes, selectedDisputeId]
-  )
-
-  return [selectedDispute, selectDispute]
-}
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
-  const [disputes] = useDisputes()
-  const connectedAccount = useConnectedAccount()
-  const jurorDisputes = useJurorDraftQuery(connectedAccount)
-  const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
+  const {
+    disputes,
+    myDisputes,
+    panelState,
+    selectDispute,
+    selectedDispute,
+  } = useDisputesLogic()
 
   const handleBack = useCallback(() => {
     selectDispute(-1)
@@ -72,7 +61,7 @@ function Disputes() {
       {selectedDispute ? (
         <DisputeDetail dispute={selectedDispute} onBack={handleBack} />
       ) : (
-        <>
+        <React.Fragment>
           <div>
             <Tabs
               css={`
@@ -85,11 +74,7 @@ function Disputes() {
                 </div>,
                 <div>
                   <span>My disputes </span>
-                  <Tag
-                    limitDigits={4}
-                    label={jurorDisputes.length}
-                    size="small"
-                  />
+                  <Tag limitDigits={4} label={myDisputes.length} size="small" />
                 </div>,
               ]}
               selected={screenIndex}
@@ -103,14 +88,38 @@ function Disputes() {
             `}
           >
             <DisputeList
-              disputes={screenIndex === 0 ? disputes : jurorDisputes}
+              disputes={screenIndex === 0 ? disputes : myDisputes}
               selectDispute={selectDispute}
             />
           </div>
-        </>
+        </React.Fragment>
       )}
+      <SidePanel
+        title="Commit"
+        opened={panelState.visible}
+        onClose={panelState.requestClose}
+        onTransitionEnd={panelState.endTransition}
+      >
+        <div
+          css={`
+            margin-top: ${2 * GU}px;
+          `}
+        />
+        <PanelComponent
+          mode={mode}
+          actions={actions}
+          balances={balances}
+          onDone={panelState.requestClose}
+        />
+      </SidePanel>
     </React.Fragment>
   )
 }
 
-export default Disputes
+export default function DisputesWithSubscritpion(props) {
+  return (
+    <DisputesStateProvider>
+      <Disputes {...props} />
+    </DisputesStateProvider>
+  )
+}

@@ -11,6 +11,7 @@ const DisputeActions = React.memo(
     if (phase === DisputesTypes.Phase.Evidence) {
       return null
     }
+    console.log('phase', phase)
 
     return (
       <div

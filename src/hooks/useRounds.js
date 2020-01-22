@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import useNow from './useNow'
-import useRoundsSubscription from './useRoundsSubscription'
+import { useRoundsSubscription } from './subscription-hooks'
 import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { useCourtConfig } from '../providers/CourtConfig'
@@ -8,7 +8,6 @@ import { useCourtConfig } from '../providers/CourtConfig'
 export default function useRounds() {
   const courtConfig = useCourtConfig()
   const rounds = useRoundsSubscription()
-  console.log('ROunds ', rounds)
   const now = useNow()
 
   const tasks = generateTasksForOpenRounds(rounds, now, courtConfig)
