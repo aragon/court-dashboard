@@ -5,13 +5,9 @@ import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
 
 import { disputes } from '../../mock-data'
-import { useDisputeActions } from '../../hooks/useCourt'
 
 function Disputes() {
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
-
-  const actions = useDisputeActions()
-  console.log(actions)
 
   const handleBack = useCallback(() => {
     selectDispute(-1)
