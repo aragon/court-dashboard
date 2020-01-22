@@ -4,7 +4,7 @@ import { reduceDispute } from '../components/Disputes/reducer'
 import { AllDisputes } from '../queries/disputes'
 import { useCourtConfig } from '../providers/CourtConfig'
 
-export default function useDisputesSubscription() {
+export default function useDisputesSubscription(ids) {
   const [disputes, setDisputes] = useState([])
   const courtConfig = useCourtConfig()
   // First argument is the last result from the query , second argument is the current response
@@ -20,6 +20,7 @@ export default function useDisputesSubscription() {
   useSubscription(
     {
       query: AllDisputes,
+      variables: {},
     },
     handleSubscription
   )

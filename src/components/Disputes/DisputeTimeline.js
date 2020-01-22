@@ -34,8 +34,6 @@ function DisputeTimeline({ dispute }) {
     }
     return item
   })
-  console.log('*************************')
-  console.log('REVERSEEEE ', reverseTimeLine)
 
   return (
     <div>

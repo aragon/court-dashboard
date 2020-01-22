@@ -3,34 +3,25 @@ import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import ANJIcon from '../../assets/anjButton.svg'
 import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
-import useRounds from '../../hooks/useRounds'
 import { useConnectedAccount } from '../../providers/Web3'
-import { addressesEqual } from '../../lib/web3-utils'
+import useFilteredTasks from '../../hooks/useFilteredTasks'
 
 const Tasks = () => {
   const connectedAccount = useConnectedAccount()
-  console.log('connected account ', connectedAccount)
   const [screenIndex, setScreenIndex] = useState(0)
-  const [tasks, openTasks] = useRounds()
-  console.log('tasks ', tasks)
-  const jurorTasks = tasks
-    ? tasks.filter(task => addressesEqual(task.juror, connectedAccount))
-    : []
-  console.log('Tasks ', tasks)
+  // const [tasks, openTasks] = useRounds()
+
+  const { tasks, page, setPage, openTasks } = useFilteredTasks(
+    screenIndex,
+    connectedAccount
+  )
+  console.log('TASK COMPONENT ', tasks)
+
   const completedTasks = 0
   const incompleteTasks = 0
 
   const handleTabChange = screenIndex => {
     setScreenIndex(screenIndex)
-  }
-
-  const getTasksByTab = screenIndex => {
-    if (screenIndex === 0) {
-      return jurorTasks
-    }
-    if (screenIndex === 1) {
-      return tasks
-    }
   }
 
   return (
@@ -81,7 +72,7 @@ const Tasks = () => {
           items={[
             <div>
               <span>My Tasks </span>
-              <Tag limitDigits={4} label={jurorTasks.length} size="small" />
+              <Tag limitDigits={4} label={0} size="small" />
             </div>,
             <div>
               <span>All Tasks </span>
@@ -96,7 +87,7 @@ const Tasks = () => {
           onChange={handleTabChange}
         />
       </div>
-      <TaskTable tasks={getTasksByTab(screenIndex)} />
+      <TaskTable tasks={tasks} page={page} handlePageChange={setPage} />
     </>
   )
 }

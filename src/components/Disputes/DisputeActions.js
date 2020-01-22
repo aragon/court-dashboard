@@ -6,7 +6,6 @@ import styled from 'styled-components'
 import { useConnectedAccount } from '../../providers/Web3'
 
 const DisputeActions = React.memo(({ dispute }) => {
-  console.log('Dispute ', dispute)
   const { phase, rounds } = dispute
   const connectedAccount = useConnectedAccount()
 
@@ -67,7 +66,6 @@ const DisputeActions = React.memo(({ dispute }) => {
   }
 
   if (phase === DisputesTypes.Phase.JuryDrafting) {
-    console.log('JURYYYYYYYYYY')
     return (
       <React.Fragment>
         <div>

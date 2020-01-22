@@ -1,53 +1,73 @@
 import { useMemo } from 'react'
 import useNow from './useNow'
-import useRoundsSubscription from './useRoundsSubscription'
+import useTasksSubscription from './useTasksSubscription'
 import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/types'
 import { useCourtConfig } from '../providers/CourtConfig'
 
-export default function useRounds() {
+export default function useRounds(allTasks, onlyOpen, page) {
   const courtConfig = useCourtConfig()
-  const rounds = useRoundsSubscription()
-  console.log('ROunds ', rounds)
+  const tasks = useTasksSubscription(allTasks, onlyOpen, page)
   const now = useNow()
+  let openTasks
+  let openTasksNumber = 0
 
-  const tasks = generateTasksForOpenRounds(rounds, now, courtConfig)
-  const openTasks = tasks.length
+  if (onlyOpen) {
+    openTasks = generateOpenTasks(tasks, now, courtConfig)
+    openTasksNumber = openTasks.length
+  }
 
-  const tasksPhasesKey = tasks.map(t => t.ongoing).join('')
+  const tasksPhasesKey = openTasks.map(t => t.ongoing).join('')
 
   return useMemo(() => {
-    return [tasks, openTasks]
-  }, [openTasks, tasks, tasksPhasesKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    return [openTasks, openTasksNumber]
+  }, [openTasksNumber, openTasks, tasksPhasesKey]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-function generateTasksForOpenRounds(rounds, now, courtSettings) {
-  const tasks = []
-  for (let i = 0; i < rounds.length; i++) {
-    for (let j = 0; j < rounds[i].jurors.length; j++) {
-      const currentRoundPhase = getAdjudicationPhase(
-        rounds[i].dispute,
-        rounds[i],
-        now,
-        courtSettings
-      )
-      if (currentRoundPhase.phase !== DisputesTypes.Phase.Ended) {
-        tasks.push({
-          number: rounds[i].number,
-          state: rounds[i].state,
-          createdAt: parseInt(rounds[i].createdAt, 10) * 1000,
-          juror: rounds[i].jurors[j].juror.id,
-          disputeId: rounds[i].dispute.id,
-          commitment: rounds[i].jurors[j].commitment,
-          outcome: rounds[i].jurors[j].outcome,
-          phase: getTaskName(currentRoundPhase.phase),
-          dueDate: currentRoundPhase.nextTransition,
-          open: true,
-        })
+function generateOpenTasks(tasks, now, courtSettings) {
+  const openTasks = []
+  for (let i = 0; i < tasks.length; i++) {
+    const currentRoundPhase = getAdjudicationPhase(
+      tasks[i].dispute,
+      tasks[i],
+      now,
+      courtSettings
+    )
+    // If we are in appeal or confirm we just need to generate 1 task
+    if (
+      currentRoundPhase.phase === DisputesTypes.Phase.AppealRuling ||
+      currentRoundPhase.phase === DisputesTypes.Phase.ConfirmAppeal
+    ) {
+      openTasks.push({
+        number: tasks[i].number,
+        state: tasks[i].state,
+        createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
+        juror: 'Anyone',
+        disputeId: tasks[i].dispute.id,
+        phase: getTaskName(currentRoundPhase.phase),
+        dueDate: currentRoundPhase.nextTransition,
+        open: true,
+      })
+    } else {
+      for (let j = 0; j < tasks[i].jurors.length; j++) {
+        if (currentRoundPhase.phase !== DisputesTypes.Phase.Ended) {
+          openTasks.push({
+            number: tasks[i].number,
+            state: tasks[i].state,
+            createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
+            juror: tasks[i].jurors[j].juror.id,
+            disputeId: tasks[i].dispute.id,
+            commitment: tasks[i].jurors[j].commitment,
+            outcome: tasks[i].jurors[j].outcome,
+            phase: getTaskName(currentRoundPhase.phase),
+            dueDate: currentRoundPhase.nextTransition,
+            open: true,
+          })
+        }
       }
     }
   }
-  return tasks
+  return openTasks
 }
 
 function getTaskName(phase) {

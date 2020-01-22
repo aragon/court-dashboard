@@ -10,7 +10,6 @@ import {
   useViewport,
 } from '@aragon/ui'
 import dayjs from '../../lib/dayjs'
-// import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import TasksFilters from './TasksFilters'
 import TaskStatus from './TaskStatus'
 import TaskDueDate from './TaskDueDate'
@@ -31,14 +30,11 @@ const getFilteredTasks = ({ tasks, selectedDateRange }) => {
   )
 }
 
-const TaskTable = ({ tasks }) => {
+const TaskTable = React.memo(({ tasks, page, handlePageChange }) => {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
-  const [page, setPage] = useState(0)
   const { below } = useViewport()
   const compactMode = below('medium')
-
   const handleSelectedDateRangeChange = range => {
-    setPage(0)
     setSelectedDateRange(range)
   }
 
@@ -47,6 +43,7 @@ const TaskTable = ({ tasks }) => {
     selectedDateRange,
   })
 
+  console.log('FILTERED ', filteredTasks)
   const sortedTasks = useMemo(
     () =>
       filteredTasks.sort(({ dueDate: dateLeft }, { dueDate: dateRight }) =>
@@ -64,7 +61,7 @@ const TaskTable = ({ tasks }) => {
     <DataView
       page={page}
       entriesPerPage={ENTRIES_PER_PAGE}
-      onPageChange={() => {}}
+      onPageChange={handlePageChange}
       heading={
         <>
           <div
@@ -105,7 +102,7 @@ const TaskTable = ({ tasks }) => {
           >
             {phase}
           </span>,
-          <Link>Dispute #{disputeId}</Link>,
+          <Link href={`/disputes/${disputeId}`}>Dispute #{disputeId}</Link>,
           <IdentityBadge entity={juror} />,
 
           <TaskStatus status={open} />,
@@ -120,10 +117,6 @@ const TaskTable = ({ tasks }) => {
       )}
     />
   )
-}
+})
 
 export default TaskTable
-
-/** <div key={5}>{`${dayjs(formattedDate).format(
-            'DD/MM/YY'
-          )} at ${hoursAndSec} - Term `}</div> */
