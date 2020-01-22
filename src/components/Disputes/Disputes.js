@@ -1,9 +1,24 @@
+<<<<<<< HEAD
 import React, { useCallback, useState } from 'react'
 import { Button, GU, Header, SidePanel, Tabs, Tag } from '@aragon/ui'
 
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
 import { DisputesStateProvider } from './DisputesStateProvider'
+=======
+import React, { useCallback, useMemo, useState } from 'react'
+import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
+import { useHistory } from 'react-router-dom'
+import DisputeDetail from './DisputeDetail'
+import DisputeList from './DisputeList'
+import useDisputes from '../../hooks/useDisputes'
+import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
+
+import ANJIcon from '../../assets/anjButton.svg'
+
+const useSelectedDispute = disputes => {
+  const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
+>>>>>>> dispute-path
 
 import { useDisputesLogic } from '../../disputes-logic'
 
@@ -11,6 +26,7 @@ import ANJIcon from '../../assets/anjButton.svg'
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
+<<<<<<< HEAD
   const {
     disputes,
     myDisputes,
@@ -18,6 +34,20 @@ function Disputes() {
     selectDispute,
     selectedDispute,
   } = useDisputesLogic()
+=======
+  const [disputes] = useDisputes()
+  const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
+  const jurorDisputes = useJurorDraftQuery(connectedAccount)
+  const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
+  const history = useHistory()
+
+  const handleSelectDispute = useCallback(
+    id => {
+      history.push(`/disputes/${id}`)
+    },
+    [history]
+  )
+>>>>>>> dispute-path
 
   const handleBack = useCallback(() => {
     selectDispute(-1)
@@ -88,8 +118,13 @@ function Disputes() {
             `}
           >
             <DisputeList
+<<<<<<< HEAD
               disputes={screenIndex === 0 ? disputes : myDisputes}
               selectDispute={selectDispute}
+=======
+              disputes={screenIndex === 0 ? disputes : jurorDisputes}
+              onSelectDispute={handleSelectDispute}
+>>>>>>> dispute-path
             />
           </div>
         </React.Fragment>
