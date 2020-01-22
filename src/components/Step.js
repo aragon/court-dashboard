@@ -1,5 +1,5 @@
 import React from 'react'
-import { GU } from '@aragon/ui'
+import { GU, useTheme } from '@aragon/ui'
 
 export default function Step({
   stepPoint,
@@ -8,11 +8,12 @@ export default function Step({
   displayPoint,
   ...props
 }) {
+  const theme = useTheme()
   if (displayPoint) {
     return (
       <div
         css={`
-          background: ${active ? '#FFF6F5' : ''};
+          background: ${active ? theme.accent.alpha(0.1) : ''};
         `}
       >
         <div

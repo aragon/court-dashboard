@@ -10,7 +10,12 @@ import disputeManagerAbi from '../abi/DisputeManager.json'
 import votingAbi from '../abi/CRVoting.json'
 
 import { getFunctionSignature } from '../lib/web3-utils'
-import { getVoteId, hashVote } from '../utils/crvoting-utils'
+import {
+  getVoteId,
+  hashVote,
+  getOutcomeFromCommitment,
+  DEFAULT_SALT,
+} from '../utils/crvoting-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 500000 // Should be relative to every tx ?
@@ -121,9 +126,11 @@ export function useDisputeActions() {
 
   // Reveal
   const reveal = useCallback(
-    (disputeId, roundId, voter, outcome, salt) => {
+    (disputeId, roundId, voter, commitment, salt) => {
       const voteId = getVoteId(disputeId, roundId)
-      return votingContract.reveal(voteId, voter, outcome, salt)
+      const outcome = getOutcomeFromCommitment(commitment, salt)
+
+      return votingContract.reveal(voteId, voter, outcome, salt || DEFAULT_SALT) // TODO: use salt generated for the juror
     },
     [votingContract]
   )

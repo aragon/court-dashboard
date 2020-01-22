@@ -1,27 +1,40 @@
 import React, { useCallback, useMemo } from 'react'
-import { Header, SyncIndicator, BackButton, Bar, Box, Split } from '@aragon/ui'
+import {
+  BackButton,
+  Bar,
+  Box,
+  GU,
+  Header,
+  SidePanel,
+  Split,
+  SyncIndicator,
+} from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-import useDisputesSubscription from './hooks/useDisputesSubscription'
+
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
 import NoEvidence from './NoEvidence'
 
 import { hexToAscii, toDate } from '../../lib/web3-utils'
-import { useDisputeActions } from '../../hooks/useCourt'
+import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
+import { DisputesStateProvider } from './DisputesStateProvider'
+import CommitPanel from './panels/CommitPanel'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
-  const disputes = useDisputesSubscription()
+
   const { id: disputeId } = match.params
+  const {
+    actions,
+    dispute,
+    isSyncing,
+    requestMode,
+    panelState,
+    requests,
+  } = useDisputeLogic(disputeId)
 
-  const dispute = useMemo(
-    () => disputes.find(dispute => dispute.id === disputeId),
-    [disputeId, disputes]
-  )
-
-  const { subject } = dispute
-  const actions = useDisputeActions()
+  const { subject = {} } = dispute || {}
 
   const evidences = useMemo(
     () =>
@@ -39,41 +52,83 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   return (
     <React.Fragment>
-      <SyncIndicator visible={!dispute} label="Loading dispute…" />
+      <SyncIndicator visible={isSyncing} label="Loading dispute…" />
 
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
 
-      <Split
-        primary={
-          <React.Fragment>
-            <DisputeInfo
-              dispute={dispute}
-              onDraft={actions.draft}
-              onCommit={actions.commit}
-              onReveal={actions.reveal}
-              onLeak={actions.leak}
-            />
-            {evidences.length > 0 ? (
-              <DisputeEvidences evidences={evidences} />
-            ) : (
-              <NoEvidence />
-            )}
-          </React.Fragment>
-        }
-        secondary={
-          <React.Fragment>
-            <Box heading="Voting results">Results</Box>
-            <Box heading="Dispute timeline" padding={0}>
-              <DisputeTimeline dispute={dispute} />
-            </Box>
-          </React.Fragment>
-        }
-      />
+      {!isSyncing && (
+        <Split
+          primary={
+            <React.Fragment>
+              <DisputeInfo
+                dispute={dispute}
+                onDraft={actions.draft}
+                onRequestCommit={requests.commit}
+                onReveal={actions.reveal}
+                onLeak={actions.leak}
+              />
+              {evidences.length > 0 ? (
+                <DisputeEvidences evidences={evidences} />
+              ) : (
+                <NoEvidence />
+              )}
+            </React.Fragment>
+          }
+          secondary={
+            <React.Fragment>
+              <Box heading="Dispute timeline" padding={0}>
+                <DisputeTimeline dispute={dispute} />
+              </Box>
+            </React.Fragment>
+          }
+        />
+      )}
+      <SidePanel
+        title={`Commit your vote on dispute #${disputeId}`}
+        opened={panelState.visible}
+        onClose={panelState.requestClose}
+        onTransitionEnd={panelState.endTransition}
+      >
+        <div
+          css={`
+            margin-top: ${2 * GU}px;
+          `}
+        >
+          <PanelComponent
+            dispute={dispute}
+            requestMode={requestMode}
+            actions={actions}
+          />
+        </div>
+      </SidePanel>
     </React.Fragment>
   )
 })
 
-export default DisputeDetail
+function PanelComponent({ dispute, requestMode, actions, ...props }) {
+  const { mode, data } = requestMode
+  const { commit } = actions
+
+  switch (mode) {
+    case REQUEST_MODE.COMMIT:
+      return (
+        <CommitPanel
+          dispute={dispute}
+          commitment={data.commitment}
+          onCommit={commit}
+          {...props}
+        />
+      )
+  }
+}
+
+export default function DisputeDetailWithSubscritpion(props) {
+  return (
+    <DisputesStateProvider>
+      <DisputeDetail {...props} />
+    </DisputesStateProvider>
+  )
+}
