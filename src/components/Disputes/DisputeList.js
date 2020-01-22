@@ -37,10 +37,10 @@ const getFilteredDisputes = ({
   selectedPhase,
 }) => {
   return disputes.filter(
-    ({ createdAt, reducedState, currentPhase }) =>
+    ({ createdAt, reducedState, phase }) =>
       (selectedPhase === UNSELECTED_FILTER ||
         selectedPhase === ALL_FILTER ||
-        currentPhase === DISPUTES_PHASE_TYPES[selectedPhase]) &&
+        phase === DISPUTES_PHASE_TYPES[selectedPhase]) &&
       (!selectedDateRange.start ||
         !selectedDateRange.end ||
         dayjs(createdAt).isBetween(
@@ -58,6 +58,8 @@ function DisputeList({ disputes, selectDispute }) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedStatus, setSelectedStatus] = useState(UNSELECTED_FILTER)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_FILTER)
+
+  console.log('DISPUTES ', disputes)
 
   const handleSelectedDateRangeChange = range => {
     setSelectedDateRange(range)
