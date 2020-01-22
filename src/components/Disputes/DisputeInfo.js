@@ -1,28 +1,20 @@
 import React from 'react'
 import {
   Box,
-  Button,
   GU,
+  IdentityBadge,
   Text,
   textStyle,
-  IdentityBadge,
+  TransactionBadge,
   useTheme,
 } from '@aragon/ui'
 import IconCourt from '../../assets/courtIcon.svg'
 import DisputeStatus from './DisputeStatus'
+import DisputeActions from './DisputeActions'
 
 const DisputeInfo = ({ dispute }) => {
   const theme = useTheme()
-  const {
-    id,
-    description,
-    // status,
-    creator,
-    rewardAmount,
-    stakedAmount,
-    term,
-    // termDate,
-  } = dispute
+  const { id, metadata, subject, txHash } = dispute
 
   return (
     <Box>
@@ -38,7 +30,6 @@ const DisputeInfo = ({ dispute }) => {
           css={`
             display: flex;
             margin-bottom: ${3 * GU}px;
-            justify-content: space-between;
           `}
         >
           <div
@@ -49,7 +40,11 @@ const DisputeInfo = ({ dispute }) => {
           >
             <div
               css={`
-                background: #c8d7ea;
+                background: linear-gradient(
+                  232.86deg,
+                  ${theme.accentEnd} -50.51%,
+                  ${theme.accentStart} 91.55%
+                );
                 border-radius: 50%;
                 padding: 12px;
                 display: inline-block;
@@ -59,26 +54,41 @@ const DisputeInfo = ({ dispute }) => {
             </div>
             <div
               css={`
-                margin-left: ${3 * GU}px;
+                display: flex;
+                align-items: center;
               `}
             >
-              <Text
+              <div
                 css={`
-                  display: block;
-                  margin-bottom: ${GU}px;
-                  ${textStyle('title3')};
+                  margin-left: ${3 * GU}px;
                 `}
               >
-                Dispute #{id}
-              </Text>
-              <IdentityBadge entity={creator} badgeOnly />
+                <Text
+                  css={`
+                    display: block;
+                    margin-bottom: ${GU}px;
+                    ${textStyle('title3')};
+                  `}
+                >
+                  Dispute #{id}
+                </Text>
+                <TransactionBadge transaction={txHash} />
+              </div>
             </div>
           </div>
-          <div>
+          <div
+            css={`
+              margin-left: ${GU}px;
+            `}
+          >
+            <div
+              css={`
+                margin-top: 6px;
+              `}
+            />
             <DisputeStatus dispute={dispute} />
           </div>
         </div>
-
         <div
           css={`
             display: grid;
@@ -102,7 +112,7 @@ const DisputeInfo = ({ dispute }) => {
                 ${textStyle('body2')};
               `}
             >
-              {description}
+              {metadata}
             </Text>
           </div>
           <div>
@@ -113,7 +123,7 @@ const DisputeInfo = ({ dispute }) => {
                 margin-bottom: ${2 * GU}px;
               `}
             >
-              Organization
+              Created by
             </h2>
             <div
               css={`
@@ -122,110 +132,13 @@ const DisputeInfo = ({ dispute }) => {
               `}
             >
               <IdentityBadge
-                // connectedAccount={addressesEqual(creator, connectedAccount)}
-                entity={creator}
+                // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- add connected account
+                entity={subject.id}
               />
             </div>
           </div>
         </div>
-        <div
-          css={`
-            display: grid;
-            grid-template-columns: repeat(3, 1fr) minmax(250px, auto);
-            margin-bottom: ${5 * GU}px;
-          `}
-        >
-          <div>
-            <span
-              css={`
-                ${textStyle('label2')}
-                color: ${theme.contentSecondary};
-                font-weight: 200;
-                display: block;
-                margin-bottom: ${1.5 * GU}px;
-              `}
-            >
-              Rewards
-            </span>
-            <Text
-              css={`
-                display: inline-block;
-                ${textStyle('body2')};
-              `}
-            >
-              {`${rewardAmount} DAI`}
-            </Text>
-          </div>
-          <div>
-            <span
-              css={`
-                ${textStyle('label2')}
-                color: ${theme.contentSecondary};
-                font-weight: 200;
-                display: block;
-                margin-bottom: ${1.5 * GU}px;
-              `}
-            >
-              Collateral Staked
-            </span>
-            <Text
-              css={`
-                display: inline-block;
-                ${textStyle('body2')};
-              `}
-            >
-              {`${stakedAmount} ANJ`}
-            </Text>
-          </div>
-          <div>
-            <span
-              css={`
-                ${textStyle('label2')}
-                color: ${theme.contentSecondary};
-                font-weight: 200;
-                display: block;
-                margin-bottom: ${1.5 * GU}px;
-              `}
-            >
-              Term Number
-            </span>
-            <Text
-              css={`
-                display: inline-block;
-                ${textStyle('body2')};
-              `}
-            >
-              {term}
-            </Text>
-          </div>
-          <div>
-            <span
-              css={`
-                ${textStyle('label2')}
-                color: ${theme.contentSecondary};
-                font-weight: 200;
-                display: block;
-                margin-bottom: ${1.5 * GU}px;
-              `}
-            >
-              Created by
-            </span>
-            <IdentityBadge
-              // connectedAccount={addressesEqual(creator, connectedAccount)}
-              entity={creator}
-            />
-          </div>
-        </div>
-        <Button
-          mode="strong"
-          onClick={() => {}}
-          wide
-          css={`
-            background: ${theme.surfaceContentSecondary};
-          `}
-        >
-          Vote
-        </Button>
+        <DisputeActions dispute={dispute} />
       </section>
     </Box>
   )

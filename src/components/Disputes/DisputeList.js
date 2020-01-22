@@ -1,13 +1,15 @@
 import React, { useCallback, useState } from 'react'
 import { Bar, CardLayout, GU } from '@aragon/ui'
-import * as DisputesTypes from './types'
+import * as DisputesTypes from '../../types/types'
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
 import dayjs from '../../lib/dayjs'
 
+const ALL_FILTER = 0
 const UNSELECTED_FILTER = -1
 const INITIAL_DATE_RANGE = { start: null, end: null }
 const DISPUTES_STATUS_TYPES = [
+  DisputesTypes.Phase.All,
   DisputesTypes.Status.Open,
   DisputesTypes.Status.Closed,
 ]
@@ -16,6 +18,7 @@ const DISPUTES_STATUS_STRING = DISPUTES_STATUS_TYPES.map(
 )
 
 const DISPUTES_PHASE_TYPES = [
+  DisputesTypes.Phase.All,
   DisputesTypes.Phase.Evidence,
   DisputesTypes.Phase.JuryDrafting,
   DisputesTypes.Phase.VotingPeriod,
@@ -34,9 +37,10 @@ const getFilteredDisputes = ({
   selectedPhase,
 }) => {
   return disputes.filter(
-    ({ createdAt, reducedState, currentPhase }) =>
+    ({ createdAt, reducedState, phase }) =>
       (selectedPhase === UNSELECTED_FILTER ||
-        currentPhase === DISPUTES_PHASE_TYPES[selectedPhase]) &&
+        selectedPhase === ALL_FILTER ||
+        phase === DISPUTES_PHASE_TYPES[selectedPhase]) &&
       (!selectedDateRange.start ||
         !selectedDateRange.end ||
         dayjs(createdAt).isBetween(
@@ -45,6 +49,7 @@ const getFilteredDisputes = ({
           '[]'
         )) &&
       (selectedStatus === UNSELECTED_FILTER ||
+        selectedStatus === ALL_FILTER ||
         reducedState === DISPUTES_STATUS_TYPES[selectedStatus])
   )
 }
@@ -53,6 +58,8 @@ function DisputeList({ disputes, onSelectDispute }) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedStatus, setSelectedStatus] = useState(UNSELECTED_FILTER)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_FILTER)
+
+  console.log('DISPUTES ', disputes)
 
   const handleSelectedDateRangeChange = range => {
     setSelectedDateRange(range)

@@ -1,16 +1,20 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
+import { useHistory } from 'react-router-dom'
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
+import useDisputes from '../../hooks/useDisputes'
+import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
+
 import ANJIcon from '../../assets/anjButton.svg'
-import useDisputesSubscription from './hooks/useDisputesSubscription'
-import useJurorDraftQuery from './hooks/useJurorDraftQuery'
-import { useHistory } from 'react-router-dom'
 
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
 
-  const selectDispute = disputeId => setSelectedDisputeId(disputeId)
+  const selectDispute = useCallback(
+    disputeId => setSelectedDisputeId(disputeId),
+    []
+  )
 
   const selectedDispute = useMemo(
     () => disputes.find(dispute => dispute.id === selectedDisputeId) || null,
@@ -22,8 +26,8 @@ const useSelectedDispute = disputes => {
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
-  const disputes = useDisputesSubscription()
-  const connectedAccount = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
+  const [disputes] = useDisputes()
+  const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
   const history = useHistory()

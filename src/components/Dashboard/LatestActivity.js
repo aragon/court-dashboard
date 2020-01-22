@@ -12,7 +12,7 @@ function LatestActivity() {
   return (
     <Box heading="latest activity" padding={0}>
       <Stepper
-        lineColor={theme.accent.alpha(0.2)}
+        lineColor="#FFCDC5"
         lineExtraHeight={10}
         lineTop={15}
         lineWidth={2}

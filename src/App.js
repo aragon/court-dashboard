@@ -1,7 +1,6 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { Main } from '@aragon/ui'
-
 import theme from './theme-court'
 
 import MainView from './components/MainView'
@@ -11,7 +10,7 @@ import { CourtConfigProvider } from './providers/CourtConfig'
 import AppLoader from './components/AppLoader'
 import Routes from './Routes'
 
-function App() {
+const App = () => {
   return (
     <BrowserRouter>
       <Main
