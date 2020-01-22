@@ -41,9 +41,9 @@ const DisputeInfo = ({ dispute }) => {
             <div
               css={`
                 background: linear-gradient(
-                  232.86deg,
-                  ${theme.accentEnd} -50.51%,
-                  ${theme.accentStart} 91.55%
+                  233deg,
+                  ${theme.accentEnd} -50%,
+                  ${theme.accentStart} 91%
                 );
                 border-radius: 50%;
                 padding: 12px;
@@ -66,7 +66,7 @@ const DisputeInfo = ({ dispute }) => {
                 <Text
                   css={`
                     display: block;
-                    margin-bottom: ${GU}px;
+                    margin-bottom: ${1 * GU}px;
                     ${textStyle('title3')};
                   `}
                 >
@@ -78,7 +78,7 @@ const DisputeInfo = ({ dispute }) => {
           </div>
           <div
             css={`
-              margin-left: ${GU}px;
+              margin-left: ${1 * GU}px;
             `}
           >
             <div
