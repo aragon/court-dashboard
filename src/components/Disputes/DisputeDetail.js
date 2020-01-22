@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { Header, SyncIndicator, BackButton, Bar, Box, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
 import useDisputeSubscription from './hooks/useDisputeSubscription'
@@ -12,11 +12,9 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
   const { id: disputeId } = match.params
 
-  const {
-    dispute,
-    fetching: disputeFetching,
-    // error: disputeFetchingError, // TODO: handle loading error
-  } = useDisputeSubscription(disputeId)
+  const { dispute, fetching: disputeFetching } = useDisputeSubscription(
+    disputeId
+  )
 
   const subject = dispute && dispute.subject
 
@@ -33,6 +31,19 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const handleBack = useCallback(() => {
     history.push('/disputes')
   }, [history])
+
+  const noDispute = !dispute && !disputeFetching
+
+  useEffect(() => {
+    // TODO: display a proper error state and let the user retry or go back
+    if (noDispute) {
+      history.push('/disputes')
+    }
+  }, [noDispute, history])
+
+  if (noDispute) {
+    return null
+  }
 
   return (
     <React.Fragment>

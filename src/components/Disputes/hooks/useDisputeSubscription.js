@@ -4,15 +4,7 @@ import { reduceDispute } from '../reducer'
 import { SingleDispute } from '../../../queries/disputes'
 
 export default function useSingleDisputeSubscription(id) {
-  const [
-    {
-      // TODO: check if we can get the equivalent of `fetching`,
-      // but for the initial query.
-      // fetching,
-      data,
-      error,
-    },
-  ] = useSubscription({
+  const [{ data, error }] = useSubscription({
     query: SingleDispute,
     variables: { id },
   })
@@ -22,5 +14,5 @@ export default function useSingleDisputeSubscription(id) {
     [data]
   )
 
-  return { dispute, fetching: !dispute && !error, error }
+  return { dispute, fetching: !data && !error, error }
 }
