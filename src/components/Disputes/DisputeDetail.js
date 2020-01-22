@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { Header, SyncIndicator, BackButton, Bar, Box, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-import useDisputesSubscription from './hooks/useDisputesSubscription'
+import useDisputeSubscription from './hooks/useDisputeSubscription'
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
@@ -10,13 +10,13 @@ import NoEvidence from './NoEvidence'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
-  const disputes = useDisputesSubscription()
   const { id: disputeId } = match.params
 
-  const dispute = useMemo(
-    () => disputes.find(dispute => dispute.id === disputeId),
-    [disputeId, disputes]
-  )
+  const {
+    dispute,
+    fetching: disputeFetching,
+    // error: disputeFetchingError, // TODO: handle loading error
+  } = useDisputeSubscription(disputeId)
 
   const subject = dispute && dispute.subject
 
@@ -34,11 +34,9 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     history.push('/disputes')
   }, [history])
 
-  const isLoading = !dispute
-
   return (
     <React.Fragment>
-      <SyncIndicator visible={isLoading} label="Loading dispute…" />
+      <SyncIndicator visible={disputeFetching} label="Loading dispute…" />
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
@@ -49,10 +47,10 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
             <DisputeInfo
               dispute={dispute}
               id={disputeId}
-              isLoading={isLoading}
+              loading={disputeFetching}
             />
             {(() => {
-              if (isLoading) {
+              if (disputeFetching) {
                 return null
               }
               if (evidences.length === 0) {
@@ -64,9 +62,9 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
         }
         secondary={
           <React.Fragment>
-            <Box heading="Voting results">{isLoading && 'Results'}</Box>
+            <Box heading="Voting results">{disputeFetching && 'Results'}</Box>
             <Box heading="Dispute timeline" padding={0}>
-              {isLoading ? (
+              {disputeFetching ? (
                 <div css="height: 100px" />
               ) : (
                 <DisputeTimeline dispute={dispute} />

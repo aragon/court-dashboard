@@ -13,12 +13,12 @@ import DisputeActions from './DisputeActions'
 
 import iconCourt from '../../assets/courtIcon.svg'
 
-function DisputeInfo({ dispute, id, isLoading }) {
+function DisputeInfo({ dispute, id, loading }) {
   const theme = useTheme()
 
-  const description = isLoading ? 'Loading…' : dispute.metadata
+  const description = loading ? 'Loading…' : dispute.metadata
   const creatorAddress = dispute && dispute.subject && dispute.subject.id
-  const transaction = (dispute && dispute.txHash) || '0x'
+  const transaction = dispute && dispute.txHash
 
   return (
     <Box>
@@ -143,7 +143,7 @@ function DisputeInfo({ dispute, id, isLoading }) {
 DisputeInfo.propTypes = {
   dispute: PropTypes.object, // TODO: define DisputeType
   id: PropTypes.string.isRequired,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
 }
 
 export default DisputeInfo
