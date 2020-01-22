@@ -10,4 +10,7 @@ export default {
   selected: '#FF9780',
   selectedContent: '#FFFFFF',
   selectedDisabled: '#C4CDD5',
+
+  tagIndicator: '#FFF5F1',
+  tagIndicatorContent: '#CD625C',
 }

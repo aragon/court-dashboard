@@ -2,7 +2,9 @@ import React from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ButtonBase, GU, useTheme, textStyle } from '@aragon/ui'
 
+import dashboardMenuIcon from '../assets/dashboardMenuIcon.svg'
 import menuIcon from '../assets/menu.svg'
+import tasksMenuIcon from '../assets/tasksMenuIcon.svg'
 
 function NavBar() {
   const theme = useTheme()
@@ -30,8 +32,8 @@ function NavBar() {
         Menu
       </h2>
 
-      <NavItem to="/dashboard" icon={menuIcon} label="Dashboard" />
-      <NavItem to="/tasks" icon={menuIcon} label="Tasks" />
+      <NavItem to="/dashboard" icon={dashboardMenuIcon} label="Dashboard" />
+      <NavItem to="/tasks" icon={tasksMenuIcon} label="Tasks" />
       <NavItem to="/disputes" icon={menuIcon} label="Disputes" />
     </nav>
   )
