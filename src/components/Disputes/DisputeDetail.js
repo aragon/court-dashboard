@@ -18,11 +18,11 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     [disputeId, disputes]
   )
 
-  const { subject } = dispute
+  const subject = dispute && dispute.subject
 
   const evidences = useMemo(
     () =>
-      (subject.evidence || []).map(evidence => ({
+      ((subject && subject.evidence) || []).map(evidence => ({
         ...evidence,
         data: hexToAscii(evidence.data),
         createdAt: toDate(evidence.createdAt),
@@ -34,31 +34,43 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     history.push('/disputes')
   }, [history])
 
+  const isLoading = !dispute
+
   return (
     <React.Fragment>
-      <SyncIndicator visible={!dispute} label="Loading dispute…" />
-
+      <SyncIndicator visible={isLoading} label="Loading dispute…" />
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
-
       <Split
         primary={
           <React.Fragment>
-            <DisputeInfo dispute={dispute} />
-            {evidences.length > 0 ? (
-              <DisputeEvidences evidences={evidences} />
-            ) : (
-              <NoEvidence />
-            )}
+            <DisputeInfo
+              dispute={dispute}
+              id={disputeId}
+              isLoading={isLoading}
+            />
+            {(() => {
+              if (isLoading) {
+                return null
+              }
+              if (evidences.length === 0) {
+                return <NoEvidence />
+              }
+              return <DisputeEvidences evidences={evidences} />
+            })()}
           </React.Fragment>
         }
         secondary={
           <React.Fragment>
-            <Box heading="Voting results">Results</Box>
+            <Box heading="Voting results">{isLoading && 'Results'}</Box>
             <Box heading="Dispute timeline" padding={0}>
-              <DisputeTimeline dispute={dispute} />
+              {isLoading ? (
+                <div css="height: 100px" />
+              ) : (
+                <DisputeTimeline dispute={dispute} />
+              )}
             </Box>
           </React.Fragment>
         }
