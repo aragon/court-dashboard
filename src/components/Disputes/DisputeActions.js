@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { GU, Help, textStyle, useTheme } from '@aragon/ui'
 
 import { Phase as DisputePhase } from '../../types/dispute-status-types'

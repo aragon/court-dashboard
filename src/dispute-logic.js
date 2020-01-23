@@ -1,8 +1,9 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { useSidePanel } from './hooks/useSidePanel'
 import { useDisputeActions } from './hooks/useCourtContracts'
-import useDisputes from './hooks/useDisputes'
+import useSingleDisputeSubscription from './hooks/subscription-hooks'
+import { useDispute } from './hooks/useDisputes'
 
 export const REQUEST_MODE = {
   NO_REQUEST: Symbol('NO_REQUEST'),
@@ -53,13 +54,6 @@ export function usePanelRequestActions(request) {
   return { commit, reveal, appeal, confirmAppeal }
 }
 
-function useSelectedDispute(disputes, disputeId) {
-  return useMemo(() => disputes.find(dispute => dispute.id === disputeId), [
-    disputeId,
-    disputes,
-  ])
-}
-
 export function useDisputeLogic(disputeId) {
   const panelState = useSidePanel()
   const [requestMode, setRequestMode] = usePanelRequestMode(
@@ -67,17 +61,20 @@ export function useDisputeLogic(disputeId) {
   )
   const requests = usePanelRequestActions(setRequestMode)
 
-  const [disputes] = useDisputes()
-  const dispute = useSelectedDispute(disputes, disputeId)
+  const { dispute, fetching: disputeFetching } = useSingleDisputeSubscription(
+    disputeId
+  )
+
+  const disputeWithPhase = useDispute(dispute)
 
   const actions = useDisputeActions()
 
   return {
     actions,
-    dispute,
+    dispute: disputeWithPhase,
     requestMode,
     panelState,
     requests,
-    isSyncing: !dispute,
+    loading: disputeFetching,
   }
 }

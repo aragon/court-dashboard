@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import {
   BackButton,
   Bar,
@@ -29,17 +29,17 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const {
     actions,
     dispute,
-    isSyncing,
+    loading,
     requestMode,
     panelState,
     requests,
   } = useDisputeLogic(disputeId)
 
-  const { subject = {} } = dispute || {}
+  const subject = dispute && dispute.subject
 
   const evidences = useMemo(
     () =>
-      (subject.evidence || []).map(evidence => ({
+      ((subject && subject.evidence) || []).map(evidence => ({
         ...evidence,
         data: hexToAscii(evidence.data),
         createdAt: toDate(evidence.createdAt),
@@ -51,21 +51,35 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     history.push('/disputes')
   }, [history])
 
+  const noDispute = !dispute && !loading
+
+  useEffect(() => {
+    // TODO: display a proper error state and let the user retry or go back
+    if (noDispute) {
+      history.push('/disputes')
+    }
+  }, [noDispute, history])
+
+  if (noDispute) {
+    return null
+  }
+
   return (
     <React.Fragment>
-      <SyncIndicator visible={isSyncing} label="Loading dispute…" />
+      <SyncIndicator visible={loading} label="Loading dispute…" />
 
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
 
-      {!isSyncing && (
+      {!loading && (
         <Split
           primary={
             <React.Fragment>
               <DisputeInfo
                 dispute={dispute}
+                loading={loading}
                 onDraft={actions.draft}
                 onRequestCommit={requests.commit}
                 onReveal={actions.reveal}
@@ -74,17 +88,25 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
                 onRequestConfirmAppeal={requests.confirmAppeal}
                 onExecuteRuling={actions.executeRuling}
               />
-              {evidences.length > 0 ? (
-                <DisputeEvidences evidences={evidences} />
-              ) : (
-                <NoEvidence />
-              )}
+              {(() => {
+                if (loading) {
+                  return null
+                }
+                if (evidences.length === 0) {
+                  return <NoEvidence />
+                }
+                return <DisputeEvidences evidences={evidences} />
+              })()}
             </React.Fragment>
           }
           secondary={
             <React.Fragment>
               <Box heading="Dispute timeline" padding={0}>
-                <DisputeTimeline dispute={dispute} />
+                {loading ? (
+                  <div css="height: 100px" />
+                ) : (
+                  <DisputeTimeline dispute={dispute} />
+                )}
               </Box>
             </React.Fragment>
           }

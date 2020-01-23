@@ -55,6 +55,61 @@ export const AllDisputes = gql`
   }
 `
 
+export const SingleDispute = gql`
+  subscription Dispute($id: ID!) {
+    dispute(id: $id) {
+      id
+      txHash
+      createTermId
+      possibleRulings
+      finalRuling
+      lastRoundId
+      state
+      metadata
+      createdAt
+      subject {
+        id
+        evidence {
+          id
+          submitter
+          data
+          createdAt
+        }
+      }
+      rounds {
+        id
+        state
+        number
+        draftTermId
+        jurorsNumber
+        settledPenalties
+        jurorFees
+        delayedTerms
+        selectedJurors
+        coherentJurors
+        collectedTokens
+        createdAt
+        jurors {
+          juror {
+            id
+          }
+          commitment
+          outcome
+        }
+        appeal {
+          id
+          maker
+          appealedRuling
+          taker
+          opposedRuling
+          settled
+          createdAt
+        }
+      }
+    }
+  }
+`
+
 export const JurorDrafts = gql`
   query JurorDrafts($id: ID!) {
     juror(id: $id) {

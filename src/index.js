@@ -29,6 +29,7 @@ const client = createClient({
     }),
   ],
 })
+
 ReactDOM.render(
   <Provider value={client}>
     <App />

@@ -34,3 +34,15 @@ export default function useDisputes() {
     jurorDisputes,
   ]
 }
+
+export function useDispute(dispute) {
+  const courtConfig = useCourtConfig()
+  const now = useNow()
+
+  if (!dispute) return
+
+  return {
+    ...dispute,
+    ...getPhaseAndTransition(dispute, courtConfig, now),
+  }
+}

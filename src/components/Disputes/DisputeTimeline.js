@@ -69,7 +69,9 @@ function DisputeTimeline({ dispute }) {
                                     margin-left: ${1.5 * GU}px;
                                   `}
                                 >
-                                  {getRoundPill(round[0].roundId)}
+                                  <RoundPill
+                                    roundId={Number(round[0].roundId)}
+                                  />
                                 </span>,
                                 <Stepper
                                   lineColor={theme.accent.alpha(0.3)}
@@ -148,9 +150,7 @@ function getStep(item, index, theme, css) {
                 {getDisplayTime(item)}
               </span>
             </div>
-            {item.active &&
-              item.phase !== DisputesTypes.Phase.Evidence &&
-              getRoundPill(item.roundId)}
+            {item.active && <RoundPill roundId={Number(item.roundId)} />}
           </div>
         </div>
       }
@@ -194,7 +194,7 @@ function getPhaseIcon(phase, active) {
   )
 }
 
-function getRoundPill(roundId) {
+function RoundPill({ roundId }) {
   const label = `Round ${numberToWord(roundId)}`
 
   return (
