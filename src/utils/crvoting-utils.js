@@ -1,7 +1,7 @@
 import { bigNum } from '../lib/math-utils'
 import { soliditySha3, hash256 } from '../lib/web3-utils'
 
-const OUTCOMES = {
+export const OUTCOMES = {
   MISSING: 0,
   LEAKED: 1,
   REFUSED: 2,
@@ -21,8 +21,8 @@ const VOTE_OPTIONS = [
 
 const optionStringMapping = {
   [VOTE_OPTION_REFUSE]: 'REFUSED TO VOTE',
-  [VOTE_OPTION_AGAINST]: 'VOTED AGAINST',
-  [VOTE_OPTION_IN_FAVOUR]: 'VOTED IN FAVOUR',
+  [VOTE_OPTION_AGAINST]: 'AGAINST',
+  [VOTE_OPTION_IN_FAVOUR]: 'IN FAVOUR',
 }
 
 export function voteToString(outcome) {
@@ -46,12 +46,8 @@ export function hashVote(outcome, salt = DEFAULT_SALT) {
   return soliditySha3(['uint8', 'bytes32'], [outcome, salt])
 }
 
-export function isVoteValid(commitment) {
-  if (!commitment) return false
-
-  return (
-    commitment.gte(VOTE_OPTION_REFUSE) && commitment.lte(VOTE_OPTION_IN_FAVOUR)
-  )
+export function isValidOutcome(outcome) {
+  return OUTCOMES.REFUSED <= outcome && outcome <= OUTCOMES.IN_FAVOUR
 }
 
 export function isvoteLeaked(outcome) {

@@ -20,6 +20,7 @@ import { hexToAscii, toDate } from '../../lib/web3-utils'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
 import { DisputesStateProvider } from './DisputesStateProvider'
 import CommitPanel from './panels/CommitPanel'
+import AppealPanel from './panels/AppealPanel'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
@@ -69,6 +70,9 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
                 onRequestCommit={requests.commit}
                 onReveal={actions.reveal}
                 onLeak={actions.leak}
+                onRequestAppeal={requests.appeal}
+                onRequestConfirmAppeal={requests.confirmAppeal}
+                onExecuteRuling={actions.executeRuling}
               />
               {evidences.length > 0 ? (
                 <DisputeEvidences evidences={evidences} />
@@ -87,7 +91,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
         />
       )}
       <SidePanel
-        title={`Commit your vote on dispute #${disputeId}`}
+        title="title"
         opened={panelState.visible}
         onClose={panelState.requestClose}
         onTransitionEnd={panelState.endTransition}
@@ -110,7 +114,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
 function PanelComponent({ dispute, requestMode, actions, ...props }) {
   const { mode, data } = requestMode
-  const { commit } = actions
+  const { commit, appeal } = actions
 
   switch (mode) {
     case REQUEST_MODE.COMMIT:
@@ -122,6 +126,14 @@ function PanelComponent({ dispute, requestMode, actions, ...props }) {
           {...props}
         />
       )
+    case REQUEST_MODE.REVEAL:
+      return (
+        <p>Reveal panels</p> // TODO: Reveal panel
+      )
+    case REQUEST_MODE.APPEAL:
+      return <AppealPanel dispute={dispute} onAppeal={appeal} />
+    default:
+      return null
   }
 }
 

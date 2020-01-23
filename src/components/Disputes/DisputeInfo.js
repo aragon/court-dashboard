@@ -10,17 +10,23 @@ import {
 } from '@aragon/ui'
 import IconCourt from '../../assets/courtIcon.svg'
 import DisputeStatus from './DisputeStatus'
+import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
 
-const DisputeInfo = ({
+import { Phase as DisputePhase } from '../../types/dispute-status-types'
+
+const DisputeInfo = React.memo(function({
   dispute,
   onDraft,
   onRequestCommit,
   onReveal,
   onLeak,
-}) => {
+  onRequestAppeal,
+  onRequestConfirmAppeal,
+  onExecuteRuling,
+}) {
   const theme = useTheme()
-  const { id, metadata, subject, txHash } = dispute
+  const { id, metadata, subject, txHash, phase } = dispute
 
   return (
     <Box>
@@ -144,16 +150,24 @@ const DisputeInfo = ({
             </div>
           </div>
         </div>
+        {(phase === DisputePhase.AppealRuling ||
+          phase === DisputePhase.ConfirmAppeal ||
+          phase === DisputePhase.ExecuteRuling) && (
+          <DisputeCurrentRuling dispute={dispute} />
+        )}
         <DisputeActions
           dispute={dispute}
           onDraft={onDraft}
           onRequestCommit={onRequestCommit}
           onReveal={onReveal}
-          onLeav={onLeak}
+          onLeavk={onLeak}
+          onRequestAppeal={onRequestAppeal}
+          onRequestConfirmAppeal={onRequestConfirmAppeal}
+          onExecuteRuling={onExecuteRuling}
         />
       </section>
     </Box>
   )
-}
+})
 
 export default DisputeInfo

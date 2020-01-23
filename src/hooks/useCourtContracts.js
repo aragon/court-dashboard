@@ -4,6 +4,7 @@ import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
 
+import aragonCourtAbi from '../abi/AragonCourt.json'
 import jurorRegistryAbi from '../abi/JurorRegistry.json'
 import tokenAbi from '../abi/ERC20.json'
 import disputeManagerAbi from '../abi/DisputeManager.json'
@@ -31,13 +32,18 @@ function useANJTokenContract() {
 
 // Court contracts
 function useCourtContract(moduleType, abi) {
-  const { modules } = useCourtConfig()
+  const { id, modules } = useCourtConfig()
 
-  const courtModule = modules.find(
-    mod => CourtModuleType[mod.type] === moduleType
-  )
+  let contractAddress
+  if (moduleType === CourtModuleType.AragonCourt) {
+    contractAddress = id
+  } else {
+    const courtModule = modules.find(
+      mod => CourtModuleType[mod.type] === moduleType
+    )
 
-  const contractAddress = courtModule ? courtModule.address : null
+    contractAddress = courtModule ? courtModule.address : null
+  }
 
   return useContract(contractAddress, abi)
 }
@@ -102,8 +108,12 @@ export function useDisputeActions() {
     CourtModuleType.DisputeManager,
     disputeManagerAbi
   )
-
   const votingContract = useCourtContract(CourtModuleType.Voting, votingAbi)
+
+  const aragonCourtContract = useCourtContract(
+    CourtModuleType.AragonCourt,
+    aragonCourtAbi
+  )
 
   // Draft jurors
   const draft = useCallback(
@@ -147,9 +157,7 @@ export function useDisputeActions() {
   // Appeal round of dispute
   const appeal = useCallback(
     (disputeId, roundId, ruling) => {
-      return disputeManagerContract.appeal(disputeId, roundId, ruling, {
-        gasLimit: GAS_LIMIT,
-      })
+      return disputeManagerContract.createAppeal(disputeId, roundId, ruling)
     },
     [disputeManagerContract]
   )
@@ -157,12 +165,18 @@ export function useDisputeActions() {
   // Confirm appeal round of dispute
   const confirmAppeal = useCallback(
     (disputeId, round, ruling) => {
-      return disputeManagerContract.confirmAppeal(disputeId, round, ruling, {
-        gasLimit: GAS_LIMIT,
-      })
+      return disputeManagerContract.confirmAppeal(disputeId, round, ruling)
     },
     [disputeManagerContract]
   )
 
-  return { draft, commit, reveal, leak, appeal, confirmAppeal }
+  const executeRuling = useCallback(
+    disputeId => {
+      return aragonCourtContract.executeRuling(disputeId, {
+        gasLimit: GAS_LIMIT,
+      })
+    },
+    [aragonCourtContract]
+  )
+  return { draft, commit, reveal, leak, appeal, confirmAppeal, executeRuling }
 }

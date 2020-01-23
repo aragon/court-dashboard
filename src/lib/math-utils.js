@@ -72,3 +72,18 @@ const wordNumbers = [
 export function numberToWord(number) {
   return wordNumbers[number]
 }
+
+export function getPercentage(value, totalValue) {
+  if (!totalValue > 0) return 0
+
+  return Math.round((value * 100) / totalValue, 2)
+}
+
+export function getPercentageBN(value, totalValue) {
+  const PERCENT = 100
+  const PERCENT_BN = bigNum(PERCENT)
+
+  if (totalValue.lte(0)) return 0
+
+  return parseInt(value.mul(PERCENT_BN).div(totalValue), 10)
+}

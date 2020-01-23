@@ -24,6 +24,7 @@ function Dashboard() {
   const { actions, mode, panelState, requests } = useDashboardLogic()
   const { balances, movements } = useBalances()
 
+  console.log('ss')
   return (
     <React.Fragment>
       <Header

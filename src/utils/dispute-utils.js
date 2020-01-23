@@ -65,12 +65,13 @@ export function getDisputeTimeLine(dispute, courtConfig) {
 
 export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   const { state, createdAt } = dispute
-  const now = dayjs(nowDate).unix() * 1000
+  const now = dayjs(nowDate)
   let phase
   let nextTransition
   const lastRound = dispute.rounds[dispute.lastRoundId]
 
   // Ruled
+  console.log('state', state)
   if (state === DisputesTypes.Phase.Ruled) {
     phase = DisputesTypes.Phase.ClaimRewards
     const ruling = null // TODO: calculate ruling

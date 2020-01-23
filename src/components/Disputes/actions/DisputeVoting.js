@@ -9,25 +9,6 @@ import {
 } from '../../../utils/crvoting-utils'
 
 function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
-  // const handleReveal = async () => {
-  //   try {
-  //     const lastRoundId = dispute.lastRoundId
-  //     const tx = await onReveal(
-  //       dispute.id,
-  //       lastRoundId,
-  //       connectedAccount,
-  //       jurorDraft.commitment
-  //     ) // TODO: Add password
-  //     await tx.wait()
-  //   } catch (err) {
-  //     console.log('Error submitting tx: ', err)
-  //   }
-  // }
-
-  // const handleAppeal = async () => {
-
-  // }
-
   return (
     <div>
       <div

@@ -1,12 +1,15 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useSidePanel } from './hooks/useSidePanel'
-import { useDisputeActions } from './hooks/useCourt'
+import { useDisputeActions } from './hooks/useCourtContracts'
 import useDisputes from './hooks/useDisputes'
 
 export const REQUEST_MODE = {
   NO_REQUEST: Symbol('NO_REQUEST'),
   COMMIT: Symbol('COMMIT'),
+  REVEAL: Symbol('REVEAL'),
+  APPEAL: Symbol('APPEAL'),
+  CONFIRM_APPEAL: Symbol('CONFIRM_APPEAL'),
 }
 
 export function usePanelRequestMode(requestPanelOpen) {
@@ -35,7 +38,19 @@ export function usePanelRequestActions(request) {
     [request]
   )
 
-  return { commit }
+  const reveal = useCallback(() => {
+    request({ mode: REQUEST_MODE.REVEAL })
+  }, [request])
+
+  const appeal = useCallback(() => {
+    request({ mode: REQUEST_MODE.APPEAL })
+  }, [request])
+
+  const confirmAppeal = useCallback(() => {
+    request({ mode: REQUEST_MODE.CONFIRM_APPEAL })
+  }, [request])
+
+  return { commit, reveal, appeal, confirmAppeal }
 }
 
 function useSelectedDispute(disputes, disputeId) {
