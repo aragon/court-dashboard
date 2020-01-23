@@ -1,6 +1,8 @@
 import { bigNum } from '../lib/math-utils'
 import { soliditySha3, hash256 } from '../lib/web3-utils'
 
+export const DEFAULT_SALT = hash256('passw0rd') // TODO: Remove when implementation of the password is done
+
 export const OUTCOMES = {
   MISSING: 0,
   LEAKED: 1,
@@ -28,8 +30,6 @@ const optionStringMapping = {
 export function voteToString(outcome) {
   return optionStringMapping[outcome]
 }
-
-export const DEFAULT_SALT = hash256('passw0rd') // TODO: Remove when implementation of the password is done
 
 export function getVoteId(disputeId, roundId) {
   return bigNum(2)
