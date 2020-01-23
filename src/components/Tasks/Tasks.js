@@ -1,25 +1,32 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import ANJIcon from '../../assets/anjButton.svg'
-import TaskBox from './TasksBox'
+// import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
 import { useConnectedAccount } from '../../providers/Web3'
 import useFilteredTasks from '../../hooks/useFilteredTasks'
 
-const Tasks = () => {
+const Tasks = React.memo(() => {
   const connectedAccount = useConnectedAccount()
   const [screenIndex, setScreenIndex] = useState(0)
-  // const [tasks, openTasks] = useRounds()
 
-  const { tasks, page, setPage, openTasks } = useFilteredTasks(
-    screenIndex,
-    connectedAccount
-  )
+  const {
+    tasks,
+    selectedDateRange,
+    handleSelectedDateRangeChange,
+    selectedPhase,
+    handleSelectedPhaseChange,
+    //  openTasksNumber,
+    jurorOpenTaskNumber,
+    taskActionsString,
+  } = useFilteredTasks(screenIndex, connectedAccount)
   console.log('TASK COMPONENT ', tasks)
 
-  const completedTasks = 0
-  const incompleteTasks = 0
+  const memoTasks = useMemo(() => {
+    return tasks
+  }, [tasks])
 
+  console.log('memooo ', memoTasks)
   const handleTabChange = screenIndex => {
     setScreenIndex(screenIndex)
   }
@@ -55,11 +62,12 @@ const Tasks = () => {
           />
         }
       />
+      {/* Commented since we are not launching V1 with this component
       <TaskBox
         openTasks={openTasks}
         completedTasks={completedTasks}
         incompleteTasks={incompleteTasks}
-      />
+      /> */}
       <div
         css={`
           margin-top: ${2 * GU}px;
@@ -72,14 +80,10 @@ const Tasks = () => {
           items={[
             <div>
               <span>My Tasks </span>
-              <Tag limitDigits={4} label={0} size="small" />
+              <Tag limitDigits={4} label={jurorOpenTaskNumber} size="small" />
             </div>,
             <div>
               <span>All Tasks </span>
-              <Tag limitDigits={4} label={openTasks} size="small" />
-            </div>,
-            <div>
-              <span>Past Tasks </span>
               <Tag limitDigits={4} label={0} size="small" />
             </div>,
           ]}
@@ -87,9 +91,16 @@ const Tasks = () => {
           onChange={handleTabChange}
         />
       </div>
-      <TaskTable tasks={tasks} page={page} handlePageChange={setPage} />
+      <TaskTable
+        tasks={memoTasks}
+        dateRangeFilter={selectedDateRange}
+        onDateRangeChange={handleSelectedDateRangeChange}
+        phaseFilter={selectedPhase}
+        onPhaseChange={handleSelectedPhaseChange}
+        phaseTypes={taskActionsString}
+      />
     </>
   )
-}
+})
 
 export default Tasks

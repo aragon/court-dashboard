@@ -5,26 +5,26 @@ import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/types'
 import { useCourtConfig } from '../providers/CourtConfig'
 
-export default function useRounds(allTasks, onlyOpen, page) {
+export default function useRounds() {
   const courtConfig = useCourtConfig()
-  const tasks = useTasksSubscription(allTasks, onlyOpen, page)
+  const tasks = useTasksSubscription()
   const now = useNow()
-  let openTasks
-  let openTasksNumber = 0
 
-  if (onlyOpen) {
-    openTasks = generateOpenTasks(tasks, now, courtConfig)
-    openTasksNumber = openTasks.length
-  }
+  const openTasks = generateOpenTasks(tasks, now, courtConfig)
+  // const openTasksNumber = openTasks.length
 
-  const tasksPhasesKey = openTasks.map(t => t.ongoing).join('')
+  const tasksPhasesKey = openTasks.map(t => t.disputeId).join('')
+  console.log('tasksPhasesKey ', tasksPhasesKey)
 
-  return useMemo(() => {
-    return [openTasks, openTasksNumber]
-  }, [openTasksNumber, openTasks, tasksPhasesKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  return [
+    useMemo(() => {
+      return openTasks
+    }, [openTasks, tasksPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
+  ]
 }
 
 function generateOpenTasks(tasks, now, courtSettings) {
+  console.log('ROUNDD GENERATE ', tasks)
   const openTasks = []
   for (let i = 0; i < tasks.length; i++) {
     const currentRoundPhase = getAdjudicationPhase(
@@ -33,6 +33,8 @@ function generateOpenTasks(tasks, now, courtSettings) {
       now,
       courtSettings
     )
+    console.log('ROUND ID ', i)
+    console.log('currentRoundPhase ', currentRoundPhase)
     // If we are in appeal or confirm we just need to generate 1 task
     if (
       currentRoundPhase.phase === DisputesTypes.Phase.AppealRuling ||
@@ -46,6 +48,7 @@ function generateOpenTasks(tasks, now, courtSettings) {
         disputeId: tasks[i].dispute.id,
         phase: getTaskName(currentRoundPhase.phase),
         dueDate: currentRoundPhase.nextTransition,
+        phaseType: currentRoundPhase.phase,
         open: true,
       })
     } else {
@@ -60,6 +63,7 @@ function generateOpenTasks(tasks, now, courtSettings) {
             commitment: tasks[i].jurors[j].commitment,
             outcome: tasks[i].jurors[j].outcome,
             phase: getTaskName(currentRoundPhase.phase),
+            phaseType: currentRoundPhase.phase,
             dueDate: currentRoundPhase.nextTransition,
             open: true,
           })
