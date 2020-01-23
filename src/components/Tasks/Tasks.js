@@ -20,8 +20,10 @@ const Tasks = React.memo(() => {
     jurorOpenTaskNumber,
     taskActionsString,
   } = useFilteredTasks(screenIndex, connectedAccount)
+
   console.log('TASK COMPONENT ', tasks)
 
+  // Testing
   const memoTasks = useMemo(() => {
     return tasks
   }, [tasks])

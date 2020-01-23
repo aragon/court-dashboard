@@ -23,6 +23,7 @@ function useFilteredTasks(tabIndex, connectedAccount) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_PHASE)
   const jurorTasksSelected = tabIndex === 0
+
   const [tasks] = useRounds()
 
   const jurorTasks = tasks
