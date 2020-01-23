@@ -1,7 +1,7 @@
 import React from 'react'
 import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
 import FolderIcon from '../../assets/folderIcon.svg'
-import dayjs from '../../lib/dayjs'
+import { dateFormat } from '../../utils/date-utils'
 
 function DisputeEvidences({ evidences }) {
   const theme = useTheme()
@@ -78,7 +78,7 @@ function DisputeEvidences({ evidences }) {
                         ${textStyle('body2')};
                       `}
                     >
-                      {dayjs(createdAt).format('DD/MM/YY')}
+                      {dateFormat(createdAt, 'DD/MM/YY')}
                     </span>
                   </div>
                   <div>
