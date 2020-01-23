@@ -1,5 +1,5 @@
 import React from 'react'
-import { DropDown, DateRangePicker, GU, SearchInput } from '@aragon/ui'
+import { DropDown, DateRangePicker, GU } from '@aragon/ui'
 
 const TasksFilters = ({
   dateRangeFilter,
@@ -18,8 +18,8 @@ const TasksFilters = ({
       `}
     >
       <DropDown
-        placeholder="Actions"
-        header="Actions"
+        placeholder="Type"
+        header="Type"
         items={phaseTypes}
         selected={phaseFilter}
         onChange={onPhaseChange}
@@ -29,14 +29,6 @@ const TasksFilters = ({
         startDate={dateRangeFilter.start}
         endDate={dateRangeFilter.end}
         onChange={onDateRangeChange}
-      />
-      <SearchInput
-        css={`
-          width: ${32 * GU}px;
-        `}
-        placeholder="Search"
-        value=""
-        onChange={() => {}}
       />
     </div>
   )

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import ANJIcon from '../../assets/anjButton.svg'
 // import TaskBox from './TasksBox'
@@ -16,19 +16,11 @@ const Tasks = React.memo(() => {
     handleSelectedDateRangeChange,
     selectedPhase,
     handleSelectedPhaseChange,
-    //  openTasksNumber,
+    openTasksNumber,
     jurorOpenTaskNumber,
     taskActionsString,
   } = useFilteredTasks(screenIndex, connectedAccount)
 
-  console.log('TASK COMPONENT ', tasks)
-
-  // Testing
-  const memoTasks = useMemo(() => {
-    return tasks
-  }, [tasks])
-
-  console.log('memooo ', memoTasks)
   const handleTabChange = screenIndex => {
     setScreenIndex(screenIndex)
   }
@@ -86,7 +78,7 @@ const Tasks = React.memo(() => {
             </div>,
             <div>
               <span>All Tasks </span>
-              <Tag limitDigits={4} label={0} size="small" />
+              <Tag limitDigits={4} label={openTasksNumber} size="small" />
             </div>,
           ]}
           selected={screenIndex}
@@ -94,7 +86,7 @@ const Tasks = React.memo(() => {
         />
       </div>
       <TaskTable
-        tasks={memoTasks}
+        tasks={tasks}
         dateRangeFilter={selectedDateRange}
         onDateRangeChange={handleSelectedDateRangeChange}
         phaseFilter={selectedPhase}

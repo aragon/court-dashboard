@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import useRounds from '../hooks/useRounds'
+import React, { useState, useMemo } from 'react'
+import useRounds from './useTasks'
 import { addressesEqual } from '../lib/web3-utils'
 import dayjs from '../lib/dayjs'
 import * as DisputesTypes from '../types/types'
@@ -15,24 +15,27 @@ const TASKS_ACTIONS_TYPES = [
   DisputesTypes.Phase.ConfirmAppeal,
 ]
 
-const TASKS_ACTIONS_TYPES_STRING = TASKS_ACTIONS_TYPES.map(
-  DisputesTypes.getTaskActionString
-)
-
 function useFilteredTasks(tabIndex, connectedAccount) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_PHASE)
   const jurorTasksSelected = tabIndex === 0
+  const TASKS_ACTIONS_TYPES_STRING = jurorTasksSelected
+    ? TASKS_ACTIONS_TYPES.slice(0, 3).map(DisputesTypes.getTaskActionString)
+    : TASKS_ACTIONS_TYPES.map(DisputesTypes.getTaskActionString)
 
-  const [tasks] = useRounds()
+  const tasks = useRounds()
 
-  const jurorTasks = tasks
-    ? tasks.filter(task =>
-        task.juror === 'Anyone'
-          ? false
-          : addressesEqual(task.juror, connectedAccount)
-      )
-    : []
+  const jurorTasks = useMemo(
+    () =>
+      tasks
+        ? tasks.filter(task =>
+            task.juror === 'Anyone'
+              ? false
+              : addressesEqual(task.juror, connectedAccount)
+          )
+        : [],
+    [connectedAccount, tasks]
+  )
 
   const handleSelectedDateRangeChange = React.useCallback(
     range => {
@@ -47,18 +50,27 @@ function useFilteredTasks(tabIndex, connectedAccount) {
 
   const tasksToFilter = jurorTasksSelected ? jurorTasks : tasks
 
-  const filteredTasks = tasksToFilter.filter(
-    ({ phaseType, dueDate }) =>
-      (selectedPhase === UNSELECTED_PHASE ||
-        selectedPhase === ALL_FILTER ||
-        phaseType === TASKS_ACTIONS_TYPES[selectedPhase]) &&
-      (!selectedDateRange.start ||
-        !selectedDateRange.end ||
-        dayjs(dueDate).isBetween(
-          dayjs(selectedDateRange.start).startOf('day'),
-          dayjs(selectedDateRange.end).endOf('day'),
-          '[]'
-        ))
+  const filteredTasks = useMemo(
+    () =>
+      tasksToFilter.filter(
+        ({ phaseType, dueDate }) =>
+          (selectedPhase === UNSELECTED_PHASE ||
+            selectedPhase === ALL_FILTER ||
+            phaseType === TASKS_ACTIONS_TYPES[selectedPhase]) &&
+          (!selectedDateRange.start ||
+            !selectedDateRange.end ||
+            dayjs(dueDate).isBetween(
+              dayjs(selectedDateRange.start).startOf('day'),
+              dayjs(selectedDateRange.end).endOf('day'),
+              '[]'
+            ))
+      ),
+    [
+      selectedDateRange.end,
+      selectedDateRange.start,
+      selectedPhase,
+      tasksToFilter,
+    ]
   )
 
   return {
@@ -67,7 +79,7 @@ function useFilteredTasks(tabIndex, connectedAccount) {
     handleSelectedDateRangeChange,
     selectedPhase,
     handleSelectedPhaseChange,
-    // openTasksNumber,
+    openTasksNumber: tasks.length,
     jurorOpenTaskNumber: jurorTasks.length,
     taskActionsString: TASKS_ACTIONS_TYPES_STRING,
   }

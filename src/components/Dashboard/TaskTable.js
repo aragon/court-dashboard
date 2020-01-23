@@ -6,7 +6,6 @@ import {
   GU,
   Link,
   textStyle,
-  theme,
   useViewport,
 } from '@aragon/ui'
 import dayjs from '../../lib/dayjs'
@@ -78,15 +77,6 @@ const TaskTable = ({ tasks }) => {
               justify-content: space-between;
             `}
           >
-            <div
-              css={`
-                color: ${theme.content};
-                ${textStyle('body1')};
-              `}
-            >
-              Upcoming tasks
-            </div>
-
             {!compactMode && (
               <div css="text-align: right;">
                 <DateRangePicker

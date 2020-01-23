@@ -140,8 +140,6 @@ export function getAdjudicationPhase(dispute, round, now, courtConfig) {
     courtConfig
   )
 
-  console.log('draftTermEndTime ', draftTermEndTime)
-
   // If given term is before the reveal start term of the last round, then jurors are still allowed to commit votes for the last round
   const revealTermStartTime = draftTermEndTime + commitTerms * termDuration
   if (now < revealTermStartTime) {

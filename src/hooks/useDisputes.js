@@ -17,7 +17,6 @@ export default function useDisputes() {
     .map(v => convertToString(v[Object.keys(v)[0]]))
     .join('')
 
-  console.log('disputesPhasesKey ', disputesPhasesKey)
   return [
     useMemo(() => {
       return disputes.map((dispute, i) => ({
