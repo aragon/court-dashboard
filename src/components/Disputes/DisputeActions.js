@@ -1,10 +1,10 @@
 import React from 'react'
-import * as DisputesTypes from '../../types/types'
-import { addressesEqual } from '../../lib/web3-utils'
 import { Button, Info, textStyle, GU } from '@aragon/ui'
 import styled from 'styled-components'
+import * as DisputesTypes from '../../types/types'
+import { addressesEqual } from '../../lib/web3-utils'
 
-const DisputeActions = React.memo(({ dispute }) => {
+const DisputeActions = React.memo(function DisputeActions({ dispute }) {
   const { currentPhase, rounds } = dispute
   const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
 
@@ -95,7 +95,8 @@ const VotingButton = styled(Button)`
   width: 50%;
   margin-right: ${1 * GU}px;
   &:last-child {
-    margin-right: 0px;
+    margin-right: 0;
   }
 `
+
 export default DisputeActions

@@ -45,9 +45,9 @@ function DisputeInfo({ dispute, id, loading }) {
             <div
               css={`
                 background: linear-gradient(
-                  232.86deg,
-                  ${theme.accentEnd} -50.51%,
-                  ${theme.accentStart} 91.55%
+                  233deg,
+                  ${theme.accentEnd} -50%,
+                  ${theme.accentStart} 91%
                 );
                 border-radius: 50%;
                 padding: 12px;

@@ -59,8 +59,6 @@ function DisputeList({ disputes, onSelectDispute }) {
   const [selectedStatus, setSelectedStatus] = useState(UNSELECTED_FILTER)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_FILTER)
 
-  console.log('DISPUTES ', disputes)
-
   const handleSelectedDateRangeChange = range => {
     setSelectedDateRange(range)
   }
