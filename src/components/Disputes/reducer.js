@@ -1,4 +1,4 @@
-import * as DisputesTypes from './types'
+import * as DisputesTypes from '../../types/types'
 
 export const reduceDispute = dispute => {
   return {
@@ -9,18 +9,8 @@ export const reduceDispute = dispute => {
       dispute.state === DisputesTypes.Phase.Ruled
         ? DisputesTypes.Status.Closed
         : DisputesTypes.Status.Open,
-
-    /* TO-DO  SUPER HORRIBE FOR NOW - This should be reduced using Facu's suggestions about how to calculate it */
-    currentPhase:
-      DisputesTypes.convertFromString(dispute.state) ===
-      DisputesTypes.Phase.JuryDrafting
-        ? DisputesTypes.Phase.JuryDrafting
-        : DisputesTypes.convertFromString(dispute.state) ===
-          DisputesTypes.Phase.Evidence
-        ? DisputesTypes.Phase.Evidence
-        : dispute.rounds &&
-          DisputesTypes.convertFromString(
-            dispute.rounds[dispute.rounds.length - 1].state
-          ),
+    rounds: dispute.rounds.map(round => {
+      return { ...round, createdAt: parseInt(round.createdAt) * 1000 }
+    }),
   }
 }

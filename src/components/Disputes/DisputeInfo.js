@@ -1,28 +1,24 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import {
   Box,
-  Button,
   GU,
-  Text,
-  textStyle,
   IdentityBadge,
+  textStyle,
+  TransactionBadge,
   useTheme,
 } from '@aragon/ui'
-import IconCourt from '../../assets/courtIcon.svg'
 import DisputeStatus from './DisputeStatus'
+import DisputeActions from './DisputeActions'
 
-const DisputeInfo = ({ dispute }) => {
+import iconCourt from '../../assets/courtIcon.svg'
+
+function DisputeInfo({ dispute, id, loading }) {
   const theme = useTheme()
-  const {
-    id,
-    description,
-    // status,
-    creator,
-    rewardAmount,
-    stakedAmount,
-    term,
-    // termDate,
-  } = dispute
+
+  const description = loading ? 'Loading…' : dispute.metadata
+  const creatorAddress = dispute && dispute.subject && dispute.subject.id
+  const transaction = dispute && dispute.txHash
 
   return (
     <Box>
@@ -38,7 +34,6 @@ const DisputeInfo = ({ dispute }) => {
           css={`
             display: flex;
             margin-bottom: ${3 * GU}px;
-            justify-content: space-between;
           `}
         >
           <div
@@ -49,36 +44,45 @@ const DisputeInfo = ({ dispute }) => {
           >
             <div
               css={`
-                background: #c8d7ea;
+                background: linear-gradient(
+                  233deg,
+                  ${theme.accentEnd} -50%,
+                  ${theme.accentStart} 91%
+                );
                 border-radius: 50%;
                 padding: 12px;
                 display: inline-block;
               `}
             >
-              <img src={IconCourt} />
+              <img src={iconCourt} alt="" width="39" height="32" />
             </div>
             <div
               css={`
                 margin-left: ${3 * GU}px;
               `}
             >
-              <Text
+              <h1
                 css={`
-                  display: block;
-                  margin-bottom: ${GU}px;
+                  display: flex;
+                  align-items: center;
+                  margin-bottom: ${1 * GU}px;
                   ${textStyle('title3')};
                 `}
               >
-                Dispute #{id}
-              </Text>
-              <IdentityBadge entity={creator} badgeOnly />
+                <span>Dispute #{id}</span>
+                {dispute && (
+                  <DisputeStatus
+                    dispute={dispute}
+                    css={`
+                      margin: 0 0 0 ${1 * GU}px;
+                    `}
+                  />
+                )}
+              </h1>
+              {transaction && <TransactionBadge transaction={transaction} />}
             </div>
           </div>
-          <div>
-            <DisputeStatus dispute={dispute} />
-          </div>
         </div>
-
         <div
           css={`
             display: grid;
@@ -97,138 +101,49 @@ const DisputeInfo = ({ dispute }) => {
             >
               Description
             </h2>
-            <Text
+            <span
               css={`
                 ${textStyle('body2')};
               `}
             >
               {description}
-            </Text>
+            </span>
           </div>
-          <div>
-            <h2
-              css={`
-                ${textStyle('label2')};
-                color: ${theme.surfaceContentSecondary};
-                margin-bottom: ${2 * GU}px;
-              `}
-            >
-              Organization
-            </h2>
-            <div
-              css={`
-                display: flex;
-                align-items: flex-start;
-              `}
-            >
-              <IdentityBadge
-                // connectedAccount={addressesEqual(creator, connectedAccount)}
-                entity={creator}
-              />
+          {creatorAddress && (
+            <div>
+              <h2
+                css={`
+                  ${textStyle('label2')};
+                  color: ${theme.surfaceContentSecondary};
+                  margin-bottom: ${2 * GU}px;
+                `}
+              >
+                Created by
+              </h2>
+              <div
+                css={`
+                  display: flex;
+                  align-items: flex-start;
+                `}
+              >
+                <IdentityBadge
+                  // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- add connected account
+                  entity={creatorAddress}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
-        <div
-          css={`
-            display: grid;
-            grid-template-columns: repeat(3, 1fr) minmax(250px, auto);
-            margin-bottom: ${5 * GU}px;
-          `}
-        >
-          <div>
-            <span
-              css={`
-                ${textStyle('label2')}
-                color: ${theme.contentSecondary};
-                font-weight: 200;
-                display: block;
-                margin-bottom: ${1.5 * GU}px;
-              `}
-            >
-              Rewards
-            </span>
-            <Text
-              css={`
-                display: inline-block;
-                ${textStyle('body2')};
-              `}
-            >
-              {`${rewardAmount} DAI`}
-            </Text>
-          </div>
-          <div>
-            <span
-              css={`
-                ${textStyle('label2')}
-                color: ${theme.contentSecondary};
-                font-weight: 200;
-                display: block;
-                margin-bottom: ${1.5 * GU}px;
-              `}
-            >
-              Collateral Staked
-            </span>
-            <Text
-              css={`
-                display: inline-block;
-                ${textStyle('body2')};
-              `}
-            >
-              {`${stakedAmount} ANJ`}
-            </Text>
-          </div>
-          <div>
-            <span
-              css={`
-                ${textStyle('label2')}
-                color: ${theme.contentSecondary};
-                font-weight: 200;
-                display: block;
-                margin-bottom: ${1.5 * GU}px;
-              `}
-            >
-              Term Number
-            </span>
-            <Text
-              css={`
-                display: inline-block;
-                ${textStyle('body2')};
-              `}
-            >
-              {term}
-            </Text>
-          </div>
-          <div>
-            <span
-              css={`
-                ${textStyle('label2')}
-                color: ${theme.contentSecondary};
-                font-weight: 200;
-                display: block;
-                margin-bottom: ${1.5 * GU}px;
-              `}
-            >
-              Created by
-            </span>
-            <IdentityBadge
-              // connectedAccount={addressesEqual(creator, connectedAccount)}
-              entity={creator}
-            />
-          </div>
-        </div>
-        <Button
-          mode="strong"
-          onClick={() => {}}
-          wide
-          css={`
-            background: ${theme.surfaceContentSecondary};
-          `}
-        >
-          Vote
-        </Button>
+        {dispute && <DisputeActions dispute={dispute} />}
       </section>
     </Box>
   )
+}
+
+DisputeInfo.propTypes = {
+  dispute: PropTypes.object, // TODO: define DisputeType
+  id: PropTypes.string.isRequired,
+  loading: PropTypes.bool,
 }
 
 export default DisputeInfo

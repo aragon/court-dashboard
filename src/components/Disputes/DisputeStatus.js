@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTheme } from '@aragon/ui'
-import { Status } from './types'
+import { Status } from '../../types/types'
 
 const getStatusAttributes = (dispute, theme) => {
   if (dispute.reducedState === Status.Open) {
@@ -19,7 +19,7 @@ const getStatusAttributes = (dispute, theme) => {
   }
 }
 
-export default function DisputeStatus({ dispute }) {
+export default function DisputeStatus({ dispute, ...props }) {
   const theme = useTheme()
   const { label, color, background } = getStatusAttributes(dispute, theme)
 
@@ -33,7 +33,9 @@ export default function DisputeStatus({ dispute }) {
         font-size: 12px;
         color: ${color};
         background: ${background};
+        margin-top: 2px;
       `}
+      {...props}
     >
       {label}
     </span>
