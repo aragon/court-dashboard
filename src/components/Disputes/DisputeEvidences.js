@@ -1,6 +1,6 @@
 import React from 'react'
 import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
-import FolderIcon from '../../assets/folderIcon.svg'
+import folderIcon from '../../assets/folderIcon.svg'
 import { dateFormat } from '../../utils/date-utils'
 
 function DisputeEvidences({ evidences }) {
@@ -20,7 +20,7 @@ function DisputeEvidences({ evidences }) {
                     align-items: center;
                   `}
                 >
-                  <img src={FolderIcon} width={17} height={20} />
+                  <img src={folderIcon} width="17" height="20" alt="" />
                   <span
                     css={`
                       margin-left: ${GU * 1.5}px;

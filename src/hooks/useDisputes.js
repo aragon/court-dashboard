@@ -10,8 +10,9 @@ export default function useDisputes() {
   const disputes = useDisputeSubscription()
   const now = useNow()
 
-  const disputesPhases = disputes.map(d =>
-    getPhaseAndTransition(d, courtConfig, now)
+  const disputesPhases = useMemo(
+    () => disputes.map(d => getPhaseAndTransition(d, courtConfig, now)),
+    [courtConfig, disputes, now]
   )
   const disputesPhasesKey = disputesPhases
     .map(v => convertToString(Object.values(v)[0]))
@@ -23,6 +24,6 @@ export default function useDisputes() {
         ...dispute,
         ...disputesPhases[i],
       }))
-    }, [disputes, disputesPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
+    }, [disputesPhases, disputes, disputesPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
   ]
 }

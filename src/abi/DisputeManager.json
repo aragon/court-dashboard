@@ -1,0 +1,5 @@
+[
+  "function draft(uint256 _disputeId) external",
+  "function createAppeal(uint256 _disputeId, uint256 _roundId, uint8 _ruling) external",
+  "function confirmAppeal(uint256 _disputeId, uint256 _roundId, uint8 _ruling) external"
+]

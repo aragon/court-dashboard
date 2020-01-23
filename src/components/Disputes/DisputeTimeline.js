@@ -75,7 +75,7 @@ function DisputeTimeline({ dispute }) {
                                 margin-left: ${GU * 1.5}px;
                               `}
                             >
-                              {getRoundPill(round[0].roundId)}
+                              <RoundPill roundId={Number(round[0].roundId)} />
                             </span>,
                             <Stepper
                               lineColor="#FFCDC5"
@@ -153,7 +153,7 @@ function getStep(item, roundId, index, theme, css) {
                 {getDisplayTime(item)}
               </span>
             </div>
-            {item.active && getRoundPill(item.roundId)}
+            {item.active && <RoundPill roundId={Number(item.roundId)} />}
           </div>
         </div>
       }
@@ -197,7 +197,7 @@ function getPhaseIcon(phase, active, theme) {
   }
 }
 
-function getRoundPill(roundId) {
+function RoundPill({ roundId }) {
   let label
 
   if (roundId === 0) {
