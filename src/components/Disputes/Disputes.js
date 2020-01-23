@@ -1,10 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
+import { useHistory } from 'react-router-dom'
 import DisputeDetail from './DisputeDetail'
 import DisputeList from './DisputeList'
-import ANJIcon from '../../assets/anjButton.svg'
 import useDisputes from '../../hooks/useDisputes'
 import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
+
+import ANJIcon from '../../assets/anjButton.svg'
 
 const useSelectedDispute = disputes => {
   const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
@@ -28,6 +30,14 @@ function Disputes() {
   const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
+  const history = useHistory()
+
+  const handleSelectDispute = useCallback(
+    id => {
+      history.push(`/disputes/${id}`)
+    },
+    [history]
+  )
 
   const handleBack = useCallback(() => {
     selectDispute(-1)
@@ -105,7 +115,7 @@ function Disputes() {
           >
             <DisputeList
               disputes={screenIndex === 0 ? disputes : jurorDisputes}
-              selectDispute={selectDispute}
+              onSelectDispute={handleSelectDispute}
             />
           </div>
         </>

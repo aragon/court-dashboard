@@ -6,6 +6,7 @@ import ErrorPage from './components/ErrorPage'
 import Dashboard from './components/Dashboard/Dashboard'
 import Tasks from './components/Tasks/Tasks'
 import Disputes from './components/Disputes/Disputes'
+import DisputeDetail from './components/Disputes/DisputeDetail'
 
 export default function Routes() {
   return (
@@ -14,6 +15,7 @@ export default function Routes() {
       <Route path="/dashboard" component={Dashboard} />
       <Route exact path="/tasks" component={Tasks} />
       <Route exact path="/disputes" component={Disputes} />
+      <Route exact path="/disputes/:id" component={DisputeDetail} />
       <Route component={ErrorPage} />
     </Switch>
   )
