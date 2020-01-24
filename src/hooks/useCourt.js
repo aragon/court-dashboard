@@ -112,8 +112,7 @@ export function useDisputeActions() {
 
   // Commit
   const commit = useCallback(
-    (disputeId, roundId, commitment) => {
-      const voteId = getVoteId(disputeId, roundId)
+    (voteId, commitment) => {
       return votingContract.commit(voteId, commitment)
     },
     [votingContract]
@@ -121,8 +120,7 @@ export function useDisputeActions() {
 
   // Reveal
   const reveal = useCallback(
-    (disputeId, roundId, voter, outcome, salt) => {
-      const voteId = getVoteId(disputeId, roundId)
+    (voteId, voter, outcome, salt) => {
       return votingContract.reveal(voteId, voter, outcome, salt)
     },
     [votingContract]
@@ -130,8 +128,7 @@ export function useDisputeActions() {
 
   // Leak
   const leak = useCallback(
-    (disputeId, roundId, voter, outcome, salt) => {
-      const voteId = getVoteId(disputeId, roundId)
+    (voteId, voter, outcome, salt) => {
       return votingContract.leak(voteId, voter, outcome, salt)
     },
     [votingContract]
@@ -140,6 +137,7 @@ export function useDisputeActions() {
   // Appeal round of dispute
   const appeal = useCallback(
     (disputeId, roundId, ruling) => {
+      console.log('calling with', disputeId, roundId, ruling)
       return disputeManagerContract.appeal(disputeId, roundId, ruling, {
         gasLimit: GAS_LIMIT,
       })
@@ -158,16 +156,4 @@ export function useDisputeActions() {
   )
 
   return { draft, commit, reveal, leak, appeal, confirmAppeal }
-}
-
-export function useCourtSubscription(courtAddress) {
-  const [result] = useSubscription({
-    query: CourtConfigSubscription,
-    variables: { id: courtAddress },
-  })
-
-  // TODO: handle possible errors
-  const courtConfig = result.data && result.data.courtConfig
-
-  return courtConfig
 }

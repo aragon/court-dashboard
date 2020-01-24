@@ -150,7 +150,7 @@ function getStep(item, index, theme, css) {
                 {getDisplayTime(item)}
               </span>
             </div>
-            {item.active && <RoundPill roundId={Number(item.roundId)} />}
+            {item.active && <RoundPill roundId={item.roundId} />}
           </div>
         </div>
       }
@@ -195,6 +195,8 @@ function getPhaseIcon(phase, active) {
 }
 
 function RoundPill({ roundId }) {
+  if (roundId === undefined) return null
+
   const label = `Round ${numberToWord(roundId)}`
 
   return (

@@ -71,7 +71,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   const lastRound = dispute.rounds[dispute.lastRoundId]
 
   // Ruled
-  // console.log('state', state)
   if (state === DisputesTypes.Phase.Ruled) {
     phase = DisputesTypes.Phase.ClaimRewards
     const ruling = null // TODO: calculate ruling
@@ -302,4 +301,8 @@ export function getRevealEndTime(round, courtConfig) {
   const commitEndTime = getCommitEndTime(round, courtConfig)
 
   return commitEndTime + revealTerms * termDuration
+}
+
+export function getDisputeLastRound(dispute) {
+  return dispute.rounds[dispute.lastRoundId]
 }

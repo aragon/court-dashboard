@@ -4,7 +4,7 @@ import { Button, GU, Info, textStyle } from '@aragon/ui'
 
 import {
   VOTE_OPTION_REFUSE,
-  VOTE_OPTION_IN_FAVOUR,
+  VOTE_OPTION_IN_FAVOR,
   VOTE_OPTION_AGAINST,
 } from '../../../utils/crvoting-utils'
 
@@ -22,7 +22,7 @@ function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
           mode="positive"
           wide
           disabled={!isJurorDrafted}
-          onClick={() => onRequestCommit(VOTE_OPTION_IN_FAVOUR)}
+          onClick={() => onRequestCommit(VOTE_OPTION_IN_FAVOR)}
         >
           In favor
         </VotingButton>

@@ -27,7 +27,7 @@ function DisputeInfo({
   onExecuteRuling,
 }) {
   const theme = useTheme()
-  const { id, phase } = dispute
+  const { id, phase } = dispute || {}
 
   const description = loading ? 'Loading…' : dispute.metadata
   const creatorAddress = dispute && dispute.subject && dispute.subject.id
@@ -147,21 +147,24 @@ function DisputeInfo({
             </div>
           )}
         </div>
+
         {(phase === DisputePhase.AppealRuling ||
           phase === DisputePhase.ConfirmAppeal ||
           phase === DisputePhase.ExecuteRuling) && (
           <DisputeCurrentRuling dispute={dispute} />
         )}
-        <DisputeActions
-          dispute={dispute}
-          onDraft={onDraft}
-          onRequestCommit={onRequestCommit}
-          onReveal={onReveal}
-          onLeavk={onLeak}
-          onRequestAppeal={onRequestAppeal}
-          onRequestConfirmAppeal={onRequestConfirmAppeal}
-          onExecuteRuling={onExecuteRuling}
-        />
+        {!loading && (
+          <DisputeActions
+            dispute={dispute}
+            onDraft={onDraft}
+            onRequestCommit={onRequestCommit}
+            onReveal={onReveal}
+            onLeavk={onLeak}
+            onRequestAppeal={onRequestAppeal}
+            onRequestConfirmAppeal={onRequestConfirmAppeal}
+            onExecuteRuling={onExecuteRuling}
+          />
+        )}
       </section>
     </Box>
   )

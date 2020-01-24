@@ -12,10 +12,10 @@ import votingAbi from '../abi/CRVoting.json'
 
 import { getFunctionSignature } from '../lib/web3-utils'
 import {
-  getVoteId,
   hashVote,
   getOutcomeFromCommitment,
   DEFAULT_SALT,
+  getVoteId,
 } from '../utils/crvoting-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
@@ -128,7 +128,6 @@ export function useDisputeActions() {
     (disputeId, roundId, commitment) => {
       const voteId = getVoteId(disputeId, roundId)
       const hashedCommitment = hashVote(commitment)
-
       return votingContract.commit(voteId, hashedCommitment)
     },
     [votingContract]
@@ -147,8 +146,7 @@ export function useDisputeActions() {
 
   // Leak
   const leak = useCallback(
-    (disputeId, roundId, voter, outcome, salt) => {
-      const voteId = getVoteId(disputeId, roundId)
+    (voteId, voter, outcome, salt) => {
       return votingContract.leak(voteId, voter, outcome, salt)
     },
     [votingContract]

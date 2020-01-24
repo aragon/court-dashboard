@@ -14,6 +14,10 @@ export const reduceDispute = dispute => {
         ...round,
         createdAt: parseInt(round.createdAt) * 1000,
         number: parseInt(round.number),
+        jurors: round.jurors.map(juror => ({
+          ...juror,
+          weight: parseInt(juror.weight, 10),
+        })),
       }
     }),
   }

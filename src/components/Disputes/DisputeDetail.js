@@ -67,51 +67,47 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   return (
     <React.Fragment>
       <SyncIndicator visible={loading} label="Loading dispute…" />
-
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
-
-      {!loading && (
-        <Split
-          primary={
-            <React.Fragment>
-              <DisputeInfo
-                dispute={dispute}
-                loading={loading}
-                onDraft={actions.draft}
-                onRequestCommit={requests.commit}
-                onReveal={actions.reveal}
-                onLeak={actions.leak}
-                onRequestAppeal={requests.appeal}
-                onRequestConfirmAppeal={requests.confirmAppeal}
-                onExecuteRuling={actions.executeRuling}
-              />
-              {(() => {
-                if (loading) {
-                  return null
-                }
-                if (evidences.length === 0) {
-                  return <NoEvidence />
-                }
-                return <DisputeEvidences evidences={evidences} />
-              })()}
-            </React.Fragment>
-          }
-          secondary={
-            <React.Fragment>
-              <Box heading="Dispute timeline" padding={0}>
-                {loading ? (
-                  <div css="height: 100px" />
-                ) : (
-                  <DisputeTimeline dispute={dispute} />
-                )}
-              </Box>
-            </React.Fragment>
-          }
-        />
-      )}
+      <Split
+        primary={
+          <React.Fragment>
+            <DisputeInfo
+              dispute={dispute}
+              loading={loading}
+              onDraft={actions.draft}
+              onRequestCommit={requests.commit}
+              onReveal={actions.reveal}
+              onLeak={actions.leak}
+              onRequestAppeal={requests.appeal}
+              onRequestConfirmAppeal={requests.confirmAppeal}
+              onExecuteRuling={actions.executeRuling}
+            />
+            {(() => {
+              if (loading) {
+                return null
+              }
+              if (evidences.length === 0) {
+                return <NoEvidence />
+              }
+              return <DisputeEvidences evidences={evidences} />
+            })()}
+          </React.Fragment>
+        }
+        secondary={
+          <React.Fragment>
+            <Box heading="Dispute timeline" padding={0}>
+              {loading ? (
+                <div css="height: 100px" />
+              ) : (
+                <DisputeTimeline dispute={dispute} />
+              )}
+            </Box>
+          </React.Fragment>
+        }
+      />
       <SidePanel
         title="title"
         opened={panelState.visible}

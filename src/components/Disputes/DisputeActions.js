@@ -24,6 +24,7 @@ import {
 
 import IconGavelOrange from '../../assets/IconGavelOrange.svg'
 import IconGavelRed from '../../assets/IconGavelRed.svg'
+import { getDisputeLastRound } from '../../utils/dispute-utils'
 
 function DisputeActions({
   dispute,
@@ -35,10 +36,9 @@ function DisputeActions({
   onRequestConfirmAppeal,
   onExecuteRuling,
 }) {
-  const { phase, rounds, lastRoundId } = dispute
-  const lastRound = rounds[lastRoundId]
+  const { phase } = dispute
+  const lastRound = getDisputeLastRound(dispute)
 
-  console.log('phase', phase)
   const connectedAccount = useConnectedAccount()
 
   if (phase === DisputePhase.Evidence) {

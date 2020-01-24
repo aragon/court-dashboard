@@ -41,6 +41,10 @@ export const AllDisputes = gql`
           commitment
           outcome
         }
+        vote {
+          id
+          winningOutcome
+        }
         appeal {
           id
           maker
@@ -93,8 +97,13 @@ export const SingleDispute = gql`
           juror {
             id
           }
+          weight
           commitment
           outcome
+        }
+        vote {
+          id
+          winningOutcome
         }
         appeal {
           id
