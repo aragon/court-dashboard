@@ -9,13 +9,11 @@ import { useConnectedAccount } from '../../providers/Web3'
 
 const Tasks = () => {
   const connectedAccount = useConnectedAccount()
-  console.log('connected account ', connectedAccount)
   const [screenIndex, setScreenIndex] = useState(0)
   const [tasks, openTasks] = useRounds()
   const jurorTasks = tasks
     ? tasks.filter(task => task.juror === connectedAccount)
     : []
-  console.log('Tasks ', tasks)
   const completedTasks = 0
   const incompleteTasks = 0
 

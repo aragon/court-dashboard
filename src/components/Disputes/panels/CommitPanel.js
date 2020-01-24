@@ -10,7 +10,13 @@ import {
 } from '@aragon/ui'
 import IconKeyCode from '../../../assets/IconKeyCode.svg'
 
-function CommitPanel({ dispute, onCommit, commitment }) {
+function CommitPanel({
+  dispute,
+  onCommit,
+  commitment,
+  keyCode,
+  downloadKeyCode,
+}) {
   const handleCommit = async event => {
     try {
       event.preventDefault()
@@ -25,7 +31,7 @@ function CommitPanel({ dispute, onCommit, commitment }) {
 
   return (
     <form onSubmit={handleCommit}>
-      <CodeSection />
+      <CodeSection keyCode={keyCode} downloadKeyCode={downloadKeyCode} />
       <RevealService onEnableRevealChange={() => {}} />
       <Button type="submit" mode="strong" wide>
         Commit your vote
@@ -34,7 +40,8 @@ function CommitPanel({ dispute, onCommit, commitment }) {
   )
 }
 
-function CodeSection() {
+function CodeSection({ keyCode }) {
+  console.log('KEY CODE ', keyCode)
   return (
     <React.Fragment>
       <div
@@ -80,6 +87,7 @@ function CodeSection() {
         `}
       >
         <TextInput
+          value=""
           css={`
             height: 88px;
           `}
@@ -104,7 +112,6 @@ function CodeSection() {
         />
         <Button
           css={`
-            margin-top: ${1 * GU}px;
             flex-grow: 1;
           `}
           onClick={() => {}}

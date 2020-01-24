@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useSidePanel } from './hooks/useSidePanel'
 import { useDisputeActions } from './hooks/useCourtContracts'
 import useDisputes from './hooks/useDisputes'
+import useKeyCodeActions from './hooks/useKeyCodeActions'
 
 export const REQUEST_MODE = {
   NO_REQUEST: Symbol('NO_REQUEST'),
@@ -68,12 +69,15 @@ export function useDisputeLogic(disputeId) {
   const requests = usePanelRequestActions(setRequestMode)
 
   const [disputes] = useDisputes()
+  console.log('disputes ', disputes)
   const dispute = useSelectedDispute(disputes, disputeId)
 
   const actions = useDisputeActions()
 
+  const keyCodeActions = useKeyCodeActions()
+
   return {
-    actions,
+    actions: { ...actions, ...keyCodeActions },
     dispute,
     requestMode,
     panelState,
