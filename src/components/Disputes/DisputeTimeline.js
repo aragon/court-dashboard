@@ -27,10 +27,10 @@ function DisputeTimeline({ dispute }) {
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
-  const reverseTimeLine = disputeTimeLine.reverse().map(item => {
+  const reverseTimeLine = [...disputeTimeLine].reverse().map(item => {
     if (Array.isArray(item)) {
-      return item.reverse().map(roundPhase => {
-        return roundPhase.reverse()
+      return [...item].reverse().map(roundPhase => {
+        return [...roundPhase].reverse()
       })
     }
     return item
