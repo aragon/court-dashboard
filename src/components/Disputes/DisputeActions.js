@@ -1,8 +1,8 @@
 import React from 'react'
-import * as DisputesTypes from '../../types/types'
-import { addressesEqual } from '../../lib/web3-utils'
 import { Button, Info, textStyle, GU } from '@aragon/ui'
 import styled from 'styled-components'
+import * as DisputesTypes from '../../types/types'
+import { addressesEqual } from '../../lib/web3-utils'
 import { useConnectedAccount } from '../../providers/Web3'
 
 const DisputeActions = React.memo(({ dispute }) => {
@@ -96,7 +96,8 @@ const VotingButton = styled(Button)`
   width: 50%;
   margin-right: ${1 * GU}px;
   &:last-child {
-    margin-right: 0px;
+    margin-right: 0;
   }
 `
+
 export default DisputeActions

@@ -13,6 +13,7 @@ import IconThinkingInactive from '../../assets/IconThinkingInactive.svg'
 import IconRulingActive from '../../assets/IconRulingActive.svg'
 import IconRulingInactive from '../../assets/IconRulingInactive.svg'
 import dayjs from '../../lib/dayjs'
+import { dateFormat } from '../../utils/date-utils'
 import Stepper from '../Stepper'
 import Step from '../Step'
 import * as DisputesTypes from '../../types/types'
@@ -26,14 +27,16 @@ function DisputeTimeline({ dispute }) {
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
-  const reverseTimeLine = disputeTimeLine.reverse().map(item => {
+  const reverseTimeLine = [...disputeTimeLine].reverse().map(item => {
     if (Array.isArray(item)) {
-      return item.reverse().map(roundPhase => {
-        return roundPhase.reverse()
+      return [...item].reverse().map(roundPhase => {
+        return [...roundPhase].reverse()
       })
     }
     return item
   })
+
+  console.log('reverseTimeLine ', reverseTimeLine)
 
   return (
     <div>
@@ -47,64 +50,62 @@ function DisputeTimeline({ dispute }) {
         {reverseTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
             return getStep(item, roundsLength, index, theme)
-          } else {
-            return item.map((round, roundIndex) => {
-              if (roundIndex === 0) {
-                return round.map((roundItem, phaseIndex) => {
-                  return getStep(roundItem, roundsLength, phaseIndex, theme)
-                })
-              } else {
-                return (
-                  <Step
-                    key={roundIndex}
-                    active={false}
-                    content={
-                      <div
-                        css={`
-                          width: 100%;
-                        `}
-                      >
-                        <StyledAccordion>
-                          <Accordion
-                            key={roundIndex}
-                            items={[
-                              [
-                                <span
-                                  css={`
-                                    margin-left: ${GU * 1.5}px;
-                                  `}
-                                >
-                                  {getRoundPill(round[0].roundId)}
-                                </span>,
-                                <Stepper
-                                  lineColor="#FFCDC5"
-                                  lineTop={13}
-                                  css={`
-                                    padding: ${3 * GU}px 0;
-                                  `}
-                                >
-                                  {round.map((roundItem, phaseIndex) => {
-                                    return getStep(
-                                      roundItem,
-                                      roundsLength,
-                                      phaseIndex,
-                                      theme,
-                                      roundStepContainerCss
-                                    )
-                                  })}
-                                </Stepper>,
-                              ],
-                            ]}
-                          />
-                        </StyledAccordion>
-                      </div>
-                    }
-                    displayPoint={false}
-                  />
-                )
-              }
-            })
           }
+          return item.map((round, roundIndex) => {
+            if (roundIndex === 0) {
+              return round.map((roundItem, phaseIndex) => {
+                return getStep(roundItem, roundsLength, phaseIndex, theme)
+              })
+            }
+            return (
+              <Step
+                key={roundIndex}
+                active={false}
+                content={
+                  <div
+                    css={`
+                      width: 100%;
+                    `}
+                  >
+                    <StyledAccordion>
+                      <Accordion
+                        key={roundIndex}
+                        items={[
+                          [
+                            <span
+                              css={`
+                                margin-left: ${GU * 1.5}px;
+                              `}
+                            >
+                              <RoundPill roundId={Number(round[0].roundId)} />
+                            </span>,
+                            <Stepper
+                              lineColor="#FFCDC5"
+                              lineTop={13}
+                              css={`
+                                padding: ${3 * GU}px 0;
+                              `}
+                            >
+                              {round.map((roundItem, phaseIndex) => {
+                                return getStep(
+                                  roundItem,
+                                  roundsLength,
+                                  phaseIndex,
+                                  theme,
+                                  roundStepContainerCss
+                                )
+                              })}
+                            </Stepper>,
+                          ],
+                        ]}
+                      />
+                    </StyledAccordion>
+                  </div>
+                }
+                displayPoint={false}
+              />
+            )
+          })
         })}
       </Stepper>
     </div>
@@ -153,9 +154,7 @@ function getStep(item, roundId, index, theme, css) {
                 {getDisplayTime(item)}
               </span>
             </div>
-            {item.active &&
-              item.phase !== DisputesTypes.Phase.Evidence &&
-              getRoundPill(item.roundId)}
+            {item.active && <RoundPill roundId={Number(item.roundId)} />}
           </div>
         </div>
       }
@@ -244,7 +243,7 @@ function getPhaseIcon(phase, active) {
   }
 }
 
-function getRoundPill(roundId) {
+function RoundPill({ roundId }) {
   let label
 
   if (roundId === 0) {
@@ -291,7 +290,7 @@ function getDisplayTime(timeLineItem) {
     return <Timer end={dayjs(endTime)} />
   }
 
-  return dayjs(endTime).format('DD/MM/YY')
+  return dateFormat(endTime, 'DD/MM/YY')
 }
 
 export default DisputeTimeline

@@ -1,0 +1,5 @@
+[
+  "function commit(uint256 _voteId, bytes32 _commitment) external",
+  "function leak(uint256 _voteId, address _voter, uint8 _outcome, bytes32 _salt) external",
+  "function reveal(uint256 _voteId, address _voter, uint8 _outcome, bytes32 _salt) external"
+]

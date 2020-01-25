@@ -9,9 +9,9 @@ import {
   useViewport,
 } from '@aragon/ui'
 import dayjs from '../../lib/dayjs'
+import { dateFormat } from '../../utils/date-utils'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { addressesEqual } from '../../lib/web3-utils'
-
 import { useConnectedAccount } from '../../providers/Web3'
 
 const ENTRIES_PER_PAGE = 5
@@ -92,8 +92,8 @@ const TaskTable = ({ tasks }) => {
       fields={['Task', 'Dispute', 'Priority', 'Assigned to juror', 'Due date']}
       entries={sortedTasks}
       renderEntry={({ taskName, disputeId, priority, juror, dueDate }) => {
-        const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
-        const hoursAndSec = dayjs(dueDate).format('HH:mm')
+        const formattedDate = dateFormat(dueDate, 'YYYY-MM-DDTHH:mm:ssZ')
+        const hoursAndSec = dateFormat(dueDate, 'HH:mm')
         return [
           <span
             css={`
@@ -111,7 +111,8 @@ const TaskTable = ({ tasks }) => {
             {priority}
           </span>,
           <LocalIdentityBadge key={4} connectedAccount entity={juror} />,
-          <div key={5}>{`${dayjs(formattedDate).format(
+          <div key={5}>{`${dateFormat(
+            formattedDate,
             'DD/MM/YY'
           )} at ${hoursAndSec}`}</div>,
         ]

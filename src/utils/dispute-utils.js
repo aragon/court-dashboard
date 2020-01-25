@@ -4,6 +4,21 @@ import * as DisputesTypes from '../types/types'
 
 const juryDraftingTerms = 3
 
+export const transformResponseDisputeAttributes = dispute => {
+  return {
+    ...dispute,
+    createdAt: parseInt(dispute.createdAt, 10) * 1000,
+    state: DisputesTypes.convertFromString(dispute.state),
+    reducedState:
+      dispute.state === DisputesTypes.Phase.Ruled
+        ? DisputesTypes.Status.Closed
+        : DisputesTypes.Status.Open,
+    rounds: dispute.rounds.map(round => {
+      return { ...round, createdAt: parseInt(round.createdAt) * 1000 }
+    }),
+  }
+}
+
 export function getDisputeTimeLine(dispute, courtConfig) {
   const { createdAt } = dispute
   const { termDuration, evidenceTerms } = courtConfig
@@ -23,15 +38,10 @@ export function getDisputeTimeLine(dispute, courtConfig) {
       phase: DisputesTypes.Phase.Evidence,
       endTime: createdAt + termDuration * evidenceTerms,
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.Evidence,
+      roundId: 0,
     },
   ]
 
-  // if (
-  //   currentPhaseAndTime.phase === DisputesTypes.Phase.Adjudicating ||
-  //   currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards ||
-  //   currentPhaseAndTime.phase === DisputesTypes.Phase.JuryDrafting ||
-  //   currentPhaseAndTime.phase === DisputesTypes.Phase.ExecuteRuling
-  // ) {
   const rounds = dispute.rounds.map(round =>
     getRoundPhasesAndTime(courtConfig, round, currentPhaseAndTime)
   )
@@ -40,7 +50,6 @@ export function getDisputeTimeLine(dispute, courtConfig) {
   }
 
   timeLine.push(rounds)
-  // }
 
   if (currentPhaseAndTime.phase === DisputesTypes.Phase.ExecuteRuling) {
     timeLine.push({
