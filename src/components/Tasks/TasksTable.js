@@ -1,12 +1,7 @@
 import React from 'react'
-import styled from 'styled-components'
 import {
-  ContextMenu,
-  ContextMenuItem,
   DataView,
   GU,
-  IconLabel,
-  IconShare,
   IdentityBadge,
   Link,
   textStyle,
@@ -66,8 +61,6 @@ const TaskTable = React.memo(function TaskTable({
       fields={['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']}
       entries={tasks}
       renderEntry={({ phase, disputeId, juror, open, dueDate }) => {
-        // const formattedDate = dayjs(dueDate).format('YYYY-MM-DDTHH:mm:ssZ')
-        // const hoursAndSec = dayjs(dueDate).format('HH:mm')
         return [
           <span
             css={`
@@ -83,48 +76,8 @@ const TaskTable = React.memo(function TaskTable({
           <TaskDueDate dueDate={dueDate} />,
         ]
       }}
-      renderEntryActions={() => (
-        <ContextMenu zIndex={1}>
-          <ContextMenuItem onClick={() => {}}>
-            <IconWrapper theme={theme}>
-              <IconShare />
-            </IconWrapper>
-            <div
-              css={`
-                ${textStyle('body2')}
-                margin-left: 15px
-              `}
-            >
-              View dispute
-            </div>
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => {}}>
-            <IconWrapper theme={theme}>
-              <IconLabel />
-            </IconWrapper>
-            <div
-              css={`
-                ${textStyle('body2')}
-                margin-left: 15px
-              `}
-            >
-              Add custom label
-            </div>
-          </ContextMenuItem>
-        </ContextMenu>
-      )}
     />
   )
 })
 
-const IconWrapper = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  color: ${({ theme }) => {
-    return theme.textSecondary
-  }};
-`
 export default TaskTable

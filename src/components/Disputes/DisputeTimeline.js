@@ -165,7 +165,6 @@ function getStep(item, roundId, index, theme, css) {
 }
 
 function getPhaseIcon(phase, active) {
-  // TODO - change this for the new icons
   if (phase === DisputesTypes.Phase.Created) {
     return (
       <img
