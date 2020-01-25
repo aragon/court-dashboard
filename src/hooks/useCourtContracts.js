@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -17,6 +17,8 @@ import {
   DEFAULT_SALT,
   getVoteId,
 } from '../utils/crvoting-utils'
+import { getModuleAddress } from '../utils/court-utils'
+import { bigNum } from '../lib/math-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 500000 // Should be relative to every tx ?
@@ -30,6 +32,15 @@ function useANJTokenContract() {
   return useContract(anjTokenAddress, tokenAbi)
 }
 
+// Fee token contract
+function useFeeTokenContract() {
+  const { feeToken } = useCourtConfig()
+
+  const feeTokenAddress = feeToken ? feeToken.id : null
+
+  return useContract(feeTokenAddress, tokenAbi)
+}
+
 // Court contracts
 function useCourtContract(moduleType, abi) {
   const { id, modules } = useCourtConfig()
@@ -38,16 +49,16 @@ function useCourtContract(moduleType, abi) {
   if (moduleType === CourtModuleType.AragonCourt) {
     contractAddress = id
   } else {
-    const courtModule = modules.find(
-      mod => CourtModuleType[mod.type] === moduleType
-    )
-
-    contractAddress = courtModule ? courtModule.address : null
+    contractAddress = getModuleAddress(modules, moduleType)
   }
 
   return useContract(contractAddress, abi)
 }
 
+/**
+ * All ANJ interactions
+ * @returns {Object} all available functions around ANJ balances
+ */
 function useANJActions() {
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
@@ -103,6 +114,10 @@ export function useCourtActions() {
   }
 }
 
+/**
+ * All dispute interactions
+ * @returns {Object} all available functions around a dispute
+ */
 export function useDisputeActions() {
   const disputeManagerContract = useCourtContract(
     CourtModuleType.DisputeManager,
@@ -114,6 +129,8 @@ export function useDisputeActions() {
     CourtModuleType.AragonCourt,
     aragonCourtAbi
   )
+
+  const feeTokenContract = useFeeTokenContract()
 
   // Draft jurors
   const draft = useCallback(
@@ -152,10 +169,22 @@ export function useDisputeActions() {
     [votingContract]
   )
 
+  const approveFeeDeposit = useCallback(
+    value => {
+      console.log('fee token address', feeTokenContract.address)
+      console.log('approving to', disputeManagerContract.address)
+      return feeTokenContract.approve(disputeManagerContract.address, value)
+    },
+    [disputeManagerContract, feeTokenContract]
+  )
+
   // Appeal round of dispute
   const appeal = useCallback(
     (disputeId, roundId, ruling) => {
-      return disputeManagerContract.createAppeal(disputeId, roundId, ruling)
+      console.log('calling appeal with', disputeId, roundId, ruling)
+      return disputeManagerContract.createAppeal(disputeId, roundId, ruling, {
+        gasLimit: GAS_LIMIT,
+      })
     },
     [disputeManagerContract]
   )
@@ -163,7 +192,9 @@ export function useDisputeActions() {
   // Confirm appeal round of dispute
   const confirmAppeal = useCallback(
     (disputeId, round, ruling) => {
-      return disputeManagerContract.confirmAppeal(disputeId, round, ruling)
+      return disputeManagerContract.confirmAppeal(disputeId, round, ruling, {
+        gasLimit: GAS_LIMIT,
+      })
     },
     [disputeManagerContract]
   )
@@ -176,5 +207,92 @@ export function useDisputeActions() {
     },
     [aragonCourtContract]
   )
-  return { draft, commit, reveal, leak, appeal, confirmAppeal, executeRuling }
+  return {
+    draft,
+    commit,
+    reveal,
+    leak,
+    appeal,
+    approveFeeDeposit,
+    confirmAppeal,
+    executeRuling,
+  }
+}
+
+/**
+ *
+ * @param {string} disputeId id of the dispute
+ * @param {string} roundId id of the round
+ * @returns {Object} appeal deposit and confirm appeal deposit amounts
+ */
+export function useAppealDeposits(disputeId, roundId) {
+  const [appealDeposits, setAppealDeposits] = useState([bigNum(0), bigNum(0)])
+
+  const disputeManagerContract = useCourtContract(
+    CourtModuleType.DisputeManager,
+    disputeManagerAbi
+  )
+
+  useEffect(() => {
+    const getNextRoundDetails = async () => {
+      if (!disputeManagerContract) return
+      const nextRound = await disputeManagerContract.getNextRoundDetails(
+        disputeId,
+        roundId
+      )
+      const appealDeposit = nextRound[6]
+      const confirmAppealDeposit = nextRound[7]
+      setAppealDeposits([appealDeposit, confirmAppealDeposit])
+    }
+
+    getNextRoundDetails()
+  }, [disputeId, disputeManagerContract, roundId])
+
+  return appealDeposits
+}
+
+export function useFeeBalanceOf(account) {
+  const [balance, setBalance] = useState(bigNum(0))
+
+  const feeTokenContract = useFeeTokenContract()
+
+  useEffect(() => {
+    const getFeeBalance = async () => {
+      if (!feeTokenContract) return
+
+      const balance = await feeTokenContract.balanceOf(account)
+      setBalance(balance)
+    }
+
+    getFeeBalance()
+  }, [account, feeTokenContract])
+
+  return balance
+}
+
+export function useAppealFeeAllowance(owner) {
+  const [allowance, setAllowance] = useState(bigNum(0))
+
+  const courtConfig = useCourtConfig()
+  const disputeManagerAddress = getModuleAddress(
+    courtConfig.modules,
+    CourtModuleType.DisputeManager
+  )
+  const feeTokenContract = useFeeTokenContract()
+
+  useEffect(() => {
+    const getFeeAllowance = async () => {
+      if (!feeTokenContract) return
+
+      const allowance = await feeTokenContract.allowance(
+        owner,
+        disputeManagerAddress
+      )
+      setAllowance(allowance)
+    }
+
+    getFeeAllowance()
+  }, [disputeManagerAddress, feeTokenContract, owner])
+
+  return allowance
 }

@@ -64,6 +64,8 @@ export function getDisputeTimeLine(dispute, courtConfig) {
 }
 
 export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
+  if (!dispute) return null
+
   const { state, createdAt } = dispute
   const now = dayjs(nowDate)
   let phase

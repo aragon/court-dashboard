@@ -1,5 +1,6 @@
 [
   "function draft(uint256 _disputeId) external",
   "function createAppeal(uint256 _disputeId, uint256 _roundId, uint8 _ruling) external",
-  "function confirmAppeal(uint256 _disputeId, uint256 _roundId, uint8 _ruling) external"
+  "function confirmAppeal(uint256 _disputeId, uint256 _roundId, uint8 _ruling) external",
+  "function getNextRoundDetails(uint256 _disputeId, uint256 _roundId) external view returns (uint64 nextRoundStartTerm, uint64 nextRoundJurorsNumber, uint8 newDisputeState, address feeToken, uint256 totalFees, uint256 jurorFees, uint256 appealDeposit, uint256 confirmAppealDeposit)"
 ]

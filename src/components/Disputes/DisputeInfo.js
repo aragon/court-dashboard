@@ -16,6 +16,7 @@ import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import iconCourt from '../../assets/courtIcon.svg'
 
 function DisputeInfo({
+  id,
   dispute,
   loading,
   onDraft,
@@ -27,7 +28,7 @@ function DisputeInfo({
   onExecuteRuling,
 }) {
   const theme = useTheme()
-  const { id, phase } = dispute || {}
+  const { phase } = dispute || {}
 
   const description = loading ? 'Loading…' : dispute.metadata
   const creatorAddress = dispute && dispute.subject && dispute.subject.id

@@ -39,10 +39,17 @@ export function useDispute(dispute) {
   const courtConfig = useCourtConfig()
   const now = useNow()
 
-  if (!dispute) return
+  const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
+  const disputePhaseKey = disputePhase
+    ? convertToString(Object.values(disputePhase)[0])
+    : ''
 
-  return {
-    ...dispute,
-    ...getPhaseAndTransition(dispute, courtConfig, now),
-  }
+  return useMemo(() => {
+    if (!dispute) return null
+
+    return {
+      ...dispute,
+      ...disputePhase,
+    }
+  }, [dispute, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
 }

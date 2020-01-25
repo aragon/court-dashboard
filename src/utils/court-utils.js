@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { CourtModuleType } from '../types/court-module-types'
 
 function getFirstTermDate(courtConfig) {
   const { terms } = courtConfig
@@ -34,4 +35,12 @@ export function getTermStartAndEndTime(termId, terms, termDuration) {
   }
 
   return { termStartTime, termEndTime }
+}
+
+export function getModuleAddress(modules, moduleType) {
+  const courtModule = modules.find(
+    mod => CourtModuleType[mod.type] === moduleType
+  )
+
+  return courtModule ? courtModule.address : null
 }

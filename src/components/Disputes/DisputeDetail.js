@@ -75,6 +75,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
         primary={
           <React.Fragment>
             <DisputeInfo
+              id={disputeId}
               dispute={dispute}
               loading={loading}
               onDraft={actions.draft}
@@ -132,7 +133,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
 function PanelComponent({ dispute, requestMode, actions, ...props }) {
   const { mode, data } = requestMode
-  const { commit, appeal } = actions
+  const { commit, appeal, approveFeeDeposit } = actions
 
   switch (mode) {
     case REQUEST_MODE.COMMIT:
@@ -149,7 +150,13 @@ function PanelComponent({ dispute, requestMode, actions, ...props }) {
         <p>Reveal panels</p> // TODO: Reveal panel
       )
     case REQUEST_MODE.APPEAL:
-      return <AppealPanel dispute={dispute} onAppeal={appeal} />
+      return (
+        <AppealPanel
+          dispute={dispute}
+          onApproveFeeDeposit={approveFeeDeposit}
+          onAppeal={appeal}
+        />
+      )
     default:
       return null
   }
