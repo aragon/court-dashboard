@@ -15,7 +15,7 @@ const CommitPanel = React.memo(function CommitPanel({
   onCommit,
   commitment,
   keyCode,
-  downloadKeyCode,
+  onDownloadKeyCode,
 }) {
   const handleCommit = async event => {
     try {
@@ -31,7 +31,7 @@ const CommitPanel = React.memo(function CommitPanel({
 
   return (
     <form onSubmit={handleCommit}>
-      <CodeSection keyCode={keyCode} downloadKeyCode={downloadKeyCode} />
+      <CodeSection keyCode={keyCode} onDownloadKeyCode={onDownloadKeyCode} />
       <RevealService onEnableRevealChange={() => {}} />
       <Button type="submit" mode="strong" wide>
         Commit your vote
@@ -40,7 +40,7 @@ const CommitPanel = React.memo(function CommitPanel({
   )
 })
 
-function CodeSection({ keyCode }) {
+function CodeSection({ keyCode, onDownloadKeyCode }) {
   console.log('KEY CODE ', keyCode)
   return (
     <React.Fragment>
@@ -107,7 +107,7 @@ function CodeSection({ keyCode }) {
             margin-right: ${2 * GU}px;
             flex-grow: 1;
           `}
-          onClick={() => {}}
+          onClick={onDownloadKeyCode}
           icon={<IconDownload />}
           label="Download"
         />

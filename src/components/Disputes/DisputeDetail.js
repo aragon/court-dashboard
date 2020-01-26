@@ -139,7 +139,7 @@ const PanelComponent = React.memo(function PanelComponent({
   ...props
 }) {
   const { mode, data } = requestMode
-  const { commit, appeal, keyCode } = actions
+  const { commit, appeal, keyCode, downloadKeyCode } = actions
   switch (mode) {
     case REQUEST_MODE.COMMIT: {
       console.log('KEYYYY ', keyCode)
@@ -149,7 +149,7 @@ const PanelComponent = React.memo(function PanelComponent({
           commitment={data.commitment}
           onCommit={commit}
           keyCode={keyCode}
-          //  downloadKeyCode={downloadKeyCode}
+          onDownloadKeyCode={downloadKeyCode}
           {...props}
         />
       )
