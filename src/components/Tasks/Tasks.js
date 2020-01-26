@@ -1,33 +1,28 @@
 import React, { useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import ANJIcon from '../../assets/anjButton.svg'
-
-import TaskBox from './TasksBox'
+// import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
-import useRounds from '../../hooks/useRounds'
 import { useConnectedAccount } from '../../providers/Web3'
+import useFilteredTasks from '../../hooks/useFilteredTasks'
 
-const Tasks = () => {
+const Tasks = React.memo(() => {
   const connectedAccount = useConnectedAccount()
   const [screenIndex, setScreenIndex] = useState(0)
-  const [tasks, openTasks] = useRounds()
-  const jurorTasks = tasks
-    ? tasks.filter(task => task.juror === connectedAccount)
-    : []
-  const completedTasks = 0
-  const incompleteTasks = 0
+
+  const {
+    tasks,
+    selectedDateRange,
+    handleSelectedDateRangeChange,
+    selectedPhase,
+    handleSelectedPhaseChange,
+    openTasksNumber,
+    jurorOpenTaskNumber,
+    taskActionsString,
+  } = useFilteredTasks(screenIndex, connectedAccount)
 
   const handleTabChange = screenIndex => {
     setScreenIndex(screenIndex)
-  }
-
-  const getTasksByTab = screenIndex => {
-    if (screenIndex === 0) {
-      return jurorTasks
-    }
-    if (screenIndex === 1) {
-      return tasks
-    }
   }
 
   return (
@@ -61,11 +56,12 @@ const Tasks = () => {
           />
         }
       />
+      {/* Commented since we are not launching V1 with this component
       <TaskBox
         openTasks={openTasks}
         completedTasks={completedTasks}
         incompleteTasks={incompleteTasks}
-      />
+      /> */}
       <div
         css={`
           margin-top: ${2 * GU}px;
@@ -78,24 +74,27 @@ const Tasks = () => {
           items={[
             <div>
               <span>My Tasks </span>
-              <Tag limitDigits={4} label={jurorTasks.length} size="small" />
+              <Tag limitDigits={4} label={jurorOpenTaskNumber} size="small" />
             </div>,
             <div>
               <span>All Tasks </span>
-              <Tag limitDigits={4} label={openTasks} size="small" />
-            </div>,
-            <div>
-              <span>Past Tasks </span>
-              <Tag limitDigits={4} label={0} size="small" />
+              <Tag limitDigits={4} label={openTasksNumber} size="small" />
             </div>,
           ]}
           selected={screenIndex}
           onChange={handleTabChange}
         />
       </div>
-      <TaskTable tasks={getTasksByTab(screenIndex)} />
+      <TaskTable
+        tasks={tasks}
+        dateRangeFilter={selectedDateRange}
+        onDateRangeChange={handleSelectedDateRangeChange}
+        phaseFilter={selectedPhase}
+        onPhaseChange={handleSelectedPhaseChange}
+        phaseTypes={taskActionsString}
+      />
     </>
   )
-}
+})
 
 export default Tasks

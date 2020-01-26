@@ -1,6 +1,6 @@
 import * as DisputesTypes from '../../types/dispute-status-types'
 
-export const reduceDispute = dispute => {
+export const transformResponseDisputeAttributes = dispute => {
   return {
     ...dispute,
     createdAt: parseInt(dispute.createdAt, 10) * 1000,

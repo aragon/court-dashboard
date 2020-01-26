@@ -10,7 +10,7 @@ function Stepper({
   children,
   ...props
 }) {
-  const stepVerticalPadding = 1 * GU
+  const stepVerticalPadding = 1.5 * GU
   return (
     <div
       css={`
@@ -18,12 +18,13 @@ function Stepper({
           display: flex;
           align-items: stretch;
           padding: ${stepVerticalPadding}px 0px;
+          &:first-child {
+            padding-top: 0;
+          }
+          &:last-child {
+            padding-bottom: 0;
+          }
         }
-
-        & > :first-child {
-          padding-top: ${2.5 * GU}px;
-        }
-
         & > :not(:last-child) > div > :first-child ::after {
           background: ${lineColor};
           content: '';

@@ -2,26 +2,21 @@ import { useMemo } from 'react'
 
 import useNow from './useNow'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { useDisputesState } from '../components/Disputes/DisputesStateProvider'
-import { useJurorDraftQuery } from './query-hooks'
-
+import { useDisputesSubscription } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { convertToString } from '../types/dispute-status-types'
-import { useConnectedAccount } from '../providers/Web3'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
-  const { disputes } = useDisputesState()
+  const { disputes } = useDisputesSubscription()
   const now = useNow()
 
-  const connectedAccount = useConnectedAccount()
-  const jurorDisputes = useJurorDraftQuery(connectedAccount) // TODO: should we do this query when the tab changes ?
-
-  const disputesPhases = disputes.map(d =>
-    getPhaseAndTransition(d, courtConfig, now)
+  const disputesPhases = useMemo(
+    () => disputes.map(d => getPhaseAndTransition(d, courtConfig, now)),
+    [courtConfig, disputes, now]
   )
   const disputesPhasesKey = disputesPhases
-    .map(v => convertToString(v[Object.keys(v)[0]]))
+    .map(v => convertToString(Object.values(v)[0]))
     .join('')
 
   return [
@@ -30,7 +25,6 @@ export default function useDisputes() {
         ...dispute,
         ...disputesPhases[i],
       }))
-    }, [disputes, disputesPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
-    jurorDisputes,
+    }, [disputesPhases, disputes, disputesPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
   ]
 }

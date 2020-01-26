@@ -1,14 +1,14 @@
 import gql from 'graphql-tag'
 
-export const OpenRounds = gql`
-  subscription {
+export const OpenTasks = gql`
+  subscription OpenTasks($state: [Int]) {
     adjudicationRounds(
-      where: { state: Committing }
+      where: { stateInt_in: $state }
       orderBy: createdAt
       orderDirection: asc
     ) {
       number
-      state
+      stateInt
       createdAt
       draftTermId
       delayedTerms

@@ -1,17 +1,18 @@
 import React, { useCallback, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
-
-import DisputeList from './DisputeList'
-import { DisputesStateProvider } from './DisputesStateProvider'
 import { useHistory } from 'react-router-dom'
+import DisputeList from './DisputeList'
+import useDisputes from '../../hooks/useDisputes'
+import { useJurorDraftQuery } from '../../hooks/query-hooks'
+import { useConnectedAccount } from '../../providers/Web3'
 
 import ANJIcon from '../../assets/anjButton.svg'
-import useDisputes from '../../hooks/useDisputes'
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
-  const [disputes, myDisputes] = useDisputes()
-
+  const [disputes] = useDisputes()
+  const connectedAccount = useConnectedAccount()
+  const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const history = useHistory()
 
   const handleSelectDispute = useCallback(
@@ -68,7 +69,7 @@ function Disputes() {
             </div>,
             <div>
               <span>My disputes </span>
-              <Tag limitDigits={4} label={myDisputes.length} size="small" />
+              <Tag limitDigits={4} label={jurorDisputes.length} size="small" />
             </div>,
           ]}
           selected={screenIndex}
@@ -82,7 +83,7 @@ function Disputes() {
         `}
       >
         <DisputeList
-          disputes={screenIndex === 0 ? disputes : myDisputes}
+          disputes={screenIndex === 0 ? disputes : jurorDisputes}
           onSelectDispute={handleSelectDispute}
         />
       </div>
@@ -90,10 +91,4 @@ function Disputes() {
   )
 }
 
-export default function DisputesWithSubscritpion(props) {
-  return (
-    <DisputesStateProvider>
-      <Disputes {...props} />
-    </DisputesStateProvider>
-  )
-}
+export default Disputes

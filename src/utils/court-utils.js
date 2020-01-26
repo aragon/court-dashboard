@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { bigNum } from '../lib/math-utils'
 
 function getFirstTermDate(courtConfig) {
   const { terms } = courtConfig
@@ -34,4 +35,10 @@ export function getTermStartAndEndTime(termId, terms, termDuration) {
   }
 
   return { termStartTime, termEndTime }
+}
+
+export function getVoteId(disputeId, roundId) {
+  return bigNum(disputeId)
+    .shln(128)
+    .add(bigNum(roundId))
 }

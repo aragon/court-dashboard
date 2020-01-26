@@ -10,7 +10,7 @@ import {
 } from '@aragon/ui'
 import IconKeyCode from '../../../assets/IconKeyCode.svg'
 
-function CommitPanel({
+const CommitPanel = React.memo(function CommitPanel({
   dispute,
   onCommit,
   commitment,
@@ -38,7 +38,7 @@ function CommitPanel({
       </Button>
     </form>
   )
-}
+})
 
 function CodeSection({ keyCode }) {
   console.log('KEY CODE ', keyCode)
@@ -87,12 +87,13 @@ function CodeSection({ keyCode }) {
         `}
       >
         <TextInput
-          value=""
+          value={keyCode}
           css={`
             height: 88px;
           `}
           multiline
           wide
+          readOnly
         />
       </div>
       <div

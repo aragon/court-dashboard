@@ -4,6 +4,21 @@ import * as DisputesTypes from '../types/dispute-status-types'
 
 const juryDraftingTerms = 3
 
+export const transformResponseDisputeAttributes = dispute => {
+  return {
+    ...dispute,
+    createdAt: parseInt(dispute.createdAt, 10) * 1000,
+    state: DisputesTypes.convertFromString(dispute.state),
+    reducedState:
+      dispute.state === DisputesTypes.Phase.Ruled
+        ? DisputesTypes.Status.Closed
+        : DisputesTypes.Status.Open,
+    rounds: dispute.rounds.map(round => {
+      return { ...round, createdAt: parseInt(round.createdAt) * 1000 }
+    }),
+  }
+}
+
 export function getDisputeTimeLine(dispute, courtConfig) {
   const { createdAt } = dispute
   const { termDuration, evidenceTerms } = courtConfig
@@ -23,15 +38,10 @@ export function getDisputeTimeLine(dispute, courtConfig) {
       phase: DisputesTypes.Phase.Evidence,
       endTime: createdAt + termDuration * evidenceTerms,
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.Evidence,
+      roundId: 0,
     },
   ]
 
-  // if (
-  //   currentPhaseAndTime.phase === DisputesTypes.Phase.Adjudicating ||
-  //   currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards ||
-  //   currentPhaseAndTime.phase === DisputesTypes.Phase.JuryDrafting ||
-  //   currentPhaseAndTime.phase === DisputesTypes.Phase.ExecuteRuling
-  // ) {
   const rounds = dispute.rounds.map(round =>
     getRoundPhasesAndTime(courtConfig, round, currentPhaseAndTime)
   )
@@ -40,7 +50,6 @@ export function getDisputeTimeLine(dispute, courtConfig) {
   }
 
   timeLine.push(rounds)
-  // }
 
   if (currentPhaseAndTime.phase === DisputesTypes.Phase.ExecuteRuling) {
     timeLine.push({
@@ -65,16 +74,17 @@ export function getDisputeTimeLine(dispute, courtConfig) {
 
 export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   const { state, createdAt } = dispute
-  const now = dayjs(nowDate)
+  const now = dayjs(nowDate).unix() * 1000
   let phase
   let nextTransition
   const lastRound = dispute.rounds[dispute.lastRoundId]
+  const { number } = lastRound
 
   // Ruled
   if (state === DisputesTypes.Phase.Ruled) {
     phase = DisputesTypes.Phase.ClaimRewards
     const ruling = null // TODO: calculate ruling
-    return { phase, ruling }
+    return { phase, ruling, roundId: number }
   }
 
   const { termDuration, evidenceTerms } = courtConfig
@@ -91,7 +101,7 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
       phase = state
       nextTransition = evidenceSubmissionEndTime
     }
-    return { phase, nextTransition }
+    return { phase, nextTransition, roundId: number }
   }
 
   // Jury Drafting
@@ -101,7 +111,7 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
 
     const { createdAt } = lastRound
     nextTransition = createdAt + termDuration * juryDraftingTerms
-    return { phase, nextTransition }
+    return { phase, nextTransition, roundId: number }
   }
 
   // Adjudicating
@@ -112,14 +122,13 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
       now,
       courtConfig
     )
-
     if (currentAdjudicationPhase.phase === DisputesTypes.Phase.Ended) {
       currentAdjudicationPhase = {
         ...currentAdjudicationPhase,
         phase: DisputesTypes.Phase.ExecuteRuling,
       }
     }
-    return { ...currentAdjudicationPhase }
+    return { ...currentAdjudicationPhase, roundId: number }
   }
 }
 

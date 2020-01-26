@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -178,5 +178,7 @@ export function useDisputeActions() {
     },
     [aragonCourtContract]
   )
-  return { draft, commit, reveal, leak, appeal, confirmAppeal, executeRuling }
+  return useMemo(() => {
+    return { draft, commit, reveal, leak, appeal, confirmAppeal, executeRuling }
+  }, [appeal, commit, confirmAppeal, draft, executeRuling, leak, reveal])
 }

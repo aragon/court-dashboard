@@ -35,9 +35,11 @@ function DisputeActions({
   onExecuteRuling,
 }) {
   const { phase, rounds, lastRoundId } = dispute
+
+  console.log('ACTION PHASEEEE ', phase)
+
   const lastRound = rounds[lastRoundId]
 
-  console.log('phase', phase)
   const connectedAccount = useConnectedAccount()
 
   if (phase === DisputePhase.Evidence) {

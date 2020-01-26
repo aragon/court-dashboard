@@ -1,9 +1,9 @@
-import { useCallback, useMemo, useState } from 'react'
-
+import { useCallback, useState, useMemo } from 'react'
 import { useSidePanel } from './hooks/useSidePanel'
 import { useDisputeActions } from './hooks/useCourtContracts'
-import useDisputes from './hooks/useDisputes'
+// import { useSingleDisputeSubscription } from './hooks/subscription-hooks'
 import useKeyCodeActions from './hooks/useKeyCodeActions'
+import useDispute from './hooks/useDispute'
 
 export const REQUEST_MODE = {
   NO_REQUEST: Symbol('NO_REQUEST'),
@@ -51,16 +51,12 @@ export function usePanelRequestActions(request) {
     request({ mode: REQUEST_MODE.CONFIRM_APPEAL })
   }, [request])
 
-  return { commit, reveal, appeal, confirmAppeal }
+  return useMemo(() => {
+    return { commit, reveal, appeal, confirmAppeal }
+  }, [appeal, commit, confirmAppeal, reveal])
 }
 
-function useSelectedDispute(disputes, disputeId) {
-  return useMemo(() => disputes.find(dispute => dispute.id === disputeId), [
-    disputeId,
-    disputes,
-  ])
-}
-
+let lastLogic = {}
 export function useDisputeLogic(disputeId) {
   const panelState = useSidePanel()
   const [requestMode, setRequestMode] = usePanelRequestMode(
@@ -68,20 +64,40 @@ export function useDisputeLogic(disputeId) {
   )
   const requests = usePanelRequestActions(setRequestMode)
 
-  const [disputes] = useDisputes()
-  console.log('disputes ', disputes)
-  const dispute = useSelectedDispute(disputes, disputeId)
+  const { dispute, fetching } = useDispute(disputeId)
+  // console.log('FETCHIIING ', fetching)
+  // console.log('DISPUTE LOGIC DISPUTE', dispute)
 
   const actions = useDisputeActions()
 
   const keyCodeActions = useKeyCodeActions()
 
-  return {
-    actions: { ...actions, ...keyCodeActions },
+  console.log(
+    'LOGIC EQ ',
+    dispute === lastLogic.dispute,
+    fetching === lastLogic.fetching,
+    panelState === lastLogic.panelState,
+    keyCodeActions === lastLogic.keyCodeActions,
+    actions === lastLogic.actions
+  )
+  lastLogic = { dispute, fetching, panelState, keyCodeActions, actions }
+
+  return useMemo(() => {
+    return {
+      actions: { ...actions, ...keyCodeActions },
+      dispute,
+      disputeFetching: fetching,
+      requestMode,
+      panelState,
+      requests,
+    }
+  }, [
+    actions,
     dispute,
-    requestMode,
+    fetching,
+    keyCodeActions,
     panelState,
+    requestMode,
     requests,
-    isSyncing: !dispute,
-  }
+  ])
 }

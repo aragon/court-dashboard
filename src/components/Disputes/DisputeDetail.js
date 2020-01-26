@@ -1,16 +1,15 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import {
   BackButton,
   Bar,
   Box,
-  // GU,
+  GU,
   Header,
-  // SidePanel,
+  SidePanel,
   Split,
   SyncIndicator,
 } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
@@ -21,24 +20,29 @@ import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
 import CommitPanel from './panels/CommitPanel'
 import AppealPanel from './panels/AppealPanel'
 
+let lastDDCall = {}
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
-
   const { id: disputeId } = match.params
+
   const {
     actions,
     dispute,
-    isSyncing,
+    disputeFetching,
     requestMode,
     panelState,
     requests,
   } = useDisputeLogic(disputeId)
 
-  const { subject = {} } = dispute || {}
+  console.log('DISPUTE DETAIL EQUALS ', dispute === lastDDCall.dispute)
+  lastDDCall = { dispute }
+  console.log('DISPUTE DETAIL ', dispute)
+
+  const subject = dispute && dispute.subject
 
   const evidences = useMemo(
     () =>
-      (subject.evidence || []).map(evidence => ({
+      ((subject && subject.evidence) || []).map(evidence => ({
         ...evidence,
         data: hexToAscii(evidence.data),
         createdAt: toDate(evidence.createdAt),
@@ -50,21 +54,34 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     history.push('/disputes')
   }, [history])
 
+  const noDispute = !dispute && !disputeFetching
+
+  useEffect(() => {
+    // TODO: display a proper error state and let the user retry or go back
+    if (noDispute) {
+      history.push('/disputes')
+    }
+  }, [noDispute, history])
+
+  if (noDispute) {
+    return null
+  }
+
   return (
     <React.Fragment>
-      <SyncIndicator visible={isSyncing} label="Loading dispute…" />
-
+      <SyncIndicator visible={disputeFetching} label="Loading dispute…" />
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
 
-      {!isSyncing && (
+      {!disputeFetching && (
         <Split
           primary={
             <React.Fragment>
               <DisputeInfo
                 dispute={dispute}
+                loading={disputeFetching}
                 onDraft={actions.draft}
                 onRequestCommit={requests.commit}
                 onReveal={actions.reveal}
@@ -83,7 +100,11 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
           secondary={
             <React.Fragment>
               <Box heading="Dispute timeline" padding={0}>
-                <DisputeTimeline dispute={dispute} />
+                {disputeFetching ? (
+                  <div css="height: 100px" />
+                ) : (
+                  <DisputeTimeline dispute={dispute} />
+                )}
               </Box>
             </React.Fragment>
           }
@@ -118,19 +139,17 @@ const PanelComponent = React.memo(function PanelComponent({
   ...props
 }) {
   const { mode, data } = requestMode
-  const { commit, appeal, generateKeyCode } = actions
-  console.log('ACTIONS ', actions)
+  const { commit, appeal, keyCode } = actions
   switch (mode) {
     case REQUEST_MODE.COMMIT: {
-      const keyCode = generateKeyCode()
-      console.log('keyyyyyy ', keyCode)
+      console.log('KEYYYY ', keyCode)
       return (
         <CommitPanel
           dispute={dispute}
           commitment={data.commitment}
           onCommit={commit}
-          // keyCode={keyCode}
-          // downloadKeyCode={downloadKeyCode}
+          keyCode={keyCode}
+          //  downloadKeyCode={downloadKeyCode}
           {...props}
         />
       )
