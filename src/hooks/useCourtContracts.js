@@ -125,9 +125,9 @@ export function useDisputeActions() {
 
   // Commit
   const commit = useCallback(
-    (disputeId, roundId, commitment) => {
+    (disputeId, roundId, commitment, password) => {
       const voteId = getVoteId(disputeId, roundId)
-      const hashedCommitment = hashVote(commitment)
+      const hashedCommitment = hashVote(commitment, password)
 
       return votingContract.commit(voteId, hashedCommitment)
     },

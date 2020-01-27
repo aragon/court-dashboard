@@ -30,7 +30,7 @@ const CommitPanel = React.memo(function CommitPanel({
       event.preventDefault()
 
       const lastRoundId = dispute.lastRoundId
-      const tx = await onCommit(dispute.id, lastRoundId, commitment) // TODO: Add password
+      const tx = await onCommit(dispute.id, lastRoundId, commitment, keyCode) // TODO: Add password
       await tx.wait()
     } catch (err) {
       console.log('Error submitting tx: ', err)
@@ -80,6 +80,7 @@ const CommitPanel = React.memo(function CommitPanel({
           margin-top: ${2 * GU}px;
         `}
         disabled={!codeSaved && !codeCopied}
+        onClick={handleCommit}
         type="submit"
         mode="strong"
         wide
