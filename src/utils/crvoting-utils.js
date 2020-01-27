@@ -1,8 +1,6 @@
 import { soliditySha3, hash256 } from '../lib/web3-utils'
 import { bigNum } from '../lib/math-utils'
 
-export const DEFAULT_SALT = hash256('passw0rd') // TODO: Remove when implementation of the password is done
-
 export const OUTCOMES = {
   Missing: 0,
   Leaked: 1,
@@ -54,7 +52,7 @@ export function getOutcomeNumber(outcome) {
  * @param {bytes} salt password used to get the commitment
  * @returns {Number} outcome
  */
-export function getOutcomeFromCommitment(commitment, salt = DEFAULT_SALT) {
+export function getOutcomeFromCommitment(commitment, salt) {
   return VALID_OUTCOMES.find(option => hashVote(option, salt) === commitment)
 }
 
@@ -87,8 +85,12 @@ export function getVoteId(disputeId, roundId) {
     .add(bigNum(roundId))
 }
 
-export function hashVote(outcome, salt = DEFAULT_SALT) {
-  return soliditySha3(['uint8', 'bytes32'], [outcome, salt])
+export function hashPassword(salt) {
+  return hash256(salt)
+}
+
+export function hashVote(outcome, salt) {
+  return soliditySha3(['uint8', 'bytes32'], [outcome, hash256(salt)])
 }
 
 /**

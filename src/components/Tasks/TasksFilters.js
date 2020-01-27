@@ -1,7 +1,13 @@
 import React from 'react'
-import { DropDown, DateRangePicker, GU, SearchInput } from '@aragon/ui'
+import { DropDown, DateRangePicker, GU } from '@aragon/ui'
 
-const TasksFilters = ({ dateRangeFilter, onDateRangeChange }) => {
+const TasksFilters = ({
+  dateRangeFilter,
+  onDateRangeChange,
+  phaseFilter,
+  onPhaseChange,
+  phaseTypes,
+}) => {
   return (
     <div
       css={`
@@ -12,31 +18,17 @@ const TasksFilters = ({ dateRangeFilter, onDateRangeChange }) => {
       `}
     >
       <DropDown
-        placeholder="Actions"
-        header="Actions"
-        items={[]}
-        onChange={() => {}}
-        width="128px"
-      />
-      <DropDown
-        placeholder="Status"
-        header="Status"
-        items={[]}
-        onChange={() => {}}
+        placeholder="Type"
+        header="Type"
+        items={phaseTypes}
+        selected={phaseFilter}
+        onChange={onPhaseChange}
         width="128px"
       />
       <DateRangePicker
         startDate={dateRangeFilter.start}
         endDate={dateRangeFilter.end}
         onChange={onDateRangeChange}
-      />
-      <SearchInput
-        css={`
-          width: ${32 * GU}px;
-        `}
-        placeholder="Search"
-        value=""
-        onChange={() => {}}
       />
     </div>
   )

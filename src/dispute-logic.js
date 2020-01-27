@@ -1,8 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useMemo } from 'react'
 
 import { useSidePanel } from './hooks/useSidePanel'
 import { useDisputeActions } from './hooks/useCourtContracts'
-import useSingleDisputeSubscription from './hooks/subscription-hooks'
 import { useDispute } from './hooks/useDisputes'
 
 export const REQUEST_MODE = {
@@ -10,7 +9,6 @@ export const REQUEST_MODE = {
   COMMIT: Symbol('COMMIT'),
   REVEAL: Symbol('REVEAL'),
   APPEAL: Symbol('APPEAL'),
-  CONFIRM_APPEAL: Symbol('CONFIRM_APPEAL'),
 }
 
 export function usePanelRequestMode(requestPanelOpen) {
@@ -50,7 +48,9 @@ export function usePanelRequestActions(request) {
     [request]
   )
 
-  return { commit, reveal, appeal }
+  return useMemo(() => {
+    return { commit, reveal, appeal }
+  }, [appeal, commit, reveal])
 }
 
 export function useDisputeLogic(disputeId) {
@@ -60,20 +60,18 @@ export function useDisputeLogic(disputeId) {
   )
   const requests = usePanelRequestActions(setRequestMode)
 
-  const { dispute, fetching: disputeFetching } = useSingleDisputeSubscription(
-    disputeId
-  )
-
-  const disputeWithPhase = useDispute(dispute)
+  const { dispute, fetching } = useDispute(disputeId)
 
   const actions = useDisputeActions()
 
-  return {
-    actions,
-    dispute: disputeWithPhase,
-    requestMode,
-    panelState,
-    requests,
-    loading: disputeFetching,
-  }
+  return useMemo(() => {
+    return {
+      actions,
+      dispute,
+      disputeFetching: fetching,
+      requestMode,
+      panelState,
+      requests,
+    }
+  }, [actions, requestMode, dispute, fetching, panelState, requests])
 }

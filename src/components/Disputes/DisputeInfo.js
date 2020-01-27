@@ -11,17 +11,16 @@ import {
 import DisputeStatus from './DisputeStatus'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
-
 import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import iconCourt from '../../assets/courtIcon.svg'
 
-function DisputeInfo({
+const DisputeInfo = React.memo(function({
   id,
   dispute,
   loading,
   onDraft,
   onRequestCommit,
-  onReveal,
+  onRequestReveal,
   onLeak,
   onRequestAppeal,
   onExecuteRuling,
@@ -158,7 +157,7 @@ function DisputeInfo({
             dispute={dispute}
             onDraft={onDraft}
             onRequestCommit={onRequestCommit}
-            onReveal={onReveal}
+            onRequestReveal={onRequestReveal}
             onLeavk={onLeak}
             onRequestAppeal={onRequestAppeal}
             onExecuteRuling={onExecuteRuling}
@@ -167,11 +166,16 @@ function DisputeInfo({
       </section>
     </Box>
   )
-}
+})
 
 DisputeInfo.propTypes = {
   dispute: PropTypes.object, // TODO: define DisputeType
   id: PropTypes.string.isRequired,
+  loading: PropTypes.bool,
+}
+
+DisputeInfo.propTypes = {
+  dispute: PropTypes.object, // TODO: define DisputeType
   loading: PropTypes.bool,
 }
 

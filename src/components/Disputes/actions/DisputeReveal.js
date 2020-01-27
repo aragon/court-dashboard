@@ -1,30 +1,13 @@
 import React from 'react'
 import { Button, GU, Info } from '@aragon/ui'
-import { useConnectedAccount } from '../../../providers/Web3'
 
-function DisputeReveal({ disputeId, roundId, commitment, onReveal }) {
-  const connectedAccount = useConnectedAccount()
-
-  const handleReveal = async () => {
-    try {
-      const tx = await onReveal(
-        disputeId,
-        roundId,
-        connectedAccount,
-        commitment
-      ) // TODO: Add password
-      await tx.wait()
-    } catch (err) {
-      console.log('Error submitting tx: ', err)
-    }
-  }
-
+function DisputeReveal({ disputeId, roundId, commitment, onRequestReveal }) {
   return (
     <div>
       <Button
         wide
         mode="strong"
-        onClick={handleReveal}
+        onClick={onRequestReveal}
         css={`
           margin-bottom: ${1.5 * GU}px;
         `}

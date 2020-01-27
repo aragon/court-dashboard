@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useMemo, useEffect, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -14,14 +14,14 @@ import { getFunctionSignature } from '../lib/web3-utils'
 import {
   hashVote,
   getOutcomeFromCommitment,
-  DEFAULT_SALT,
   getVoteId,
+  hashPassword,
 } from '../utils/crvoting-utils'
 import { getModuleAddress } from '../utils/court-utils'
 import { bigNum } from '../lib/math-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 500000 // Should be relative to every tx ?
+const GAS_LIMIT = 700000 // Should be relative to every tx ?
 
 // ANJ contract
 function useANJTokenContract() {
@@ -142,9 +142,10 @@ export function useDisputeActions() {
 
   // Commit
   const commit = useCallback(
-    (disputeId, roundId, commitment) => {
+    (disputeId, roundId, commitment, password) => {
       const voteId = getVoteId(disputeId, roundId)
-      const hashedCommitment = hashVote(commitment)
+      const hashedCommitment = hashVote(commitment, password)
+
       return votingContract.commit(voteId, hashedCommitment)
     },
     [votingContract]
@@ -156,7 +157,7 @@ export function useDisputeActions() {
       const voteId = getVoteId(disputeId, roundId)
       const outcome = getOutcomeFromCommitment(commitment, salt)
 
-      return votingContract.reveal(voteId, voter, outcome, salt || DEFAULT_SALT) // TODO: use salt generated for the juror
+      return votingContract.reveal(voteId, voter, outcome, hashPassword(salt))
     },
     [votingContract]
   )
@@ -207,16 +208,27 @@ export function useDisputeActions() {
     },
     [aragonCourtContract]
   )
-  return {
-    draft,
-    commit,
-    reveal,
-    leak,
+  return useMemo(() => {
+    return {
+      approveFeeDeposit,
+      draft,
+      commit,
+      reveal,
+      leak,
+      appeal,
+      confirmAppeal,
+      executeRuling,
+    }
+  }, [
     appeal,
     approveFeeDeposit,
+    commit,
     confirmAppeal,
+    draft,
     executeRuling,
-  }
+    leak,
+    reveal,
+  ])
 }
 
 /**

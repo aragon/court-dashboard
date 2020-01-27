@@ -21,6 +21,7 @@ const AppealPanel = React.memo(function AppealPanel({
   onApproveFeeDeposit,
   onAppeal,
   confirm,
+  onDone,
 }) {
   const { feeToken } = useCourtConfig()
   const [selectedAppeal, setSelectedAppeal] = useState(-1)
@@ -42,8 +43,9 @@ const AppealPanel = React.memo(function AppealPanel({
   // If appealing => options are the opossed of the wining outcome
   // If confirming appeal => options are the opossed of the appealed ruling
   const { vote, appeal } = getDisputeLastRound(dispute)
+  const { winningOutcome } = vote || {}
   const appealOptions = getAppealRulingOptions(
-    confirm ? appeal.appealedRuling : vote.winningOutcome
+    confirm ? appeal.appealedRuling : winningOutcome
   )
 
   // check if connected account has the minimum required deposit to be able to appeal
@@ -68,6 +70,7 @@ const AppealPanel = React.memo(function AppealPanel({
         appealOption.outcome
       )
       await tx.wait()
+      onDone()
     } catch (err) {
       console.log('Error submitting tx: ', err)
     }

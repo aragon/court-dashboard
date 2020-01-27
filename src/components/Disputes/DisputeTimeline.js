@@ -1,11 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import dayjs from '../../lib/dayjs'
-
 import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
-
-import { useCourtConfig } from '../../providers/CourtConfig'
-
+import dayjs from '../../lib/dayjs'
+import { dateFormat } from '../../utils/date-utils'
 import Stepper from '../Stepper'
 import Step from '../Step'
 import {
@@ -21,16 +18,16 @@ import {
 import * as DisputesTypes from '../../types/dispute-status-types'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 import { numberToWord } from '../../lib/math-utils'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
-function DisputeTimeline({ dispute }) {
+const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   const theme = useTheme()
-  const roundsLength = dispute.rounds.length
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
   return (
     <div>
-      <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={10}>
+      <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={12}>
         {disputeTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
             return getStep(item, index, theme)
@@ -76,7 +73,7 @@ function DisputeTimeline({ dispute }) {
 
                                 <Stepper
                                   lineColor={theme.accent.alpha(0.3)}
-                                  lineTop={13}
+                                  lineTop={12}
                                   css={`
                                     padding: ${3 * GU}px 0;
                                   `}
@@ -84,7 +81,6 @@ function DisputeTimeline({ dispute }) {
                                   {round.map((roundItem, phaseIndex) => {
                                     return getStep(
                                       roundItem,
-                                      roundsLength,
                                       phaseIndex,
                                       theme,
                                       roundStepContainerCss
@@ -107,7 +103,7 @@ function DisputeTimeline({ dispute }) {
       </Stepper>
     </div>
   )
-}
+})
 
 function getStep(item, index, theme, css) {
   return (
@@ -126,7 +122,7 @@ function getStep(item, index, theme, css) {
             display: inline-flex;
           `}
         >
-          {getPhaseIcon(item.phase, item.active, theme)}
+          {getPhaseIcon(item.phase, item.active)}
         </div>
       }
       content={
@@ -151,7 +147,7 @@ function getStep(item, index, theme, css) {
                 {getDisplayTime(item)}
               </span>
             </div>
-            {item.active && <RoundPill roundId={item.roundId} />}
+            {item.active && <RoundPill roundId={Number(item.roundId)} />}
           </div>
         </div>
       }
@@ -166,7 +162,7 @@ function getPhaseIcon(phase, active) {
 
   if (
     phase === DisputesTypes.Phase.Created ||
-    phase === DisputesTypes.Phase.Invalid
+    phase === DisputesTypes.Phase.NotStarted
   ) {
     icon = IconFlag
   } else if (phase === DisputesTypes.Phase.Evidence) {
@@ -225,13 +221,19 @@ function RoundPill({ roundId }) {
 }
 
 function getDisplayTime(timeLineItem) {
-  const { endTime, active } = timeLineItem
+  const { endTime, active, phase } = timeLineItem
 
   if (active) {
+    if (
+      phase === DisputesTypes.Phase.ExecuteRuling ||
+      phase === DisputesTypes.Phase.ClaimRewards
+    ) {
+      return 'ANY TIME'
+    }
     return <Timer end={dayjs(endTime)} />
   }
 
-  return dayjs(endTime).format('DD/MM/YY')
+  return dateFormat(endTime, 'DD/MM/YY')
 }
 
 const StyledAccordion = styled.div`
@@ -240,6 +242,7 @@ const StyledAccordion = styled.div`
     border-left: 0;
     border-right: 0;
   }
+  padding: 0;
 `
 const roundStepContainerCss = `margin-left: 0px;`
 

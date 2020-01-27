@@ -10,7 +10,6 @@ import {
   SyncIndicator,
 } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
@@ -18,18 +17,18 @@ import NoEvidence from './NoEvidence'
 
 import { hexToAscii, toDate } from '../../lib/web3-utils'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
-import { DisputesStateProvider } from './DisputesStateProvider'
 import CommitPanel from './panels/CommitPanel'
+import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
-
   const { id: disputeId } = match.params
+
   const {
     actions,
     dispute,
-    loading,
+    disputeFetching,
     requestMode,
     panelState,
     requests,
@@ -51,7 +50,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     history.push('/disputes')
   }, [history])
 
-  const noDispute = !dispute && !loading
+  const noDispute = !dispute && !disputeFetching
 
   useEffect(() => {
     // TODO: display a proper error state and let the user retry or go back
@@ -66,7 +65,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   return (
     <React.Fragment>
-      <SyncIndicator visible={loading} label="Loading dispute…" />
+      <SyncIndicator visible={disputeFetching} label="Loading dispute…" />
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
@@ -77,16 +76,16 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
             <DisputeInfo
               id={disputeId}
               dispute={dispute}
-              loading={loading}
+              loading={disputeFetching}
               onDraft={actions.draft}
               onRequestCommit={requests.commit}
-              onReveal={actions.reveal}
+              onRequestReveal={requests.reveal}
               onLeak={actions.leak}
               onRequestAppeal={requests.appeal}
               onExecuteRuling={actions.executeRuling}
             />
             {(() => {
-              if (loading) {
+              if (disputeFetching) {
                 return null
               }
               if (evidences.length === 0) {
@@ -99,7 +98,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
         secondary={
           <React.Fragment>
             <Box heading="Dispute timeline" padding={0}>
-              {loading ? (
+              {disputeFetching ? (
                 <div css="height: 100px" />
               ) : (
                 <DisputeTimeline dispute={dispute} />
@@ -109,7 +108,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
         }
       />
       <SidePanel
-        title="title"
+        title={<PanelTitle requestMode={requestMode} disputeId={disputeId} />}
         opened={panelState.visible}
         onClose={panelState.requestClose}
         onTransitionEnd={panelState.endTransition}
@@ -123,6 +122,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
             dispute={dispute}
             requestMode={requestMode}
             actions={actions}
+            onDone={panelState.requestClose}
           />
         </div>
       </SidePanel>
@@ -130,24 +130,57 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   )
 })
 
-function PanelComponent({ dispute, requestMode, actions, ...props }) {
+const PanelTitle = ({ requestMode, disputeId }) => {
   const { mode, data } = requestMode
-  const { commit, appeal, confirmAppeal, approveFeeDeposit } = actions
+
+  let title
+  if (mode === REQUEST_MODE.COMMIT)
+    title = `Commit your vote on dispute #${disputeId}`
+  else if (mode === REQUEST_MODE.REVEAL)
+    title = `Reveal your vote on dispute #${disputeId}`
+  else if (mode === REQUEST_MODE.APPEAL) {
+    if (data.confirm) {
+      title = `Confirm an appeal on dispute #${disputeId}`
+    } else {
+      title = `Appeal ruling on dispute #${disputeId}`
+    }
+  }
+
+  return <span>{title}</span>
+}
+
+const PanelComponent = React.memo(function PanelComponent({
+  dispute,
+  requestMode,
+  actions,
+  ...props
+}) {
+  const { mode, data } = requestMode
+  const {
+    commit,
+    reveal,
+    appeal,
+    confirmAppeal,
+    approveFeeDeposit,
+    keyCode,
+    downloadKeyCode,
+  } = actions
 
   switch (mode) {
-    case REQUEST_MODE.COMMIT:
+    case REQUEST_MODE.COMMIT: {
       return (
         <CommitPanel
           dispute={dispute}
           commitment={data.commitment}
           onCommit={commit}
+          keyCode={keyCode}
+          onDownloadKeyCode={downloadKeyCode}
           {...props}
         />
       )
+    }
     case REQUEST_MODE.REVEAL:
-      return (
-        <p>Reveal panels</p> // TODO: Reveal panel
-      )
+      return <RevealPanel dispute={dispute} onReveal={reveal} {...props} />
     case REQUEST_MODE.APPEAL:
       return (
         <AppealPanel
@@ -155,17 +188,12 @@ function PanelComponent({ dispute, requestMode, actions, ...props }) {
           onApproveFeeDeposit={approveFeeDeposit}
           onAppeal={data.confirm ? confirmAppeal : appeal}
           confirm={data.confirm}
+          {...props}
         />
       )
     default:
       return null
   }
-}
+})
 
-export default function DisputeDetailWithSubscritpion(props) {
-  return (
-    <DisputesStateProvider>
-      <DisputeDetail {...props} />
-    </DisputesStateProvider>
-  )
-}
+export default DisputeDetail

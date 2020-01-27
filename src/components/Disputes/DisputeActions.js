@@ -1,5 +1,4 @@
 import React from 'react'
-
 import { GU, Help, textStyle, useTheme } from '@aragon/ui'
 
 import { Phase as DisputePhase } from '../../types/dispute-status-types'
@@ -16,11 +15,7 @@ import {
   jurorVoted,
   canJurorReveal,
 } from '../../utils/juror-draft-utils'
-import {
-  isvoteLeaked,
-  getOutcomeFromCommitment,
-  voteToString,
-} from '../../utils/crvoting-utils'
+import { isvoteLeaked, voteToString } from '../../utils/crvoting-utils'
 
 import IconGavelOrange from '../../assets/IconGavelOrange.svg'
 import IconGavelRed from '../../assets/IconGavelRed.svg'
@@ -28,12 +23,12 @@ import { getDisputeLastRound } from '../../utils/dispute-utils'
 
 function DisputeActions({
   dispute,
+  onCloseEvidence,
   onDraft,
   onRequestCommit,
-  onReveal,
+  onRequestReveal,
   onLeak,
   onRequestAppeal,
-  onRequestConfirmAppeal,
   onExecuteRuling,
 }) {
   const { phase } = dispute
@@ -76,7 +71,7 @@ function DisputeActions({
                 disputeId={dispute.id}
                 roundId={dispute.lastRoundId}
                 commitment={jurorDraft.commitment}
-                onReveal={onReveal}
+                onRequestReveal={onRequestReveal}
               />
             ) : null
           } else {
@@ -199,8 +194,7 @@ const getVotingInfoAttributes = (jurorDraft, hasJurorVoted, theme) => {
     }
   }
 
-  const jurorOutcome = getOutcomeFromCommitment(jurorDraft.commitment) // TODO: use jurors password
-  const outcomeDescription = voteToString(jurorOutcome)
+  const outcomeDescription = voteToString(jurorDraft.outcome)
 
   return {
     title: 'Your vote was casted successfuly.',

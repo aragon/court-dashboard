@@ -9,6 +9,7 @@ export const Phase = {
   Adjudicating: Symbol('Adjudicating'),
   Ruled: Symbol('Ruled'),
   Evidence: Symbol('Evidence submission'),
+  NotStarted: Symbol('Not started'),
   JuryDrafting: Symbol('Jury drafting'),
   VotingPeriod: Symbol('Voting period'),
   RevealVote: Symbol('Reveal vote'),
@@ -26,12 +27,13 @@ const stringMapping = {
   [Phase.All]: 'All',
   [Phase.Evidence]: 'Evidence submission',
   [Phase.JuryDrafting]: 'Jury drafting',
+  [Phase.NotStarted]: 'Starts in',
   [Phase.VotingPeriod]: 'Voting period',
   [Phase.RevealVote]: 'Reveal vote',
   [Phase.AppealRuling]: 'Appeal ruling',
   [Phase.ConfirmAppeal]: 'Confirm appeal',
   [Phase.ClaimRewards]: 'Claim rewards',
-  [Phase.Invalid]: 'Starts in',
+  [Phase.Invalid]: 'Invalid',
   [Phase.Ended]: 'Ended',
   [Phase.ExecuteRuling]: 'Execute Ruling',
   [Phase.Created]: 'Dispute created',
@@ -44,9 +46,9 @@ const endedStringMapping = {
   [Phase.Evidence]: 'Evidence submitted',
   [Phase.JuryDrafting]: 'Jury drafted',
   [Phase.VotingPeriod]: 'Voting period',
-  [Phase.RevealVote]: 'Reveal period',
+  [Phase.RevealVote]: 'Vote revealed',
   [Phase.AppealRuling]: 'Appeal ruling',
-  [Phase.ConfirmAppeal]: 'Confirm appeal',
+  [Phase.ConfirmAppeal]: 'Appeal confirmed',
   [Phase.ClaimRewards]: 'Claim rewards',
   [Phase.Invalid]: 'Started',
   [Phase.Ended]: 'Ended',
@@ -69,6 +71,14 @@ const symbolMapping = {
   Created: Phase.Created,
 }
 
+const taskActionsMapping = {
+  [Phase.All]: 'All',
+  [Phase.VotingPeriod]: 'Commit vote',
+  [Phase.RevealVote]: 'Reveal vote',
+  [Phase.AppealRuling]: 'Appeal ruling',
+  [Phase.ConfirmAppeal]: 'Confirm appeal',
+}
+
 export function convertFromString(str) {
   return symbolMapping[str]
 }
@@ -83,4 +93,8 @@ export function getPhaseStringForStatus(symbol, active) {
   } else {
     return endedStringMapping[symbol]
   }
+}
+
+export function getTaskActionString(symbol) {
+  return taskActionsMapping[symbol]
 }
