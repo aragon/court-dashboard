@@ -53,6 +53,7 @@ function DisputeActions({
   const isJurorDrafted = !!jurorDraft
   const hasJurorVoted = isJurorDrafted && jurorVoted(jurorDraft)
 
+  console.log('lastRound', lastRound)
   if (phase === DisputePhase.VotingPeriod && !hasJurorVoted) {
     return (
       <DisputeVoting
@@ -93,7 +94,6 @@ function DisputeActions({
           disputeId={dispute.id}
           roundId={dispute.lastRoundId}
           onRequestAppeal={onRequestAppeal}
-          onRequestConfirmAppeal={onRequestConfirmAppeal}
           confirm={phase === DisputePhase.ConfirmAppeal}
         />
       )}

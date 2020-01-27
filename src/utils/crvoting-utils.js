@@ -60,15 +60,13 @@ export function getOutcomeFromCommitment(commitment, salt = DEFAULT_SALT) {
 
 /**
  * returns all possible appeal ruling options
- * @param {String} winningOutcome the resulting winning outcome of a vote
+ * @param {Number} currentOutcome current round outcome
  * @returns {Array} Array of appeal ruling options
  */
-export function getAppealRulingOptions(winningOutcome) {
-  const winningOutcomeNumber = getOutcomeNumber(winningOutcome)
-
-  return VALID_OUTCOMES.filter(outcome => {
-    return outcome !== winningOutcomeNumber
-  }).map(outcome => ({ outcome, description: voteToString(outcome) }))
+export function getAppealRulingOptions(currentOutcome) {
+  return VALID_OUTCOMES.filter(
+    outcome => outcome !== currentOutcome
+  ).map(outcome => ({ outcome, description: voteToString(outcome) }))
 }
 
 export function filterByValidOutcome(totalValidOutcomes) {

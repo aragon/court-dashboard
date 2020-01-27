@@ -43,15 +43,14 @@ export function usePanelRequestActions(request) {
     request({ mode: REQUEST_MODE.REVEAL })
   }, [request])
 
-  const appeal = useCallback(() => {
-    request({ mode: REQUEST_MODE.APPEAL })
-  }, [request])
+  const appeal = useCallback(
+    confirm => {
+      request({ mode: REQUEST_MODE.APPEAL, data: { confirm } })
+    },
+    [request]
+  )
 
-  const confirmAppeal = useCallback(() => {
-    request({ mode: REQUEST_MODE.CONFIRM_APPEAL })
-  }, [request])
-
-  return { commit, reveal, appeal, confirmAppeal }
+  return { commit, reveal, appeal }
 }
 
 export function useDisputeLogic(disputeId) {

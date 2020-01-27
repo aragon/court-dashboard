@@ -240,6 +240,8 @@ export function useAppealDeposits(disputeId, roundId) {
         disputeId,
         roundId
       )
+
+      console.log('nextRound', nextRound)
       const appealDeposit = nextRound[6]
       const confirmAppealDeposit = nextRound[7]
       setAppealDeposits([appealDeposit, confirmAppealDeposit])

@@ -1,35 +1,22 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 
 import { Button, Info, GU, useTheme } from '@aragon/ui'
 
-function DisputeAppeal({
-  disputeId,
-  roundId,
-  onRequestAppeal,
-  onRequestConfirmAppeal,
-  confirm,
-  ruling,
-}) {
+function DisputeAppeal({ onRequestAppeal, onRequestConfirmAppeal, confirm }) {
   const theme = useTheme()
 
   const actionLabel = confirm ? 'Confirm appeal' : 'Appeal Ruling'
 
-  const handleAppeal = async () => {
-    try {
-      const action = confirm ? onRequestConfirmAppeal : onRequestAppeal
-      const tx = await action(disputeId, roundId, ruling)
-      await tx.wait()
-    } catch (err) {
-      console.log('Error submitting tx: ', err)
-    }
-  }
+  const handleRequestAppeal = useCallback(() => {
+    onRequestAppeal(confirm)
+  }, [confirm, onRequestAppeal])
 
   return (
     <div>
       <Button
         wide
         mode="strong"
-        onClick={handleAppeal}
+        onClick={handleRequestAppeal}
         css={`
           margin-bottom: ${1.5 * GU}px;
         `}

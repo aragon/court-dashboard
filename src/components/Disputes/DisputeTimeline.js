@@ -15,6 +15,7 @@ import {
   IconThinking,
   IconRuling,
   IconVoting,
+  IconGavelNoFill,
 } from '../../utils/dispute-icons'
 
 import * as DisputesTypes from '../../types/dispute-status-types'
@@ -27,19 +28,10 @@ function DisputeTimeline({ dispute }) {
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
-  const reverseTimeLine = disputeTimeLine.reverse().map(item => {
-    if (Array.isArray(item)) {
-      return item.reverse().map(roundPhase => {
-        return roundPhase.reverse()
-      })
-    }
-    return item
-  })
-
   return (
     <div>
-      <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={13}>
-        {reverseTimeLine.map((item, index) => {
+      <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={10}>
+        {disputeTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
             return getStep(item, index, theme)
           } else {
@@ -64,15 +56,24 @@ function DisputeTimeline({ dispute }) {
                             key={roundIndex}
                             items={[
                               [
-                                <span
+                                <div
                                   css={`
-                                    margin-left: ${1.5 * GU}px;
+                                    display: flex;
+                                    align-items: center;
                                   `}
                                 >
+                                  <img
+                                    alt={18}
+                                    src={IconGavelNoFill}
+                                    css={`
+                                      margin-right: ${1 * GU}px;
+                                    `}
+                                  />
                                   <RoundPill
                                     roundId={Number(round[0].roundId)}
                                   />
-                                </span>,
+                                </div>,
+
                                 <Stepper
                                   lineColor={theme.accent.alpha(0.3)}
                                   lineTop={13}
@@ -163,7 +164,10 @@ function getStep(item, index, theme, css) {
 function getPhaseIcon(phase, active) {
   let icon
 
-  if (phase === DisputesTypes.Phase.Created) {
+  if (
+    phase === DisputesTypes.Phase.Created ||
+    phase === DisputesTypes.Phase.Invalid
+  ) {
     icon = IconFlag
   } else if (phase === DisputesTypes.Phase.Evidence) {
     icon = IconFolder
@@ -233,6 +237,8 @@ function getDisplayTime(timeLineItem) {
 const StyledAccordion = styled.div`
   & > div:first-child {
     border-radius: 0px;
+    border-left: 0;
+    border-right: 0;
   }
 `
 const roundStepContainerCss = `margin-left: 0px;`

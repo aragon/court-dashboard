@@ -83,7 +83,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
               onReveal={actions.reveal}
               onLeak={actions.leak}
               onRequestAppeal={requests.appeal}
-              onRequestConfirmAppeal={requests.confirmAppeal}
               onExecuteRuling={actions.executeRuling}
             />
             {(() => {
@@ -133,7 +132,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
 function PanelComponent({ dispute, requestMode, actions, ...props }) {
   const { mode, data } = requestMode
-  const { commit, appeal, approveFeeDeposit } = actions
+  const { commit, appeal, confirmAppeal, approveFeeDeposit } = actions
 
   switch (mode) {
     case REQUEST_MODE.COMMIT:
@@ -154,7 +153,8 @@ function PanelComponent({ dispute, requestMode, actions, ...props }) {
         <AppealPanel
           dispute={dispute}
           onApproveFeeDeposit={approveFeeDeposit}
-          onAppeal={appeal}
+          onAppeal={data.confirm ? confirmAppeal : appeal}
+          confirm={data.confirm}
         />
       )
     default:

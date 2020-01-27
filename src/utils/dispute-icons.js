@@ -10,6 +10,7 @@ import IconThinkingActive from '../assets/IconThinkingActive.svg'
 import IconThinkingInactive from '../assets/IconThinkingInactive.svg'
 import IconRulingActive from '../assets/IconRulingActive.svg'
 import IconRulingInactive from '../assets/IconRulingInactive.svg'
+export { default as IconGavelNoFill } from '../assets/IconGavelNoFill.svg'
 
 export const IconFlag = {
   active: IconFlagActive,

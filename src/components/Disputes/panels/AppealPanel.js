@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
-import { Button, DropDown, GU, Info } from '@aragon/ui'
+import { Button, DropDown, Field, GU, Info } from '@aragon/ui'
 
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
-import { getAppealRulingOptions } from '../../../utils/crvoting-utils'
+import {
+  getAppealRulingOptions,
+  voteToString,
+} from '../../../utils/crvoting-utils'
 import { formatUnits } from '../../../lib/math-utils'
 
 import {
@@ -15,29 +18,44 @@ import { useConnectedAccount } from '../../../providers/Web3'
 
 const AppealPanel = React.memo(function AppealPanel({
   dispute,
-  onAppeal,
   onApproveFeeDeposit,
-  confirm, // TODO:  appeal confirm
+  onAppeal,
+  confirm,
 }) {
   const { feeToken } = useCourtConfig()
   const [selectedAppeal, setSelectedAppeal] = useState(-1)
   const connectedAccount = useConnectedAccount()
 
+  // get connected account fee balance and  allowance
   const feeBalance = useFeeBalanceOf(connectedAccount)
   const feeAllowance = useAppealFeeAllowance(connectedAccount)
-  const [appealDeposit] = useAppealDeposits(dispute.id, dispute.lastRoundId)
-  const canAppeal = feeBalance.gte(appealDeposit)
 
-  const lastRound = getDisputeLastRound(dispute)
-  const appealOptions = getAppealRulingOptions(lastRound.vote.winningOutcome)
+  // get required appeal desposits (appeal and confirm appeal)
+  const [appealDeposit, confirmAppealDeposit] = useAppealDeposits(
+    dispute.id,
+    dispute.lastRoundId
+  )
+
+  // Reqiured deposits for appealing and confirming appeal are different
+  const requiredDeposit = confirm ? confirmAppealDeposit : appealDeposit
+
+  // If appealing => options are the opossed of the wining outcome
+  // If confirming appeal => options are the opossed of the appealed ruling
+  const { vote, appeal } = getDisputeLastRound(dispute)
+  const appealOptions = getAppealRulingOptions(
+    confirm ? appeal.appealedRuling : vote.winningOutcome
+  )
+
+  // check if connected account has the minimum required deposit to be able to appeal
+  const canAppeal = feeBalance.gte(requiredDeposit)
 
   const handleAppeal = async event => {
     try {
       event.preventDefault()
 
-      if (feeAllowance.lt(appealDeposit)) {
+      if (feeAllowance.lt(requiredDeposit)) {
         // Approve fee deposit for appealing
-        const approveTx = await onApproveFeeDeposit(appealDeposit)
+        const approveTx = await onApproveFeeDeposit(requiredDeposit)
         await approveTx.wait()
       }
 
@@ -55,10 +73,37 @@ const AppealPanel = React.memo(function AppealPanel({
     }
   }
 
+  const actionLabel = confirm ? 'Confirm appeal' : 'Appealed ruling'
+
   return (
     <form onSubmit={handleAppeal}>
+      <Field label="Required deposit">
+        <div
+          css={`
+            display: flex;
+            align-items: center;
+          `}
+        >
+          <img
+            height="18"
+            src={`https://chasing-coins.com/coin/logo/${feeToken.symbol}`}
+            css={`
+              margin-right: ${0.5 * GU}px;
+            `}
+          />
+          <span>
+            {formatUnits(requiredDeposit)} {feeToken.symbol}{' '}
+          </span>
+        </div>
+      </Field>
+      {confirm && vote && (
+        <Field label="Ruling appealed">
+          {voteToString(appeal.appealedRuling)}
+        </Field>
+      )}
       <DropDown
         items={appealOptions.map(option => option.description)}
+        placeholder="Select a ruling"
         selected={selectedAppeal}
         onChange={setSelectedAppeal}
         wide
@@ -75,12 +120,12 @@ const AppealPanel = React.memo(function AppealPanel({
           margin-bottom: ${2 * GU}px;
         `}
       >
-        Appeal ruling
+        {actionLabel}
       </Button>
       {!canAppeal && (
         <Info mode="warning">
-          You must hold {formatUnits(appealDeposit)} {feeToken.symbol} in order
-          to appeal
+          You must hold {formatUnits(requiredDeposit)} {feeToken.symbol} in
+          order to appeal
         </Info>
       )}
     </form>

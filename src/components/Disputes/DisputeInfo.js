@@ -24,7 +24,6 @@ function DisputeInfo({
   onReveal,
   onLeak,
   onRequestAppeal,
-  onRequestConfirmAppeal,
   onExecuteRuling,
 }) {
   const theme = useTheme()
@@ -162,7 +161,6 @@ function DisputeInfo({
             onReveal={onReveal}
             onLeavk={onLeak}
             onRequestAppeal={onRequestAppeal}
-            onRequestConfirmAppeal={onRequestConfirmAppeal}
             onExecuteRuling={onExecuteRuling}
           />
         )}

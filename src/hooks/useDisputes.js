@@ -39,6 +39,10 @@ export function useDispute(dispute) {
   const courtConfig = useCourtConfig()
   const now = useNow()
 
+  console.log('courtconfig', courtConfig)
+
+  console.log('dispute', dispute)
+
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
   const disputePhaseKey = disputePhase
     ? convertToString(Object.values(disputePhase)[0])
