@@ -21,7 +21,6 @@ import { useCourtConfig } from '../../providers/CourtConfig'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 
 function DisputeTimeline({ dispute }) {
-  const theme = useTheme()
   const roundsLength = dispute.rounds.length
 
   const courtConfig = useCourtConfig()
@@ -47,13 +46,25 @@ function DisputeTimeline({ dispute }) {
       >
         {reverseTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
-            return getStep(item, roundsLength, index, theme)
+            return (
+              <ItemStep
+                key={index}
+                item={item}
+                roundId={roundsLength}
+                index={index}
+              />
+            )
           }
           return item.map((round, roundIndex) => {
             if (roundIndex === 0) {
-              return round.map((roundItem, phaseIndex) => {
-                return getStep(roundItem, roundsLength, phaseIndex, theme)
-              })
+              return round.map((roundItem, phaseIndex) => (
+                <ItemStep
+                  key={phaseIndex}
+                  item={roundItem}
+                  roundId={roundsLength}
+                  index={phaseIndex}
+                />
+              ))
             }
             return (
               <Step
@@ -84,15 +95,15 @@ function DisputeTimeline({ dispute }) {
                                 padding: ${3 * GU}px 0;
                               `}
                             >
-                              {round.map((roundItem, phaseIndex) => {
-                                return getStep(
-                                  roundItem,
-                                  roundsLength,
-                                  phaseIndex,
-                                  theme,
-                                  roundStepContainerCss
-                                )
-                              })}
+                              {round.map((roundItem, phaseIndex) => (
+                                <ItemStep
+                                  key={phaseIndex}
+                                  item={roundItem}
+                                  roundId={roundsLength}
+                                  index={phaseIndex}
+                                  roundStepContainer
+                                />
+                              ))}
                             </Stepper>,
                           ],
                         ]}
@@ -110,7 +121,8 @@ function DisputeTimeline({ dispute }) {
   )
 }
 
-function getStep(item, roundId, index, theme, css) {
+function ItemStep({ item, roundId, index, roundStepContainer }) {
+  const theme = useTheme()
   return (
     <Step
       key={index}
@@ -128,7 +140,7 @@ function getStep(item, roundId, index, theme, css) {
             display: inline-flex;
           `}
         >
-          {getPhaseIcon(item.phase, item.active, theme)}
+          <PhaseIcon phase={item.phase} active={item.active} />
         </div>
       }
       content={
@@ -150,7 +162,7 @@ function getStep(item, roundId, index, theme, css) {
                   opacity: 0.6;
                 `}
               >
-                {getDisplayTime(item)}
+                <DisplayTime item={item} />
               </span>
             </div>
             {item.active && <RoundPill roundId={Number(item.roundId)} />}
@@ -158,12 +170,16 @@ function getStep(item, roundId, index, theme, css) {
         </div>
       }
       displayPoint
-      css={css}
+      css={`
+        ${roundStepContainer ? 'margin-left: 0px;' : ''}
+      `}
     />
   )
 }
 
-function getPhaseIcon(phase, active, theme) {
+function PhaseIcon({ phase, active }) {
+  const theme = useTheme()
+
   // TODO - change this for the new icons
   if (phase === DisputesTypes.Phase.Created) {
     return <IconFlag color={active ? '#fff' : theme.surfaceIcon} />
@@ -231,21 +247,18 @@ function RoundPill({ roundId }) {
   )
 }
 
-function getDisplayTime(timeLineItem) {
-  const { endTime, active } = timeLineItem
-
+function DisplayTime({ item }) {
+  const { endTime, active } = item
   if (active) {
     return <Timer end={dayjs(endTime)} />
   }
-
-  return dateFormat(endTime, 'DD/MM/YY')
+  return <>{dateFormat(endTime, 'DD/MM/YY')}</>
 }
-
-export default DisputeTimeline
 
 const StyledAccordion = styled.div`
   & > div:first-child {
     border-radius: 0px;
   }
 `
-const roundStepContainerCss = `margin-left: 0px;`
+
+export default DisputeTimeline
