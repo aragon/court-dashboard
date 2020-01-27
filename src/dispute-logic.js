@@ -56,7 +56,6 @@ export function usePanelRequestActions(request) {
   }, [appeal, commit, confirmAppeal, reveal])
 }
 
-let lastLogic = {}
 export function useDisputeLogic(disputeId) {
   const panelState = useSidePanel()
   const [requestMode, setRequestMode] = usePanelRequestMode(
@@ -69,16 +68,6 @@ export function useDisputeLogic(disputeId) {
   const actions = useDisputeActions()
 
   const keyCodeActions = useKeyCodeActions()
-
-  console.log(
-    'LOGIC EQ ',
-    dispute === lastLogic.dispute,
-    fetching === lastLogic.fetching,
-    panelState === lastLogic.panelState,
-    keyCodeActions === lastLogic.keyCodeActions,
-    actions === lastLogic.actions
-  )
-  lastLogic = { dispute, fetching, panelState, keyCodeActions, actions }
 
   return useMemo(() => {
     return {

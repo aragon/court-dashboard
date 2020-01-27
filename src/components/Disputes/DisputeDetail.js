@@ -20,7 +20,6 @@ import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
 import CommitPanel from './panels/CommitPanel'
 import AppealPanel from './panels/AppealPanel'
 
-let lastDDCall = {}
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
   const { id: disputeId } = match.params
@@ -33,10 +32,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     panelState,
     requests,
   } = useDisputeLogic(disputeId)
-
-  console.log('DISPUTE DETAIL EQUALS ', dispute === lastDDCall.dispute)
-  lastDDCall = { dispute }
-  console.log('DISPUTE DETAIL ', dispute)
 
   const subject = dispute && dispute.subject
 
@@ -142,7 +137,6 @@ const PanelComponent = React.memo(function PanelComponent({
   const { commit, appeal, keyCode, downloadKeyCode } = actions
   switch (mode) {
     case REQUEST_MODE.COMMIT: {
-      console.log('KEYYYY ', keyCode)
       return (
         <CommitPanel
           dispute={dispute}

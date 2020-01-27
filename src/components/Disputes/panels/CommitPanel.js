@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import {
   Button,
   GU,
   IconCopy,
   IconDownload,
+  Info,
   Switch,
   TextInput,
   textStyle,
+  Timer,
+  useToast,
 } from '@aragon/ui'
 import IconKeyCode from '../../../assets/IconKeyCode.svg'
 
@@ -17,6 +20,11 @@ const CommitPanel = React.memo(function CommitPanel({
   keyCode,
   onDownloadKeyCode,
 }) {
+  const [codeSaved, setCodeSaved] = useState(false)
+  const [codeCopied, setCodeCopied] = useState(false)
+  const [revealService, setRevealService] = useState(true)
+  const toast = useToast()
+
   const handleCommit = async event => {
     try {
       event.preventDefault()
@@ -29,19 +37,79 @@ const CommitPanel = React.memo(function CommitPanel({
     }
   }
 
+  const handleDownloadKeyCode = useCallback(() => {
+    onDownloadKeyCode()
+    setCodeSaved(true)
+  }, [onDownloadKeyCode])
+
+  const handleCopyKeyCode = useCallback(() => {
+    setCodeCopied(true)
+    toast('One Time Password copied to clipboard')
+  }, [toast])
+
+  const handleRevealService = useCallback(
+    checked => {
+      setRevealService(checked)
+      toast(
+        checked
+          ? 'Court auto-reveal service enabled'
+          : 'Court auto-reveal service disabled'
+      )
+    },
+    [toast]
+  )
+
   return (
     <form onSubmit={handleCommit}>
-      <CodeSection keyCode={keyCode} onDownloadKeyCode={onDownloadKeyCode} />
-      <RevealService onEnableRevealChange={() => {}} />
-      <Button type="submit" mode="strong" wide>
+      <CodeSection
+        keyCode={keyCode}
+        onDownloadKeyCode={handleDownloadKeyCode}
+        onCopyKeyCode={handleCopyKeyCode}
+      />
+      <RevealService
+        onRevealServiceChange={handleRevealService}
+        revealService={revealService}
+      />
+      <InfoSection
+        codeCopied={codeCopied}
+        codeSaved={codeSaved}
+        commitEndTime={dispute.nextTransition}
+      />
+      <Button
+        css={`
+          margin-top: ${2 * GU}px;
+        `}
+        disabled={!codeSaved && !codeCopied}
+        type="submit"
+        mode="strong"
+        wide
+      >
         Commit your vote
       </Button>
     </form>
   )
 })
 
-function CodeSection({ keyCode, onDownloadKeyCode }) {
-  console.log('KEY CODE ', keyCode)
+const CodeSection = React.memo(function CodeSection({
+  keyCode,
+  onDownloadKeyCode,
+  onCopyKeyCode,
+}) {
+  const codeTextAreaRef = useRef(null)
+
+  const handleCopyKeyCode = useCallback(() => {
+    if (codeTextAreaRef.current) {
+      codeTextAreaRef.current.select()
+
+      try {
+        document.execCommand('copy')
+        onCopyKeyCode()
+      } catch (err) {
+        console.error('error copying the code')
+      }
+    }
+  }, [onCopyKeyCode])
+
   return (
     <React.Fragment>
       <div
@@ -87,6 +155,7 @@ function CodeSection({ keyCode, onDownloadKeyCode }) {
         `}
       >
         <TextInput
+          ref={codeTextAreaRef}
           value={keyCode}
           css={`
             height: 88px;
@@ -115,16 +184,19 @@ function CodeSection({ keyCode, onDownloadKeyCode }) {
           css={`
             flex-grow: 1;
           `}
-          onClick={() => {}}
+          onClick={handleCopyKeyCode}
           icon={<IconCopy />}
           label="Copy"
         />
       </div>
     </React.Fragment>
   )
-}
+})
 
-function RevealService({ onEnableRevealChange }) {
+const RevealService = React.memo(function RevealService({
+  onRevealServiceChange,
+  revealService,
+}) {
   return (
     <React.Fragment>
       <div
@@ -134,7 +206,7 @@ function RevealService({ onEnableRevealChange }) {
           align-items: center;
         `}
       >
-        <Switch checked onChange={onEnableRevealChange} />
+        <Switch checked={revealService} onChange={onRevealServiceChange} />
         <span
           css={`
             margin-left: ${2 * GU}px;
@@ -161,6 +233,37 @@ function RevealService({ onEnableRevealChange }) {
       </div>
     </React.Fragment>
   )
-}
+})
 
+const InfoSection = React.memo(function InfoSection({
+  codeCopied,
+  codeSaved,
+  commitEndTime,
+}) {
+  const copiedOrSaved = codeCopied || codeSaved
+  const content = copiedOrSaved
+    ? 'This temporary code will be valid to commit and reveal your vote for this dispute only. You won’t be required to enter this code unless a problem occur with our services.'
+    : `You must copy or download this code before you can commit your vote. You’ll be asked to enter it in order to reveal your vote in: ${commitEndTime}`
+
+  return (
+    <Info
+      css={`
+        margin-top: ${3 * GU}px;
+      `}
+      title={!copiedOrSaved && 'ACTION REQUIREMENT'}
+      mode={copiedOrSaved ? 'info' : 'warning'}
+    >
+      {content}
+      {!copiedOrSaved && (
+        <div
+          css={`
+            margin-top: ${1 * GU}px;
+          `}
+        >
+          <Timer end={commitEndTime} />
+        </div>
+      )}
+    </Info>
+  )
+})
 export default CommitPanel
