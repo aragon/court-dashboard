@@ -39,7 +39,7 @@ function NoEvidence() {
             text-align: center; 
           `}
         >
-          The involved parties have up to 7 days to submitt evidence supporting
+          The involved parties have up to 7 days to submit evidence supporting
           their case
         </div>
       </div>
