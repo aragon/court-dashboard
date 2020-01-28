@@ -5,7 +5,7 @@ import * as DisputesTypes from '../../types/types'
 import { addressesEqual } from '../../lib/web3-utils'
 import { useConnectedAccount } from '../../providers/Web3'
 
-const DisputeActions = React.memo(({ dispute }) => {
+const DisputeActions = React.memo(function DisputeActions({ dispute }) {
   const { phase, rounds } = dispute
   const connectedAccount = useConnectedAccount()
 

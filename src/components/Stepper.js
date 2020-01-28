@@ -17,7 +17,7 @@ function Stepper({
         & > * {
           display: flex;
           align-items: stretch;
-          padding: ${stepVerticalPadding}px 0px;
+          padding: ${stepVerticalPadding}px 0;
 
           &:first-child {
             padding-top: 0;

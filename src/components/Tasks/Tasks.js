@@ -23,8 +23,6 @@ const Tasks = React.memo(() => {
     taskActionsString,
   } = useFilteredTasks(screenIndex, connectedAccount)
 
-  console.log('tasksssss ', tasks)
-
   const handleTabChange = screenIndex => {
     setScreenIndex(screenIndex)
   }
