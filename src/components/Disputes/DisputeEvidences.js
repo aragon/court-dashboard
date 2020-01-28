@@ -3,7 +3,7 @@ import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
 import folderIcon from '../../assets/folderIcon.svg'
 import { dateFormat } from '../../utils/date-utils'
 
-function DisputeEvidences({ evidences }) {
+const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
   const theme = useTheme()
   return (
     <React.Fragment>
@@ -108,6 +108,6 @@ function DisputeEvidences({ evidences }) {
       })}
     </React.Fragment>
   )
-}
+})
 
 export default DisputeEvidences

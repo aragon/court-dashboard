@@ -149,7 +149,8 @@ const DisputeInfo = React.memo(function({
 
         {(phase === DisputePhase.AppealRuling ||
           phase === DisputePhase.ConfirmAppeal ||
-          phase === DisputePhase.ExecuteRuling) && (
+          phase === DisputePhase.ExecuteRuling ||
+          phase === DisputePhase.ClaimRewards) && (
           <DisputeCurrentRuling dispute={dispute} />
         )}
         {!loading && (

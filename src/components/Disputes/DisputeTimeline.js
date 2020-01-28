@@ -13,6 +13,7 @@ import {
   IconRuling,
   IconVoting,
   IconGavelNoFill,
+  IconRewards,
 } from '../../utils/dispute-icons'
 
 import * as DisputesTypes from '../../types/dispute-status-types'
@@ -66,9 +67,7 @@ const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
                                       margin-right: ${1 * GU}px;
                                     `}
                                   />
-                                  <RoundPill
-                                    roundId={Number(round[0].roundId)}
-                                  />
+                                  <RoundPill roundId={round[0].roundId} />
                                 </div>,
 
                                 <Stepper
@@ -147,7 +146,7 @@ function getStep(item, index, theme, css) {
                 {getDisplayTime(item)}
               </span>
             </div>
-            {item.active && <RoundPill roundId={Number(item.roundId)} />}
+            {item.active && <RoundPill roundId={item.roundId} />}
           </div>
         </div>
       }
@@ -179,8 +178,10 @@ function getPhaseIcon(phase, active) {
     phase === DisputesTypes.Phase.ConfirmAppeal
   ) {
     icon = IconThinking
-  } else {
+  } else if (phase === DisputesTypes.Phase.ExecuteRuling) {
     icon = IconRuling
+  } else {
+    icon = IconRewards
   }
 
   return (

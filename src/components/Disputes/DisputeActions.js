@@ -20,14 +20,13 @@ import { isvoteLeaked, voteToString } from '../../utils/crvoting-utils'
 import IconGavelOrange from '../../assets/IconGavelOrange.svg'
 import IconGavelRed from '../../assets/IconGavelRed.svg'
 import { getDisputeLastRound } from '../../utils/dispute-utils'
+import IconRewardsGreen from '../../assets/IconRewardsGreen.svg'
 
 function DisputeActions({
   dispute,
-  onCloseEvidence,
   onDraft,
   onRequestCommit,
   onRequestReveal,
-  onLeak,
   onRequestAppeal,
   onExecuteRuling,
 }) {
@@ -48,7 +47,6 @@ function DisputeActions({
   const isJurorDrafted = !!jurorDraft
   const hasJurorVoted = isJurorDrafted && jurorVoted(jurorDraft)
 
-  console.log('lastRound', lastRound)
   if (phase === DisputePhase.VotingPeriod && !hasJurorVoted) {
     return (
       <DisputeVoting
@@ -60,25 +58,29 @@ function DisputeActions({
 
   return (
     <React.Fragment>
-      <YourVoteInfo jurorDraft={jurorDraft} hasJurorVoted={hasJurorVoted} />
+      <InformationSection
+        phase={phase}
+        jurorDraft={jurorDraft}
+        hasJurorVoted={hasJurorVoted}
+        lastRound={lastRound}
+      />
       {(() => {
         if (phase === DisputePhase.VotingPeriod) return null
 
         if (isJurorDrafted && hasJurorVoted) {
           if (phase === DisputePhase.RevealVote) {
-            return canJurorReveal(jurorDraft) ? (
-              <DisputeReveal
-                disputeId={dispute.id}
-                roundId={dispute.lastRoundId}
-                commitment={jurorDraft.commitment}
-                onRequestReveal={onRequestReveal}
-              />
-            ) : null
+            return (
+              canJurorReveal(jurorDraft) && (
+                <DisputeReveal
+                  disputeId={dispute.id}
+                  roundId={dispute.lastRoundId}
+                  commitment={jurorDraft.commitment}
+                  onRequestReveal={onRequestReveal}
+                />
+              )
+            )
           } else {
-            // If we are not in the reveal phase means we are past it.
-            // Check if juror has not revealed on time
-            if (!jurorDraft.outcome)
-              return <p>You have not revealed on time :(</p> // TODO: Add better descritpion
+            return null
           }
         }
       })()}
@@ -102,14 +104,21 @@ function DisputeActions({
   )
 }
 
-const YourVoteInfo = ({ jurorDraft, hasJurorVoted }) => {
+const InformationSection = ({
+  phase,
+  jurorDraft,
+  hasJurorVoted,
+  lastRound,
+}) => {
   const theme = useTheme()
 
   if (!jurorDraft) return null
 
-  const { title, paragraph, background, icon, hint } = getVotingInfoAttributes(
+  const { title, paragraph, background, icon, hint } = getInfoAttributes(
+    phase,
     jurorDraft,
     hasJurorVoted,
+    lastRound,
     theme
   )
   return (
@@ -164,64 +173,134 @@ const YourVoteInfo = ({ jurorDraft, hasJurorVoted }) => {
 }
 
 // Helper function that returns main attributes for the YourVoteInfo component
-const getVotingInfoAttributes = (jurorDraft, hasJurorVoted, theme) => {
+const getInfoAttributes = (
+  phase,
+  jurorDraft,
+  hasJurorVoted,
+  lastRound,
+  theme
+) => {
+  const positiveBackground = theme.positive.alpha(0.1)
+  const negativeBackground = theme.accent.alpha(0.2)
+
+  let title, paragraph, icon, hintText, background
+
+  const isOpen =
+    phase !== DisputePhase.Ruled && phase !== DisputePhase.ClaimRewards
+  const votingPeriodEnded =
+    phase !== DisputePhase.VotingPeriod && phase !== DisputePhase.RevealVote
+
   const voteLeaked = isvoteLeaked(jurorDraft.outcome)
+
+  // If vote leaked or juror hasn't voted
   if (!hasJurorVoted || voteLeaked) {
-    const title = voteLeaked
+    title = voteLeaked
       ? 'Unfortunately, your vote has been leaked'
       : "Your vote wasn't casted on time."
 
-    const paragraph = (
-      <span>
-        Your{' '}
-        <span
-          css={`
-            color: ${theme.help};
-          `}
-        >
-          ANJ locked balance
-        </span>{' '}
-        has been discounted
-      </span>
-    )
+    paragraph = <ANJDiscountedMessage />
+    background = negativeBackground
+    icon = IconGavelRed
+    hintText = voteLeaked ? 'Vote leaked (complete)' : null
+  } else if (hasJurorVoted && votingPeriodEnded) {
+    if (!jurorDraft.outcome) {
+      title = "Your vote wasn't revealed on time"
+      paragraph = <ANJDiscountedMessage />
+      background = negativeBackground
+      icon = IconGavelRed
+    } else {
+      const hasVotedInConsensus =
+        jurorDraft.outcome === lastRound.vote.winningOutcome
 
-    return {
-      title,
-      paragraph,
-      background: theme.accent.alpha(0.2),
-      icon: IconGavelRed,
-      hintText: voteLeaked ? 'Vote leaked (complete)' : null,
+      title = hasVotedInConsensus
+        ? 'You have voted in consensus with the mayority'
+        : 'You have not voted in consensus with the mayority'
+      paragraph = hasVotedInConsensus ? (
+        <ANJRewardsMessage isOpen={isOpen} />
+      ) : (
+        <ANJDiscountedMessage />
+      )
+      background = hasVotedInConsensus ? positiveBackground : negativeBackground
+      icon = IconRewardsGreen // TODO: ask for an Icon rewards red
     }
-  }
+  } else {
+    const outcomeDescription = voteToString(jurorDraft.outcome)
 
-  const outcomeDescription = voteToString(jurorDraft.outcome)
+    title = 'Your vote was casted successfuly.'
+    paragraph = <VoteInfo outcome={outcomeDescription} />
+    background = theme.accent.alpha(0.05)
+    icon = IconGavelOrange
+  }
 
   return {
-    title: 'Your vote was casted successfuly.',
-    paragraph: (
-      <span>
-        You voted{' '}
-        <span
-          css={`
-            text-transform: uppercase;
-            color: ${theme.content};
-          `}
-        >
-          {outcomeDescription}
-        </span>{' '}
-        on{' '}
-        <span
-          css={`
-            color: ${theme.content};
-          `}
-        >
-          (DATE PLACEHOLDER)
-        </span>
-      </span>
-    ),
-    background: theme.accent.alpha(0.05),
-    icon: IconGavelOrange,
+    title,
+    paragraph,
+    background,
+    icon,
+    hintText,
   }
+}
+
+const ANJDiscountedMessage = () => {
+  const theme = useTheme()
+  return (
+    <span>
+      Your{' '}
+      <span
+        css={`
+          color: ${theme.help};
+        `}
+      >
+        ANJ locked balance
+      </span>{' '}
+      will be discounted
+    </span>
+  )
+}
+
+const ANJRewardsMessage = ({ isOpen }) => {
+  const theme = useTheme()
+
+  const Rewards = (
+    <span
+      css={`
+        color: ${theme.help};
+      `}
+    >
+      rewards
+    </span>
+  )
+
+  return isOpen ? (
+    <span>Your {Rewards} will be available when the dispute is closed</span>
+  ) : (
+    <span>You can now claim your {Rewards} in the dashboard</span>
+  )
+}
+
+const VoteInfo = ({ outcome }) => {
+  const theme = useTheme()
+  return (
+    <span>
+      You voted{' '}
+      <span
+        css={`
+          text-transform: uppercase;
+          color: ${theme.content};
+        `}
+      >
+        {outcome}
+      </span>{' '}
+      on{' '}
+      <span
+        css={`
+          color: ${theme.content};
+        `}
+      >
+        (DATE PLACEHOLDER)
+      </span>
+    </span>
+  )
 }
 
 export default DisputeActions

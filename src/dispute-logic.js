@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from 'react'
+import { useCallback, useState } from 'react'
 
 import { useSidePanel } from './hooks/useSidePanel'
 import { useDisputeActions } from './hooks/useCourtContracts'
@@ -48,9 +48,7 @@ export function usePanelRequestActions(request) {
     [request]
   )
 
-  return useMemo(() => {
-    return { commit, reveal, appeal }
-  }, [appeal, commit, reveal])
+  return { commit, reveal, appeal }
 }
 
 export function useDisputeLogic(disputeId) {
@@ -64,14 +62,12 @@ export function useDisputeLogic(disputeId) {
 
   const actions = useDisputeActions()
 
-  return useMemo(() => {
-    return {
-      actions,
-      dispute,
-      disputeFetching: fetching,
-      requestMode,
-      panelState,
-      requests,
-    }
-  }, [actions, requestMode, dispute, fetching, panelState, requests])
+  return {
+    actions,
+    dispute,
+    disputeFetching: fetching,
+    requestMode,
+    panelState,
+    requests,
+  }
 }

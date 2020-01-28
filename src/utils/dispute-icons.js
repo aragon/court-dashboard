@@ -10,6 +10,9 @@ import IconThinkingActive from '../assets/IconThinkingActive.svg'
 import IconThinkingInactive from '../assets/IconThinkingInactive.svg'
 import IconRulingActive from '../assets/IconRulingActive.svg'
 import IconRulingInactive from '../assets/IconRulingInactive.svg'
+import IconRewardsActive from '../assets/IconRewardsActive.svg'
+import IconRewardsInactive from '../assets/IconRewardsInactive.svg'
+
 export { default as IconGavelNoFill } from '../assets/IconGavelNoFill.svg'
 
 export const IconFlag = {
@@ -36,4 +39,9 @@ export const IconThinking = {
 export const IconRuling = {
   active: IconRulingActive,
   inactive: IconRulingInactive,
+}
+
+export const IconRewards = {
+  active: IconRewardsActive,
+  inactive: IconRewardsInactive,
 }

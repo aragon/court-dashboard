@@ -5,7 +5,11 @@ import { useConnectedAccount } from '../../../providers/Web3'
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import { getJurorDraft } from '../../../utils/juror-draft-utils'
 
-function RevealPanel({ dispute, onReveal, onDone }) {
+const RevealPanel = React.memo(function RevealPanel({
+  dispute,
+  onReveal,
+  onDone,
+}) {
   const [password, setPassword] = useState('')
   const connectedAccount = useConnectedAccount()
   const lastRound = getDisputeLastRound(dispute)
@@ -57,6 +61,6 @@ function RevealPanel({ dispute, onReveal, onDone }) {
       </Button>
     </form>
   )
-}
+})
 
 export default RevealPanel

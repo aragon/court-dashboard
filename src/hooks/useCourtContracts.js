@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -21,7 +21,7 @@ import { getModuleAddress } from '../utils/court-utils'
 import { bigNum } from '../lib/math-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 700000 // Should be relative to every tx ?
+const GAS_LIMIT = 900000 // Should be relative to every tx ?
 
 // ANJ contract
 function useANJTokenContract() {
@@ -172,8 +172,6 @@ export function useDisputeActions() {
 
   const approveFeeDeposit = useCallback(
     value => {
-      console.log('fee token address', feeTokenContract.address)
-      console.log('approving to', disputeManagerContract.address)
       return feeTokenContract.approve(disputeManagerContract.address, value)
     },
     [disputeManagerContract, feeTokenContract]
@@ -182,7 +180,6 @@ export function useDisputeActions() {
   // Appeal round of dispute
   const appeal = useCallback(
     (disputeId, roundId, ruling) => {
-      console.log('calling appeal with', disputeId, roundId, ruling)
       return disputeManagerContract.createAppeal(disputeId, roundId, ruling, {
         gasLimit: GAS_LIMIT,
       })
@@ -208,27 +205,16 @@ export function useDisputeActions() {
     },
     [aragonCourtContract]
   )
-  return useMemo(() => {
-    return {
-      approveFeeDeposit,
-      draft,
-      commit,
-      reveal,
-      leak,
-      appeal,
-      confirmAppeal,
-      executeRuling,
-    }
-  }, [
-    appeal,
+  return {
     approveFeeDeposit,
-    commit,
-    confirmAppeal,
     draft,
-    executeRuling,
-    leak,
+    commit,
     reveal,
-  ])
+    leak,
+    appeal,
+    confirmAppeal,
+    executeRuling,
+  }
 }
 
 /**
@@ -253,7 +239,6 @@ export function useAppealDeposits(disputeId, roundId) {
         roundId
       )
 
-      console.log('nextRound', nextRound)
       const appealDeposit = nextRound[6]
       const confirmAppealDeposit = nextRound[7]
       setAppealDeposits([appealDeposit, confirmAppealDeposit])

@@ -121,7 +121,11 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
           <PanelComponent
             dispute={dispute}
             requestMode={requestMode}
-            actions={actions}
+            commit={actions.commit}
+            reveal={actions.reveal}
+            appeal={actions.appeal}
+            confirmAppeal={actions.confirmAppeal}
+            approveFeeDeposit={actions.approveFeeDeposit}
             onDone={panelState.requestClose}
           />
         </div>
@@ -149,23 +153,17 @@ const PanelTitle = ({ requestMode, disputeId }) => {
   return <span>{title}</span>
 }
 
-const PanelComponent = React.memo(function PanelComponent({
+const PanelComponent = ({
   dispute,
   requestMode,
-  actions,
+  commit,
+  reveal,
+  appeal,
+  confirmAppeal,
+  approveFeeDeposit,
   ...props
-}) {
+}) => {
   const { mode, data } = requestMode
-  const {
-    commit,
-    reveal,
-    appeal,
-    confirmAppeal,
-    approveFeeDeposit,
-    keyCode,
-    downloadKeyCode,
-  } = actions
-
   switch (mode) {
     case REQUEST_MODE.COMMIT: {
       return (
@@ -173,8 +171,6 @@ const PanelComponent = React.memo(function PanelComponent({
           dispute={dispute}
           commitment={data.commitment}
           onCommit={commit}
-          keyCode={keyCode}
-          onDownloadKeyCode={downloadKeyCode}
           {...props}
         />
       )
@@ -194,6 +190,6 @@ const PanelComponent = React.memo(function PanelComponent({
     default:
       return null
   }
-})
+}
 
 export default DisputeDetail

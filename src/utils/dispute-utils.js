@@ -14,6 +14,9 @@ export const transformResponseDisputeAttributes = dispute => {
       dispute.state === DisputesTypes.Phase.Ruled
         ? DisputesTypes.Status.Closed
         : DisputesTypes.Status.Open,
+    isOpen:
+      DisputesTypes.convertFromString(dispute.state) !==
+      DisputesTypes.Phase.Ruled,
     rounds: dispute.rounds.map(round => {
       const { vote, appeal } = round
 
@@ -84,22 +87,22 @@ export function getDisputeTimeLine(dispute, courtConfig) {
 
   timeLine.unshift(rounds)
 
-  if (currentPhaseAndTime.phase === DisputesTypes.Phase.ExecuteRuling) {
+  if (
+    currentPhaseAndTime.phase === DisputesTypes.Phase.ExecuteRuling ||
+    currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards
+  ) {
     timeLine.unshift({
       phase: DisputesTypes.Phase.ExecuteRuling,
       active: DisputesTypes.Phase.ExecuteRuling === currentPhaseAndTime.phase,
       roundId: currentPhaseAndTime.roundId,
     })
-    return timeLine
   }
 
   if (currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards) {
     timeLine.unshift({
       phase: DisputesTypes.Phase.ClaimRewards,
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards,
-      roundId: currentPhaseAndTime.roundId,
     })
-    return timeLine
   }
 
   return timeLine
@@ -109,7 +112,7 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   if (!dispute) return null
 
   const { state, createdAt } = dispute
-  const now = dayjs(nowDate).unix() * 1000
+  const now = dayjs(nowDate)
   let phase
   let nextTransition
 
@@ -146,7 +149,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
     // There is no end time for juty drafting?
 
     const { createdAt } = lastRound
-    console.log('last round', lastRound)
     const juryDraftingStartTime = getTermStartTime(
       lastRound.draftTermId,
       courtConfig
@@ -294,10 +296,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   const disputeDraftStartTime = getTermStartTime(draftTermId, courtConfig)
 
   // Case where we are in a next round and has not yet started
-  if (
-    currentPhase.roundId === roundId &&
-    currentPhase.phase === DisputesTypes.Phase.NotStarted
-  ) {
+  if (isCurrentRound && currentPhase.phase === DisputesTypes.Phase.NotStarted) {
     return [
       {
         phase: DisputesTypes.Phase.NotStarted,
@@ -359,15 +358,14 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
   ]
 
-  const currentPhaseIndex = roundPhasesAndTime.findIndex(
-    phase => phase.phase === currentPhase.phase
-  )
-
   if (roundId < currentPhase.roundId) {
     return roundPhasesAndTime
   }
 
-  if (currentPhase.phase === DisputesTypes.Phase.ExecuteRuling) {
+  if (
+    currentPhase.phase === DisputesTypes.Phase.ExecuteRuling ||
+    currentPhase.phase === DisputesTypes.Phase.ClaimRewards
+  ) {
     // It is the last possible round the last phase of the round is Reveal or If it was not appealed not show the Confirm appeal
     if (currentPhase.maxAppealReached || !currentPhase.appealed) {
       return roundPhasesAndTime.slice(0, 4)
@@ -378,6 +376,10 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       return roundPhasesAndTime
     }
   }
+
+  const currentPhaseIndex = roundPhasesAndTime.findIndex(
+    phase => phase.phase === currentPhase.phase
+  )
 
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
 }
