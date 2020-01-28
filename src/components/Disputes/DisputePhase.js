@@ -1,12 +1,11 @@
 import React from 'react'
-import { convertToString } from './types'
+import dayjs from '../../lib/dayjs'
+import { convertToString } from '../../types/types'
 
 import { GU, textStyle, Timer } from '@aragon/ui'
 
-function DisputePhase({ phase }) {
+function DisputePhase({ phase, nextTransition }) {
   const stringPhase = convertToString(phase)
-  const DAY_IN_MS = 1000 * 60 * 60 * 24
-  const endDate = new Date(Date.now() + 0.5 * DAY_IN_MS)
   return (
     <div
       css={`
@@ -61,7 +60,7 @@ function DisputePhase({ phase }) {
           margin-bottom: ${2 * GU}px;
         `}
       >
-        <Timer end={endDate} />
+        <Timer end={dayjs(nextTransition)} />
       </div>
     </div>
   )
