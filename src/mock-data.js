@@ -1,6 +1,5 @@
 import {
   DISPUTE_STATUS_OPEN,
-  DISPUTE_STATUS_APPEAL,
   DISPUTE_STATUS_CLOSED,
 } from './types/dispute-status-types'
 
@@ -77,7 +76,7 @@ export const disputes = [
     id: 2,
     description:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_APPEAL,
+    status: DISPUTE_STATUS_CLOSED,
     creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
     rewardAmount: 870,
     stakedAmount: 500,
@@ -122,7 +121,7 @@ export const disputes = [
     id: 5,
     description:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_APPEAL,
+    status: DISPUTE_STATUS_OPEN,
     creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
     rewardAmount: 930,
     stakedAmount: 495,

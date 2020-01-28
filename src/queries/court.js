@@ -20,11 +20,16 @@ export const CourtConfig = gql`
       jurorFee
       draftFee
       settleFee
+
       evidenceTerms
       commitTerms
       revealTerms
       appealTerms
       appealConfirmationTerms
+      terms {
+        id
+        startTime
+      }
       finalRoundReduction
       firstRoundJurorsNumber
       appealStepFactor

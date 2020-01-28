@@ -1,41 +1,111 @@
 import React from 'react'
-import { Accordion, GU, IconFolder, useTheme } from '@aragon/ui'
+import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
+import folderIcon from '../../assets/folderIcon.svg'
+import dayjs from '../../lib/dayjs'
 
 function DisputeEvidences({ evidences }) {
   const theme = useTheme()
-
   return (
     <React.Fragment>
-      {evidences.map((evidence, index) => (
-        <Accordion
-          key={index}
-          items={[
-            [
-              <div
-                css={`
-                  display: flex;
-                  align-items: center;
-                `}
-              >
-                <IconFolder
+      {evidences.map((evidence, index) => {
+        const { createdAt, submitter, data } = evidence
+        return (
+          <Accordion
+            key={index}
+            items={[
+              [
+                <div
                   css={`
-                    margin-right: ${1 * GU}px;
+                    display: flex;
+                    align-items: center;
                   `}
-                  color={theme.surfaceIcon}
-                />
-                <span>Evidence #{index + 1}</span>
-              </div>,
-              <div
-                css={`
-                  padding: ${3 * GU}px ${8 * GU}px;
-                `}
-              >
-                {evidence}
-              </div>,
-            ],
-          ]}
-        />
-      ))}
+                >
+                  <img src={folderIcon} width="17" height="20" alt="" />
+                  <span
+                    css={`
+                      margin-left: ${GU * 1.5}px;
+                    `}
+                  >
+                    Evidence #{index + 1}
+                  </span>
+                </div>,
+                <div
+                  css={`
+                    display: grid;
+                    grid-template-columns: minmax(250px, auto) minmax(
+                        250px,
+                        auto
+                      );
+                    grid-gap: ${5 * GU}px;
+                    margin-bottom: ${2 * GU}px;
+                    padding: ${3 * GU}px ${8 * GU}px;
+                  `}
+                >
+                  <div>
+                    <h2
+                      css={`
+                        ${textStyle('label2')};
+                        color: ${theme.surfaceContentSecondary};
+                        margin-bottom: ${2 * GU}px;
+                      `}
+                    >
+                      Submitted by
+                    </h2>
+                    <div
+                      css={`
+                        display: flex;
+                        align-items: flex-start;
+                      `}
+                    >
+                      <IdentityBadge
+                        // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- ADD connnected account
+                        entity={submitter}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <h2
+                      css={`
+                        ${textStyle('label2')};
+                        color: ${theme.surfaceContentSecondary};
+                        margin-bottom: ${2 * GU}px;
+                      `}
+                    >
+                      Date
+                    </h2>
+                    <span
+                      css={`
+                        ${textStyle('body2')};
+                      `}
+                    >
+                      {dayjs(createdAt).format('DD/MM/YY')}
+                    </span>
+                  </div>
+                  <div>
+                    <h2
+                      css={`
+                        ${textStyle('label2')};
+                        color: ${theme.surfaceContentSecondary};
+                        margin-bottom: ${2 * GU}px;
+                      `}
+                    >
+                      Data
+                    </h2>
+                    <div
+                      css={`
+                        display: flex;
+                        align-items: flex-start;
+                      `}
+                    >
+                      {data}
+                    </div>
+                  </div>
+                </div>,
+              ],
+            ]}
+          />
+        )
+      })}
     </React.Fragment>
   )
 }

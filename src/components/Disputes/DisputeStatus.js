@@ -1,28 +1,16 @@
 import React from 'react'
 import { useTheme } from '@aragon/ui'
-
-import {
-  DISPUTE_STATUS_OPEN,
-  DISPUTE_STATUS_APPEAL,
-  DISPUTE_STATUS_CLOSED,
-} from '../../types/dispute-status-types'
+import { Status } from '../../types/types'
 
 const getStatusAttributes = (dispute, theme) => {
-  if (dispute.status === DISPUTE_STATUS_OPEN) {
+  if (dispute.reducedState === Status.Open) {
     return {
       label: 'Open',
-      color: theme.positiveSurfaceContent,
-      background: theme.green.alpha(0.2),
+      color: '#22B187',
+      background: 'rgba(53, 214, 167, 0.1)',
     }
   }
-  if (dispute.status === DISPUTE_STATUS_APPEAL) {
-    return {
-      label: 'Appeal',
-      color: '#564038', // TODO: use theme when available (colors.BrownDark)
-      background: 'rgba(216, 188, 177, 0.2)', // colors.BrownLight
-    }
-  }
-  if (dispute.status === DISPUTE_STATUS_CLOSED) {
+  if (dispute.reducedState === Status.Closed) {
     return {
       label: 'Closed',
       color: theme.content,
@@ -31,7 +19,7 @@ const getStatusAttributes = (dispute, theme) => {
   }
 }
 
-export default function DisputeStatus({ dispute }) {
+export default function DisputeStatus({ dispute, ...props }) {
   const theme = useTheme()
   const { label, color, background } = getStatusAttributes(dispute, theme)
 
@@ -45,7 +33,9 @@ export default function DisputeStatus({ dispute }) {
         font-size: 12px;
         color: ${color};
         background: ${background};
+        margin-top: 2px;
       `}
+      {...props}
     >
       {label}
     </span>
