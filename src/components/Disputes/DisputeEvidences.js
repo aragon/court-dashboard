@@ -1,7 +1,7 @@
 import React from 'react'
 import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
-import FolderIcon from '../../assets/folderIcon.svg'
-import dayjs from '../../lib/dayjs'
+import folderIcon from '../../assets/folderIcon.svg'
+import { dateFormat } from '../../utils/date-utils'
 
 function DisputeEvidences({ evidences }) {
   const theme = useTheme()
@@ -20,7 +20,7 @@ function DisputeEvidences({ evidences }) {
                     align-items: center;
                   `}
                 >
-                  <img src={FolderIcon} width={17} height={20} />
+                  <img src={folderIcon} width="17" height="20" alt="" />
                   <span
                     css={`
                       margin-left: ${GU * 1.5}px;
@@ -78,7 +78,7 @@ function DisputeEvidences({ evidences }) {
                         ${textStyle('body2')};
                       `}
                     >
-                      {dayjs(createdAt).format('DD/MM/YY')}
+                      {dateFormat(createdAt, 'DD/MM/YY')}
                     </span>
                   </div>
                   <div>

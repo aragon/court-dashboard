@@ -12,7 +12,7 @@ export function getTermStartTime(term, courtConfig) {
   return getFirstTermDate(courtConfig) + termMs
 }
 
-export const getVoteId = (disputeId, roundId) => {
+export function getVoteId(disputeId, roundId) {
   return bigNum(disputeId)
     .shln(128)
     .add(bigNum(roundId))

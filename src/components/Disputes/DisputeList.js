@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Bar, CardLayout, GU } from '@aragon/ui'
 import * as DisputesTypes from '../../types/types'
 import DisputeCard from './DisputeCard'
@@ -54,7 +54,7 @@ const getFilteredDisputes = ({
   )
 }
 
-function DisputeList({ disputes, selectDispute }) {
+function DisputeList({ disputes, onSelectDispute }) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedStatus, setSelectedStatus] = useState(UNSELECTED_FILTER)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_FILTER)
@@ -62,11 +62,11 @@ function DisputeList({ disputes, selectDispute }) {
   const handleSelectedDateRangeChange = range => {
     setSelectedDateRange(range)
   }
-  const handlePhaseChange = React.useCallback(index => {
+  const handlePhaseChange = useCallback(index => {
     return setSelectedPhase(index)
   }, [])
 
-  const handleStatusChange = React.useCallback(
+  const handleStatusChange = useCallback(
     index => {
       setSelectedStatus(index)
     },
@@ -100,7 +100,7 @@ function DisputeList({ disputes, selectDispute }) {
             <DisputeCard
               key={dispute.id}
               dispute={dispute}
-              selectDispute={selectDispute}
+              onSelectDispute={onSelectDispute}
             />
           )
         })}

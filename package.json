@@ -12,6 +12,7 @@
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "js-sha3": "^0.8.0",
+    "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
@@ -33,17 +34,15 @@
     "build:rinkeby": "REACT_APP_CHAIN_ID=4 npm run build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
+    "optimize": "npm run optimize:svg",
+    "optimize:svg": "find ./src -name *.svg -exec svgo --config '{ \"plugins\": [ { \"removeDesc\": {\"removeAny\": true} }, { \"removeTitle\": true }, { \"removeViewBox\": false } ] }' {} \\;",
     "sync-assets": "copy-aragon-ui-assets ./public"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -72,6 +71,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "prettier": "^1.19.1",
     "react-app-rewired": "^2.1.5",
-    "subscriptions-transport-ws": "^0.9.16"
+    "subscriptions-transport-ws": "^0.9.16",
+    "svgo": "^1.3.2"
   }
 }

@@ -1,6 +1,5 @@
 import React from 'react'
 import { useTheme } from '@aragon/ui'
-
 import { Status } from '../../types/types'
 
 const getStatusAttributes = (dispute, theme) => {
@@ -20,7 +19,7 @@ const getStatusAttributes = (dispute, theme) => {
   }
 }
 
-export default function DisputeStatus({ dispute }) {
+export default function DisputeStatus({ dispute, ...props }) {
   const theme = useTheme()
   const { label, color, background } = getStatusAttributes(dispute, theme)
 
@@ -36,6 +35,7 @@ export default function DisputeStatus({ dispute }) {
         background: ${background};
         margin-top: 2px;
       `}
+      {...props}
     >
       {label}
     </span>

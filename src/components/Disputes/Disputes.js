@@ -1,45 +1,33 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
-import DisputeDetail from './DisputeDetail'
+import { useHistory } from 'react-router-dom'
 import DisputeList from './DisputeList'
-import ANJIcon from '../../assets/anjButton.svg'
 import useDisputes from '../../hooks/useDisputes'
 import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
 import { useConnectedAccount } from '../../providers/Web3'
 
-const useSelectedDispute = disputes => {
-  const [selectedDisputeId, setSelectedDisputeId] = useState(-1)
-
-  const selectDispute = useCallback(
-    disputeId => setSelectedDisputeId(disputeId),
-    []
-  )
-
-  const selectedDispute = useMemo(
-    () => disputes.find(dispute => dispute.id === selectedDisputeId) || null,
-    [disputes, selectedDisputeId]
-  )
-
-  return [selectedDispute, selectDispute]
-}
+import ANJIcon from '../../assets/anjButton.svg'
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   const [disputes] = useDisputes()
   const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
-  const [selectedDispute, selectDispute] = useSelectedDispute(disputes)
+  const history = useHistory()
 
-  const handleBack = useCallback(() => {
-    selectDispute(-1)
-  }, [selectDispute])
+  const handleSelectDispute = useCallback(
+    id => {
+      history.push(`/disputes/${id}`)
+    },
+    [history]
+  )
 
   const handleTabChange = screenIndex => {
     setScreenIndex(screenIndex)
   }
 
   return (
-    <React.Fragment>
+    <>
       <Header
         primary="Disputes"
         secondary={
@@ -69,47 +57,37 @@ function Disputes() {
           />
         }
       />
-      {selectedDispute ? (
-        <DisputeDetail dispute={selectedDispute} onBack={handleBack} />
-      ) : (
-        <>
-          <div>
-            <Tabs
-              css={`
-                margin-bottom: 0px;
-              `}
-              items={[
-                <div>
-                  <span>All disputes </span>
-                  <Tag limitDigits={4} label={disputes.length} size="small" />
-                </div>,
-                <div>
-                  <span>My disputes </span>
-                  <Tag
-                    limitDigits={4}
-                    label={jurorDisputes.length}
-                    size="small"
-                  />
-                </div>,
-              ]}
-              selected={screenIndex}
-              onChange={handleTabChange}
-            />
-          </div>
-          <div
-            css={`
-              margin-top: 0px;
-              width: 100%;
-            `}
-          >
-            <DisputeList
-              disputes={screenIndex === 0 ? disputes : jurorDisputes}
-              selectDispute={selectDispute}
-            />
-          </div>
-        </>
-      )}
-    </React.Fragment>
+      <div>
+        <Tabs
+          css={`
+            margin-bottom: 0px;
+          `}
+          items={[
+            <div>
+              <span>All disputes </span>
+              <Tag limitDigits={4} label={disputes.length} size="small" />
+            </div>,
+            <div>
+              <span>My disputes </span>
+              <Tag limitDigits={4} label={jurorDisputes.length} size="small" />
+            </div>,
+          ]}
+          selected={screenIndex}
+          onChange={handleTabChange}
+        />
+      </div>
+      <div
+        css={`
+          margin-top: -${GU * 1}px;
+          width: 100%;
+        `}
+      >
+        <DisputeList
+          disputes={screenIndex === 0 ? disputes : jurorDisputes}
+          onSelectDispute={handleSelectDispute}
+        />
+      </div>
+    </>
   )
 }
 
