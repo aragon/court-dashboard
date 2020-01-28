@@ -83,7 +83,7 @@ const BalanceModule = React.memo(
                   amount={effectiveInactiveBalance}
                   label="Inactive"
                   mainIcon={inactiveANJIcon}
-                  mainIconBackground="#FEF3F1"
+                  mainIconBackground={theme.accent.alpha(0.2)}
                   actions={[
                     { label: 'Withdraw', onClick: onRequestWithdraw },
                     {
@@ -136,7 +136,7 @@ const BalanceModule = React.memo(
                 amount={walletBalance.amount}
                 label="My wallet"
                 mainIcon={walletIcon}
-                mainIconBackground="#FEF3F1"
+                mainIconBackground={theme.accent.alpha(0.2)}
                 actions={[
                   {
                     label: 'Activate',
