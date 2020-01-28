@@ -175,9 +175,4 @@ DisputeInfo.propTypes = {
   loading: PropTypes.bool,
 }
 
-DisputeInfo.propTypes = {
-  dispute: PropTypes.object, // TODO: define DisputeType
-  loading: PropTypes.bool,
-}
-
 export default DisputeInfo
