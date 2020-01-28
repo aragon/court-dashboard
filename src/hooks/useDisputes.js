@@ -15,6 +15,7 @@ export default function useDisputes() {
   )
   const disputesPhasesKey = disputesPhases
     .map(v => convertToString(v[Object.keys(v)[0]]))
+
     .join('')
 
   return [
@@ -23,6 +24,6 @@ export default function useDisputes() {
         ...dispute,
         ...disputesPhases[i],
       }))
-    }, [disputes, disputesPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
+    }, [disputesPhases, disputes, disputesPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
   ]
 }

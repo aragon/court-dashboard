@@ -1,6 +1,6 @@
 import { useQuery } from 'urql'
 import { JurorDrafts } from '../queries/disputes'
-import { reduceDispute } from '../components/Disputes/reducer'
+import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 
 export default function useJurorDraftQuery(juror) {
   const [result] = useQuery({
@@ -13,6 +13,8 @@ export default function useJurorDraftQuery(juror) {
   }
 
   return result.data.juror
-    ? result.data.juror.drafts.map(draft => reduceDispute(draft.round.dispute))
+    ? result.data.juror.drafts.map(draft =>
+        transformResponseDisputeAttributes(draft.round.dispute)
+      )
     : []
 }

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { Header, SyncIndicator, BackButton, Bar, Box, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-import useDisputeSubscription from './hooks/useDisputeSubscription'
+import useDisputeSubscription from '../../hooks/useDisputeSubscription'
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
@@ -73,7 +73,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
         }
         secondary={
           <React.Fragment>
-            <Box heading="Voting results">{disputeFetching && 'Results'}</Box>
             <Box heading="Dispute timeline" padding={0}>
               {disputeFetching ? (
                 <div css="height: 100px" />
