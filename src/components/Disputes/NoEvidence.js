@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, textStyle, GU, useTheme } from '@aragon/ui'
-import noEvidencePng from '../../assets/noEvidence.png'
+import noEvidenceSvg from '../../assets/noEvidence.svg'
 
 function NoEvidence() {
   const theme = useTheme()
@@ -15,12 +15,15 @@ function NoEvidence() {
         `}
       >
         <img
-          css={`
-            margin: ${4 * GU}px 0;
-            height: 176px;
-          `}
-          src={noEvidencePng}
+          src={noEvidenceSvg}
           alt="No Evidence"
+          css={`
+            display: block;
+            width: 100%;
+            max-width: 237px;
+            height: auto;
+            margin: ${4 * GU}px 0;
+          `}
         />
         <span
           css={`
@@ -39,7 +42,7 @@ function NoEvidence() {
             text-align: center; 
           `}
         >
-          The involved parties have up to 7 days to submitt evidence supporting
+          The involved parties have up to 7 days to submit evidence supporting
           their case
         </div>
       </div>

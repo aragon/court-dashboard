@@ -27,7 +27,7 @@ function Disputes() {
   }
 
   return (
-    <React.Fragment>
+    <>
       <Header
         primary="Disputes"
         secondary={
@@ -78,7 +78,7 @@ function Disputes() {
       </div>
       <div
         css={`
-          margin-top: 0px;
+          margin-top: -${GU * 1}px;
           width: 100%;
         `}
       >
@@ -87,7 +87,7 @@ function Disputes() {
           onSelectDispute={handleSelectDispute}
         />
       </div>
-    </React.Fragment>
+    </>
   )
 }
 

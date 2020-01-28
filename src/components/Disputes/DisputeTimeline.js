@@ -1,10 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
-import dayjs from '../../lib/dayjs'
-import { dateFormat } from '../../utils/date-utils'
-import Stepper from '../Stepper'
-import Step from '../Step'
 import {
   IconFlag,
   IconFolder,
@@ -12,9 +8,14 @@ import {
   IconThinking,
   IconRuling,
   IconVoting,
-  IconGavelNoFill,
   IconRewards,
+  IconGavelNoFill,
 } from '../../utils/dispute-icons'
+
+import dayjs from '../../lib/dayjs'
+import { dateFormat } from '../../utils/date-utils'
+import Stepper from '../Stepper'
+import Step from '../Step'
 
 import * as DisputesTypes from '../../types/dispute-status-types'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
@@ -31,13 +32,17 @@ const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
       <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={12}>
         {disputeTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
-            return getStep(item, index, theme)
+            return <ItemStep key={index} item={item} index={index} />
           } else {
             return item.map((round, roundIndex) => {
               if (roundIndex === 0) {
-                return round.map((roundItem, phaseIndex) => {
-                  return getStep(roundItem, phaseIndex, theme)
-                })
+                return round.map((roundItem, phaseIndex) => (
+                  <ItemStep
+                    key={phaseIndex}
+                    item={roundItem}
+                    index={phaseIndex}
+                  />
+                ))
               } else {
                 return (
                   <Step
@@ -77,14 +82,14 @@ const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
                                     padding: ${3 * GU}px 0;
                                   `}
                                 >
-                                  {round.map((roundItem, phaseIndex) => {
-                                    return getStep(
-                                      roundItem,
-                                      phaseIndex,
-                                      theme,
-                                      roundStepContainerCss
-                                    )
-                                  })}
+                                  {round.map((roundItem, phaseIndex) => (
+                                    <ItemStep
+                                      key={phaseIndex}
+                                      item={roundItem}
+                                      index={phaseIndex}
+                                      roundStepContainer
+                                    />
+                                  ))}
                                 </Stepper>,
                               ],
                             ]}
@@ -104,7 +109,9 @@ const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   )
 })
 
-function getStep(item, index, theme, css) {
+function ItemStep({ item, index, roundStepContainer }) {
+  const theme = useTheme()
+
   return (
     <Step
       key={index}
@@ -121,7 +128,7 @@ function getStep(item, index, theme, css) {
             display: inline-flex;
           `}
         >
-          {getPhaseIcon(item.phase, item.active)}
+          <PhaseIcon phase={item.phase} active={item.active} />
         </div>
       }
       content={
@@ -143,7 +150,7 @@ function getStep(item, index, theme, css) {
                   opacity: 0.6;
                 `}
               >
-                {getDisplayTime(item)}
+                <DisplayTime item={item} />
               </span>
             </div>
             {item.active && <RoundPill roundId={item.roundId} />}
@@ -151,12 +158,14 @@ function getStep(item, index, theme, css) {
         </div>
       }
       displayPoint
-      css={css}
+      css={`
+        ${roundStepContainer ? 'margin-left: 0px;' : ''}
+      `}
     />
   )
 }
 
-function getPhaseIcon(phase, active) {
+function PhaseIcon({ phase, active }) {
   let icon
 
   if (
@@ -221,9 +230,8 @@ function RoundPill({ roundId }) {
   )
 }
 
-function getDisplayTime(timeLineItem) {
-  const { endTime, active, phase } = timeLineItem
-
+function DisplayTime({ item }) {
+  const { endTime, active, phase } = item
   if (active) {
     if (
       phase === DisputesTypes.Phase.ExecuteRuling ||
@@ -233,8 +241,7 @@ function getDisplayTime(timeLineItem) {
     }
     return <Timer end={dayjs(endTime)} />
   }
-
-  return dateFormat(endTime, 'DD/MM/YY')
+  return <>{dateFormat(endTime, 'DD/MM/YY')}</>
 }
 
 const StyledAccordion = styled.div`
@@ -245,6 +252,5 @@ const StyledAccordion = styled.div`
   }
   padding: 0;
 `
-const roundStepContainerCss = `margin-left: 0px;`
 
 export default DisputeTimeline

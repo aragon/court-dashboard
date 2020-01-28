@@ -7,10 +7,10 @@ import { useCourtConfig } from '../providers/CourtConfig'
 
 export default function useTasks() {
   const courtConfig = useCourtConfig()
-  const { tasks } = useTasksSubscription()
+  const { tasks, error } = useTasksSubscription()
   const now = useNow()
 
-  return useOpenTasks(tasks, now, courtConfig)
+  return { openTasks: useOpenTasks(tasks, now, courtConfig), error }
 }
 
 function useOpenTasks(tasks, now, courtSettings) {

@@ -5,7 +5,6 @@ import * as DisputesTypes from '../../types/dispute-status-types'
 import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
 
 function DisputePhase({ phase, nextTransition }) {
-  const theme = useTheme()
   const stringPhase = DisputesTypes.convertToString(phase)
   return (
     <div
@@ -56,12 +55,13 @@ function DisputePhase({ phase, nextTransition }) {
         </span>
       </div>
 
-      {getDisplayTime(phase, nextTransition, theme)}
+      <DisplayTime phase={phase} nextTransition={nextTransition} />
     </div>
   )
 }
 
-function getDisplayTime(phase, nextTransition, theme) {
+function DisplayTime({ phase, nextTransition }) {
+  const theme = useTheme()
   if (
     phase === DisputesTypes.Phase.ExecuteRuling ||
     phase === DisputesTypes.Phase.ClaimRewards
