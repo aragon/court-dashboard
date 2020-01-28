@@ -3,6 +3,7 @@ import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import ANJIcon from '../../assets/anjButton.svg'
 // import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
+import NoTasks from './NoTasks'
 import { useConnectedAccount } from '../../providers/Web3'
 import useFilteredTasks from '../../hooks/useFilteredTasks'
 
@@ -12,6 +13,7 @@ const Tasks = React.memo(() => {
 
   const {
     tasks,
+    error,
     selectedDateRange,
     handleSelectedDateRangeChange,
     selectedPhase,
@@ -20,6 +22,8 @@ const Tasks = React.memo(() => {
     jurorOpenTaskNumber,
     taskActionsString,
   } = useFilteredTasks(screenIndex, connectedAccount)
+
+  console.log('tasksssss ', tasks)
 
   const handleTabChange = screenIndex => {
     setScreenIndex(screenIndex)
@@ -85,14 +89,18 @@ const Tasks = React.memo(() => {
           onChange={handleTabChange}
         />
       </div>
-      <TaskTable
-        tasks={tasks}
-        dateRangeFilter={selectedDateRange}
-        onDateRangeChange={handleSelectedDateRangeChange}
-        phaseFilter={selectedPhase}
-        onPhaseChange={handleSelectedPhaseChange}
-        phaseTypes={taskActionsString}
-      />
+      {tasks.length === 0 && !error ? (
+        <NoTasks />
+      ) : (
+        <TaskTable
+          tasks={tasks}
+          dateRangeFilter={selectedDateRange}
+          onDateRangeChange={handleSelectedDateRangeChange}
+          phaseFilter={selectedPhase}
+          onPhaseChange={handleSelectedPhaseChange}
+          phaseTypes={taskActionsString}
+        />
+      )}
     </>
   )
 })

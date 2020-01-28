@@ -4,7 +4,7 @@ import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { AllDisputes } from '../queries/disputes'
 import { useCourtConfig } from '../providers/CourtConfig'
 
-export default function useDisputesSubscription(ids) {
+export default function useDisputesSubscription() {
   const [disputes, setDisputes] = useState([])
   const courtConfig = useCourtConfig()
   // First argument is the last result from the query , second argument is the current response

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import useRounds from './useTasks'
+import useTasks from './useTasks'
 import { addressesEqual } from '../lib/web3-utils'
 import dayjs from '../lib/dayjs'
 import * as DisputesTypes from '../types/types'
@@ -19,11 +19,12 @@ function useFilteredTasks(tabIndex, connectedAccount) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_PHASE)
   const jurorTasksSelected = tabIndex === 0
+  // If My Tasks is selected we need to only show ALL-COMMIT-REVEAL actions
   const TASKS_ACTIONS_TYPES_STRING = jurorTasksSelected
     ? TASKS_ACTIONS_TYPES.slice(0, 3).map(DisputesTypes.getTaskActionString)
     : TASKS_ACTIONS_TYPES.map(DisputesTypes.getTaskActionString)
 
-  const tasks = useRounds()
+  const { openTasks: tasks, error } = useTasks()
 
   const jurorTasks = useMemo(
     () =>
@@ -75,6 +76,7 @@ function useFilteredTasks(tabIndex, connectedAccount) {
 
   return {
     tasks: filteredTasks,
+    error,
     selectedDateRange,
     handleSelectedDateRangeChange,
     selectedPhase,
