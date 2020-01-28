@@ -1,11 +1,11 @@
 import React from 'react'
 import dayjs from '../../lib/dayjs'
-import { convertToString } from '../../types/types'
+import * as DisputesTypes from '../../types/dispute-status-types'
 
-import { GU, textStyle, Timer } from '@aragon/ui'
+import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
 
 function DisputePhase({ phase, nextTransition }) {
-  const stringPhase = convertToString(phase)
+  const stringPhase = DisputesTypes.convertToString(phase)
   return (
     <div
       css={`
@@ -54,14 +54,39 @@ function DisputePhase({ phase, nextTransition }) {
           {stringPhase}
         </span>
       </div>
-      <div
-        css={`
-          margin-left: -${0.5 * GU}px;
-          margin-bottom: ${2 * GU}px;
-        `}
-      >
-        <Timer end={dayjs(nextTransition)} />
+
+      <DisplayTime phase={phase} nextTransition={nextTransition} />
+    </div>
+  )
+}
+
+function DisplayTime({ phase, nextTransition }) {
+  const theme = useTheme()
+  if (
+    phase === DisputesTypes.Phase.ExecuteRuling ||
+    phase === DisputesTypes.Phase.ClaimRewards
+  ) {
+    return (
+      <div>
+        <span
+          css={`
+            color: ${theme.contentSecondary};
+            opacity: 0.6;
+          `}
+        >
+          ANY TIME
+        </span>
       </div>
+    )
+  }
+  return (
+    <div
+      css={`
+        margin-left: -${0.5 * GU}px;
+        margin-bottom: ${2 * GU}px;
+      `}
+    >
+      <Timer end={dayjs(nextTransition)} />
     </div>
   )
 }

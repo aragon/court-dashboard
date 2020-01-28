@@ -1,13 +1,16 @@
 import { useMemo } from 'react'
+
 import useNow from './useNow'
-import useDisputeSubscription from './useDisputesSubscription'
-import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { convertToString } from '../types/types'
+import useSingleDisputeSubscription, {
+  useDisputesSubscription,
+} from './subscription-hooks'
+import { getPhaseAndTransition } from '../utils/dispute-utils'
+import { convertToString } from '../types/dispute-status-types'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
-  const disputes = useDisputeSubscription()
+  const { disputes } = useDisputesSubscription()
   const now = useNow()
 
   const disputesPhases = disputes.map(d =>
@@ -26,4 +29,29 @@ export default function useDisputes() {
       }))
     }, [disputesPhases, disputes, disputesPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
   ]
+}
+
+export function useDispute(disputeId) {
+  const courtConfig = useCourtConfig()
+  const now = useNow()
+  const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
+
+  const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
+  const disputePhaseKey = disputePhase
+    ? convertToString(Object.values(disputePhase)[0])
+    : ''
+
+  return useMemo(() => {
+    if (fetching) {
+      return { fetching }
+    }
+
+    return {
+      dispute: {
+        ...dispute,
+        ...disputePhase,
+      },
+      fetching,
+    }
+  }, [dispute, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
 }

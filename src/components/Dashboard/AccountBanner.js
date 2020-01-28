@@ -4,7 +4,7 @@ import { CircleGraph, GU, Help, useTheme } from '@aragon/ui'
 import AccountBannerInfo from './AccountBannerInfo'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useTotalActiveBalancePolling } from '../../hooks/useCourt'
+import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 import { useClock } from '../../providers/Clock'
 
@@ -164,13 +164,14 @@ const BannerWithProbability = ({ activeBalance }) => {
   const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
     currentTermId
   )
+  const totalActiveBalanceFetched = totalActiveBalanceCurrentTerm.gte(0)
 
   const totalPercentage = getPercentage(
     activeBalanceCurrentTerm,
     totalActiveBalanceCurrentTerm
   )
 
-  // Calculate probability (since the total active balance is asynconous
+  // Calculate probability (since the total active balance is asyncronous
   // it can happen that it has not been updated yet when the juror active balance has)
   const draftingProbability = Math.min(1, totalPercentage / 100)
   const probabilityText = getProbabilityText(draftingProbability)
@@ -204,7 +205,20 @@ const BannerWithProbability = ({ activeBalance }) => {
 
   return (
     <Wrapper
-      mainIcon={<CircleGraph value={draftingProbability} size={6 * GU} />}
+      mainIcon={
+        totalActiveBalanceFetched ? (
+          <CircleGraph value={draftingProbability} size={6 * GU} />
+        ) : (
+          <div
+            css={`
+              height: ${6 * GU}px;
+              width: ${6 * GU}px;
+              border: 1px solid ${theme.accent};
+              border-radius: 50%;
+            `}
+          />
+        )
+      }
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
     />
   )

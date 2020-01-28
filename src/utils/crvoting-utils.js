@@ -1,16 +1,82 @@
+import { soliditySha3, hash256 } from '../lib/web3-utils'
 import { bigNum } from '../lib/math-utils'
 
-const OUTCOMES = {
-  MISSING: bigNum(0),
-  LEAKED: bigNum(1),
-  REFUSED: bigNum(2),
-  AGAINST: bigNum(3),
-  IN_FAVOUR: bigNum(4),
+export const OUTCOMES = {
+  Missing: 0,
+  Leaked: 1,
+  Refused: 2,
+  Against: 3,
+  InFavor: 4,
 }
 
-export const VOTE_OPTION_REFUSE = OUTCOMES.REFUSED.toString()
-export const VOTE_OPTION_AGAINST = OUTCOMES.AGAINST.toString()
-export const VOTE_OPTION_IN_FAVOUR = OUTCOMES.IN_FAVOUR.toString()
+export const VOTE_OPTION_REFUSE = OUTCOMES.Refused
+export const VOTE_OPTION_AGAINST = OUTCOMES.Against
+export const VOTE_OPTION_IN_FAVOR = OUTCOMES.InFavor
+
+const optionStringMapping = {
+  [VOTE_OPTION_REFUSE]: 'REFUSE TO VOTE',
+  [VOTE_OPTION_AGAINST]: 'AGAINST',
+  [VOTE_OPTION_IN_FAVOR]: 'IN FAVOR',
+}
+
+export function voteToString(outcome) {
+  return optionStringMapping[outcome]
+}
+
+const outcomeStringMapping = {
+  [OUTCOMES.Missing]: 'Refused to vote',
+  [OUTCOMES.Leaked]: 'Invalid ruling',
+  [OUTCOMES.Refused]: 'Refused to vote',
+  [OUTCOMES.Against]: 'Voted against',
+  [OUTCOMES.InFavor]: 'Voted in favor',
+}
+
+export function outcomeToString(outcome) {
+  return outcomeStringMapping[outcome]
+}
+
+const VALID_OUTCOMES = [OUTCOMES.Refused, OUTCOMES.Against, OUTCOMES.InFavor]
+
+/**
+ *
+ * @param {String} outcome String representation of the outcome
+ * @returns {Number} corresponding outcome number
+ */
+export function getOutcomeNumber(outcome) {
+  return OUTCOMES[outcome]
+}
+
+/**
+ *
+ * @param {bytes} commitment vote commitment
+ * @param {bytes} salt password used to get the commitment
+ * @returns {Number} outcome
+ */
+export function getOutcomeFromCommitment(commitment, salt) {
+  return VALID_OUTCOMES.find(option => hashVote(option, salt) === commitment)
+}
+
+/**
+ * returns all possible appeal ruling options
+ * @param {Number} currentOutcome current round outcome
+ * @returns {Array} Array of appeal ruling options
+ */
+export function getAppealRulingOptions(currentOutcome) {
+  return VALID_OUTCOMES.filter(
+    outcome => outcome !== currentOutcome
+  ).map(outcome => ({ outcome, description: voteToString(outcome) }))
+}
+
+export function filterByValidOutcome(totalValidOutcomes) {
+  return VALID_OUTCOMES.map(outcomeFilter => {
+    return {
+      outcomes: totalValidOutcomes.filter(
+        ({ outcome }) => outcome === outcomeFilter
+      ),
+      outcome: outcomeFilter,
+    }
+  })
+}
 
 export const getVoteId = (disputeId, roundId) => {
   return bigNum(2)
@@ -19,6 +85,39 @@ export const getVoteId = (disputeId, roundId) => {
     .add(bigNum(roundId))
 }
 
-export const hashVote = (outcome, salt) => {
-  // return `0x${soliditySha3(outcome, salt)}`
+export function hashPassword(salt) {
+  return hash256(salt)
+}
+
+export function hashVote(outcome, salt) {
+  return soliditySha3(['uint8', 'bytes32'], [outcome, hash256(salt)])
+}
+
+/**
+ *
+ * @param {Number} outcome vote outcome
+ * @returns {Boolean} True if outcome is valid
+ */
+export function isValidOutcome(outcome) {
+  return (
+    VALID_OUTCOMES[0] <= outcome &&
+    outcome <= VALID_OUTCOMES[VALID_OUTCOMES.length - 1]
+  )
+}
+
+export function isvoteLeaked(outcome) {
+  if (!outcome) return false
+
+  return outcome === OUTCOMES.Leaked
+}
+
+export function getTotalOutcomeWeight(outcomes) {
+  return outcomes.reduce((acc, { weight }) => acc + weight, 0)
+}
+
+export function getOutcomeColor(outcome, theme) {
+  if (outcome === OUTCOMES.InFavor) return theme.positive
+  if (outcome === OUTCOMES.Against) return theme.negative
+
+  return theme.hint
 }

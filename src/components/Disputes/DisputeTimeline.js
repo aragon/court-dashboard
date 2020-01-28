@@ -1,129 +1,118 @@
 import React from 'react'
+import styled from 'styled-components'
+import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
 import {
-  Accordion,
-  GU,
-  textStyle,
-  useTheme,
-  IconFolder,
   IconFlag,
-  IconGroup,
-  IconVote,
-  IconWrite,
-  Timer,
-} from '@aragon/ui'
+  IconFolder,
+  IconUsers,
+  IconThinking,
+  IconRuling,
+  IconVoting,
+  IconRewards,
+  IconGavelNoFill,
+} from '../../utils/dispute-icons'
+
 import dayjs from '../../lib/dayjs'
 
 import { dateFormat } from '../../utils/date-utils'
 import Stepper from '../Stepper'
 import Step from '../Step'
-import * as DisputesTypes from '../../types/types'
-import styled from 'styled-components'
-import { useCourtConfig } from '../../providers/CourtConfig'
+
+import * as DisputesTypes from '../../types/dispute-status-types'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
+import { numberToWord } from '../../lib/math-utils'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
-function DisputeTimeline({ dispute }) {
-  const roundsLength = dispute.rounds.length
-
+const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
+  const theme = useTheme()
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
-  const reverseTimeLine = [...disputeTimeLine].reverse().map(item => {
-    if (Array.isArray(item)) {
-      return [...item].reverse().map(roundPhase => {
-        return [...roundPhase].reverse()
-      })
-    }
-    return item
-  })
-
   return (
     <div>
-      <Stepper
-        lineColor="#FFCDC5"
-        lineTop={13}
-        css={`
-          padding-bottom: ${3 * GU}px;
-        `}
-      >
-        {reverseTimeLine.map((item, index) => {
+      <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={12}>
+        {disputeTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
-            return (
-              <ItemStep
-                key={index}
-                item={item}
-                roundId={roundsLength}
-                index={index}
-              />
-            )
+            return <ItemStep key={index} item={item} index={index} />
+          } else {
+            return item.map((round, roundIndex) => {
+              if (roundIndex === 0) {
+                return round.map((roundItem, phaseIndex) => (
+                  <ItemStep
+                    key={phaseIndex}
+                    item={roundItem}
+                    index={phaseIndex}
+                  />
+                ))
+              } else {
+                return (
+                  <Step
+                    key={roundIndex}
+                    active={false}
+                    content={
+                      <div
+                        css={`
+                          width: 100%;
+                        `}
+                      >
+                        <StyledAccordion>
+                          <Accordion
+                            key={roundIndex}
+                            items={[
+                              [
+                                <div
+                                  css={`
+                                    display: flex;
+                                    align-items: center;
+                                  `}
+                                >
+                                  <img
+                                    alt={18}
+                                    src={IconGavelNoFill}
+                                    css={`
+                                      margin-right: ${1 * GU}px;
+                                    `}
+                                  />
+                                  <RoundPill roundId={round[0].roundId} />
+                                </div>,
+
+                                <Stepper
+                                  lineColor={theme.accent.alpha(0.3)}
+                                  lineTop={12}
+                                  css={`
+                                    padding: ${3 * GU}px 0;
+                                  `}
+                                >
+                                  {round.map((roundItem, phaseIndex) => (
+                                    <ItemStep
+                                      key={phaseIndex}
+                                      item={roundItem}
+                                      index={phaseIndex}
+                                      roundStepContainer
+                                    />
+                                  ))}
+                                </Stepper>,
+                              ],
+                            ]}
+                          />
+                        </StyledAccordion>
+                      </div>
+                    }
+                    displayPoint={false}
+                  />
+                )
+              }
+            })
           }
-          return item.map((round, roundIndex) => {
-            if (roundIndex === 0) {
-              return round.map((roundItem, phaseIndex) => (
-                <ItemStep
-                  key={phaseIndex}
-                  item={roundItem}
-                  roundId={roundsLength}
-                  index={phaseIndex}
-                />
-              ))
-            }
-            return (
-              <Step
-                key={roundIndex}
-                active={false}
-                content={
-                  <div
-                    css={`
-                      width: 100%;
-                    `}
-                  >
-                    <StyledAccordion>
-                      <Accordion
-                        key={roundIndex}
-                        items={[
-                          [
-                            <span
-                              css={`
-                                margin-left: ${GU * 1.5}px;
-                              `}
-                            >
-                              <RoundPill roundId={Number(round[0].roundId)} />
-                            </span>,
-                            <Stepper
-                              lineColor="#FFCDC5"
-                              lineTop={13}
-                              css={`
-                                padding: ${3 * GU}px 0;
-                              `}
-                            >
-                              {round.map((roundItem, phaseIndex) => (
-                                <ItemStep
-                                  key={phaseIndex}
-                                  item={roundItem}
-                                  roundId={roundsLength}
-                                  index={phaseIndex}
-                                  roundStepContainer
-                                />
-                              ))}
-                            </Stepper>,
-                          ],
-                        ]}
-                      />
-                    </StyledAccordion>
-                  </div>
-                }
-                displayPoint={false}
-              />
-            )
-          })
         })}
       </Stepper>
     </div>
   )
-}
+})
 
-function ItemStep({ item, roundId, index, roundStepContainer }) {
+function ItemStep({ item, index, roundStepContainer }) {
   const theme = useTheme()
+
   return (
     <Step
       key={index}
@@ -135,7 +124,6 @@ function ItemStep({ item, roundId, index, roundStepContainer }) {
               ? 'linear-gradient(51.69deg, #FFB36D -0.55%, #FF8888 88.44%)'
               : '#FFE2D7'};
             border-radius: 80%;
-            padding: 10px;
             position: relative;
             z-index: 2;
             display: inline-flex;
@@ -166,7 +154,7 @@ function ItemStep({ item, roundId, index, roundStepContainer }) {
                 <DisplayTime item={item} />
               </span>
             </div>
-            {item.active && <RoundPill roundId={Number(item.roundId)} />}
+            {item.active && <RoundPill roundId={item.roundId} />}
           </div>
         </div>
       }
@@ -179,53 +167,48 @@ function ItemStep({ item, roundId, index, roundStepContainer }) {
 }
 
 function PhaseIcon({ phase, active }) {
-  const theme = useTheme()
+  let icon
 
-  // TODO - change this for the new icons
-  if (phase === DisputesTypes.Phase.Created) {
-    return <IconFlag color={active ? '#fff' : theme.surfaceIcon} />
+  if (
+    phase === DisputesTypes.Phase.Created ||
+    phase === DisputesTypes.Phase.NotStarted
+  ) {
+    icon = IconFlag
+  } else if (phase === DisputesTypes.Phase.Evidence) {
+    icon = IconFolder
+  } else if (phase === DisputesTypes.Phase.JuryDrafting) {
+    icon = IconUsers
+  } else if (
+    phase === DisputesTypes.Phase.VotingPeriod ||
+    phase === DisputesTypes.Phase.RevealVote
+  ) {
+    icon = IconVoting
+  } else if (
+    phase === DisputesTypes.Phase.AppealRuling ||
+    phase === DisputesTypes.Phase.ConfirmAppeal
+  ) {
+    icon = IconThinking
+  } else if (phase === DisputesTypes.Phase.ExecuteRuling) {
+    icon = IconRuling
+  } else {
+    icon = IconRewards
   }
 
-  if (phase === DisputesTypes.Phase.Evidence) {
-    return <IconFolder color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.JuryDrafting) {
-    return <IconGroup color={active ? '#fff' : theme.surfaceIcon} />
-  }
-  if (phase === DisputesTypes.Phase.VotingPeriod) {
-    return <IconVote color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.RevealVote) {
-    return <IconVote color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.AppealRuling) {
-    return (
-      <IconWrite
-        color={active ? '#fff' : theme.surfaceIcon}
-        background="#fff"
-      />
-    )
-  }
-  if (phase === DisputesTypes.Phase.ConfirmAppeal) {
-    return <IconWrite color={active ? '#fff' : theme.surfaceIcon} />
-  }
+  return (
+    <img
+      css={`
+        height: ${GU * 6}px;
+      `}
+      src={active ? icon.active : icon.inactive}
+      alt="phase-icon"
+    />
+  )
 }
 
 function RoundPill({ roundId }) {
-  let label
+  if (roundId === undefined) return null
 
-  if (roundId === 0) {
-    label = 'Round One'
-  }
-  if (roundId === 1) {
-    label = 'Round Two'
-  }
-  if (roundId === 2) {
-    label = 'Round Three'
-  }
+  const label = `Round ${numberToWord(roundId)}`
 
   return (
     <span
@@ -249,8 +232,14 @@ function RoundPill({ roundId }) {
 }
 
 function DisplayTime({ item }) {
-  const { endTime, active } = item
+  const { endTime, active, phase } = item
   if (active) {
+    if (
+      phase === DisputesTypes.Phase.ExecuteRuling ||
+      phase === DisputesTypes.Phase.ClaimRewards
+    ) {
+      return 'ANY TIME'
+    }
     return <Timer end={dayjs(endTime)} />
   }
   return <>{dateFormat(endTime, 'DD/MM/YY')}</>
@@ -259,7 +248,10 @@ function DisplayTime({ item }) {
 const StyledAccordion = styled.div`
   & > div:first-child {
     border-radius: 0px;
+    border-left: 0;
+    border-right: 0;
   }
+  padding: 0;
 `
 
 export default DisputeTimeline

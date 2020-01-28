@@ -9,12 +9,24 @@ import {
   useTheme,
 } from '@aragon/ui'
 import DisputeStatus from './DisputeStatus'
+import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
-
+import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import iconCourt from '../../assets/courtIcon.svg'
 
-function DisputeInfo({ dispute, id, loading }) {
+const DisputeInfo = React.memo(function({
+  id,
+  dispute,
+  loading,
+  onDraft,
+  onRequestCommit,
+  onRequestReveal,
+  onLeak,
+  onRequestAppeal,
+  onExecuteRuling,
+}) {
   const theme = useTheme()
+  const { phase } = dispute || {}
 
   const description = loading ? 'Loading…' : dispute.metadata
   const creatorAddress = dispute && dispute.subject && dispute.subject.id
@@ -134,11 +146,28 @@ function DisputeInfo({ dispute, id, loading }) {
             </div>
           )}
         </div>
-        {dispute && <DisputeActions dispute={dispute} />}
+
+        {(phase === DisputePhase.AppealRuling ||
+          phase === DisputePhase.ConfirmAppeal ||
+          phase === DisputePhase.ExecuteRuling ||
+          phase === DisputePhase.ClaimRewards) && (
+          <DisputeCurrentRuling dispute={dispute} />
+        )}
+        {!loading && (
+          <DisputeActions
+            dispute={dispute}
+            onDraft={onDraft}
+            onRequestCommit={onRequestCommit}
+            onRequestReveal={onRequestReveal}
+            onLeavk={onLeak}
+            onRequestAppeal={onRequestAppeal}
+            onExecuteRuling={onExecuteRuling}
+          />
+        )}
       </section>
     </Box>
   )
-}
+})
 
 DisputeInfo.propTypes = {
   dispute: PropTypes.object, // TODO: define DisputeType

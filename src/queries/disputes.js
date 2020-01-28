@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 
 export const AllDisputes = gql`
-  subscription {
-    disputes(orderBy: createdAt, orderDirection: desc) {
+  subscription AllDisputes($limit: Int) {
+    disputes(first: $limit, orderBy: createdAt, orderDirection: desc) {
       id
       txHash
       createTermId
@@ -22,6 +22,7 @@ export const AllDisputes = gql`
         }
       }
       rounds {
+        id
         state
         number
         draftTermId
@@ -37,6 +38,12 @@ export const AllDisputes = gql`
           juror {
             id
           }
+          commitment
+          outcome
+        }
+        vote {
+          id
+          winningOutcome
         }
         appeal {
           id
@@ -56,6 +63,7 @@ export const SingleDispute = gql`
   subscription Dispute($id: ID!) {
     dispute(id: $id) {
       id
+      txHash
       createTermId
       possibleRulings
       finalRuling
@@ -73,6 +81,7 @@ export const SingleDispute = gql`
         }
       }
       rounds {
+        id
         state
         number
         draftTermId
@@ -88,6 +97,13 @@ export const SingleDispute = gql`
           juror {
             id
           }
+          weight
+          commitment
+          outcome
+        }
+        vote {
+          id
+          winningOutcome
         }
         appeal {
           id
