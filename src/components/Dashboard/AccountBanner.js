@@ -15,12 +15,12 @@ import { getProbabilityText } from '../../utils/account-utils'
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
 import gavelIcon from '../../assets/IconGavel.svg'
+import { useJurorDrafted } from '../../hooks/useJurorDraft'
 
 const getBannerAttributes = (
   status,
   drafted,
   isFirstTimeActivating,
-
   minActiveBalance,
   decimals,
   theme
@@ -61,17 +61,23 @@ const getBannerAttributes = (
   }
 }
 
-function AccountBanner({ status, minActiveBalance, activeBalance, drafted }) {
+function AccountBanner({ status, minActiveBalance, activeBalance }) {
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
 
+  // check if juror has been drafted in this current term
+  const isJurorDrafted = useJurorDrafted({
+    pause: status !== ACCOUNT_STATUS_JUROR_ACTIVE,
+  })
+
+  // check if it's the first time activating ANJ
   const isFirstTimeActivating = useJurorFirstTimeANJActivation({
-    pause: drafted || status !== ACCOUNT_STATUS_JUROR_ACTIVE,
+    pause: isJurorDrafted || status !== ACCOUNT_STATUS_JUROR_ACTIVE,
   })
 
   const attributes = getBannerAttributes(
     status,
-    drafted,
+    isJurorDrafted,
     isFirstTimeActivating,
     minActiveBalance,
     anjToken.decimals,
@@ -90,21 +96,23 @@ function AccountBanner({ status, minActiveBalance, activeBalance, drafted }) {
     showTimer,
   } = attributes
 
-  const iconBackgroundStyle = iconBackground
-    ? `   
-    background: ${iconBackground};
-    height: ${6 * GU}px;
-    padding: ${1.5 * GU}px;
-    border-radius: 50%;`
-    : ''
-
   return (
     <Wrapper
       mainIcon={
-        <div css={iconBackgroundStyle}>
+        <div
+          css={`
+            display: flex;
+            align-items: center;
+            background: ${iconBackground};
+            height: ${6 * GU}px;
+            width: ${iconBackground ? 6 * GU + 'px' : 'auto'};
+            border-radius: 50%;
+          `}
+        >
           <img
             css={`
               display: block;
+              margin: 0 auto;
             `}
             height={iconBackground ? 3 * GU : 6 * GU}
             src={icon}

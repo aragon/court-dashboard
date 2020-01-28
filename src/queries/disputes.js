@@ -170,3 +170,15 @@ export const JurorDrafts = gql`
     }
   }
 `
+
+export const CurrentTermJurorDrafts = gql`
+  subscription JurorDrafts($id: ID!, $from: BigInt!) {
+    juror(id: $id) {
+      id
+      drafts(where: { createdAt_gt: $from }) {
+        id
+        createdAt
+      }
+    }
+  }
+`
