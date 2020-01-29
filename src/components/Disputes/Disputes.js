@@ -12,6 +12,7 @@ import ANJIcon from '../../assets/IconANJButton.svg'
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   const [disputes] = useDisputes()
+  console.log('disputessss ', disputes)
   const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
 

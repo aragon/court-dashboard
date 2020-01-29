@@ -35,6 +35,7 @@ export function useDispute(disputeId) {
   const courtConfig = useCourtConfig()
   const now = useNow()
   const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
+  console.log('SINGLEEEEE ', dispute)
 
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
   const disputePhaseKey = disputePhase
