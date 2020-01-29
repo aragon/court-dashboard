@@ -1,6 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
+import {
+  Accordion,
+  GU,
+  IconClose,
+  IconCheck,
+  textStyle,
+  useTheme,
+  Timer,
+} from '@aragon/ui'
 import {
   IconFlag,
   IconFolder,
@@ -21,11 +29,19 @@ import * as DisputesTypes from '../../types/dispute-status-types'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 import { numberToWord } from '../../lib/math-utils'
 import { useCourtConfig } from '../../providers/CourtConfig'
+import {
+  outcomeToAppealString,
+  OUTCOMES,
+  NOBODY_APPEALED,
+  NOBODY_CONFIRMED,
+} from '../../utils/crvoting-utils'
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   const theme = useTheme()
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
+  console.log('dispute time ', disputeTimeLine)
+  console.log('DisputeTimeline dispute ', dispute)
 
   return (
     <div>
@@ -154,6 +170,9 @@ function ItemStep({ item, index, roundStepContainer }) {
               </span>
             </div>
             {item.active && <RoundPill roundId={item.roundId} />}
+            {item.outcome && (
+              <Outcome item={item} outcome={item.outcome} phase={item.phase} />
+            )}
           </div>
         </div>
       }
@@ -162,6 +181,84 @@ function ItemStep({ item, index, roundStepContainer }) {
         ${roundStepContainer ? 'margin-left: 0px;' : ''}
       `}
     />
+  )
+}
+
+function Outcome({ item, outcome, phase }) {
+  console.log('ROUND ITEM ', item)
+  console.log('oooouutt ', outcome)
+  if (outcome) {
+    const title =
+      phase && phase === DisputesTypes.Phase.RevealVote
+        ? 'JURY OUTCOME'
+        : 'OUTCOME'
+    return (
+      <React.Fragment>
+        <div
+          css={`
+            margin-top: ${1 * GU}px;
+          `}
+        >
+          <span
+            css={`
+              ${textStyle('body3')}
+              color:#637381;
+            `}
+          >
+            {title}
+          </span>
+        </div>
+        <OutcomeText outcome={outcome} />
+      </React.Fragment>
+    )
+  }
+  return null
+}
+
+function OutcomeText({ outcome }) {
+  const theme = useTheme()
+  // let icon
+  let Icon
+  // let outcomeText
+  let color
+  if (
+    outcome === outcomeToAppealString(OUTCOMES.Refused) ||
+    outcome === NOBODY_APPEALED ||
+    outcome === NOBODY_CONFIRMED
+  ) {
+    Icon = IconClose
+    color = '#8fa4b5'
+  }
+  if (outcome === outcomeToAppealString(OUTCOMES.Against)) {
+    Icon = IconClose
+    color = theme.negative
+  }
+  if (outcome === outcomeToAppealString(OUTCOMES.InFavor)) {
+    Icon = IconCheck
+    color = theme.positive
+  }
+
+  return (
+    <div>
+      {Icon && (
+        <div
+          css={`
+            color: ${color};
+            display: flex;
+            align-items: center;
+          `}
+        >
+          <Icon size="medium" />
+          <span
+            css={`
+              ${textStyle('body2')}
+            `}
+          >
+            {outcome}
+          </span>
+        </div>
+      )}
+    </div>
   )
 }
 
