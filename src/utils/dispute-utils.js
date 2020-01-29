@@ -355,9 +355,9 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       active:
         isCurrentRound && DisputesTypes.Phase.RevealVote === currentPhase.phase,
       roundId,
-      outcome:
-        dayjs(new Date()).isAfter(revealEndTime) &&
-        outcomeToString(winningOutcome),
+      outcome: dayjs(new Date()).isAfter(revealEndTime)
+        ? outcomeToString(winningOutcome)
+        : null,
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,

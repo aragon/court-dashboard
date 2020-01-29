@@ -36,6 +36,7 @@ import {
   OUTCOMES,
   NOBODY_APPEALED,
   NOBODY_CONFIRMED,
+  outcomeToString,
 } from '../../utils/crvoting-utils'
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
@@ -216,7 +217,7 @@ function OutcomeText({ outcome }) {
   // let outcomeText
   let color
   if (
-    outcome === outcomeToAppealString(OUTCOMES.Refused) ||
+    outcome === outcomeToString(OUTCOMES.Refused) ||
     outcome === NOBODY_APPEALED ||
     outcome === NOBODY_CONFIRMED
   ) {
