@@ -2,9 +2,9 @@ import React from 'react'
 import { Button, GU, Header, SidePanel, Split, useLayout } from '@aragon/ui'
 
 import BalanceModule from './BalanceModule'
-import TaskTable from './TaskTable'
-import { tasks } from '../../mock-data'
+import Tasks from '../../components/Tasks/Tasks'
 import Welcome from './Welcome'
+
 import { DashboardStateProvider } from './DashboardStateProvider'
 
 import ANJIcon from '../../assets/IconANJButton.svg'
@@ -70,7 +70,7 @@ function Dashboard() {
       )}
 
       <Split
-        primary={<TaskTable tasks={tasks} />}
+        primary={<Tasks onlyTable />}
         secondary={
           <>
             <RewardsModule />
