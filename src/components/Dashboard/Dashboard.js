@@ -74,7 +74,7 @@ function Dashboard() {
         secondary={
           <>
             <RewardsModule />
-            {appealCollaterals && (
+            {appealCollaterals && !!appealCollaterals.length && (
               <AppealColateralModule appeals={appealCollaterals} />
             )}
           </>

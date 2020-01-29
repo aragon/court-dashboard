@@ -79,7 +79,6 @@ export function getDisputeTimeLine(dispute, courtConfig) {
   ]
 
   const rounds = []
-  console.log('disputeEEEEEe ', dispute)
   dispute.rounds.forEach(round => {
     const roundPhases = getRoundPhasesAndTime(
       courtConfig,
@@ -305,9 +304,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     createdAt,
     vote,
     appeal,
-    state: roundState,
   } = round
-  console.log('round ', round)
   const isCurrentRound = roundId === currentPhase.roundId
   const { winningOutcome } = vote || {}
 
@@ -368,7 +365,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
-      outcome: getAppealOutcome(appeal, appealEndTime, roundState),
+      outcome: getAppealOutcome(appeal, appealEndTime),
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
@@ -407,15 +404,10 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
 }
 
-function getAppealOutcome(appeal, appealEndTime, roundState) {
+function getAppealOutcome(appeal, appealEndTime) {
   const { appealedRuling } = appeal || {}
   if (appeal) {
-    if (
-      roundState === DisputesTypes.Phase.ConfirmAppeal ||
-      roundState === DisputesTypes.Phase.ExecuteRuling
-    ) {
-      return outcomeToAppealString(appealedRuling)
-    }
+    return outcomeToAppealString(appealedRuling)
   }
 
   if (dayjs(new Date()).isAfter(appealEndTime)) {
@@ -426,13 +418,13 @@ function getAppealOutcome(appeal, appealEndTime, roundState) {
 
 function getConfirmAppealOutcome(appeal, confirmAppealEndTime) {
   const { opposedRuling } = appeal || {}
-  console.log('opossed Ruling ', opposedRuling)
   if (appeal) {
-    if (dayjs(new Date()).isAfter(confirmAppealEndTime)) {
-      if (opposedRuling === OUTCOMES.Missing) {
-        return NOBODY_CONFIRMED
-      }
+    if (opposedRuling !== OUTCOMES.Missing) {
       return outcomeToAppealString(opposedRuling)
+    }
+
+    if (dayjs(new Date()).isAfter(confirmAppealEndTime)) {
+      return NOBODY_CONFIRMED
     }
   }
   return null

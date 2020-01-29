@@ -9,6 +9,9 @@ import {
   useTheme,
   Timer,
 } from '@aragon/ui'
+
+import dayjs from '../../lib/dayjs'
+
 import {
   IconFlag,
   IconFolder,
@@ -20,16 +23,14 @@ import {
   IconGavelNoFill,
 } from '../../utils/dispute-icons'
 
-import dayjs from '../../lib/dayjs'
-
-import { dateFormat } from '../../utils/date-utils'
 import Stepper from '../Stepper'
 import Step from '../Step'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
 import * as DisputesTypes from '../../types/dispute-status-types'
+import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 import { numberToWord } from '../../lib/math-utils'
-import { useCourtConfig } from '../../providers/CourtConfig'
 import {
   outcomeToAppealString,
   OUTCOMES,
@@ -41,8 +42,6 @@ const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   const theme = useTheme()
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
-  console.log('dispute time ', disputeTimeLine)
-  console.log('DisputeTimeline dispute ', dispute)
 
   return (
     <div>
@@ -141,7 +140,7 @@ function ItemStep({ item, index, roundStepContainer }) {
               : '#FFE2D7'};
             border-radius: 80%;
             position: relative;
-            z-index: 2;
+            z-index: 1;
             display: inline-flex;
           `}
         >
@@ -150,11 +149,7 @@ function ItemStep({ item, index, roundStepContainer }) {
       }
       content={
         <div>
-          <div
-            css={`
-              margin-bottom: ${3 * GU}px;
-            `}
-          >
+          <div>
             <div>
               <span css={textStyle('body1')}>
                 {DisputesTypes.getPhaseStringForStatus(item.phase, item.active)}
@@ -172,7 +167,7 @@ function ItemStep({ item, index, roundStepContainer }) {
             </div>
             {item.active && <RoundPill roundId={item.roundId} />}
             {item.outcome && (
-              <Outcome item={item} outcome={item.outcome} phase={item.phase} />
+              <Outcome outcome={item.outcome} phase={item.phase} />
             )}
           </div>
         </div>
@@ -185,9 +180,7 @@ function ItemStep({ item, index, roundStepContainer }) {
   )
 }
 
-function Outcome({ item, outcome, phase }) {
-  console.log('ROUND ITEM ', item)
-  console.log('oooouutt ', outcome)
+function Outcome({ outcome, phase }) {
   if (outcome) {
     const title =
       phase && phase === DisputesTypes.Phase.RevealVote

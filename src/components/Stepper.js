@@ -23,9 +23,6 @@ function Stepper({
           &:first-child {
             padding-top: 0;
           }
-          &:last-child {
-            padding-bottom: 0;
-          }
         }
         & > :not(:last-child) > div > :first-child ::after {
           background: ${lineColor};
