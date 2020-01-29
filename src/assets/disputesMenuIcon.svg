@@ -1,15 +1,1 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="24" height="24" rx="4" fill="url(#paint0_linear)"/>
-<circle cx="8.09846" cy="12.0985" r="5.09847" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M13.2528 16.4377C14.2424 15.2637 14.8388 13.7473 14.8388 12.0916C14.8388 10.4401 14.2455 8.92726 13.2604 7.75448C14.0371 7.27601 14.9518 7 15.9309 7C18.7467 7 21.0294 9.28266 21.0294 12.0985C21.0294 14.9143 18.7467 17.1969 15.9309 17.1969C14.9485 17.1969 14.0311 16.9191 13.2528 16.4377Z" fill="url(#paint1_linear)"/>
-<defs>
-<linearGradient id="paint0_linear" x1="5.29283e-07" y1="20.5431" x2="25.0964" y2="3.45689" gradientUnits="userSpaceOnUse">
-<stop stop-color="#FFC58F"/>
-<stop offset="1" stop-color="#FF7C7C"/>
-</linearGradient>
-<linearGradient id="paint1_linear" x1="-67.9911" y1="68.1816" x2="-11.1503" y2="-15.8081" gradientUnits="userSpaceOnUse">
-<stop stop-color="#FF8A88"/>
-<stop offset="1" stop-color="#FFCCB6"/>
-</linearGradient>
-</defs>
-</svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="4" fill="url(#paint0_linear)"/><circle cx="8.098" cy="12.098" r="5.098" fill="#fff"/><path fill-rule="evenodd" clip-rule="evenodd" d="M13.253 16.438a6.72 6.72 0 001.586-4.346 6.72 6.72 0 00-1.579-4.338 5.099 5.099 0 11-.008 8.683z" fill="url(#paint1_linear)"/><defs><linearGradient id="paint0_linear" x1="0" y1="20.543" x2="25.096" y2="3.457" gradientUnits="userSpaceOnUse"><stop stop-color="#FFC58F"/><stop offset="1" stop-color="#FF7C7C"/></linearGradient><linearGradient id="paint1_linear" x1="-67.991" y1="68.182" x2="-11.15" y2="-15.808" gradientUnits="userSpaceOnUse"><stop stop-color="#FF8A88"/><stop offset="1" stop-color="#FFCCB6"/></linearGradient></defs></svg>
