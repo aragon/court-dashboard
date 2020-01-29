@@ -3,6 +3,7 @@ import { Bar, CardLayout, GU } from '@aragon/ui'
 import * as DisputesTypes from '../../types/dispute-status-types'
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
+import NoFilterResults from './NoFilterResults'
 import dayjs from '../../lib/dayjs'
 
 const ALL_FILTER = 0
@@ -73,12 +74,23 @@ function DisputeList({ disputes, onSelectDispute }) {
     [setSelectedStatus]
   )
 
+  const handleOnClearAllFilters = useCallback(() => {
+    setSelectedDateRange(INITIAL_DATE_RANGE)
+    setSelectedStatus(UNSELECTED_FILTER)
+    setSelectedPhase(UNSELECTED_FILTER)
+  }, [])
+
   const filteredDisputes = getFilteredDisputes({
     disputes,
     selectedDateRange,
     selectedStatus,
     selectedPhase,
   })
+
+  const filtersSelected =
+    selectedDateRange !== INITIAL_DATE_RANGE ||
+    selectedStatus !== UNSELECTED_FILTER ||
+    selectedPhase !== UNSELECTED_FILTER
 
   return (
     <div>
@@ -94,17 +106,22 @@ function DisputeList({ disputes, onSelectDispute }) {
           onStatusChange={handleStatusChange}
         />
       </Bar>
-      <CardLayout columnWidthMin={30 * GU} rowHeight={272}>
-        {filteredDisputes.map(dispute => {
-          return (
-            <DisputeCard
-              key={dispute.id}
-              dispute={dispute}
-              onSelectDispute={onSelectDispute}
-            />
-          )
-        })}
-      </CardLayout>
+
+      {filteredDisputes.length === 0 && filtersSelected ? (
+        <NoFilterResults onClearFilters={handleOnClearAllFilters} />
+      ) : (
+        <CardLayout columnWidthMin={30 * GU} rowHeight={272}>
+          {filteredDisputes.map(dispute => {
+            return (
+              <DisputeCard
+                key={dispute.id}
+                dispute={dispute}
+                onSelectDispute={onSelectDispute}
+              />
+            )
+          })}
+        </CardLayout>
+      )}
     </div>
   )
 }
