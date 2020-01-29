@@ -1,7 +1,13 @@
 import { getTermStartTime } from './court-utils'
 import dayjs from '../lib/dayjs'
 import * as DisputesTypes from '../types/dispute-status-types'
-import { getOutcomeNumber } from './crvoting-utils'
+import {
+  getOutcomeNumber,
+  outcomeToAppealString,
+  NOBODY_APPEALED,
+  NOBODY_CONFIRMED,
+  OUTCOMES,
+} from './crvoting-utils'
 
 const juryDraftingTerms = 3
 
@@ -43,6 +49,7 @@ export const transformResponseDisputeAttributes = dispute => {
               opposedRuling: parseInt(appeal.opposedRuling, 10),
             }
           : null,
+        state: DisputesTypes.convertFromString(round.state),
       }
     }),
   }
@@ -72,6 +79,7 @@ export function getDisputeTimeLine(dispute, courtConfig) {
   ]
 
   const rounds = []
+  console.log('disputeEEEEEe ', dispute)
   dispute.rounds.forEach(round => {
     const roundPhases = getRoundPhasesAndTime(
       courtConfig,
@@ -290,8 +298,18 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     appealConfirmationTerms,
   } = courtConfig
 
-  const { draftTermId, delayedTerms, number: roundId, createdAt } = round
+  const {
+    draftTermId,
+    delayedTerms,
+    number: roundId,
+    createdAt,
+    vote,
+    appeal,
+    state: roundState,
+  } = round
+  console.log('round ', round)
   const isCurrentRound = roundId === currentPhase.roundId
+  const { winningOutcome } = vote || {}
 
   const disputeDraftStartTime = getTermStartTime(draftTermId, courtConfig)
 
@@ -309,6 +327,12 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
 
   const disputeDraftTermEndTime =
     disputeDraftStartTime + delayedTerms * termDuration
+
+  const revealEndTime =
+    disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms)
+
+  const appealEndTime = revealEndTime + termDuration * appealTerms
+  const confirmEndTime = appealEndTime + termDuration * appealConfirmationTerms
 
   const roundPhasesAndTime = [
     {
@@ -329,32 +353,31 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.RevealVote,
-      endTime:
-        disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms),
+      endTime: revealEndTime,
       active:
         isCurrentRound && DisputesTypes.Phase.RevealVote === currentPhase.phase,
       roundId,
+      outcome:
+        dayjs(new Date()).isAfter(revealEndTime) &&
+        outcomeToAppealString(winningOutcome),
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
-      endTime:
-        disputeDraftTermEndTime +
-        termDuration * (commitTerms + revealTerms + appealTerms),
+      endTime: appealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
+      outcome: getAppealOutcome(appeal, appealEndTime, roundState),
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime:
-        disputeDraftTermEndTime +
-        termDuration *
-          (commitTerms + revealTerms + appealTerms + appealConfirmationTerms),
+      endTime: confirmEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
+      outcome: getConfirmAppealOutcome(appeal, confirmEndTime),
     },
   ]
 
@@ -382,6 +405,37 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   )
 
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
+}
+
+function getAppealOutcome(appeal, appealEndTime, roundState) {
+  const { appealedRuling } = appeal || {}
+  if (appeal) {
+    if (
+      roundState === DisputesTypes.Phase.ConfirmAppeal ||
+      roundState === DisputesTypes.Phase.ExecuteRuling
+    ) {
+      return outcomeToAppealString(appealedRuling)
+    }
+  }
+
+  if (dayjs(new Date()).isAfter(appealEndTime)) {
+    return NOBODY_APPEALED
+  }
+  return null
+}
+
+function getConfirmAppealOutcome(appeal, confirmAppealEndTime) {
+  const { opposedRuling } = appeal || {}
+  console.log('opossed Ruling ', opposedRuling)
+  if (appeal) {
+    if (dayjs(new Date()).isAfter(confirmAppealEndTime)) {
+      if (opposedRuling === OUTCOMES.Missing) {
+        return NOBODY_CONFIRMED
+      }
+      return outcomeToAppealString(opposedRuling)
+    }
+  }
+  return null
 }
 
 export function getCommitEndTime(round, courtConfig) {

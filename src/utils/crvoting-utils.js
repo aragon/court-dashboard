@@ -12,6 +12,8 @@ export const OUTCOMES = {
 export const VOTE_OPTION_REFUSE = OUTCOMES.Refused
 export const VOTE_OPTION_AGAINST = OUTCOMES.Against
 export const VOTE_OPTION_IN_FAVOR = OUTCOMES.InFavor
+export const NOBODY_APPEALED = 'Nobody appealed'
+export const NOBODY_CONFIRMED = 'No confirmation'
 
 const optionStringMapping = {
   [VOTE_OPTION_REFUSE]: 'REFUSE TO VOTE',
@@ -31,8 +33,26 @@ const outcomeStringMapping = {
   [OUTCOMES.InFavor]: 'Voted in favor',
 }
 
+const outcomeAppealStringMapping = {
+  [OUTCOMES.Missing]: 'Refused',
+  [OUTCOMES.Leaked]: 'Invalid ruling',
+  [OUTCOMES.Refused]: 'Refused',
+  [OUTCOMES.Against]: 'Ruled Against',
+  [OUTCOMES.InFavor]: 'Ruled in favor',
+}
+
 export function outcomeToString(outcome) {
+  if (!outcome) {
+    return outcomeStringMapping[OUTCOMES.Refused]
+  }
   return outcomeStringMapping[outcome]
+}
+
+export function outcomeToAppealString(outcome) {
+  if (!outcome) {
+    return NOBODY_APPEALED
+  }
+  return outcomeAppealStringMapping[outcome]
 }
 
 const VALID_OUTCOMES = [OUTCOMES.Refused, OUTCOMES.Against, OUTCOMES.InFavor]
