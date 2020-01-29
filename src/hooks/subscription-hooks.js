@@ -143,6 +143,7 @@ export function useDisputesSubscription() {
     handleSubscription
   )
   const disputes = result.data || []
+  console.log('disputes subsssss ', disputes)
 
   return { disputes, errors: result.errors, fetching: result.fetching }
 }
