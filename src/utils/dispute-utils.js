@@ -7,6 +7,7 @@ import {
   NOBODY_APPEALED,
   NOBODY_CONFIRMED,
   OUTCOMES,
+  outcomeToString,
 } from './crvoting-utils'
 
 const juryDraftingTerms = 3
@@ -356,7 +357,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       roundId,
       outcome:
         dayjs(new Date()).isAfter(revealEndTime) &&
-        outcomeToAppealString(winningOutcome),
+        outcomeToString(winningOutcome),
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
