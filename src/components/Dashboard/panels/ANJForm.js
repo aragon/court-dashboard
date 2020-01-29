@@ -1,5 +1,11 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Button, Field, TextInput, useSidePanelFocusOnReady } from '@aragon/ui'
+import {
+  Button,
+  Field,
+  GU,
+  TextInput,
+  useSidePanelFocusOnReady,
+} from '@aragon/ui'
 
 import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
@@ -14,6 +20,7 @@ const ANJForm = React.memo(function ANJForm({
   onSubmit,
   validateForm,
   errorToMessage,
+  maxBalance,
 }) {
   const [amount, setAmount] = useState({ value: '0', error: NO_ERROR })
   const { anjToken } = useCourtConfig()
@@ -52,6 +59,14 @@ const ANJForm = React.memo(function ANJForm({
     onDone()
   }
 
+  const handleOnSelectMaxValue = useCallback(() => {
+    console.log('max balance ', maxBalance)
+    setAmount({
+      ...amount,
+      value: formatUnits(maxBalance, { digits: 18, commas: false }),
+    })
+  }, [amount, maxBalance])
+
   const errorMessage = errorToMessage(amount.error)
 
   return (
@@ -66,6 +81,17 @@ const ANJForm = React.memo(function ANJForm({
           step={minStep}
           min="1"
           ref={inputRef}
+          adornment={
+            <span
+              css={`
+                margin-right: ${5 * GU}px;
+              `}
+              onClick={handleOnSelectMaxValue}
+            >
+              MAX
+            </span>
+          }
+          adornmentPosition="end"
           required
         />
       </Field>

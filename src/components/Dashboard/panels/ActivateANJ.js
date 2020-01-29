@@ -50,6 +50,7 @@ const ActivateANJ = React.memo(function ActivateANJ({
       onDone={onDone}
       validateForm={validation}
       errorToMessage={errorToMessage}
+      maxBalance={walletBalance}
     />
   )
 })
