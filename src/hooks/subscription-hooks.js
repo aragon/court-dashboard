@@ -7,7 +7,7 @@ import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 
 import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
-import { AppealsByUser } from '../queries/appeals'
+import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
 import {
   CurrentTermJurorDrafts,
   AllDisputes,
@@ -184,13 +184,38 @@ export function useJurorDraftsSubscription(jurorId, from, pause) {
   return juror && juror.drafts ? juror.drafts : []
 }
 
-export function useAppealsByUserSubscription(jurorId, settled) {
+function useAppealsByMaker(jurorId, settled) {
   const [result] = useSubscription({
-    query: AppealsByUser,
-    variables: { id: jurorId, settled },
+    query: AppealsByMaker,
+    variables: { maker: jurorId, settled },
   })
 
   const { appeals } = result.data || []
 
-  return appeals
+  return appeals || []
+}
+
+function useAppealsByTaker(jurorId, settled) {
+  const [result] = useSubscription({
+    query: AppealsByTaker,
+    variables: { taker: jurorId, settled },
+  })
+
+  const { appeals } = result.data || []
+
+  return appeals || []
+}
+
+export function useAppealsByUserSubscription(jurorId, settled) {
+  const makerAppeals = useAppealsByMaker(jurorId, settled)
+  const takerAppeals = useAppealsByTaker(jurorId, settled)
+
+  return [...makerAppeals, ...takerAppeals].map(
+    ({ round, maker, taker, ...appeal }) => ({
+      disputeId: round.dispute.id,
+      amountStaked: bigNum(
+        maker ? appeal.appealDeposit : appeal.confirmAppealDeposit
+      ),
+    })
+  )
 }

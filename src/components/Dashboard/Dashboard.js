@@ -1,8 +1,7 @@
 import React from 'react'
-import { Button, GU, Header, SidePanel, Split } from '@aragon/ui'
+import { Button, GU, Header, SidePanel, Split, useLayout } from '@aragon/ui'
 
 import BalanceModule from './BalanceModule'
-import DashboardStats from './DashboardStats'
 import TaskTable from './TaskTable'
 import { tasks } from '../../mock-data'
 import Welcome from './Welcome'
@@ -18,10 +17,22 @@ import {
 import ActivateANJ from './panels/ActivateANJ'
 import DeactivateANJ from './panels/DeactivateANJ'
 import WithdrawANJ from './panels/WithdrawANJ'
+import AppealColateralModule from './AppealColateralModule'
+import RewardsModule from './RewardsModule'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
-  const { actions, balances, mode, panelState, requests } = useDashboardLogic()
+  const {
+    actions,
+    appealCollaterals,
+    balances,
+    mode,
+    panelState,
+    requests,
+  } = useDashboardLogic()
+
+  const { name: layout } = useLayout()
+  const oneColumn = layout === 'small' || layout === 'medium'
 
   return (
     <React.Fragment>
@@ -60,7 +71,15 @@ function Dashboard() {
 
       <Split
         primary={<TaskTable tasks={tasks} />}
-        secondary={<DashboardStats />}
+        secondary={
+          <>
+            <RewardsModule />
+            {appealCollaterals && (
+              <AppealColateralModule appeals={appealCollaterals} />
+            )}
+          </>
+        }
+        invert={oneColumn ? 'vertical' : 'horizontal'}
       />
       <SidePanel
         title={`${getRequestModeString(mode)} ANJ`}
