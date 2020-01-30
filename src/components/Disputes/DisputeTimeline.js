@@ -1,6 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
+
+import dayjs from '../../lib/dayjs'
+
 import {
   IconFlag,
   IconFolder,
@@ -12,15 +15,22 @@ import {
   IconGavelNoFill,
 } from '../../utils/dispute-icons'
 
-import dayjs from '../../lib/dayjs'
-import { dateFormat } from '../../utils/date-utils'
 import Stepper from '../Stepper'
 import Step from '../Step'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
-import * as DisputesTypes from '../../types/dispute-status-types'
+import {
+  Phase as DisputePhase,
+  getPhaseStringForStatus,
+} from '../../types/dispute-status-types'
+import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 import { numberToWord } from '../../lib/math-utils'
-import { useCourtConfig } from '../../providers/CourtConfig'
+import {
+  getOutcomeIcon,
+  juryOutcomeToString,
+  appealRulingToString,
+} from '../../utils/crvoting-utils'
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   const theme = useTheme()
@@ -124,7 +134,7 @@ function ItemStep({ item, index, roundStepContainer }) {
               : '#FFE2D7'};
             border-radius: 80%;
             position: relative;
-            z-index: 2;
+            z-index: 1;
             display: inline-flex;
           `}
         >
@@ -133,14 +143,10 @@ function ItemStep({ item, index, roundStepContainer }) {
       }
       content={
         <div>
-          <div
-            css={`
-              margin-bottom: ${3 * GU}px;
-            `}
-          >
+          <div>
             <div>
               <span css={textStyle('body1')}>
-                {DisputesTypes.getPhaseStringForStatus(item.phase, item.active)}
+                {getPhaseStringForStatus(item.phase, item.active)}
               </span>
             </div>
             <div>
@@ -154,6 +160,9 @@ function ItemStep({ item, index, roundStepContainer }) {
               </span>
             </div>
             {item.active && <RoundPill roundId={item.roundId} />}
+            {item.showOutcome && (
+              <Outcome outcome={item.outcome} phase={item.phase} />
+            )}
           </div>
         </div>
       }
@@ -165,29 +174,87 @@ function ItemStep({ item, index, roundStepContainer }) {
   )
 }
 
+function Outcome({ outcome, phase }) {
+  const title =
+    phase && phase === DisputePhase.RevealVote ? 'JURY OUTCOME' : 'OUTCOME'
+  return (
+    <React.Fragment>
+      <div
+        css={`
+          margin-top: ${1 * GU}px;
+        `}
+      >
+        <span
+          css={`
+            ${textStyle('body3')}
+            color:#637381;
+          `}
+        >
+          {title}
+        </span>
+      </div>
+      <OutcomeText outcome={outcome} phase={phase} />
+    </React.Fragment>
+  )
+}
+
+function OutcomeText({ outcome, phase }) {
+  const theme = useTheme()
+
+  const { Icon, color } = getOutcomeIcon(outcome, theme)
+
+  let outcomeText
+  if (phase === DisputePhase.RevealVote) {
+    outcomeText = juryOutcomeToString(outcome)
+  } else {
+    const confirm = phase === DisputePhase.ConfirmAppeal
+    outcomeText = appealRulingToString(outcome, confirm)
+  }
+
+  return (
+    <div>
+      {Icon && (
+        <div
+          css={`
+            color: ${color};
+            display: flex;
+            align-items: center;
+          `}
+        >
+          <Icon size="medium" />
+          <span
+            css={`
+              ${textStyle('body2')}
+            `}
+          >
+            {outcomeText}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function PhaseIcon({ phase, active }) {
   let icon
 
-  if (
-    phase === DisputesTypes.Phase.Created ||
-    phase === DisputesTypes.Phase.NotStarted
-  ) {
+  if (phase === DisputePhase.Created || phase === DisputePhase.NotStarted) {
     icon = IconFlag
-  } else if (phase === DisputesTypes.Phase.Evidence) {
+  } else if (phase === DisputePhase.Evidence) {
     icon = IconFolder
-  } else if (phase === DisputesTypes.Phase.JuryDrafting) {
+  } else if (phase === DisputePhase.JuryDrafting) {
     icon = IconUsers
   } else if (
-    phase === DisputesTypes.Phase.VotingPeriod ||
-    phase === DisputesTypes.Phase.RevealVote
+    phase === DisputePhase.VotingPeriod ||
+    phase === DisputePhase.RevealVote
   ) {
     icon = IconVoting
   } else if (
-    phase === DisputesTypes.Phase.AppealRuling ||
-    phase === DisputesTypes.Phase.ConfirmAppeal
+    phase === DisputePhase.AppealRuling ||
+    phase === DisputePhase.ConfirmAppeal
   ) {
     icon = IconThinking
-  } else if (phase === DisputesTypes.Phase.ExecuteRuling) {
+  } else if (phase === DisputePhase.ExecuteRuling) {
     icon = IconRuling
   } else {
     icon = IconRewards
@@ -234,8 +301,8 @@ function DisplayTime({ item }) {
   const { endTime, active, phase } = item
   if (active) {
     if (
-      phase === DisputesTypes.Phase.ExecuteRuling ||
-      phase === DisputesTypes.Phase.ClaimRewards
+      phase === DisputePhase.ExecuteRuling ||
+      phase === DisputePhase.ClaimRewards
     ) {
       return 'ANY TIME'
     }

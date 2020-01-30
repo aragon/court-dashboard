@@ -43,6 +43,7 @@ export const transformResponseDisputeAttributes = dispute => {
               opposedRuling: parseInt(appeal.opposedRuling, 10),
             }
           : null,
+        state: DisputesTypes.convertFromString(round.state),
       }
     }),
   }
@@ -290,8 +291,16 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     appealConfirmationTerms,
   } = courtConfig
 
-  const { draftTermId, delayedTerms, number: roundId, createdAt } = round
+  const {
+    draftTermId,
+    delayedTerms,
+    number: roundId,
+    createdAt,
+    vote,
+    appeal,
+  } = round
   const isCurrentRound = roundId === currentPhase.roundId
+  const { winningOutcome } = vote || {}
 
   const disputeDraftStartTime = getTermStartTime(draftTermId, courtConfig)
 
@@ -309,6 +318,13 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
 
   const disputeDraftTermEndTime =
     disputeDraftStartTime + delayedTerms * termDuration
+
+  const revealEndTime =
+    disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms)
+
+  const appealEndTime = revealEndTime + termDuration * appealTerms
+  const confirmAppealEndTime =
+    appealEndTime + termDuration * appealConfirmationTerms
 
   const roundPhasesAndTime = [
     {
@@ -329,32 +345,32 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.RevealVote,
-      endTime:
-        disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms),
+      endTime: revealEndTime,
       active:
         isCurrentRound && DisputesTypes.Phase.RevealVote === currentPhase.phase,
       roundId,
+      outcome: winningOutcome,
+      showOutcome: dayjs(new Date()).isAfter(revealEndTime),
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
-      endTime:
-        disputeDraftTermEndTime +
-        termDuration * (commitTerms + revealTerms + appealTerms),
+      endTime: appealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
+      outcome: appeal ? appeal.appealedRuling : null,
+      showOutcome: dayjs(new Date()).isAfter(appealEndTime),
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime:
-        disputeDraftTermEndTime +
-        termDuration *
-          (commitTerms + revealTerms + appealTerms + appealConfirmationTerms),
+      endTime: confirmAppealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
+      outcome: appeal ? appeal.opposedRuling : null,
+      showOutcome: dayjs(new Date()).isAfter(confirmAppealEndTime),
     },
   ]
 
@@ -383,6 +399,32 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
 
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
 }
+
+// function getAppealOutcome(appeal, appealEndTime) {
+//   const { appealedRuling } = appeal || {}
+//   if (appeal) {
+//     return outcomeToAppealString(appealedRuling)
+//   }
+
+//   if () {
+//     return NOBODY_APPEALED
+//   }
+//   return null
+// }
+
+// function getConfirmAppealOutcome(appeal, confirmAppealEndTime) {
+//   const { opposedRuling } = appeal || {}
+//   if (appeal) {
+//     if (opposedRuling !== OUTCOMES.Missing) {
+//       return outcomeToAppealString(opposedRuling)
+//     }
+
+//     if (dayjs(new Date()).isAfter(confirmAppealEndTime)) {
+//       return NOBODY_CONFIRMED
+//     }
+//   }
+//   return null
+// }
 
 export function getCommitEndTime(round, courtConfig) {
   const { termDuration, commitTerms } = courtConfig
