@@ -1,3 +1,5 @@
+import { IconClose, IconCheck } from '@aragon/ui'
+
 import { soliditySha3, hash256 } from '../lib/web3-utils'
 import { bigNum } from '../lib/math-utils'
 
@@ -33,27 +35,25 @@ const outcomeStringMapping = {
   [OUTCOMES.InFavor]: 'Voted in favor',
 }
 
-const outcomeAppealStringMapping = {
-  [OUTCOMES.Missing]: 'Refused',
+const appealRulingStringMapping = {
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused',
   [OUTCOMES.Against]: 'Ruled Against',
   [OUTCOMES.InFavor]: 'Ruled in favor',
 }
 
-export function outcomeToString(outcome) {
-  console.log('outcome', outcome)
+export function juryOutcomeToString(outcome) {
   if (!outcome) {
     return outcomeStringMapping[OUTCOMES.Refused]
   }
   return outcomeStringMapping[outcome]
 }
 
-export function outcomeToAppealString(outcome) {
+export function appealRulingToString(outcome, confirm) {
   if (!outcome) {
-    return NOBODY_APPEALED
+    return confirm ? NOBODY_CONFIRMED : NOBODY_APPEALED
   }
-  return outcomeAppealStringMapping[outcome]
+  return appealRulingStringMapping[outcome]
 }
 
 const VALID_OUTCOMES = [OUTCOMES.Refused, OUTCOMES.Against, OUTCOMES.InFavor]
@@ -141,4 +141,27 @@ export function getOutcomeColor(outcome, theme) {
   if (outcome === OUTCOMES.Against) return theme.negative
 
   return theme.hint
+}
+
+export function getOutcomeIcon(outcome, theme) {
+  if (!outcome || outcome === OUTCOMES.Refused) {
+    return {
+      Icon: IconClose,
+      color: theme.disabledIcon,
+    }
+  }
+
+  if (outcome === OUTCOMES.Against) {
+    return {
+      Icon: IconClose,
+      color: theme.negative,
+    }
+  }
+
+  if (outcome === OUTCOMES.InFavor) {
+    return {
+      Icon: IconCheck,
+      color: theme.positive,
+    }
+  }
 }

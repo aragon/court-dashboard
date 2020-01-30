@@ -65,7 +65,7 @@ const symbolMapping = {
   Adjudicating: Phase.Adjudicating,
   Appeal: Phase.AppealRuling,
   ConfirmAppeal: Phase.ConfirmAppeal,
-  ConfirmingAppeal: Phase.ConfirmAppeal, // TODO: Use ConfirmingAppeal or ConfirmAppeal
+  ConfirmingAppeal: Phase.ConfirmAppeal,
   Ruled: Phase.Ruled,
   Evidence: Phase.Evidence,
   ExecuteRuling: Phase.ExecuteRuling,
