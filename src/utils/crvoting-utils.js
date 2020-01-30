@@ -99,7 +99,7 @@ export function filterByValidOutcome(totalValidOutcomes) {
   })
 }
 
-export const getVoteId = (disputeId, roundId) => {
+export function getVoteId(disputeId, roundId) {
   return bigNum(2)
     .pow(bigNum(128))
     .mul(bigNum(disputeId))
