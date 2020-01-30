@@ -42,7 +42,7 @@ const getBannerAttributes = (
       return {
         icon: userIcon,
         iconBackground: theme.positive.alpha(0.2),
-        title: 'You are elegible to be drafted',
+        title: 'You are eligible to be drafted',
         titleColor: theme.positive,
         paragraph: 'You are eligible to be drafted starting from the next term',
         showTimer: true,
@@ -116,7 +116,7 @@ function AccountBanner({ status, minActiveBalance, activeBalance }) {
             `}
             height={iconBackground ? 3 * GU : 6 * GU}
             src={icon}
-            alt="info-icon"
+             alt=""
           />
         </div>
       }
