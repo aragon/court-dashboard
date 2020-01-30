@@ -62,8 +62,6 @@ const AppealPanel = React.memo(function AppealPanel({
       }
 
       const appealOption = appealOptions[selectedAppeal]
-      console.log('APPEAL OPTIOOOOON ', appealOptions)
-      console.log('APPEAL OPTIOOOOON ', appealOptions[selectedAppeal])
 
       // Appeal ruling
       const tx = await onAppeal(
@@ -71,7 +69,6 @@ const AppealPanel = React.memo(function AppealPanel({
         dispute.lastRoundId,
         appealOption.outcome
       )
-      console.log('TXXXX ', tx)
       await tx.wait()
       onDone()
     } catch (err) {

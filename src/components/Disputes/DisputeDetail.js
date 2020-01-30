@@ -34,8 +34,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     requests,
   } = useDisputeLogic(disputeId)
 
-  console.log('disputeeeeeeee ', dispute)
-
   const evidenceList = dispute && dispute.evidences
 
   const evidences = useMemo(

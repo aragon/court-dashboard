@@ -1,10 +1,8 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
-
-import useInterval from './useInterval'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
 import jurorRegistryAbi from '../abi/JurorRegistry.json'
@@ -299,24 +297,30 @@ export function useAppealFeeAllowance(owner) {
 }
 
 export function useTotalActiveBalancePolling(termId) {
-  const POLL_EVERY = 1000
-
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
   )
   const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
 
-  const fetchTotalActiveBalance = useCallback(
-    cancelled => {
-      jurorRegistryContract.totalActiveBalanceAt(termId).then(balance => {
-        if (!cancelled) setTotalActiveBalance(balance)
-      })
-    },
-    [jurorRegistryContract, termId]
-  )
+  const timeoutId = useRef(null)
 
-  useInterval(fetchTotalActiveBalance, POLL_EVERY, true)
+  const fetchTotalActiveBalance = useCallback(() => {
+    timeoutId.current = setTimeout(() => {
+      return jurorRegistryContract
+        .totalActiveBalanceAt(termId)
+        .then(balance => {
+          setTotalActiveBalance(balance)
+          fetchTotalActiveBalance()
+        })
+    }, 500)
+  }, [jurorRegistryContract, termId])
+
+  useEffect(() => {
+    fetchTotalActiveBalance()
+
+    return () => clearTimeout(timeoutId.current)
+  }, [fetchTotalActiveBalance])
 
   return totalActiveBalance
 }

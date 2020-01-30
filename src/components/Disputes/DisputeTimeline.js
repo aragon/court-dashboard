@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
 
-
 import dayjs from '../../lib/dayjs'
 
 import {

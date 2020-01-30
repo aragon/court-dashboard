@@ -1,14 +1,7 @@
 import { getTermStartTime } from './court-utils'
 import dayjs from '../lib/dayjs'
 import * as DisputesTypes from '../types/dispute-status-types'
-import {
-  getOutcomeNumber,
-  outcomeToAppealString,
-  NOBODY_APPEALED,
-  NOBODY_CONFIRMED,
-  OUTCOMES,
-  outcomeToString,
-} from './crvoting-utils'
+import { getOutcomeNumber } from './crvoting-utils'
 
 const juryDraftingTerms = 3
 
