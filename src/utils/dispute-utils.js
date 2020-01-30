@@ -1,14 +1,7 @@
 import { getTermStartTime } from './court-utils'
 import dayjs from '../lib/dayjs'
 import * as DisputesTypes from '../types/dispute-status-types'
-import {
-  getOutcomeNumber,
-  outcomeToAppealString,
-  NOBODY_APPEALED,
-  NOBODY_CONFIRMED,
-  OUTCOMES,
-  outcomeToString,
-} from './crvoting-utils'
+import { getOutcomeNumber } from './crvoting-utils'
 
 const juryDraftingTerms = 3
 
@@ -330,7 +323,8 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms)
 
   const appealEndTime = revealEndTime + termDuration * appealTerms
-  const confirmEndTime = appealEndTime + termDuration * appealConfirmationTerms
+  const confirmAppealEndTime =
+    appealEndTime + termDuration * appealConfirmationTerms
 
   const roundPhasesAndTime = [
     {
@@ -355,9 +349,8 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       active:
         isCurrentRound && DisputesTypes.Phase.RevealVote === currentPhase.phase,
       roundId,
-      outcome: dayjs(new Date()).isAfter(revealEndTime)
-        ? outcomeToString(winningOutcome)
-        : null,
+      outcome: winningOutcome,
+      showOutcome: dayjs(new Date()).isAfter(revealEndTime),
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
@@ -366,16 +359,18 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
-      outcome: getAppealOutcome(appeal, appealEndTime),
+      outcome: appeal ? appeal.appealedRuling : null,
+      showOutcome: dayjs(new Date()).isAfter(appealEndTime),
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime: confirmEndTime,
+      endTime: confirmAppealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
-      outcome: getConfirmAppealOutcome(appeal, confirmEndTime),
+      outcome: appeal ? appeal.opposedRuling : null,
+      showOutcome: dayjs(new Date()).isAfter(confirmAppealEndTime),
     },
   ]
 
@@ -405,31 +400,31 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
 }
 
-function getAppealOutcome(appeal, appealEndTime) {
-  const { appealedRuling } = appeal || {}
-  if (appeal) {
-    return outcomeToAppealString(appealedRuling)
-  }
+// function getAppealOutcome(appeal, appealEndTime) {
+//   const { appealedRuling } = appeal || {}
+//   if (appeal) {
+//     return outcomeToAppealString(appealedRuling)
+//   }
 
-  if (dayjs(new Date()).isAfter(appealEndTime)) {
-    return NOBODY_APPEALED
-  }
-  return null
-}
+//   if () {
+//     return NOBODY_APPEALED
+//   }
+//   return null
+// }
 
-function getConfirmAppealOutcome(appeal, confirmAppealEndTime) {
-  const { opposedRuling } = appeal || {}
-  if (appeal) {
-    if (opposedRuling !== OUTCOMES.Missing) {
-      return outcomeToAppealString(opposedRuling)
-    }
+// function getConfirmAppealOutcome(appeal, confirmAppealEndTime) {
+//   const { opposedRuling } = appeal || {}
+//   if (appeal) {
+//     if (opposedRuling !== OUTCOMES.Missing) {
+//       return outcomeToAppealString(opposedRuling)
+//     }
 
-    if (dayjs(new Date()).isAfter(confirmAppealEndTime)) {
-      return NOBODY_CONFIRMED
-    }
-  }
-  return null
-}
+//     if (dayjs(new Date()).isAfter(confirmAppealEndTime)) {
+//       return NOBODY_CONFIRMED
+//     }
+//   }
+//   return null
+// }
 
 export function getCommitEndTime(round, courtConfig) {
   const { termDuration, commitTerms } = courtConfig
