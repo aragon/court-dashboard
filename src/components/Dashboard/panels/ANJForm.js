@@ -3,8 +3,10 @@ import {
   Button,
   Field,
   GU,
+  Info,
   TextInput,
   useSidePanelFocusOnReady,
+  useTheme,
 } from '@aragon/ui'
 
 import { parseUnits, formatUnits } from '../../../lib/math-utils'
@@ -22,6 +24,7 @@ const ANJForm = React.memo(function ANJForm({
 }) {
   const [amount, setAmount] = useState({ value: '0', error: NO_ERROR })
   const { anjToken } = useCourtConfig()
+  const theme = useTheme()
   const inputRef = useSidePanelFocusOnReady()
 
   // Change amount handler
@@ -31,11 +34,15 @@ const ANJForm = React.memo(function ANJForm({
   }, [])
 
   const handleOnSelectMaxValue = useCallback(() => {
-    setAmount({
+    setAmount(amount => ({
       ...amount,
-      value: formatUnits(maxAmount, { digits: 18, commas: false }),
-    })
-  }, [amount, maxAmount])
+      value: formatUnits(maxAmount, {
+        digits: anjToken.decimals,
+        commas: false,
+        precision: anjToken.decimals,
+      }),
+    }))
+  }, [anjToken.decimals, maxAmount])
 
   // Form submit
   const handleSubmit = async event => {
@@ -62,18 +69,18 @@ const ANJForm = React.memo(function ANJForm({
     <form onSubmit={handleSubmit}>
       <Field label="Amount">
         <TextInput
-          type="number"
           name="amount"
           wide
           onChange={handleAmountChange}
           value={amount.value}
-          min="1"
           ref={inputRef}
           required
           adornment={
             <span
               css={`
                 margin-right: ${5 * GU}px;
+                color: ${theme.accent};
+                cursor: pointer;
               `}
               onClick={handleOnSelectMaxValue}
             >
@@ -83,8 +90,16 @@ const ANJForm = React.memo(function ANJForm({
           adornmentPosition="end"
         />
       </Field>
-      <Button label={actionLabel} mode="strong" type="submit" wide />
-      {errorMessage && <span>{errorMessage}</span>}
+      <Button
+        css={`
+          margin-bottom: ${1 * GU}px;
+        `}
+        label={actionLabel}
+        mode="strong"
+        type="submit"
+        wide
+      />
+      {errorMessage && <Info mode="error">{errorMessage}</Info>}
     </form>
   )
 })
