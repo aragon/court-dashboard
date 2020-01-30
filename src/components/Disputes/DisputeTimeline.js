@@ -197,7 +197,7 @@ function PhaseIcon({ phase, active }) {
         height: ${GU * 6}px;
       `}
       src={active ? icon.active : icon.inactive}
-      alt="phase-icon"
+      alt=""
     />
   )
 }
