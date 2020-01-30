@@ -400,32 +400,6 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
 }
 
-// function getAppealOutcome(appeal, appealEndTime) {
-//   const { appealedRuling } = appeal || {}
-//   if (appeal) {
-//     return outcomeToAppealString(appealedRuling)
-//   }
-
-//   if () {
-//     return NOBODY_APPEALED
-//   }
-//   return null
-// }
-
-// function getConfirmAppealOutcome(appeal, confirmAppealEndTime) {
-//   const { opposedRuling } = appeal || {}
-//   if (appeal) {
-//     if (opposedRuling !== OUTCOMES.Missing) {
-//       return outcomeToAppealString(opposedRuling)
-//     }
-
-//     if (dayjs(new Date()).isAfter(confirmAppealEndTime)) {
-//       return NOBODY_CONFIRMED
-//     }
-//   }
-//   return null
-// }
-
 export function getCommitEndTime(round, courtConfig) {
   const { termDuration, commitTerms } = courtConfig
 
