@@ -42,6 +42,7 @@ const outcomeAppealStringMapping = {
 }
 
 export function outcomeToString(outcome) {
+  console.log('outcome', outcome)
   if (!outcome) {
     return outcomeStringMapping[OUTCOMES.Refused]
   }
@@ -98,7 +99,7 @@ export function filterByValidOutcome(totalValidOutcomes) {
   })
 }
 
-export function getVoteId(disputeId, roundId) {
+export const getVoteId = (disputeId, roundId) => {
   return bigNum(2)
     .pow(bigNum(128))
     .mul(bigNum(disputeId))
