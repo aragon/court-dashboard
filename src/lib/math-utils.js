@@ -38,7 +38,7 @@ export function parseUnits(value, digits) {
  */
 export function formatUnits(
   value,
-  { digits = 18, commas = true, replaceZeroBy = '0' } = {}
+  { digits = 18, commas = true, replaceZeroBy = '0', precision = 2 } = {}
 ) {
   if (value.lt(0) || digits < 0) {
     return ''
@@ -53,8 +53,24 @@ export function formatUnits(
 
   // EthersUtils.formatUnits() adds a decimal even when 0, this removes it.
   valueBeforeCommas = valueBeforeCommas.replace(/\.0$/, '')
+  const roundedValue = round(valueBeforeCommas, precision)
 
-  return commas ? EthersUtils.commify(valueBeforeCommas) : valueBeforeCommas
+  return commas ? EthersUtils.commify(roundedValue) : roundedValue
+}
+
+/**
+ * Format an amount of units to be displayed.
+ *
+ * @param {String} value Value to round
+ * @param {Number} precision rounding precision
+ * @returns {String} value rounded
+ */
+export function round(value, precision = 2) {
+  const valueNumber = parseFloat(value)
+  const roundedValue =
+    Math.round(valueNumber * Math.pow(10, precision)) / Math.pow(10, precision)
+
+  return roundedValue.toString()
 }
 
 export function getPercentage(value, totalValue) {

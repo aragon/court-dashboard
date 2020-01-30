@@ -1,15 +1,20 @@
-import React, { useCallback, useMemo, useState } from 'react'
-import { Button, Field, TextInput, useSidePanelFocusOnReady } from '@aragon/ui'
+import React, { useCallback, useState } from 'react'
+import {
+  Button,
+  Field,
+  GU,
+  TextInput,
+  useSidePanelFocusOnReady,
+} from '@aragon/ui'
 
-import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
+import { parseUnits, formatUnits } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 
 const NO_ERROR = Symbol('NO_ERROR')
 
-const MAX_INPUT_DECIMAL_BASE = 3
-
 const ANJForm = React.memo(function ANJForm({
   actionLabel,
+  maxAmount,
   onDone,
   onSubmit,
   validateForm,
@@ -19,19 +24,18 @@ const ANJForm = React.memo(function ANJForm({
   const { anjToken } = useCourtConfig()
   const inputRef = useSidePanelFocusOnReady()
 
-  const minStep = useMemo(
-    () =>
-      formatUnits(bigNum(1), {
-        digits: Math.min(anjToken.decimals, MAX_INPUT_DECIMAL_BASE),
-      }),
-    [anjToken.decimals]
-  )
-
   // Change amount handler
   const handleAmountChange = useCallback(event => {
     const newAmount = event.target.value
     setAmount(amount => ({ ...amount, value: newAmount }))
   }, [])
+
+  const handleOnSelectMaxValue = useCallback(() => {
+    setAmount({
+      ...amount,
+      value: formatUnits(maxAmount, { digits: 18, commas: false }),
+    })
+  }, [amount, maxAmount])
 
   // Form submit
   const handleSubmit = async event => {
@@ -63,10 +67,20 @@ const ANJForm = React.memo(function ANJForm({
           wide
           onChange={handleAmountChange}
           value={amount.value}
-          step={minStep}
           min="1"
           ref={inputRef}
           required
+          adornment={
+            <span
+              css={`
+                margin-right: ${5 * GU}px;
+              `}
+              onClick={handleOnSelectMaxValue}
+            >
+              MAX
+            </span>
+          }
+          adornmentPosition="end"
         />
       </Field>
       <Button label={actionLabel} mode="strong" type="submit" wide />

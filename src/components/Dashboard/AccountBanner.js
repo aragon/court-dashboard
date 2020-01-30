@@ -116,7 +116,7 @@ function AccountBanner({ status, minActiveBalance, activeBalance }) {
             `}
             height={iconBackground ? 3 * GU : 6 * GU}
             src={icon}
-             alt=""
+            alt=""
           />
         </div>
       }
