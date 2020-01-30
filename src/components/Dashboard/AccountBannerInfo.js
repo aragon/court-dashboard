@@ -1,10 +1,10 @@
 import React from 'react'
 import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
-import { useClock } from '../../providers/Clock'
+import { useCourtClock } from '../../providers/CourtClock'
 
 function AccountBannerInfo({ title, titleColor = '', paragraph, showTimer }) {
   const theme = useTheme()
-  const { currentTermEndDate } = useClock()
+  const { currentTermEndDate } = useCourtClock()
   return (
     <div
       css={`

@@ -1,15 +1,22 @@
-import React, { useCallback, useMemo, useState } from 'react'
-import { Button, Field, TextInput, useSidePanelFocusOnReady } from '@aragon/ui'
+import React, { useCallback, useState } from 'react'
+import {
+  Button,
+  Field,
+  GU,
+  Info,
+  TextInput,
+  useSidePanelFocusOnReady,
+  useTheme,
+} from '@aragon/ui'
 
-import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
+import { parseUnits, formatUnits } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 
 const NO_ERROR = Symbol('NO_ERROR')
 
-const MAX_INPUT_DECIMAL_BASE = 3
-
 const ANJForm = React.memo(function ANJForm({
   actionLabel,
+  maxAmount,
   onDone,
   onSubmit,
   validateForm,
@@ -17,21 +24,25 @@ const ANJForm = React.memo(function ANJForm({
 }) {
   const [amount, setAmount] = useState({ value: '0', error: NO_ERROR })
   const { anjToken } = useCourtConfig()
+  const theme = useTheme()
   const inputRef = useSidePanelFocusOnReady()
-
-  const minStep = useMemo(
-    () =>
-      formatUnits(bigNum(1), {
-        digits: Math.min(anjToken.decimals, MAX_INPUT_DECIMAL_BASE),
-      }),
-    [anjToken.decimals]
-  )
 
   // Change amount handler
   const handleAmountChange = useCallback(event => {
     const newAmount = event.target.value
     setAmount(amount => ({ ...amount, value: newAmount }))
   }, [])
+
+  const handleOnSelectMaxValue = useCallback(() => {
+    setAmount(amount => ({
+      ...amount,
+      value: formatUnits(maxAmount, {
+        digits: anjToken.decimals,
+        commas: false,
+        precision: anjToken.decimals,
+      }),
+    }))
+  }, [anjToken.decimals, maxAmount])
 
   // Form submit
   const handleSubmit = async event => {
@@ -58,19 +69,37 @@ const ANJForm = React.memo(function ANJForm({
     <form onSubmit={handleSubmit}>
       <Field label="Amount">
         <TextInput
-          type="number"
           name="amount"
           wide
           onChange={handleAmountChange}
           value={amount.value}
-          step={minStep}
-          min="1"
           ref={inputRef}
           required
+          adornment={
+            <span
+              css={`
+                margin-right: ${5 * GU}px;
+                color: ${theme.accent};
+                cursor: pointer;
+              `}
+              onClick={handleOnSelectMaxValue}
+            >
+              MAX
+            </span>
+          }
+          adornmentPosition="end"
         />
       </Field>
-      <Button label={actionLabel} mode="strong" type="submit" wide />
-      {errorMessage && <span>{errorMessage}</span>}
+      <Button
+        css={`
+          margin-bottom: ${1 * GU}px;
+        `}
+        label={actionLabel}
+        mode="strong"
+        type="submit"
+        wide
+      />
+      {errorMessage && <Info mode="error">{errorMessage}</Info>}
     </form>
   )
 })

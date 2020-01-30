@@ -20,6 +20,11 @@ import WithdrawANJ from './panels/WithdrawANJ'
 import AppealColateralModule from './AppealColateralModule'
 import RewardsModule from './RewardsModule'
 
+import {
+  getTotalUnlockedActiveBalance,
+  getTotalEffectiveInactiveBalance,
+} from '../../utils/balance-utils'
+
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
   const {
@@ -107,11 +112,14 @@ function PanelComponent({ mode, actions, balances, ...props }) {
   const { activateANJ, deactivateANJ, withdrawANJ } = actions
   const { walletBalance, activeBalance, inactiveBalance } = balances
 
+  const unlockedActiveBalance = getTotalUnlockedActiveBalance(balances)
+  const effectiveInactiveBalance = getTotalEffectiveInactiveBalance(balances)
+
   switch (mode) {
     case REQUEST_MODE.DEACTIVATE:
       return (
         <DeactivateANJ
-          activeBalance={activeBalance.amount}
+          activeBalance={unlockedActiveBalance}
           onDeactivateANJ={deactivateANJ}
           {...props}
         />
@@ -119,7 +127,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     case REQUEST_MODE.WITHDRAW:
       return (
         <WithdrawANJ
-          inactiveBalance={inactiveBalance.amount}
+          inactiveBalance={effectiveInactiveBalance}
           onWithdrawANJ={withdrawANJ}
           {...props}
         />
@@ -128,8 +136,10 @@ function PanelComponent({ mode, actions, balances, ...props }) {
       return (
         <ActivateANJ
           activeBalance={activeBalance.amount}
+          inactiveBalance={inactiveBalance.amount}
           walletBalance={walletBalance.amount}
           onActivateANJ={activateANJ}
+          fromWallet={REQUEST_MODE.STAKE_ACTIVATE}
           {...props}
         />
       )
