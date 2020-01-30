@@ -147,7 +147,7 @@ export function getOutcomeIcon(outcome, theme) {
   if (!outcome || outcome === OUTCOMES.Refused) {
     return {
       Icon: IconClose,
-      color: '#8fa4b5',
+      color: theme.disabledIcon,
     }
   }
 

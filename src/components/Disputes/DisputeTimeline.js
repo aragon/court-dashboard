@@ -175,8 +175,10 @@ function ItemStep({ item, index, roundStepContainer }) {
 }
 
 function Outcome({ outcome, phase }) {
+  const theme = useTheme()
   const title =
     phase && phase === DisputePhase.RevealVote ? 'JURY OUTCOME' : 'OUTCOME'
+
   return (
     <React.Fragment>
       <div
@@ -187,7 +189,7 @@ function Outcome({ outcome, phase }) {
         <span
           css={`
             ${textStyle('body3')}
-            color:#637381;
+            color:${theme.contentSecondary};
           `}
         >
           {title}
