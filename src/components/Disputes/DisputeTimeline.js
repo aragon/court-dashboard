@@ -1,18 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
-import {
-  Accordion,
-  GU,
-  IconClose,
-  IconCheck,
-  textStyle,
-  useTheme,
-  Timer,
-} from '@aragon/ui'
+import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
 
 import dayjs from '../../lib/dayjs'
 
 import {
+  IconClose,
+  IconCheck,
   IconFlag,
   IconFolder,
   IconUsers,
@@ -27,16 +21,17 @@ import Stepper from '../Stepper'
 import Step from '../Step'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
-import * as DisputesTypes from '../../types/dispute-status-types'
+import {
+  Phase as DisputePhase,
+  getPhaseStringForStatus,
+} from '../../types/dispute-status-types'
 import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 import { numberToWord } from '../../lib/math-utils'
 import {
-  outcomeToAppealString,
+  juryOutcomeToString,
+  appealRulingToString,
   OUTCOMES,
-  NOBODY_APPEALED,
-  NOBODY_CONFIRMED,
-  outcomeToString,
 } from '../../utils/crvoting-utils'
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
@@ -153,7 +148,7 @@ function ItemStep({ item, index, roundStepContainer }) {
           <div>
             <div>
               <span css={textStyle('body1')}>
-                {DisputesTypes.getPhaseStringForStatus(item.phase, item.active)}
+                {getPhaseStringForStatus(item.phase, item.active)}
               </span>
             </div>
             <div>
@@ -167,7 +162,7 @@ function ItemStep({ item, index, roundStepContainer }) {
               </span>
             </div>
             {item.active && <RoundPill roundId={item.roundId} />}
-            {item.outcome && (
+            {item.showOutcome && (
               <Outcome outcome={item.outcome} phase={item.phase} />
             )}
           </div>
@@ -182,55 +177,42 @@ function ItemStep({ item, index, roundStepContainer }) {
 }
 
 function Outcome({ outcome, phase }) {
-  if (outcome) {
-    const title =
-      phase && phase === DisputesTypes.Phase.RevealVote
-        ? 'JURY OUTCOME'
-        : 'OUTCOME'
-    return (
-      <React.Fragment>
-        <div
+  const theme = useTheme()
+  const title =
+    phase && phase === DisputePhase.RevealVote ? 'JURY OUTCOME' : 'OUTCOME'
+
+  return (
+    <React.Fragment>
+      <div
+        css={`
+          margin-top: ${1 * GU}px;
+        `}
+      >
+        <span
           css={`
-            margin-top: ${1 * GU}px;
+            ${textStyle('body3')}
+            color:${theme.contentSecondary};
           `}
         >
-          <span
-            css={`
-              ${textStyle('body3')}
-              color:#637381;
-            `}
-          >
-            {title}
-          </span>
-        </div>
-        <OutcomeText outcome={outcome} />
-      </React.Fragment>
-    )
-  }
-  return null
+          {title}
+        </span>
+      </div>
+      <OutcomeText outcome={outcome} phase={phase} />
+    </React.Fragment>
+  )
 }
 
-function OutcomeText({ outcome }) {
+function OutcomeText({ outcome, phase }) {
   const theme = useTheme()
-  // let icon
-  let Icon
-  // let outcomeText
-  let color
-  if (
-    outcome === outcomeToString(OUTCOMES.Refused) ||
-    outcome === NOBODY_APPEALED ||
-    outcome === NOBODY_CONFIRMED
-  ) {
-    Icon = IconClose
-    color = '#8fa4b5'
-  }
-  if (outcome === outcomeToAppealString(OUTCOMES.Against)) {
-    Icon = IconClose
-    color = theme.negative
-  }
-  if (outcome === outcomeToAppealString(OUTCOMES.InFavor)) {
-    Icon = IconCheck
-    color = theme.positive
+
+  const { Icon, color } = getOutcomeIcon(outcome, theme)
+
+  let outcomeText
+  if (phase === DisputePhase.RevealVote) {
+    outcomeText = juryOutcomeToString(outcome)
+  } else {
+    const confirm = phase === DisputePhase.ConfirmAppeal
+    outcomeText = appealRulingToString(outcome, confirm)
   }
 
   return (
@@ -249,7 +231,7 @@ function OutcomeText({ outcome }) {
               ${textStyle('body2')}
             `}
           >
-            {outcome}
+            {outcomeText}
           </span>
         </div>
       )}
@@ -260,26 +242,23 @@ function OutcomeText({ outcome }) {
 function PhaseIcon({ phase, active }) {
   let icon
 
-  if (
-    phase === DisputesTypes.Phase.Created ||
-    phase === DisputesTypes.Phase.NotStarted
-  ) {
+  if (phase === DisputePhase.Created || phase === DisputePhase.NotStarted) {
     icon = IconFlag
-  } else if (phase === DisputesTypes.Phase.Evidence) {
+  } else if (phase === DisputePhase.Evidence) {
     icon = IconFolder
-  } else if (phase === DisputesTypes.Phase.JuryDrafting) {
+  } else if (phase === DisputePhase.JuryDrafting) {
     icon = IconUsers
   } else if (
-    phase === DisputesTypes.Phase.VotingPeriod ||
-    phase === DisputesTypes.Phase.RevealVote
+    phase === DisputePhase.VotingPeriod ||
+    phase === DisputePhase.RevealVote
   ) {
     icon = IconVoting
   } else if (
-    phase === DisputesTypes.Phase.AppealRuling ||
-    phase === DisputesTypes.Phase.ConfirmAppeal
+    phase === DisputePhase.AppealRuling ||
+    phase === DisputePhase.ConfirmAppeal
   ) {
     icon = IconThinking
-  } else if (phase === DisputesTypes.Phase.ExecuteRuling) {
+  } else if (phase === DisputePhase.ExecuteRuling) {
     icon = IconRuling
   } else {
     icon = IconRewards
@@ -326,8 +305,8 @@ function DisplayTime({ item }) {
   const { endTime, active, phase } = item
   if (active) {
     if (
-      phase === DisputesTypes.Phase.ExecuteRuling ||
-      phase === DisputesTypes.Phase.ClaimRewards
+      phase === DisputePhase.ExecuteRuling ||
+      phase === DisputePhase.ClaimRewards
     ) {
       return 'ANY TIME'
     }
@@ -344,5 +323,28 @@ const StyledAccordion = styled.div`
   }
   padding: 0;
 `
+
+function getOutcomeIcon(outcome, theme) {
+  if (!outcome || outcome === OUTCOMES.Refused) {
+    return {
+      Icon: IconClose,
+      color: theme.disabledIcon,
+    }
+  }
+
+  if (outcome === OUTCOMES.Against) {
+    return {
+      Icon: IconClose,
+      color: theme.negative,
+    }
+  }
+
+  if (outcome === OUTCOMES.InFavor) {
+    return {
+      Icon: IconCheck,
+      color: theme.positive,
+    }
+  }
+}
 
 export default DisputeTimeline

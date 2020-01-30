@@ -330,7 +330,12 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms)
 
   const appealEndTime = revealEndTime + termDuration * appealTerms
+<<<<<<< HEAD
   const confirmEndTime = appealEndTime + termDuration * appealConfirmationTerms
+=======
+  const confirmAppealEndTime =
+    appealEndTime + termDuration * appealConfirmationTerms
+>>>>>>> dispute-interactions
 
   const roundPhasesAndTime = [
     {
@@ -355,9 +360,14 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       active:
         isCurrentRound && DisputesTypes.Phase.RevealVote === currentPhase.phase,
       roundId,
+<<<<<<< HEAD
       outcome: dayjs(new Date()).isAfter(revealEndTime)
         ? outcomeToString(winningOutcome)
         : null,
+=======
+      outcome: winningOutcome,
+      showOutcome: dayjs(new Date()).isAfter(revealEndTime),
+>>>>>>> dispute-interactions
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
@@ -366,16 +376,30 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
+<<<<<<< HEAD
       outcome: getAppealOutcome(appeal, appealEndTime),
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
       endTime: confirmEndTime,
+=======
+      outcome: appeal ? appeal.appealedRuling : null,
+      showOutcome: dayjs(new Date()).isAfter(appealEndTime),
+    },
+    {
+      phase: DisputesTypes.Phase.ConfirmAppeal,
+      endTime: confirmAppealEndTime,
+>>>>>>> dispute-interactions
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
+<<<<<<< HEAD
       outcome: getConfirmAppealOutcome(appeal, confirmEndTime),
+=======
+      outcome: appeal ? appeal.opposedRuling : null,
+      showOutcome: dayjs(new Date()).isAfter(confirmAppealEndTime),
+>>>>>>> dispute-interactions
     },
   ]
 

@@ -33,27 +33,25 @@ const outcomeStringMapping = {
   [OUTCOMES.InFavor]: 'Voted in favor',
 }
 
-const outcomeAppealStringMapping = {
-  [OUTCOMES.Missing]: 'Refused',
+const appealRulingStringMapping = {
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused',
   [OUTCOMES.Against]: 'Ruled Against',
   [OUTCOMES.InFavor]: 'Ruled in favor',
 }
 
-export function outcomeToString(outcome) {
-  console.log('outcome', outcome)
+export function juryOutcomeToString(outcome) {
   if (!outcome) {
     return outcomeStringMapping[OUTCOMES.Refused]
   }
   return outcomeStringMapping[outcome]
 }
 
-export function outcomeToAppealString(outcome) {
+export function appealRulingToString(outcome, confirm) {
   if (!outcome) {
-    return NOBODY_APPEALED
+    return confirm ? NOBODY_CONFIRMED : NOBODY_APPEALED
   }
-  return outcomeAppealStringMapping[outcome]
+  return appealRulingStringMapping[outcome]
 }
 
 const VALID_OUTCOMES = [OUTCOMES.Refused, OUTCOMES.Against, OUTCOMES.InFavor]

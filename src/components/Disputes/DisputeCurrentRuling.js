@@ -5,7 +5,7 @@ import {
   isValidOutcome,
   getTotalOutcomeWeight,
   filterByValidOutcome,
-  outcomeToString,
+  juryOutcomeToString,
   getOutcomeColor,
 } from '../../utils/crvoting-utils'
 import { getPercentage } from '../../lib/math-utils'
@@ -46,7 +46,7 @@ function DisputeCurrentRuling({ dispute }) {
           </span>
         }
         items={distribution.map(({ outcome, weight }) => ({
-          item: outcomeToString(outcome),
+          item: juryOutcomeToString(outcome),
           percentage: weight,
         }))}
         renderFullLegendItem={({ color, item, index, percentage }) => (
