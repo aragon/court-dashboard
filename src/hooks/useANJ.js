@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useClock } from '../providers/Clock'
+import { useCourtClock } from '../providers/CourtClock'
 
 import {
   ANJMovement as anjMovementTypes,
@@ -70,7 +70,7 @@ export function useANJBalances() {
 
 // Asummes movements in descending order of creation
 function useConvertedMovements(movements) {
-  const { currentTermId } = useClock()
+  const { currentTermId } = useCourtClock()
 
   const effectiveStates = movements.map(mov =>
     isMovementEffective(mov, currentTermId)
@@ -178,7 +178,7 @@ function convertMovement(acceptedMovements, movement) {
  */
 export function useJurorFirstTimeANJActivation(options) {
   const connectedAccount = useConnectedAccount()
-  const { currentTermId } = useClock()
+  const { currentTermId } = useCourtClock()
   const firstANJActivation = useFirstANJActivation(
     connectedAccount.toLowerCase(),
     options

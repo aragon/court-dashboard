@@ -1,9 +1,8 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
-import useInterval from './useInterval'
 
 import jurorRegistryAbi from '../abi/JurorRegistry.json'
 import tokenAbi from '../abi/ERC20.json'
@@ -179,21 +178,27 @@ export function useDisputeActions() {
 }
 
 export function useTotalActiveBalancePolling(termId) {
-  const POLL_EVERY = 1000
-
   const jurorRegistryContract = useJurorRegistryContract()
   const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
 
-  const fetchTotalActiveBalance = useCallback(
-    cancelled => {
-      jurorRegistryContract.totalActiveBalanceAt(termId).then(balance => {
-        if (!cancelled) setTotalActiveBalance(balance)
-      })
-    },
-    [jurorRegistryContract, termId]
-  )
+  const timeoutId = useRef(null)
 
-  useInterval(fetchTotalActiveBalance, POLL_EVERY, true)
+  const fetchTotalActiveBalance = useCallback(() => {
+    timeoutId.current = setTimeout(() => {
+      return jurorRegistryContract
+        .totalActiveBalanceAt(termId)
+        .then(balance => {
+          setTotalActiveBalance(balance)
+          fetchTotalActiveBalance()
+        })
+    }, 500)
+  }, [jurorRegistryContract, termId])
+
+  useEffect(() => {
+    fetchTotalActiveBalance()
+
+    return () => clearTimeout(timeoutId.current)
+  }, [fetchTotalActiveBalance])
 
   return totalActiveBalance
 }

@@ -7,7 +7,7 @@ import Web3ConnectProvider from './providers/Web3'
 import { CourtConfigProvider } from './providers/CourtConfig'
 import AppLoader from './components/AppLoader'
 import Routes from './Routes'
-import { ClockProvider } from './providers/Clock'
+import { CourtClockProvider } from './providers/CourtClock'
 
 function App() {
   return (
@@ -20,13 +20,13 @@ function App() {
       >
         <Web3ConnectProvider>
           <CourtConfigProvider>
-            <ClockProvider>
+            <CourtClockProvider>
               <MainView>
                 <AppLoader>
                   <Routes />
                 </AppLoader>
               </MainView>
-            </ClockProvider>
+            </CourtClockProvider>
           </CourtConfigProvider>
         </Web3ConnectProvider>
       </Main>
