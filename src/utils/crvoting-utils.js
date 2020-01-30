@@ -42,7 +42,6 @@ const outcomeAppealStringMapping = {
 }
 
 export function outcomeToString(outcome) {
-  console.log('outcome', outcome)
   if (!outcome) {
     return outcomeStringMapping[OUTCOMES.Refused]
   }
