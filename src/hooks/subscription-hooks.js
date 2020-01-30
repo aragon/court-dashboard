@@ -6,12 +6,12 @@ import { CourtConfig } from '../queries/court'
 
 import { bigNum } from '../lib/math-utils'
 import { AppealsByUser } from '../queries/appeals'
+import { CurrentTermJurorDrafts } from '../queries/disputes'
 
 const NO_AMOUNT = bigNum(0)
 
 function useANJBalance(jurorId) {
   const [result] = useSubscription({
-    skip: true,
     query: ANJBalance,
     variables: { id: jurorId },
   })
@@ -94,7 +94,18 @@ export function useCourtConfigSubscription(courtAddress) {
   return courtConfig
 }
 
-export function useAppealsByUser(jurorId, settled) {
+export function useJurorDraftsSubscription(jurorId, from, pause) {
+  const [result] = useSubscription({
+    query: CurrentTermJurorDrafts,
+    variables: { id: jurorId, from },
+    pause,
+  })
+
+  const { juror } = result.data || {}
+  return juror && juror.drafts ? juror.drafts : []
+}
+
+export function useAppealsByUserSubscription(jurorId, settled) {
   const [result] = useSubscription({
     query: AppealsByUser,
     variables: { id: jurorId, settled },

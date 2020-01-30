@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { useConnectedAccount } from '../../providers/Web3'
 import {
   useJurorBalancesSubscription,
-  useAppealsByUser,
+  useAppealsByUserSubscription,
 } from '../../hooks/subscription-hooks'
 
 const DashboardContext = React.createContext()
@@ -30,7 +30,7 @@ function DashboardStateProvider({ children }) {
 const WithSubscription = ({ Provider, connectedAccount, children }) => {
   const account = connectedAccount.toLowerCase()
   const { balances, movements } = useJurorBalancesSubscription(account)
-  const nonSettledAppeals = useAppealsByUser(account, false) // Non settled appeals
+  const nonSettledAppeals = useAppealsByUserSubscription(account, false) // Non settled appeals
 
   return (
     <Provider value={{ balances, movements, nonSettledAppeals }}>
