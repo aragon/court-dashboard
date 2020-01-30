@@ -78,7 +78,7 @@ const ANJForm = React.memo(function ANJForm({
           adornment={
             <span
               css={`
-                margin-right: ${5 * GU}px;
+                margin-right: ${1 * GU}px;
                 color: ${theme.accent};
                 cursor: pointer;
               `}
