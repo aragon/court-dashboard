@@ -43,6 +43,10 @@ const AppealPanel = React.memo(function AppealPanel({
   // If appealing => options are the opossed of the wining outcome
   // If confirming appeal => options are the opossed of the appealed ruling
   const { vote, appeal } = getDisputeLastRound(dispute)
+
+  // Cases where a confirm appeal is done, the next round is created (with no appeal) and the panel hasn't closed yet
+  if (confirm && !appeal) return null
+
   const { winningOutcome } = vote || {}
   const appealOptions = getAppealRulingOptions(
     confirm ? appeal.appealedRuling : winningOutcome
@@ -76,7 +80,7 @@ const AppealPanel = React.memo(function AppealPanel({
     }
   }
 
-  const actionLabel = confirm ? 'Confirm appeal' : 'Appealed ruling'
+  const actionLabel = confirm ? 'Confirm appeal' : 'Appeal ruling'
 
   return (
     <form onSubmit={handleAppeal}>
