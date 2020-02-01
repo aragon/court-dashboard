@@ -123,8 +123,7 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   // Ruled
   if (state === DisputesTypes.Phase.Ruled) {
     phase = DisputesTypes.Phase.ClaimRewards
-    const ruling = null // TODO: calculate ruling
-    return { phase, ruling, roundId: number }
+    return { phase, roundId: number }
   }
 
   const { termDuration, evidenceTerms } = courtConfig

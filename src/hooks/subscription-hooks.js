@@ -42,26 +42,22 @@ export default function useSingleDisputeSubscription(id) {
 // All disputes
 export function useDisputesSubscription() {
   const courtConfig = useCourtConfig()
-  // First argument is the last result from the query , second argument is the current response
-  // See https://formidable.com/open-source/urql/docs/basics/#subscriptions - Usage with hooks
-  const handleSubscription = (disputes = [], response) => {
-    /** Here we are reducing all the response againg because the response is not returning only the new elements or modified elements
-     So we don't have a way to know if some item was updated or not. The first argument is where the previouse subscription response comes
-     */
-    return response.disputes.map(dispute =>
-      transformResponseDisputeAttributes(dispute, courtConfig)
-    )
-  }
 
-  const [result] = useSubscription(
-    {
-      query: AllDisputes,
-    },
-    handleSubscription
+  const [{ data, error }] = useSubscription({
+    query: AllDisputes,
+  })
+
+  const disputes = useMemo(
+    () =>
+      data && data.disputes
+        ? data.disputes.map(dispute =>
+            transformResponseDisputeAttributes(dispute, courtConfig)
+          )
+        : null,
+    [courtConfig, data]
   )
-  const disputes = result.data || []
 
-  return { disputes, errors: result.errors, fetching: result.fetching }
+  return { disputes, fetching: !data && !error, error }
 }
 
 export function useTasksSubscription() {

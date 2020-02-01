@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
+
 import DisputeList from './DisputeList'
 import useDisputes from '../../hooks/useDisputes'
 import { useJurorDraftQuery } from '../../hooks/query-hooks'
@@ -10,7 +11,7 @@ import ANJIcon from '../../assets/anjButton.svg'
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
-  const [disputes] = useDisputes()
+  const { disputes, fetching: disputesFetching } = useDisputes()
   const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const history = useHistory()
@@ -59,17 +60,22 @@ function Disputes() {
       />
       <div>
         <Tabs
-          css={`
-            margin-bottom: 0px;
-          `}
           items={[
             <div>
               <span>All disputes </span>
-              <Tag limitDigits={4} label={disputes.length} size="small" />
+              <Tag
+                limitDigits={4}
+                label={disputes ? disputes.length : 0}
+                size="small"
+              />
             </div>,
             <div>
               <span>My disputes </span>
-              <Tag limitDigits={4} label={jurorDisputes.length} size="small" />
+              <Tag
+                limitDigits={4}
+                label={jurorDisputes ? jurorDisputes.length : 0}
+                size="small"
+              />
             </div>,
           ]}
           selected={screenIndex}
@@ -78,12 +84,14 @@ function Disputes() {
       </div>
       <div
         css={`
-          margin-top: -${GU * 1}px;
           width: 100%;
+          margin-top: -${2 * GU}px;
         `}
       >
         <DisputeList
           disputes={screenIndex === 0 ? disputes : jurorDisputes}
+          loading={disputesFetching}
+          myDisputeSelected={screenIndex === 1}
           onSelectDispute={handleSelectDispute}
         />
       </div>

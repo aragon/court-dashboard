@@ -64,11 +64,7 @@ const Tasks = React.memo(() => {
         completedTasks={completedTasks}
         incompleteTasks={incompleteTasks}
       /> */}
-      <div
-        css={`
-          margin-top: ${2 * GU}px;
-        `}
-      >
+      <div>
         <Tabs
           css={`
             margin-bottom: 0px;

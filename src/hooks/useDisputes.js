@@ -10,30 +10,39 @@ import { convertToString } from '../types/dispute-status-types'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
-  const { disputes } = useDisputesSubscription()
-  const now = useNow()
+  const { disputes, fetching } = useDisputesSubscription()
 
-  const disputesPhases = useMemo(
-    () => disputes.map(d => getPhaseAndTransition(d, courtConfig, now)),
-    [courtConfig, disputes, now]
-  )
+  const now = useNow() // TODO: use court clock
+
+  const disputesPhases = useMemo(() => {
+    if (!disputes) {
+      return null
+    }
+
+    return disputes.map(d => getPhaseAndTransition(d, courtConfig, now))
+  }, [courtConfig, disputes, now])
+
   const disputesPhasesKey = disputesPhases
-    .map(v => convertToString(Object.values(v)[0]))
-    .join('')
+    ? disputesPhases.map(v => convertToString(Object.values(v)[0])).join('')
+    : null
 
-  return [
-    useMemo(() => {
-      return disputes.map((dispute, i) => ({
+  return useMemo(() => {
+    if (fetching) {
+      return { fetching }
+    }
+
+    return {
+      disputes: disputes.map((dispute, i) => ({
         ...dispute,
         ...disputesPhases[i],
-      }))
-    }, [disputesPhases, disputes, disputesPhasesKey]), // eslint-disable-line react-hooks/exhaustive-deps
-  ]
+      })),
+    }
+  }, [disputesPhases, disputes, disputesPhasesKey]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 export function useDispute(disputeId) {
   const courtConfig = useCourtConfig()
-  const now = useNow()
+  const now = useNow() // TODO: use court clock
   const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
 
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
