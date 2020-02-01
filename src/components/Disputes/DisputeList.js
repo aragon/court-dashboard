@@ -11,6 +11,7 @@ import noDataSvg from '../../assets/noData.svg'
 import noDraftSvg from '../../assets/noDraft.svg'
 
 import dayjs from '../../lib/dayjs'
+import ErrorLoading from '../ErrorLoading'
 
 const ALL_FILTER = 0
 const UNSELECTED_FILTER = -1
@@ -64,6 +65,7 @@ const getFilteredDisputes = ({
 function DisputeList({
   disputes,
   loading,
+  errorLoading,
   myDisputeSelected,
   onSelectDispute,
 }) {
@@ -114,6 +116,10 @@ function DisputeList({
       </Bar>
 
       {(() => {
+        if (errorLoading) {
+          return <ErrorLoading subject="dispute" error={errorLoading.message} />
+        }
+
         if (loading) {
           return <DisputesLoading />
         }

@@ -10,7 +10,7 @@ import { convertToString } from '../types/dispute-status-types'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
-  const { disputes, fetching } = useDisputesSubscription()
+  const { disputes, fetching, error } = useDisputesSubscription()
 
   const now = useNow() // TODO: use court clock
 
@@ -27,6 +27,10 @@ export default function useDisputes() {
     : null
 
   return useMemo(() => {
+    if (error) {
+      return { error }
+    }
+
     if (fetching) {
       return { fetching }
     }
@@ -37,7 +41,7 @@ export default function useDisputes() {
         ...disputesPhases[i],
       })),
     }
-  }, [disputesPhases, disputes, disputesPhasesKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [disputesPhases, disputes, disputesPhasesKey, error]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 export function useDispute(disputeId) {

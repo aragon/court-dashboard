@@ -11,7 +11,11 @@ import ANJIcon from '../../assets/anjButton.svg'
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
-  const { disputes, fetching: disputesFetching } = useDisputes()
+  const {
+    disputes,
+    fetching: disputesFetching,
+    error: errorFetching,
+  } = useDisputes()
   const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
   const history = useHistory()
@@ -91,6 +95,7 @@ function Disputes() {
         <DisputeList
           disputes={screenIndex === 0 ? disputes : jurorDisputes}
           loading={disputesFetching}
+          errorLoading={errorFetching}
           myDisputeSelected={screenIndex === 1}
           onSelectDispute={handleSelectDispute}
         />
