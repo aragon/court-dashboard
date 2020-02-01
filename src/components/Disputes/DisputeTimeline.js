@@ -269,33 +269,29 @@ export function getOutcomeIcon(outcome, theme) {
 }
 
 function PhaseIcon({ phase, active }) {
-
   const icon = useMemo(() => {
-    if (
-      phase === DisputesTypes.Phase.Created ||
-      phase === DisputesTypes.Phase.NotStarted
-    ) {
+    if (phase === DisputePhase.Created || phase === DisputePhase.NotStarted) {
       return IconFlag
     }
-    if (phase === DisputesTypes.Phase.Evidence) {
+    if (phase === DisputePhase.Evidence) {
       return IconFolder
     }
-    if (phase === DisputesTypes.Phase.JuryDrafting) {
+    if (phase === DisputePhase.JuryDrafting) {
       return IconUsers
     }
     if (
-      phase === DisputesTypes.Phase.VotingPeriod ||
-      phase === DisputesTypes.Phase.RevealVote
+      phase === DisputePhase.VotingPeriod ||
+      phase === DisputePhase.RevealVote
     ) {
       return IconVoting
     }
     if (
-      phase === DisputesTypes.Phase.AppealRuling ||
-      phase === DisputesTypes.Phase.ConfirmAppeal
+      phase === DisputePhase.AppealRuling ||
+      phase === DisputePhase.ConfirmAppeal
     ) {
       return IconThinking
     }
-    if (phase === DisputesTypes.Phase.ExecuteRuling) {
+    if (phase === DisputePhase.ExecuteRuling) {
       return IconRuling
     }
     return IconRewards
