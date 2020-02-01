@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 
 export const AllDisputes = gql`
-  subscription {
-    disputes(orderBy: createdAt, orderDirection: desc) {
+  subscription AllDisputes($limit: Int) {
+    disputes(first: $limit, orderBy: createdAt, orderDirection: desc) {
       id
       txHash
       createTermId

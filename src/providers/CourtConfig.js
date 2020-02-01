@@ -19,6 +19,12 @@ function CourtConfigProvider({ children }) {
     ? {
         ...courtConfig,
         minActiveBalance: bigNum(courtConfig.minActiveBalance),
+        termDuration: parseInt(courtConfig.termDuration) * 1000,
+        evidenceTerms: parseInt(courtConfig.evidenceTerms),
+        commitTerms: parseInt(courtConfig.commitTerms),
+        revealTerms: parseInt(courtConfig.revealTerms),
+        appealTerms: parseInt(courtConfig.appealTerms),
+        appealConfirmationTerms: parseInt(courtConfig.appealConfirmationTerms),
       }
     : null
 
