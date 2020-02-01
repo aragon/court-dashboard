@@ -18,8 +18,8 @@ function Disputes() {
   } = useDisputes()
   const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
-  const history = useHistory()
 
+  const history = useHistory()
   const handleSelectDispute = useCallback(
     id => {
       history.push(`/disputes/${id}`)

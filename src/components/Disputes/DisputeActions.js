@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { GU, Help, textStyle, useTheme } from '@aragon/ui'
 
 import { Phase as DisputePhase } from '../../types/dispute-status-types'
@@ -112,15 +112,16 @@ const InformationSection = ({
 }) => {
   const theme = useTheme()
 
-  if (!jurorDraft) return null
-
-  const { title, paragraph, background, icon, hint } = getInfoAttributes(
+  const { title, paragraph, background, icon, hint } = useInfoAttributes(
     phase,
     jurorDraft,
     hasJurorVoted,
     lastRound,
     theme
   )
+
+  if (!jurorDraft) return null
+
   return (
     <div
       css={`
@@ -173,7 +174,7 @@ const InformationSection = ({
 }
 
 // Helper function that returns main attributes for the YourVoteInfo component
-const getInfoAttributes = (
+const useInfoAttributes = (
   phase,
   jurorDraft,
   hasJurorVoted,
@@ -183,62 +184,81 @@ const getInfoAttributes = (
   const positiveBackground = theme.positive.alpha(0.1)
   const negativeBackground = theme.accent.alpha(0.2)
 
-  let title, paragraph, icon, hintText, background
+  return useMemo(() => {
+    if (!jurorDraft) return {}
 
-  const isOpen =
-    phase !== DisputePhase.Ruled && phase !== DisputePhase.ClaimRewards
-  const votingPeriodEnded =
-    phase !== DisputePhase.VotingPeriod && phase !== DisputePhase.RevealVote
+    const isOpen =
+      phase !== DisputePhase.Ruled && phase !== DisputePhase.ClaimRewards
 
-  const voteLeaked = isvoteLeaked(jurorDraft.outcome)
+    // Note that we can assume that the evidence submission and drafting phases have already passed since we do an early return above
+    const votingPeriodEnded =
+      phase !== DisputePhase.VotingPeriod && phase !== DisputePhase.RevealVote
 
-  // If vote leaked or juror hasn't voted
-  if (!hasJurorVoted || voteLeaked) {
-    title = voteLeaked
-      ? 'Unfortunately, your vote has been leaked'
-      : "Your vote wasn't casted on time."
+    const voteLeaked = isvoteLeaked(jurorDraft.outcome)
 
-    paragraph = <ANJDiscountedMessage />
-    background = negativeBackground
-    icon = IconGavelRed
-    hintText = voteLeaked ? 'Vote leaked (complete)' : null
-  } else if (hasJurorVoted && votingPeriodEnded) {
-    if (!jurorDraft.outcome) {
-      title = "Your vote wasn't revealed on time"
-      paragraph = <ANJDiscountedMessage />
-      background = negativeBackground
-      icon = IconGavelRed
-    } else {
-      const hasVotedInConsensus =
-        jurorDraft.outcome === lastRound.vote.winningOutcome
-
-      title = hasVotedInConsensus
-        ? 'You have voted in consensus with the mayority'
-        : 'You have not voted in consensus with the mayority'
-      paragraph = hasVotedInConsensus ? (
-        <ANJRewardsMessage isOpen={isOpen} />
-      ) : (
-        <ANJDiscountedMessage />
-      )
-      background = hasVotedInConsensus ? positiveBackground : negativeBackground
-      icon = IconRewardsGreen // TODO: ask for an Icon rewards red
+    // If vote leaked or juror hasn't voted
+    if (!hasJurorVoted || voteLeaked) {
+      return {
+        title: voteLeaked
+          ? 'Unfortunately, your vote has been leaked'
+          : "Your vote wasn't casted on time.",
+        paragraph: <ANJDiscountedMessage />,
+        backgroud: negativeBackground,
+        icon: IconGavelRed,
+        hintText: voteLeaked ? 'Vote leaked (complete)' : null,
+      }
     }
-  } else {
+
+    // If juror voted and the voting (commit) period has ended
+    if (hasJurorVoted && votingPeriodEnded) {
+      // If the juror didn't revealed
+      if (!jurorDraft.outcome) {
+        return {
+          title: "Your vote wasn't revealed on time",
+          paragraph: <ANJDiscountedMessage />,
+          background: negativeBackground,
+          icon: IconGavelRed,
+        }
+      } else {
+        // Juror has revealed
+        const hasVotedInConsensus =
+          jurorDraft.outcome === lastRound.vote.winningOutcome
+
+        return {
+          title: hasVotedInConsensus
+            ? 'You have voted in consensus with the mayority'
+            : 'You have not voted in consensus with the mayority',
+          paragraph: hasVotedInConsensus ? (
+            <ANJRewardsMessage isOpen={isOpen} />
+          ) : (
+            <ANJDiscountedMessage />
+          ),
+          background: hasVotedInConsensus
+            ? positiveBackground
+            : negativeBackground,
+          icon: IconRewardsGreen, // TODO: ask for an Icon rewards red
+        }
+      }
+    }
+
     const outcomeDescription = voteToString(jurorDraft.outcome)
 
-    title = 'Your vote was casted successfuly.'
-    paragraph = <VoteInfo outcome={outcomeDescription} />
-    background = theme.accent.alpha(0.05)
-    icon = IconGavelOrange
-  }
-
-  return {
-    title,
-    paragraph,
-    background,
-    icon,
-    hintText,
-  }
+    // Juror has voted and reveal period hasn't ended
+    return {
+      title: 'Your vote was casted successfuly.',
+      paragraph: <VoteInfo outcome={outcomeDescription} />,
+      background: theme.accent.alpha(0.05),
+      icon: IconGavelOrange,
+    }
+  }, [
+    hasJurorVoted,
+    jurorDraft,
+    lastRound.vote,
+    negativeBackground,
+    phase,
+    positiveBackground,
+    theme.accent,
+  ])
 }
 
 const ANJDiscountedMessage = () => {
