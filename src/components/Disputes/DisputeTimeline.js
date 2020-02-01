@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import {
   Accordion,
@@ -269,29 +269,37 @@ export function getOutcomeIcon(outcome, theme) {
 }
 
 function PhaseIcon({ phase, active }) {
-  let icon
 
-  if (phase === DisputePhase.Created || phase === DisputePhase.NotStarted) {
-    icon = IconFlag
-  } else if (phase === DisputePhase.Evidence) {
-    icon = IconFolder
-  } else if (phase === DisputePhase.JuryDrafting) {
-    icon = IconUsers
-  } else if (
-    phase === DisputePhase.VotingPeriod ||
-    phase === DisputePhase.RevealVote
-  ) {
-    icon = IconVoting
-  } else if (
-    phase === DisputePhase.AppealRuling ||
-    phase === DisputePhase.ConfirmAppeal
-  ) {
-    icon = IconThinking
-  } else if (phase === DisputePhase.ExecuteRuling) {
-    icon = IconRuling
-  } else {
-    icon = IconRewards
-  }
+  const icon = useMemo(() => {
+    if (
+      phase === DisputesTypes.Phase.Created ||
+      phase === DisputesTypes.Phase.NotStarted
+    ) {
+      return IconFlag
+    }
+    if (phase === DisputesTypes.Phase.Evidence) {
+      return IconFolder
+    }
+    if (phase === DisputesTypes.Phase.JuryDrafting) {
+      return IconUsers
+    }
+    if (
+      phase === DisputesTypes.Phase.VotingPeriod ||
+      phase === DisputesTypes.Phase.RevealVote
+    ) {
+      return IconVoting
+    }
+    if (
+      phase === DisputesTypes.Phase.AppealRuling ||
+      phase === DisputesTypes.Phase.ConfirmAppeal
+    ) {
+      return IconThinking
+    }
+    if (phase === DisputesTypes.Phase.ExecuteRuling) {
+      return IconRuling
+    }
+    return IconRewards
+  }, [phase])
 
   return (
     <img
@@ -299,7 +307,7 @@ function PhaseIcon({ phase, active }) {
         height: ${GU * 6}px;
       `}
       src={active ? icon.active : icon.inactive}
-      alt="phase-icon"
+      alt=""
     />
   )
 }
