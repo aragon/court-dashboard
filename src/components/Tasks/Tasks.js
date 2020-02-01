@@ -76,11 +76,7 @@ const Tasks = React.memo(({ onlyTable }) => {
         incompleteTasks={incompleteTasks}
       /> */}
       {!onlyTable && (
-        <div
-          css={`
-            margin-top: ${2 * GU}px;
-          `}
-        >
+        <div>
           <Tabs
             css={`
               margin-bottom: 0px;

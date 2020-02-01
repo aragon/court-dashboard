@@ -1,7 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
+import {
+  Accordion,
+  GU,
+  textStyle,
+  useTheme,
+  Timer,
+  IconClose,
+  IconCheck,
+} from '@aragon/ui'
 
 import dayjs from '../../lib/dayjs'
 
@@ -28,9 +36,9 @@ import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 import { numberToWord } from '../../lib/math-utils'
 import {
-  getOutcomeIcon,
   juryOutcomeToString,
   appealRulingToString,
+  OUTCOMES,
 } from '../../utils/crvoting-utils'
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
@@ -236,6 +244,29 @@ function OutcomeText({ outcome, phase }) {
       )}
     </div>
   )
+}
+
+export function getOutcomeIcon(outcome, theme) {
+  if (!outcome || outcome === OUTCOMES.Refused) {
+    return {
+      Icon: IconClose,
+      color: theme.disabledIcon,
+    }
+  }
+
+  if (outcome === OUTCOMES.Against) {
+    return {
+      Icon: IconClose,
+      color: theme.negative,
+    }
+  }
+
+  if (outcome === OUTCOMES.InFavor) {
+    return {
+      Icon: IconCheck,
+      color: theme.positive,
+    }
+  }
 }
 
 function PhaseIcon({ phase, active }) {

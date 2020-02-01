@@ -99,7 +99,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
           <React.Fragment>
             <Box heading="Dispute timeline" padding={0}>
               {disputeFetching ? (
-                <div css="height: 100px" />
+                <div css="height: 200px" />
               ) : (
                 <DisputeTimeline dispute={dispute} />
               )}

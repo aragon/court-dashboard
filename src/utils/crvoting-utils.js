@@ -1,5 +1,3 @@
-import { IconClose, IconCheck } from '@aragon/ui'
-
 import { soliditySha3, hash256 } from '../lib/web3-utils'
 import { bigNum } from '../lib/math-utils'
 
@@ -141,27 +139,4 @@ export function getOutcomeColor(outcome, theme) {
   if (outcome === OUTCOMES.Against) return theme.negative
 
   return theme.hint
-}
-
-export function getOutcomeIcon(outcome, theme) {
-  if (!outcome || outcome === OUTCOMES.Refused) {
-    return {
-      Icon: IconClose,
-      color: theme.disabledIcon,
-    }
-  }
-
-  if (outcome === OUTCOMES.Against) {
-    return {
-      Icon: IconClose,
-      color: theme.negative,
-    }
-  }
-
-  if (outcome === OUTCOMES.InFavor) {
-    return {
-      Icon: IconCheck,
-      color: theme.positive,
-    }
-  }
 }
