@@ -22,6 +22,7 @@ export default function useDisputesSubscription() {
   useSubscription(
     {
       query: AllDisputes,
+      variables: {},
     },
     handleSubscription
   )
