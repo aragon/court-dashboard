@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, GU, LoadingRing, textStyle, useTheme } from '@aragon/ui'
+import { Box, GU, LoadingRing, textStyle, useTheme, Link } from '@aragon/ui'
 
 export default function MessageCard({
   icon,
@@ -7,6 +7,7 @@ export default function MessageCard({
   paragraph,
   loading,
   noBorder,
+  link,
 }) {
   const theme = useTheme()
 
@@ -65,7 +66,7 @@ export default function MessageCard({
               css={`
                 ${textStyle('body2')}
                 color: ${theme.contentSecondary};
-                margin-top: ${GU * 1.5}px;
+                margin: ${1.5 * GU}px 0 ;
                 width: 450px;
                 display: flex;
                 text-align: center; 
@@ -73,6 +74,7 @@ export default function MessageCard({
             >
               {paragraph}
             </div>
+            {link && <Link onClick={link.action}>{link.text}</Link>}
           </>
         )}
       </div>

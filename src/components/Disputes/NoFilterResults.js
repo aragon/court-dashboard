@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from '@aragon/ui'
 
 import noResults from '../../assets/noResults.svg'
 import MessageCard from '../MessageCard'
@@ -9,16 +8,19 @@ function NoFilterResults({ onClearFilters }) {
   const paragraph =
     'We couldn’t find any dispute matching your filter selection.'
 
-  return (
-    <>
-      <MessageCard title={title} paragraph={paragraph} icon={noResults} />
-      <TextLink text="Clear all filters" onLinkClick={onClearFilters} />
-    </>
-  )
-}
+  const link = {
+    text: 'Clear all filters',
+    action: onClearFilters,
+  }
 
-function TextLink({ text, onLinkClick }) {
-  return <Link onClick={onLinkClick}>{text}</Link>
+  return (
+    <MessageCard
+      title={title}
+      paragraph={paragraph}
+      icon={noResults}
+      link={link}
+    />
+  )
 }
 
 export default NoFilterResults
