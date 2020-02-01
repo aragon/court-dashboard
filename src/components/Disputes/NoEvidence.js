@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, textStyle, GU, useTheme } from '@aragon/ui'
+
 import noEvidenceSvg from '../../assets/noEvidence.svg'
 
 function NoEvidence() {

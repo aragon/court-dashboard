@@ -10,8 +10,6 @@ import {
   IconCheck,
 } from '@aragon/ui'
 
-import dayjs from '../../lib/dayjs'
-
 import {
   IconFlag,
   IconFolder,
@@ -31,6 +29,7 @@ import {
   Phase as DisputePhase,
   getPhaseStringForStatus,
 } from '../../types/dispute-status-types'
+import dayjs from '../../lib/dayjs'
 import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 import { numberToWord } from '../../lib/math-utils'
@@ -42,6 +41,7 @@ import {
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   const theme = useTheme()
+
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 

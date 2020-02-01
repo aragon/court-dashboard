@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
+
 import DisputeList from './DisputeList'
 import useDisputes from '../../hooks/useDisputes'
 import { useJurorDraftQuery } from '../../hooks/query-hooks'
@@ -13,8 +14,8 @@ function Disputes() {
   const [disputes] = useDisputes()
   const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
-  const history = useHistory()
 
+  const history = useHistory()
   const handleSelectDispute = useCallback(
     id => {
       history.push(`/disputes/${id}`)
