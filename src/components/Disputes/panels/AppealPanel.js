@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
-import { Button, DropDown, Field, GU, Info } from '@aragon/ui'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Button, DropDown, Field, GU, Info, Link } from '@aragon/ui'
 
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import {
   getAppealRulingOptions,
-  voteToString,
+  appealOptionToString,
 } from '../../../utils/crvoting-utils'
 import { formatUnits } from '../../../lib/math-utils'
+import { Phase as DisputePhase } from '../../../types/dispute-status-types'
 
 import {
   useAppealDeposits,
@@ -24,8 +25,27 @@ const AppealPanel = React.memo(function AppealPanel({
   onDone,
 }) {
   const { feeToken } = useCourtConfig()
-  const [selectedAppeal, setSelectedAppeal] = useState(-1)
+  const [selectedOutcome, setSelectedOutcome] = useState({
+    value: -1,
+    error: null,
+  })
   const connectedAccount = useConnectedAccount()
+
+  const handleOutcomeSelected = useCallback(newOutcome => {
+    setSelectedOutcome({ value: newOutcome })
+  }, [])
+
+  // If users have the appeal panel open but the phase has already pass
+  // don't let them continue and close it
+  useEffect(() => {
+    if (
+      (confirm && dispute.phase !== DisputePhase.ConfirmAppeal) ||
+      (!confirm && dispute.phase !== DisputePhase.AppealRuling)
+    ) {
+      // close the panel
+      onDone()
+    }
+  }, [confirm, dispute.phase, onDone])
 
   // get connected account fee balance and  allowance
   const feeBalance = useFeeBalanceOf(connectedAccount)
@@ -55,17 +75,38 @@ const AppealPanel = React.memo(function AppealPanel({
   // check if connected account has the minimum required deposit to be able to appeal
   const canAppeal = feeBalance.gte(requiredDeposit)
 
+  // Form validation
+  const validateForm = outcome => {
+    if (outcome === -1) {
+      const error = 'You must select an outcome'
+      setSelectedOutcome(outcome => ({ ...outcome, error }))
+      return true
+    }
+
+    return false
+  }
+
+  // For submission
   const handleAppeal = async event => {
     try {
       event.preventDefault()
 
+      const error = validateForm(selectedOutcome.value)
+      if (error) {
+        return
+      }
+
       if (feeAllowance.lt(requiredDeposit)) {
+        // TODO: some ERC20s don't let to set a new allowance if the current allowance is positive (handle this cases)
+        if (feeAllowance.eq(0)) {
+          console.warn('Allowance must be zero')
+        }
         // Approve fee deposit for appealing
         const approveTx = await onApproveFeeDeposit(requiredDeposit)
         await approveTx.wait()
       }
 
-      const appealOption = appealOptions[selectedAppeal]
+      const appealOption = appealOptions[selectedOutcome.value]
 
       // Appeal ruling
       const tx = await onAppeal(
@@ -81,10 +122,11 @@ const AppealPanel = React.memo(function AppealPanel({
   }
 
   const actionLabel = confirm ? 'Confirm appeal' : 'Appeal ruling'
+  const errorMessage = selectedOutcome.error
 
   return (
     <form onSubmit={handleAppeal}>
-      <Field label="Required deposit">
+      <Field label="Required collateral">
         <div
           css={`
             display: flex;
@@ -103,21 +145,23 @@ const AppealPanel = React.memo(function AppealPanel({
           </span>
         </div>
       </Field>
-      {confirm && vote && (
-        <Field label="Ruling appealed">
-          {voteToString(appeal.appealedRuling)}
+      {confirm && appeal && (
+        <Field label="Appeal outcome">
+          {appealOptionToString(appeal.appealedRuling)}
         </Field>
       )}
-      <DropDown
-        items={appealOptions.map(option => option.description)}
-        placeholder="Select a ruling"
-        selected={selectedAppeal}
-        onChange={setSelectedAppeal}
-        wide
-        css={`
-          margin-bottom: ${2 * GU}px;
-        `}
-      />
+      <Field label={confirm ? 'Appeal confirmation outcome' : 'Appeal outcome'}>
+        <DropDown
+          items={appealOptions.map(option => option.description)}
+          placeholder="Select outcome"
+          selected={selectedOutcome.value}
+          onChange={handleOutcomeSelected}
+          wide
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+        />
+      </Field>
       <Button
         type="submit"
         mode="strong"
@@ -130,11 +174,31 @@ const AppealPanel = React.memo(function AppealPanel({
         {actionLabel}
       </Button>
       {!canAppeal && (
-        <Info mode="warning">
+        <Info
+          mode="warning"
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+        >
           You must hold {formatUnits(requiredDeposit)} {feeToken.symbol} in
           order to appeal
         </Info>
       )}
+      {errorMessage && (
+        <Info
+          mode="error"
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+        >
+          {errorMessage}
+        </Info>
+      )}
+      <Info>
+        Please note that if the final ruling outcome is different from your
+        selected appeal, the entire amount of your collateral will be slashed.
+        <Link href="#">Learn more</Link>
+      </Info>
     </form>
   )
 })

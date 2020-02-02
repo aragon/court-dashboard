@@ -15,7 +15,11 @@ import {
   jurorVoted,
   canJurorReveal,
 } from '../../utils/juror-draft-utils'
-import { isvoteLeaked, voteToString } from '../../utils/crvoting-utils'
+import {
+  isvoteLeaked,
+  voteToString,
+  OUTCOMES,
+} from '../../utils/crvoting-utils'
 
 import IconGavelOrange from '../../assets/IconGavelOrange.svg'
 import IconGavelRed from '../../assets/IconGavelRed.svg'
@@ -241,12 +245,10 @@ const useInfoAttributes = (
       }
     }
 
-    const outcomeDescription = voteToString(jurorDraft.outcome)
-
     // Juror has voted and reveal period hasn't ended
     return {
       title: 'Your vote was casted successfuly.',
-      paragraph: <VoteInfo outcome={outcomeDescription} />,
+      paragraph: <VoteInfo outcome={jurorDraft.outcome} />,
       background: theme.accent.alpha(0.05),
       icon: IconGavelOrange,
     }
@@ -300,16 +302,25 @@ const ANJRewardsMessage = ({ isOpen }) => {
 
 const VoteInfo = ({ outcome }) => {
   const theme = useTheme()
+
+  const outcomeDescription = useMemo(() => {
+    if (outcome === OUTCOMES.Refused) {
+      return { text: 'Refused to vote' }
+    }
+
+    return { prefix: 'voted ', text: voteToString(outcome) }
+  }, [outcome])
+
   return (
     <span>
-      You voted{' '}
+      You {outcomeDescription.prefix}
       <span
         css={`
           text-transform: uppercase;
           color: ${theme.content};
         `}
       >
-        {outcome}
+        {outcomeDescription.text}
       </span>{' '}
       on{' '}
       <span
