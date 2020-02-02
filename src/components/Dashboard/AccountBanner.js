@@ -9,7 +9,7 @@ import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
-import { formatUnits, getPercentage } from '../../lib/math-utils'
+import { formatUnits, getPercentageBN } from '../../lib/math-utils'
 import { getProbabilityText } from '../../utils/account-utils'
 
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
@@ -167,9 +167,8 @@ const BannerWithProbability = ({ activeBalance }) => {
   const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
     currentTermId
   )
-  const totalActiveBalanceFetched = totalActiveBalanceCurrentTerm.gte(0)
 
-  const totalPercentage = getPercentage(
+  const totalPercentage = getPercentageBN(
     activeBalanceCurrentTerm,
     totalActiveBalanceCurrentTerm
   )
@@ -208,20 +207,7 @@ const BannerWithProbability = ({ activeBalance }) => {
 
   return (
     <Wrapper
-      mainIcon={
-        totalActiveBalanceFetched ? (
-          <CircleGraph value={draftingProbability} size={6 * GU} />
-        ) : (
-          <div
-            css={`
-              height: ${6 * GU}px;
-              width: ${6 * GU}px;
-              border: 1px solid ${theme.accent};
-              border-radius: 50%;
-            `}
-          />
-        )
-      }
+      mainIcon={<CircleGraph value={draftingProbability} size={6 * GU} />}
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
     />
   )
