@@ -25,7 +25,7 @@ function Dashboard() {
     actions,
     balances,
     fetching,
-    // errorsFetching,
+    // errorsFetching, //TODO: handle errors
     mode,
     panelState,
     requests,

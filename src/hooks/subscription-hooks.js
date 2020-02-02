@@ -86,8 +86,9 @@ export function useJurorBalancesSubscription(jurorId) {
 
   return {
     balances,
-    fetching: !balances && errors.length === 0,
     movements,
+    fetching: !balances && errors.length === 0,
+    errors,
   }
 }
 
