@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 
 import DisputeList from './DisputeList'
 import useDisputes from '../../hooks/useDisputes'
-import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
+import { useJurorDraftQuery } from '../../hooks/query-hooks'
 import { useConnectedAccount } from '../../providers/Web3'
 
 import ANJIcon from '../../assets/anjButton.svg'

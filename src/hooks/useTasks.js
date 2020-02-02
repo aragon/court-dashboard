@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import useNow from './useNow'
-import useTasksSubscription from './useTasksSubscription'
+import { useTasksSubscription } from './subscription-hooks'
 import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/types'
 import { useCourtConfig } from '../providers/CourtConfig'

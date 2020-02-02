@@ -2,13 +2,13 @@ import { useMemo } from 'react'
 
 import useNow from './useNow'
 import { useCourtConfig } from '../providers/CourtConfig'
-import useDisputeSubscription from './useDisputeSubscription'
+import { useSingleDisputeSubscription } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { convertToString } from '../types/types'
 
 export default function useDispute(disputeId) {
   const courtConfig = useCourtConfig()
-  const { dispute, fetching } = useDisputeSubscription(disputeId)
+  const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
 
   const now = useNow()
 

@@ -2,7 +2,7 @@ import { useQuery } from 'urql'
 import { JurorDrafts } from '../queries/disputes'
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 
-export default function useJurorDraftQuery(juror) {
+export function useJurorDraftQuery(juror) {
   const [result] = useQuery({
     query: JurorDrafts,
     variables: { id: juror },
