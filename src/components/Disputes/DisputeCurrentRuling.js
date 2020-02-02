@@ -6,12 +6,19 @@ import {
   getTotalOutcomeWeight,
   filterByValidOutcome,
   juryOutcomeToString,
-  getOutcomeColor,
+  OUTCOMES,
 } from '../../utils/crvoting-utils'
 import { getPercentage } from '../../lib/math-utils'
 import { useConnectedAccount } from '../../providers/Web3'
 import { getJurorDraft } from '../../utils/juror-draft-utils'
 import { getDisputeLastRound } from '../../utils/dispute-utils'
+
+const getOutcomeColor = (outcome, theme) => {
+  if (outcome === OUTCOMES.InFavor) return theme.positive
+  if (outcome === OUTCOMES.Against) return theme.negative
+
+  return theme.hint
+}
 
 function DisputeCurrentRuling({ dispute }) {
   const theme = useTheme()
