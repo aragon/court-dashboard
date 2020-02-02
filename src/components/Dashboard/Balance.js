@@ -1,13 +1,16 @@
 import React from 'react'
 import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
 
+import { useSpring, animated } from 'react-spring'
+
+import ANJIcon from '../../assets/IconANJ.svg'
 import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
 import { movementDirection, convertToString } from '../../types/anj-types'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
 
-import ANJIcon from '../../assets/IconANJ.svg'
 import lockIcon from '../../assets/IconLock.svg'
+import Loading from './Loading'
 
 const splitAmount = amount => {
   const [integer, fractional] = amount.split('.')
@@ -38,6 +41,7 @@ const Balance = React.memo(function Balance({
   mainIconBackground,
   activity,
   actions,
+  loading,
 }) {
   const theme = useTheme()
   const {
@@ -46,6 +50,12 @@ const Balance = React.memo(function Balance({
 
   const convertedAmount = useBalanceToUsd(symbol, decimals, amount)
 
+  const springProps = useSpring({
+    opacity: 1,
+    from: { opacity: 0 },
+    delay: 200,
+  })
+
   return (
     <div>
       <div
@@ -53,99 +63,114 @@ const Balance = React.memo(function Balance({
           border-bottom: 1px solid ${theme.border.alpha(0.7)};
         `}
       >
-        <div
-          css={`
-            display: flex;
-            align-items: flex-start;
-            padding-bottom: ${2 * GU}px;
-          `}
-        >
-          <div
+        {loading ? (
+          <Loading />
+        ) : (
+          <animated.div
+            style={springProps}
             css={`
-              padding: ${1.5 * GU}px;
-              background: ${mainIconBackground};
-              border-radius: 50%;
-              margin-right: ${2 * GU}px;
+              display: flex;
+              align-items: flex-start;
+              padding-bottom: ${2 * GU}px;
             `}
           >
-            <img
+            <div
               css={`
-                display: block;
+                padding: ${1.5 * GU}px;
+                background: ${mainIconBackground};
+                border-radius: 50%;
+                margin-right: ${2 * GU}px;
               `}
-              src={mainIcon}
-              height={3 * GU}
-              width={3 * GU}
-            />
-          </div>
-          <div>
-            <span
-              css={`      
+            >
+              <img
+                css={`
+                  display: block;
+                `}
+                src={mainIcon}
+                height={3 * GU}
+                width={3 * GU}
+              />
+            </div>
+            <div>
+              <span
+                css={`      
                 ${textStyle('body2')}
                 color: ${theme.contentSecondary};
                 display:block;
               `}
-            >
-              {label}
-            </span>
-            <div
-              css={`
-                ${textStyle('title3')}
-                line-height: 1.2;
-                display: flex;
-                align-items: center;
-              `}
-            >
-              {splitAmount(formatUnits(amount, { digits: decimals }))}
-              <img height="20px" width="18px" src={ANJIcon} />
-            </div>
-            <span
-              css={`
+              >
+                {label}
+              </span>
+              <div
+                css={`
+                  ${textStyle('title3')}
+                  line-height: 1.2;
+                  display: flex;
+                  align-items: center;
+                `}
+              >
+                {splitAmount(formatUnits(amount, { digits: decimals }))}
+                <img height="20px" width="18px" src={ANJIcon} />
+              </div>
+              <span
+                css={`
                 ${textStyle('body4')}
                 color: ${theme.contentSecondary};
                 display:block;
               `}
-            >
-              $ {convertedAmount}
-            </span>
-          </div>
-        </div>
-      </div>
-      <div
-        css={`
-          margin: ${2 * GU}px 0;
-          color: ${theme.contentSecondary};
-        `}
-      >
-        {activity ? (
-          <LatestActivity activity={activity} tokenSymbol={symbol} />
-        ) : (
-          <span>No recent 24h activity</span>
+              >
+                $ {convertedAmount}
+              </span>
+            </div>
+          </animated.div>
         )}
       </div>
-
-      {amount.gt(0) && (
+      {loading ? (
         <div
           css={`
-            display: grid;
-            grid-template-columns: repeat(
-              auto-fit,
-              minmax(calc(50% - 8px), 1fr)
-            );
-            grid-column-gap: 8px;
+            height: 50px;
           `}
-        >
-          {actions.map((action, index) => {
-            return (
-              <Button
-                key={index}
-                label={action.label}
-                mode={action.mode}
-                onClick={action.onClick}
-                wide
-              />
-            )
-          })}
-        </div>
+        />
+      ) : (
+        <animated.div style={springProps}>
+          <div
+            css={`
+              margin: ${2 * GU}px 0;
+              color: ${theme.contentSecondary};
+            `}
+          >
+            {activity ? (
+              <LatestActivity activity={activity} tokenSymbol={symbol} />
+            ) : (
+              <span>No recent 24h activity</span>
+            )}
+          </div>
+
+          {amount.gt(0) && (
+            <div
+              css={`
+                display: grid;
+                grid-template-columns: repeat(
+                  auto-fit,
+                  minmax(calc(50% - 8px), 1fr)
+                );
+                grid-column-gap: 8px;
+              `}
+            >
+              {actions.map((action, index) => {
+                return (
+                  <Button
+                    key={index}
+                    label={action.label}
+                    mode={action.mode}
+                    onClick={action.onClick}
+                    wide
+                  />
+                )
+              })}
+            </div>
+          )}
+        </animated.div>
       )}
     </div>
   )

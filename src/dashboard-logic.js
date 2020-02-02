@@ -69,6 +69,7 @@ export function useDashboardLogic() {
 
   const { appealCollaterals } = useDashboardState()
   const balances = useANJBalances()
+  const { fetching, errors: errorsFetching } = useDashboardState()
 
   const panelState = useSidePanel()
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
@@ -85,6 +86,8 @@ export function useDashboardLogic() {
     actions,
     appealCollaterals,
     balances,
+    fetching,
+    errorsFetching,
     mode,
     panelState,
     requests,
