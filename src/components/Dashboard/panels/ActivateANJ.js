@@ -43,7 +43,11 @@ const ActivateANJ = React.memo(function ActivateANJ({
   const errorToMessage = useCallback(
     error => {
       if (error === INSUFFICIENT_FUNDS_ERROR) {
-        return `Insufficient funds, you cannnot activate more than ${maxAmountFormatted} ${anjToken.symbol}`
+        return `Insufficient funds, your ${
+          fromWallet
+            ? 'wallet balance is'
+            : 'inactive balance available for activation is'
+        } ${maxAmountFormatted} ${anjToken.symbol} `
       }
 
       if (error === INVALID_AMOUNT_ERROR) {
@@ -52,7 +56,7 @@ const ActivateANJ = React.memo(function ActivateANJ({
 
       return ''
     },
-    [anjToken.symbol, maxAmountFormatted, minActiveBalanceFormatted]
+    [anjToken.symbol, fromWallet, maxAmountFormatted, minActiveBalanceFormatted]
   )
 
   return (

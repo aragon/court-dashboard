@@ -54,7 +54,7 @@ const getBannerAttributes = (
 
   return {
     icon: anjSpringIcon,
-    title: 'Active ANJ to be an active juror',
+    title: 'Activate ANJ to be an active juror',
     paragraph: `You must activate at least ${formatUnits(minActiveBalance, {
       digits: decimals,
     })}  ANJ to be drafted as a juror`,
