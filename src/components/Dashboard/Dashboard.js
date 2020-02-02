@@ -26,6 +26,8 @@ function Dashboard() {
     actions,
     appealCollaterals,
     balances,
+    fetching,
+    // errorsFetching, //TODO: handle errors
     mode,
     panelState,
     requests,
@@ -60,6 +62,7 @@ function Dashboard() {
       {connectedAccount ? (
         <BalanceModule
           balances={balances}
+          loading={fetching}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
           onRequestStakeActivate={requests.stakeActivateANJ}

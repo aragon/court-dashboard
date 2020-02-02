@@ -6,7 +6,7 @@ import AccountBannerInfo from './AccountBannerInfo'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
-import { useClock } from '../../providers/Clock'
+import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits, getPercentageBN } from '../../lib/math-utils'
@@ -16,6 +16,7 @@ import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
 import gavelIcon from '../../assets/IconGavel.svg'
 import { useJurorDrafted } from '../../hooks/useJurorDraft'
+import Loading from './Loading'
 
 const getBannerAttributes = (
   status,
@@ -42,7 +43,7 @@ const getBannerAttributes = (
       return {
         icon: userIcon,
         iconBackground: theme.positive.alpha(0.2),
-        title: 'You are elegible to be drafted',
+        title: 'You are eligible to be drafted',
         titleColor: theme.positive,
         paragraph: 'You are eligible to be drafted starting from the next term',
         showTimer: true,
@@ -61,7 +62,7 @@ const getBannerAttributes = (
   }
 }
 
-function AccountBanner({ status, minActiveBalance, activeBalance }) {
+function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
 
@@ -83,6 +84,8 @@ function AccountBanner({ status, minActiveBalance, activeBalance }) {
     anjToken.decimals,
     theme
   )
+
+  if (loading) return <Loading />
 
   if (attributes.showProbability)
     return <BannerWithProbability activeBalance={activeBalance} />
@@ -116,7 +119,7 @@ function AccountBanner({ status, minActiveBalance, activeBalance }) {
             `}
             height={iconBackground ? 3 * GU : 6 * GU}
             src={icon}
-            alt="info-icon"
+            alt=""
           />
         </div>
       }
@@ -153,7 +156,7 @@ const Wrapper = ({ mainIcon, information }) => {
 
 const BannerWithProbability = ({ activeBalance }) => {
   const theme = useTheme()
-  const { currentTermId } = useClock()
+  const { currentTermId } = useCourtClock()
 
   // Calculate juror's active balance and total active balance for current term
   const {

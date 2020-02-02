@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useClock } from '../providers/Clock'
+import { useCourtClock } from '../providers/CourtClock'
 
 import {
   ANJMovement as anjMovementTypes,
@@ -21,81 +21,102 @@ import { useConnectedAccount } from '../providers/Web3'
 export function useANJBalances() {
   const { balances, movements } = useDashboardState()
 
+  const {
+    walletBalance,
+    inactiveBalance,
+    activeBalance,
+    lockedBalance,
+    deactivationBalance,
+  } = balances || {}
+
   const convertedMovements = useConvertedMovements(movements)
 
-  const walletBalance = useBalanceWithMovements(
-    balances.walletBalance,
+  const convertedWalletBalance = useBalanceWithMovements(
+    walletBalance,
     convertedMovements,
     anjBalanceTypes.Wallet
   )
 
-  const inactiveBalance = useBalanceWithMovements(
-    balances.inactiveBalance,
+  const convertedInactiveBalance = useBalanceWithMovements(
+    inactiveBalance,
     convertedMovements,
     anjBalanceTypes.Inactive
   )
 
-  const activeBalance = useBalanceWithMovements(
-    balances.activeBalance,
+  const convertedActiveBalance = useBalanceWithMovements(
+    activeBalance,
     convertedMovements,
     anjBalanceTypes.Active
   )
 
-  const lockedBalance = useMemo(() => {
-    return { amount: balances.lockedBalance }
-  }, [balances.lockedBalance])
+  const convertedLockedBalance = useMemo(() => {
+    return { amount: lockedBalance }
+  }, [lockedBalance])
 
-  const deactivationBalance = useMemo(() => {
-    return { amount: balances.deactivationBalance }
-  }, [balances.deactivationBalance])
+  const convertedDeactivationBalance = useMemo(() => {
+    return { amount: deactivationBalance }
+  }, [deactivationBalance])
 
   // Since we pass the whole object through props to components, we should memoize it
-  return useMemo(
-    () => ({
-      walletBalance,
-      inactiveBalance,
-      activeBalance,
-      lockedBalance,
-      deactivationBalance,
-    }),
-    [
-      activeBalance,
-      deactivationBalance,
-      inactiveBalance,
-      lockedBalance,
-      walletBalance,
-    ]
-  )
+  return useMemo(() => {
+    if (!balances) {
+      return null
+    }
+
+    return {
+      walletBalance: convertedWalletBalance,
+      inactiveBalance: convertedInactiveBalance,
+      activeBalance: convertedActiveBalance,
+      lockedBalance: convertedLockedBalance,
+      deactivationBalance: convertedDeactivationBalance,
+    }
+  }, [
+    balances,
+    convertedActiveBalance,
+    convertedDeactivationBalance,
+    convertedInactiveBalance,
+    convertedLockedBalance,
+    convertedWalletBalance,
+  ])
 }
 
 // Asummes movements in descending order of creation
 function useConvertedMovements(movements) {
-  const { currentTermId } = useClock()
+  const { currentTermId } = useCourtClock()
 
-  const effectiveStates = movements.map(mov =>
-    isMovementEffective(mov, currentTermId)
-  )
+  const effectiveStates = movements
+    ? movements.map(mov => isMovementEffective(mov, currentTermId))
+    : []
   const effectiveStatesKey = effectiveStates.join('')
 
   return useMemo(
-    () =>
-      movements.map((mov, i) => ({
+    () => {
+      if (!movements) {
+        return null
+      }
+
+      return movements.map((mov, i) => ({
         ...mov,
         isEffective: effectiveStates[i],
-      })),
+      }))
+    },
     [effectiveStatesKey, movements] //eslint-disable-line
   )
 }
 
 // Calculates the latest movement for each balance
-// In case the balance is the active, we must also calculate all non effective movements to get the effective active balance at current term
+// In case the balance is active or ianctive, we must also calculate all non effective movements to get the effective balance at current term
 function useBalanceWithMovements(balance, movements, balanceType) {
   const acceptedMovements = acceptedMovementsPerBalance.get(balanceType)
   const filteredMovements = useFilteredMovements(movements, acceptedMovements)
 
   return useMemo(() => {
-    // We need to calulate the total not effective amount for the activa and inacitve balance
-    // Note that we don't this for the wallet balance since all corresponding movements are done effective at the same
+    if (!balance) {
+      return null
+    }
+
+    // We need to calulate the total not effective amount for the active and inactive balance
+    // Note that we don't do this for the wallet balance since all its corresponding movements are done effective inmediately
     // Note that this assumes the termDuration is less than 24hrs
     let movementType
     if (balanceType === anjBalanceTypes.Active) {
@@ -143,15 +164,14 @@ function useBalanceWithMovements(balance, movements, balanceType) {
 }
 
 function useFilteredMovements(movements, acceptedMovements) {
-  const filteredMovements = useMemo(
-    () =>
-      movements.filter(movement =>
-        isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
-      ),
-    [acceptedMovements, movements]
-  )
-
-  return filteredMovements
+  return useMemo(() => {
+    if (!movements) {
+      return null
+    }
+    return movements.filter(movement =>
+      isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
+    )
+  }, [acceptedMovements, movements])
 }
 
 function convertMovement(acceptedMovements, movement) {
@@ -178,7 +198,7 @@ function convertMovement(acceptedMovements, movement) {
  */
 export function useJurorFirstTimeANJActivation(options) {
   const connectedAccount = useConnectedAccount()
-  const { currentTermId } = useClock()
+  const { currentTermId } = useCourtClock()
   const firstANJActivation = useFirstANJActivation(
     connectedAccount.toLowerCase(),
     options
