@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import {
   Accordion,
@@ -9,8 +9,6 @@ import {
   IconClose,
   IconCheck,
 } from '@aragon/ui'
-
-import dayjs from '../../lib/dayjs'
 
 import {
   IconFlag,
@@ -31,6 +29,7 @@ import {
   Phase as DisputePhase,
   getPhaseStringForStatus,
 } from '../../types/dispute-status-types'
+import dayjs from '../../lib/dayjs'
 import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 import { numberToWord } from '../../lib/math-utils'
@@ -42,6 +41,7 @@ import {
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   const theme = useTheme()
+
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
@@ -269,29 +269,33 @@ export function getOutcomeIcon(outcome, theme) {
 }
 
 function PhaseIcon({ phase, active }) {
-  let icon
-
-  if (phase === DisputePhase.Created || phase === DisputePhase.NotStarted) {
-    icon = IconFlag
-  } else if (phase === DisputePhase.Evidence) {
-    icon = IconFolder
-  } else if (phase === DisputePhase.JuryDrafting) {
-    icon = IconUsers
-  } else if (
-    phase === DisputePhase.VotingPeriod ||
-    phase === DisputePhase.RevealVote
-  ) {
-    icon = IconVoting
-  } else if (
-    phase === DisputePhase.AppealRuling ||
-    phase === DisputePhase.ConfirmAppeal
-  ) {
-    icon = IconThinking
-  } else if (phase === DisputePhase.ExecuteRuling) {
-    icon = IconRuling
-  } else {
-    icon = IconRewards
-  }
+  const icon = useMemo(() => {
+    if (phase === DisputePhase.Created || phase === DisputePhase.NotStarted) {
+      return IconFlag
+    }
+    if (phase === DisputePhase.Evidence) {
+      return IconFolder
+    }
+    if (phase === DisputePhase.JuryDrafting) {
+      return IconUsers
+    }
+    if (
+      phase === DisputePhase.VotingPeriod ||
+      phase === DisputePhase.RevealVote
+    ) {
+      return IconVoting
+    }
+    if (
+      phase === DisputePhase.AppealRuling ||
+      phase === DisputePhase.ConfirmAppeal
+    ) {
+      return IconThinking
+    }
+    if (phase === DisputePhase.ExecuteRuling) {
+      return IconRuling
+    }
+    return IconRewards
+  }, [phase])
 
   return (
     <img
@@ -299,7 +303,7 @@ function PhaseIcon({ phase, active }) {
         height: ${GU * 6}px;
       `}
       src={active ? icon.active : icon.inactive}
-      alt="phase-icon"
+      alt=""
     />
   )
 }

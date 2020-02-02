@@ -103,6 +103,7 @@ export function getDisputeTimeLine(dispute, courtConfig) {
     timeLine.unshift({
       phase: DisputesTypes.Phase.ClaimRewards,
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards,
+      roundId: currentPhaseAndTime.roundId,
     })
   }
 
