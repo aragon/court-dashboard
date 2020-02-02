@@ -67,8 +67,12 @@ export function useDashboardLogic() {
     withdrawANJ,
   } = useCourtActions()
 
-  const { appealCollaterals } = useDashboardState()
   const balances = useANJBalances()
+  const {
+    appealCollaterals,
+    fetching,
+    errors: errorsFetching,
+  } = useDashboardState()
 
   const panelState = useSidePanel()
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
@@ -84,6 +88,8 @@ export function useDashboardLogic() {
   return {
     actions,
     appealCollaterals,
+    fetching,
+    errorsFetching,
     balances,
     mode,
     panelState,

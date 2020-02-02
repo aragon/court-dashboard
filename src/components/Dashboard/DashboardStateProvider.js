@@ -29,11 +29,31 @@ function DashboardStateProvider({ children }) {
 
 const WithSubscription = ({ Provider, connectedAccount, children }) => {
   const account = connectedAccount.toLowerCase()
-  const { balances, movements } = useJurorBalancesSubscription(account)
-  const appealCollaterals = useAppealsByUserSubscription(account, false) // Non settled appeals
+  const {
+    balances,
+    movements,
+    fetching: balancesFetching,
+    errors: balanceErrors,
+  } = useJurorBalancesSubscription(account)
+  const {
+    appeals,
+    fetching: appealsFetching,
+    errors: appealErrors,
+  } = useAppealsByUserSubscription(account, false) // Non settled appeals
+
+  const fetching = balancesFetching || appealsFetching
+  const errors = [...balanceErrors, ...appealErrors]
 
   return (
-    <Provider value={{ balances, movements, appealCollaterals }}>
+    <Provider
+      value={{
+        balances,
+        movements,
+        appealCollaterals: appeals,
+        fetching,
+        errors,
+      }}
+    >
       {children}
     </Provider>
   )

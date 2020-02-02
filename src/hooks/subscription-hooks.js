@@ -185,37 +185,53 @@ export function useJurorDraftsSubscription(jurorId, from, pause) {
 }
 
 function useAppealsByMaker(jurorId, settled) {
-  const [result] = useSubscription({
+  const [{ data, error }] = useSubscription({
     query: AppealsByMaker,
     variables: { maker: jurorId, settled },
   })
 
-  const { appeals } = result.data || []
-
-  return appeals || []
+  return { data, error }
 }
 
 function useAppealsByTaker(jurorId, settled) {
-  const [result] = useSubscription({
+  const [{ data, error }] = useSubscription({
     query: AppealsByTaker,
     variables: { taker: jurorId, settled },
   })
 
-  const { appeals } = result.data || []
-
-  return appeals || []
+  return { data, error }
 }
 
+// Since we cannot do or operators on graphql queries, we need to get appeals by taker and maker separately
 export function useAppealsByUserSubscription(jurorId, settled) {
-  const makerAppeals = useAppealsByMaker(jurorId, settled)
-  const takerAppeals = useAppealsByTaker(jurorId, settled)
+  const {
+    data: makerAppealsData,
+    error: makerAppealsError,
+  } = useAppealsByMaker(jurorId, settled)
+  const {
+    data: takerAppealsData,
+    error: takerAppealsError,
+  } = useAppealsByTaker(jurorId, settled)
 
-  return [...makerAppeals, ...takerAppeals].map(
-    ({ round, maker, taker, ...appeal }) => ({
-      disputeId: round.dispute.id,
-      amountStaked: bigNum(
-        maker ? appeal.appealDeposit : appeal.confirmAppealDeposit
-      ),
-    })
-  )
+  const appeals = useMemo(() => {
+    if (!makerAppealsData || !takerAppealsData) {
+      return null
+    }
+
+    const makerAppeals = makerAppealsData.appeals
+    const takerAppeals = takerAppealsData.appeals
+
+    return [...makerAppeals, ...takerAppeals].map(
+      ({ round, maker, taker, ...appeal }) => ({
+        disputeId: round.dispute.id,
+        amountStaked: bigNum(
+          maker ? appeal.appealDeposit : appeal.confirmAppealDeposit
+        ),
+      })
+    )
+  }, [makerAppealsData, takerAppealsData])
+
+  const errors = [makerAppealsError, takerAppealsError].filter(err => err)
+
+  return { appeals, fetching: !appeals && errors.legnth === 0, errors }
 }
