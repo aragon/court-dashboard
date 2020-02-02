@@ -1,8 +1,10 @@
 import React from 'react'
 import { useTheme } from '@aragon/ui'
 
+import { Status } from '../../types/dispute-status-types'
+
 const getStatusAttributes = (dispute, theme) => {
-  if (dispute.isOpen) {
+  if (dispute.status === Status.Open) {
     return {
       label: 'Open',
       color: '#22B187',

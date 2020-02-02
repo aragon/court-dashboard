@@ -47,7 +47,7 @@ const getFilteredDisputes = ({
   selectedPhase,
 }) => {
   return disputes.filter(
-    ({ createdAt, reducedState, phase }) =>
+    ({ createdAt, status, phase }) =>
       (selectedPhase === UNSELECTED_FILTER ||
         selectedPhase === ALL_FILTER ||
         phase === DISPUTES_PHASE_TYPES[selectedPhase]) &&
@@ -60,7 +60,7 @@ const getFilteredDisputes = ({
         )) &&
       (selectedStatus === UNSELECTED_FILTER ||
         selectedStatus === ALL_FILTER ||
-        reducedState === DISPUTES_STATUS_TYPES[selectedStatus])
+        status === DISPUTES_STATUS_TYPES[selectedStatus])
   )
 }
 
