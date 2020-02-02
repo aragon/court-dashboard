@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import { useCourtActions } from './hooks/useCourt'
+import { useCourtActions } from './hooks/useCourtContracts'
 import { useSidePanel } from './hooks/useSidePanel'
 import { useANJBalances } from './hooks/useANJ'
 

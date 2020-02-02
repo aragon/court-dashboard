@@ -4,7 +4,7 @@ import { CircleGraph, GU, Help, useTheme } from '@aragon/ui'
 import AccountBannerInfo from './AccountBannerInfo'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useTotalActiveBalancePolling } from '../../hooks/useCourt'
+import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 import { useCourtClock } from '../../providers/CourtClock'
 
