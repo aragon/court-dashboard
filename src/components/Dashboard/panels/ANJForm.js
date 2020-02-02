@@ -54,6 +54,8 @@ const ANJForm = React.memo(function ANJForm({
       return
     }
 
+    setAmount(amount => ({ ...amount, error: '' }))
+
     try {
       const tx = await onSubmit(parseUnits(amount.value, anjToken.decimals))
       await tx.wait()
@@ -67,7 +69,12 @@ const ANJForm = React.memo(function ANJForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Field label="Amount">
+      <Field
+        css={`
+          margin-bottom: ${2 * GU}px;
+        `}
+        label="Amount"
+      >
         <TextInput
           name="amount"
           wide
@@ -90,6 +97,16 @@ const ANJForm = React.memo(function ANJForm({
           adornmentPosition="end"
         />
       </Field>
+      {errorMessage && (
+        <Info
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+          mode="error"
+        >
+          {errorMessage}
+        </Info>
+      )}
       <Button
         css={`
           margin-bottom: ${1 * GU}px;
@@ -99,7 +116,6 @@ const ANJForm = React.memo(function ANJForm({
         type="submit"
         wide
       />
-      {errorMessage && <Info mode="error">{errorMessage}</Info>}
     </form>
   )
 })

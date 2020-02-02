@@ -3,7 +3,8 @@ import ANJForm from './ANJForm'
 import { parseUnits, formatUnits } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 
-const INVALID_AMOUNT_ERROR = Symbol('INVALID_AMOUNT_ERROR')
+const INVALID_MINIMUM_AMOUNT_ERROR = Symbol('INVALID_MINIMUM_AMOUNT_ERROR')
+const AMOUNT_NOT_ZERO_ERORR = Symbol('AMOUNT_NOT_ZERO_ERORR')
 const INSUFFICIENT_FUNDS_ERROR = Symbol('INSUFFICIENT_FUNDS_ERROR')
 
 const DeactivateANJ = React.memo(function DeactivateANJ({
@@ -28,12 +29,16 @@ const DeactivateANJ = React.memo(function DeactivateANJ({
       const amountBN = parseUnits(amount, anjToken.decimals)
       const activeBalanceAfter = activeBalance.sub(amountBN)
 
-      if (activeBalanceAfter.lt(minActiveBalance) && activeBalanceAfter.gt(0)) {
-        return INVALID_AMOUNT_ERROR
-      }
-
       if (amountBN.gt(maxAmount)) {
         return INSUFFICIENT_FUNDS_ERROR
+      }
+
+      if (amountBN.eq(0)) {
+        return AMOUNT_NOT_ZERO_ERORR
+      }
+
+      if (activeBalanceAfter.lt(minActiveBalance) && activeBalanceAfter.gt(0)) {
+        return INVALID_MINIMUM_AMOUNT_ERROR
       }
 
       return null
@@ -43,12 +48,16 @@ const DeactivateANJ = React.memo(function DeactivateANJ({
 
   const errorToMessage = useCallback(
     error => {
-      if (error === INVALID_AMOUNT_ERROR) {
-        return `Your resulting active balance must be 0 or at least the minimum to be a juror (${minActiveBalanceFormatted} ${anjToken.symbol})`
-      }
-
       if (error === INSUFFICIENT_FUNDS_ERROR) {
         return `Insufficient funds, you cannnot deactivate more than ${maxAmountFormatted} ${anjToken.symbol}`
+      }
+
+      if (error === AMOUNT_NOT_ZERO_ERORR) {
+        return 'Amount must not be zero'
+      }
+
+      if (error === INVALID_MINIMUM_AMOUNT_ERROR) {
+        return `Your resulting active balance must be 0 or at least the minimum to be a juror (${minActiveBalanceFormatted} ${anjToken.symbol})`
       }
 
       return ''

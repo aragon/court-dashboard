@@ -3,6 +3,7 @@ import ANJForm from './ANJForm'
 import { formatUnits, parseUnits } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 
+const AMOUNT_NOT_ZERO_ERORR = Symbol('AMOUNT_NOT_ZERO_ERORR')
 const INSUFFICIENT_FUNDS_ERROR = Symbol('INSUFFICIENT_FUNDS_ERROR')
 
 const WithdrawANJ = React.memo(function WithdrawANJ({
@@ -26,6 +27,11 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
       if (amountBN.gt(maxAmount)) {
         return INSUFFICIENT_FUNDS_ERROR
       }
+
+      if (amountBN.eq(0)) {
+        return AMOUNT_NOT_ZERO_ERORR
+      }
+
       return null
     },
     [anjToken.decimals, maxAmount]
@@ -36,6 +42,11 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
       if (error === INSUFFICIENT_FUNDS_ERROR) {
         return `Insufficient funds, you cannnot withdraw more than ${maxAmountFormatted} ${anjToken.symbol}`
       }
+
+      if (error === AMOUNT_NOT_ZERO_ERORR) {
+        return 'Amount must not be zero'
+      }
+
       return ''
     },
     [anjToken.symbol, maxAmountFormatted]
