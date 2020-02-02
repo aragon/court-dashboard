@@ -141,7 +141,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
           inactiveBalance={inactiveBalance.amount}
           walletBalance={walletBalance.amount}
           onActivateANJ={activateANJ}
-          fromWallet={REQUEST_MODE.STAKE_ACTIVATE}
+          fromWallet={mode === REQUEST_MODE.STAKE_ACTIVATE}
           {...props}
         />
       )
