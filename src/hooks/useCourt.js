@@ -12,7 +12,7 @@ import disputeManagerAbi from '../abi/DisputeManager.json'
 import votingAbi from '../abi/CRVoting.json'
 
 import { getFunctionSignature } from '../lib/web3-utils'
-import { getVoteId } from '../utils/court-utils'
+import { getVoteId } from '../utils/crvoting-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 500000 // Should be relative to every tx ?

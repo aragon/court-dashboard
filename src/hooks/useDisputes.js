@@ -1,21 +1,21 @@
 import { useMemo } from 'react'
 import useNow from './useNow'
-import useDisputeSubscription from './useDisputesSubscription'
+import { useDisputesSubscription } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { convertToString } from '../types/types'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
-  const disputes = useDisputeSubscription()
+  const disputes = useDisputesSubscription()
   const now = useNow()
 
-  const disputesPhases = useMemo(
-    () => disputes.map(d => getPhaseAndTransition(d, courtConfig, now)),
-    [courtConfig, disputes, now]
+  const disputesPhases = disputes.map(d =>
+    getPhaseAndTransition(d, courtConfig, now)
   )
   const disputesPhasesKey = disputesPhases
-    .map(v => convertToString(Object.values(v)[0]))
+    .map(v => convertToString(v[Object.keys(v)[0]]))
+
     .join('')
 
   return [
