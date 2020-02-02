@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react'
 import { useCourtActions } from './hooks/useCourt'
 import { useSidePanel } from './hooks/useSidePanel'
 import { useANJBalances } from './hooks/useANJ'
+import { useDashboardState } from './components/Dashboard/DashboardStateProvider'
 
 export const REQUEST_MODE = {
   ACTIVATE: Symbol('ACTIVATE'),
@@ -67,6 +68,7 @@ export function useDashboardLogic() {
   } = useCourtActions()
 
   const balances = useANJBalances()
+  const { fetching, errors: errorsFetching } = useDashboardState()
 
   const panelState = useSidePanel()
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
@@ -82,6 +84,8 @@ export function useDashboardLogic() {
   return {
     actions,
     balances,
+    fetching,
+    errorsFetching,
     mode,
     panelState,
     requests,
