@@ -4,6 +4,9 @@ import ANJIcon from '../../assets/IconANJButton.svg'
 // import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
 import NoTasks from './NoTasks'
+import NoMyTasks from './NoMyTasks'
+import TasksLoading from '../Loading'
+import ErrorLoading from '../ErrorLoading'
 import { useConnectedAccount } from '../../providers/Web3'
 import useFilteredTasks from '../../hooks/useFilteredTasks'
 
@@ -11,15 +14,27 @@ const Tasks = React.memo(({ onlyTable }) => {
   const connectedAccount = useConnectedAccount()
 
   const [screenIndex, setScreenIndex] = useState(0)
-  const getScreenIndex = () => {
-    if (connectedAccount) {
-      return 0
+
+  const getMyTasksSelected = () => {
+    if (onlyTable) {
+      if (connectedAccount) {
+        return true
+      }
+      return false
     }
-    return 1
+    return screenIndex === 0
   }
+
+  const myTasksSelected = getMyTasksSelected()
+
   const {
     tasks,
-    error,
+    fetching: tasksFetching,
+    error: errorLoading,
+    filtersSelected,
+    setFiltersSelected,
+    emptyFilterResults,
+    handleClearFilters,
     selectedDateRange,
     handleSelectedDateRangeChange,
     selectedPhase,
@@ -27,12 +42,11 @@ const Tasks = React.memo(({ onlyTable }) => {
     openTasksNumber,
     jurorOpenTaskNumber,
     taskActionsString,
-  } = useFilteredTasks(
-    onlyTable ? getScreenIndex() : screenIndex,
-    connectedAccount
-  )
+  } = useFilteredTasks(myTasksSelected, connectedAccount)
 
   const handleTabChange = screenIndex => {
+    setFiltersSelected(false)
+    handleClearFilters()
     setScreenIndex(screenIndex)
   }
 
@@ -76,7 +90,11 @@ const Tasks = React.memo(({ onlyTable }) => {
         incompleteTasks={incompleteTasks}
       /> */}
       {!onlyTable && (
-        <div>
+        <div
+          css={`
+            margin-top: ${2 * GU}px;
+          `}
+        >
           <Tabs
             css={`
               margin-bottom: 0px;
@@ -96,19 +114,32 @@ const Tasks = React.memo(({ onlyTable }) => {
           />
         </div>
       )}
-      {tasks.length === 0 && !error ? (
-        <NoTasks />
-      ) : (
-        <TaskTable
-          tasks={tasks}
-          dateRangeFilter={selectedDateRange}
-          onDateRangeChange={handleSelectedDateRangeChange}
-          phaseFilter={selectedPhase}
-          onPhaseChange={handleSelectedPhaseChange}
-          phaseTypes={taskActionsString}
-          fromDashboard
-        />
-      )}
+
+      {(() => {
+        if (errorLoading) {
+          return <ErrorLoading subject="tasks" error={errorLoading.message} />
+        }
+        if (tasksFetching) {
+          return <TasksLoading />
+        }
+
+        if (!filtersSelected && tasks.length === 0) {
+          return myTasksSelected ? <NoMyTasks /> : <NoTasks />
+        }
+        return (
+          <TaskTable
+            tasks={tasks}
+            emptyFilterResults={emptyFilterResults}
+            onClearFilters={handleClearFilters}
+            dateRangeFilter={selectedDateRange}
+            onDateRangeChange={handleSelectedDateRangeChange}
+            phaseFilter={selectedPhase}
+            onPhaseChange={handleSelectedPhaseChange}
+            phaseTypes={taskActionsString}
+            onlyTable={onlyTable}
+          />
+        )
+      })()}
     </>
   )
 })
