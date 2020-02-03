@@ -7,7 +7,7 @@ import useDisputes from '../../hooks/useDisputes'
 import { useJurorDraftQuery } from '../../hooks/query-hooks'
 import { useConnectedAccount } from '../../providers/Web3'
 
-import ANJIcon from '../../assets/anjButton.svg'
+import ANJIcon from '../../assets/IconANJButton.svg'
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)

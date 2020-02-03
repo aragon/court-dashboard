@@ -1,6 +1,4 @@
-import { useCallback } from 'react'
-import { useSubscription } from 'urql'
-import { CourtConfig as CourtConfigSubscription } from '../queries/court'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -12,10 +10,29 @@ import disputeManagerAbi from '../abi/DisputeManager.json'
 import votingAbi from '../abi/CRVoting.json'
 
 import { getFunctionSignature } from '../lib/web3-utils'
+import { bigNum } from '../lib/math-utils'
 import { getVoteId } from '../utils/crvoting-utils'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 500000 // Should be relative to every tx ?
+
+function useJurorRegistryContract() {
+  const { modules } = useCourtConfig()
+
+  const jurorRegistryModule = useMemo(
+    () =>
+      modules.find(
+        mod => CourtModuleType[mod.type] === CourtModuleType.JurorsRegistry
+      ),
+    [modules]
+  )
+
+  const jurorRegistryAddress = jurorRegistryModule
+    ? jurorRegistryModule.address
+    : null
+
+  return useContract(jurorRegistryAddress, jurorRegistryAbi)
+}
 
 // ANJ contract
 function useANJTokenContract() {
@@ -160,14 +177,28 @@ export function useDisputeActions() {
   return { draft, commit, reveal, leak, appeal, confirmAppeal }
 }
 
-export function useCourtSubscription(courtAddress) {
-  const [result] = useSubscription({
-    query: CourtConfigSubscription,
-    variables: { id: courtAddress },
-  })
+export function useTotalActiveBalancePolling(termId) {
+  const jurorRegistryContract = useJurorRegistryContract()
+  const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
 
-  // TODO: handle possible errors
-  const courtConfig = result.data && result.data.courtConfig
+  const timeoutId = useRef(null)
 
-  return courtConfig
+  const fetchTotalActiveBalance = useCallback(() => {
+    timeoutId.current = setTimeout(() => {
+      return jurorRegistryContract
+        .totalActiveBalanceAt(termId)
+        .then(balance => {
+          setTotalActiveBalance(balance)
+          fetchTotalActiveBalance()
+        })
+    }, 500)
+  }, [jurorRegistryContract, termId])
+
+  useEffect(() => {
+    fetchTotalActiveBalance()
+
+    return () => clearTimeout(timeoutId.current)
+  }, [fetchTotalActiveBalance])
+
+  return totalActiveBalance
 }

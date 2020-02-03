@@ -1,16 +1,21 @@
-import { useMemo, useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useSubscription } from 'urql'
 import dayjs from 'dayjs'
 
+import { useCourtConfig } from '../providers/CourtConfig'
+
+import { ANJBalance, Juror } from '../queries/balances'
+import { CourtConfig } from '../queries/court'
+import { AppealsByUser } from '../queries/appeals'
+import {
+  CurrentTermJurorDrafts,
+  SingleDispute,
+  AllDisputes,
+} from '../queries/disputes'
+import { OpenTasks } from '../queries/tasks'
+
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
-
-import { OpenTasks } from '../queries/tasks'
-import { CourtConfig } from '../queries/court'
-import { AllDisputes, SingleDispute } from '../queries/disputes'
-import { ANJBalance, Juror } from '../queries/balances'
-
-import { useCourtConfig } from '../providers/CourtConfig'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -45,53 +50,57 @@ export function useJurorBalancesSubscription(jurorId) {
     data: anjBalanceData,
     error: anjBalanceError,
     fetching: anjBalanceFetching,
-  } = useANJBalance(jurorId.toLowerCase())
+  } = useANJBalance(jurorId)
 
-  // Active, inactive balance
+  // Active, inactive, locked balance
   const {
     data: jurorData,
     error: jurorError,
     fetching: jurorFetching,
-  } = useJuror(jurorId.toLowerCase())
+  } = useJuror(jurorId)
 
   const fetching = anjBalanceFetching || jurorFetching
   const errors = [anjBalanceError, jurorError].filter(err => err)
 
+  const { amount: walletBalance = NO_AMOUNT } = anjBalanceData || {}
+  const {
+    activeBalance = NO_AMOUNT,
+    lockedBalance = NO_AMOUNT,
+    availableBalance = NO_AMOUNT,
+    deactivationBalance = NO_AMOUNT,
+    movements = [],
+  } = jurorData || {}
+
   const balances = {
-    // TODO: find cleaner way
-    walletBalance: anjBalanceData ? bigNum(anjBalanceData.amount) : NO_AMOUNT,
-    activeBalance: jurorData ? bigNum(jurorData.activeBalance) : NO_AMOUNT,
-    lockedBalance: jurorData ? bigNum(jurorData.lockedBalance) : NO_AMOUNT,
-    availableBalance: jurorData
-      ? bigNum(jurorData.availableBalance)
-      : NO_AMOUNT,
-    deactivationBalance: jurorData
-      ? bigNum(jurorData.deactivationBalance)
-      : NO_AMOUNT,
+    walletBalance: bigNum(walletBalance),
+    activeBalance: bigNum(activeBalance),
+    lockedBalance: bigNum(lockedBalance),
+    inactiveBalance: bigNum(availableBalance),
+    deactivationBalance: bigNum(deactivationBalance),
   }
 
-  const movements = jurorData
-    ? jurorData.movements.map(movement => ({
-        ...movement,
-        amount: bigNum(movement.amount),
-      }))
-    : []
-
-  return { balances, movements, fetching, errors }
+  return {
+    balances,
+    fetching,
+    errors,
+    movements: movements.map(movement => ({
+      ...movement,
+      effectiveTermId: parseInt(movement.effectiveTermId, 10),
+      amount: bigNum(movement.amount),
+    })),
+  }
 }
 
-export function useCourtSubscription() {
-  const [court, setCourt] = useState([])
-  const handleSubscription = (lastResponse = [], response) => {
-    return setCourt(response.courtConfig)
-  }
-  useSubscription(
-    {
-      query: CourtConfig,
-    },
-    handleSubscription
-  )
-  return court
+export function useCourtConfigSubscription(courtAddress) {
+  const [result] = useSubscription({
+    query: CourtConfig,
+    variables: { id: courtAddress },
+  })
+
+  // TODO: handle possible errors
+  const { courtConfig } = result.data || {}
+
+  return courtConfig
 }
 
 export function useSingleDisputeSubscription(id) {
@@ -135,6 +144,28 @@ export function useDisputesSubscription() {
   )
 
   return disputes
+}
+
+export function useJurorDraftsSubscription(jurorId, from, pause) {
+  const [result] = useSubscription({
+    query: CurrentTermJurorDrafts,
+    variables: { id: jurorId, from },
+    pause,
+  })
+
+  const { juror } = result.data || {}
+  return juror && juror.drafts ? juror.drafts : []
+}
+
+export function useAppealsByUserSubscription(jurorId, settled) {
+  const [result] = useSubscription({
+    query: AppealsByUser,
+    variables: { id: jurorId, settled },
+  })
+
+  const { appeals } = result.data || []
+
+  return appeals
 }
 
 export function useTasksSubscription() {
