@@ -2,15 +2,14 @@ import React from 'react'
 import { Box, GU, useViewport } from '@aragon/ui'
 import TaskAmounts from './TasksAmounts'
 
-function TasksBox() {
+function TasksBox({ openTasks, completedTasks, incompleteTasks }) {
   const { below } = useViewport()
   const compactMode = below('medium')
   const tasks = [
-    { status: 'active', amount: 34 },
-    { status: 'completed', amount: 21 },
-    { status: 'archived', amount: 67 },
+    { status: 'Open', amount: openTasks },
+    { status: 'Completed', amount: completedTasks },
+    { status: 'Incomplete', amount: incompleteTasks },
   ]
-
   return (
     <Box heading="Overview">
       <div
@@ -20,7 +19,7 @@ function TasksBox() {
             * scrollbar would briefly appear on top of everything (including the
             * sidepanel overlay).
             */
-          min-height: 112px;
+          min-height: 70px;
           transform: translate3d(0, 0, 0);
           overflow-x: auto;
         `}
@@ -37,9 +36,9 @@ function TasksBox() {
               : ''}
           `}
         >
-          {tasks.map(({ amount, status }) => (
+          {tasks.map(({ amount, status }, index) => (
             <li
-              key={amount}
+              key={index}
               css={`
                 display: block;
                 min-width: ${20 * GU}px;

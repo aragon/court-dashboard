@@ -1,16 +1,14 @@
-import React from 'react'
+import React, { useMemo } from 'react'
+import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
 import {
-  Accordion,
-  GU,
-  textStyle,
-  useTheme,
-  IconFolder,
   IconFlag,
-  IconGroup,
-  IconVote,
-  IconWrite,
-  Timer,
-} from '@aragon/ui'
+  IconFolder,
+  IconUsers,
+  IconThinking,
+  IconRuling,
+  IconVoting,
+  IconRewards,
+} from '../../utils/dispute-icons'
 import dayjs from '../../lib/dayjs'
 
 import { dateFormat } from '../../utils/date-utils'
@@ -22,8 +20,6 @@ import { useCourtConfig } from '../../providers/CourtConfig'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 
 function DisputeTimeline({ dispute }) {
-  const roundsLength = dispute.rounds.length
-
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
@@ -47,14 +43,7 @@ function DisputeTimeline({ dispute }) {
       >
         {reverseTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
-            return (
-              <ItemStep
-                key={index}
-                item={item}
-                roundId={roundsLength}
-                index={index}
-              />
-            )
+            return <ItemStep key={index} item={item} index={index} />
           }
           return item.map((round, roundIndex) => {
             if (roundIndex === 0) {
@@ -62,7 +51,6 @@ function DisputeTimeline({ dispute }) {
                 <ItemStep
                   key={phaseIndex}
                   item={roundItem}
-                  roundId={roundsLength}
                   index={phaseIndex}
                 />
               ))
@@ -100,7 +88,6 @@ function DisputeTimeline({ dispute }) {
                                 <ItemStep
                                   key={phaseIndex}
                                   item={roundItem}
-                                  roundId={roundsLength}
                                   index={phaseIndex}
                                   roundStepContainer
                                 />
@@ -122,7 +109,7 @@ function DisputeTimeline({ dispute }) {
   )
 }
 
-function ItemStep({ item, roundId, index, roundStepContainer }) {
+function ItemStep({ item, index, roundStepContainer }) {
   const theme = useTheme()
   return (
     <Step
@@ -135,7 +122,6 @@ function ItemStep({ item, roundId, index, roundStepContainer }) {
               ? 'linear-gradient(51.69deg, #FFB36D -0.55%, #FF8888 88.44%)'
               : '#FFE2D7'};
             border-radius: 80%;
-            padding: 10px;
             position: relative;
             z-index: 2;
             display: inline-flex;
@@ -179,39 +165,46 @@ function ItemStep({ item, roundId, index, roundStepContainer }) {
 }
 
 function PhaseIcon({ phase, active }) {
-  const theme = useTheme()
+  const icon = useMemo(() => {
+    if (
+      phase === DisputesTypes.Phase.Created ||
+      phase === DisputesTypes.Phase.NotStarted
+    ) {
+      return IconFlag
+    }
+    if (phase === DisputesTypes.Phase.Evidence) {
+      return IconFolder
+    }
+    if (phase === DisputesTypes.Phase.JuryDrafting) {
+      return IconUsers
+    }
+    if (
+      phase === DisputesTypes.Phase.VotingPeriod ||
+      phase === DisputesTypes.Phase.RevealVote
+    ) {
+      return IconVoting
+    }
+    if (
+      phase === DisputesTypes.Phase.AppealRuling ||
+      phase === DisputesTypes.Phase.ConfirmAppeal
+    ) {
+      return IconThinking
+    }
+    if (phase === DisputesTypes.Phase.ExecuteRuling) {
+      return IconRuling
+    }
+    return IconRewards
+  }, [phase])
 
-  // TODO - change this for the new icons
-  if (phase === DisputesTypes.Phase.Created) {
-    return <IconFlag color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.Evidence) {
-    return <IconFolder color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.JuryDrafting) {
-    return <IconGroup color={active ? '#fff' : theme.surfaceIcon} />
-  }
-  if (phase === DisputesTypes.Phase.VotingPeriod) {
-    return <IconVote color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.RevealVote) {
-    return <IconVote color={active ? '#fff' : theme.surfaceIcon} />
-  }
-
-  if (phase === DisputesTypes.Phase.AppealRuling) {
-    return (
-      <IconWrite
-        color={active ? '#fff' : theme.surfaceIcon}
-        background="#fff"
-      />
-    )
-  }
-  if (phase === DisputesTypes.Phase.ConfirmAppeal) {
-    return <IconWrite color={active ? '#fff' : theme.surfaceIcon} />
-  }
+  return (
+    <img
+      css={`
+        height: ${GU * 6}px;
+      `}
+      src={active ? icon.active : icon.inactive}
+      alt=""
+    />
+  )
 }
 
 function RoundPill({ roundId }) {
