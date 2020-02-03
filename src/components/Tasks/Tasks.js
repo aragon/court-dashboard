@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
-import ANJIcon from '../../assets/anjButton.svg'
+import ANJIcon from '../../assets/IconANJButton.svg'
 // import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
 import NoTasks from './NoTasks'

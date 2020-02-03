@@ -6,8 +6,8 @@ import {
   ACCOUNT_STATUS_JUROR_INACTIVE,
 } from '../../types/account-status-types'
 
-import inactiveJurorIcon from '../../assets/juror-inactive.svg'
-import activeJurorIcon from '../../assets/juror-active.svg'
+import inactiveJurorIcon from '../../assets/IconJurorInactive.svg'
+import activeJurorIcon from '../../assets/IconJurorActive.svg'
 
 const getProfileAttributes = (status, theme) => {
   if (status === ACCOUNT_STATUS_JUROR_ACTIVE)
@@ -51,54 +51,59 @@ function Profile({ account, status }) {
       css={`
         background: ${background};
         padding: ${3 * GU}px;
-        display: flex;
-        align-items: stretch;
       `}
     >
-      <EthIdenticon
-        address={account}
-        radius={100}
-        scale={2}
-        css={`
-          margin-right: ${1.5 * GU}px;
-        `}
-      />
       <div
         css={`
           display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          height: ${6 * GU}px;
+          align-items: stretch;
         `}
       >
-        <span
+        <EthIdenticon
+          address={account}
+          radius={100}
+          scale={2}
           css={`
+            margin-right: ${1.5 * GU}px;
+          `}
+        />
+        <div
+          css={`
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: ${6 * GU}px;
+          `}
+        >
+          <span
+            css={`
             ${textStyle('title4')}
             color: ${primaryColor};
             line-height: 1.2;
           `}
-        >
-          {shortenAddress(account)}
-        </span>
-        <span
-          css={`
-            ${textStyle('label2')}
-            display: flex;
-            color: ${secondaryColor};
-            line-height: 1.2;
-          `}
-        >
-          {icon && (
-            <img
-              css={`
-                margin-right: ${0.5 * GU}px;
-              `}
-              src={icon}
-              alt="juror-icon"
-            />
-          )}
-          {statusLabel}
-        </span>
+          >
+            {shortenAddress(account)}
+          </span>
+          <span
+            css={`
+              ${textStyle('label2')}
+              display: flex;
+              color: ${secondaryColor};
+              line-height: 1.2;
+            `}
+          >
+            {icon && (
+              <img
+                css={`
+                  margin-right: ${0.5 * GU}px;
+                `}
+                src={icon}
+                alt="juror-icon"
+              />
+            )}
+            {statusLabel}
+          </span>
+        </div>
       </div>
     </div>
   )

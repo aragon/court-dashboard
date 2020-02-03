@@ -15,18 +15,27 @@ export const VOTE_OPTION_IN_FAVOR = OUTCOMES.InFavor
 export const NOBODY_APPEALED = 'Nobody appealed'
 export const NOBODY_CONFIRMED = 'No confirmation'
 
-const optionStringMapping = {
+const voteOptionStringMapping = {
   [VOTE_OPTION_REFUSE]: 'REFUSE TO VOTE',
   [VOTE_OPTION_AGAINST]: 'AGAINST',
   [VOTE_OPTION_IN_FAVOR]: 'IN FAVOR',
 }
 
 export function voteToString(outcome) {
-  return optionStringMapping[outcome]
+  return voteOptionStringMapping[outcome]
+}
+
+const appealOptionStringMapping = {
+  [VOTE_OPTION_REFUSE]: 'Refuse',
+  [VOTE_OPTION_AGAINST]: 'Against',
+  [VOTE_OPTION_IN_FAVOR]: 'In favor',
+}
+
+export function appealOptionToString(outcome) {
+  return appealOptionStringMapping[outcome]
 }
 
 const outcomeStringMapping = {
-  [OUTCOMES.Missing]: 'Refused to vote',
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused to vote',
   [OUTCOMES.Against]: 'Voted against',
@@ -36,7 +45,7 @@ const outcomeStringMapping = {
 const appealRulingStringMapping = {
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused',
-  [OUTCOMES.Against]: 'Ruled Against',
+  [OUTCOMES.Against]: 'Ruled against',
   [OUTCOMES.InFavor]: 'Ruled in favor',
 }
 
@@ -83,7 +92,7 @@ export function getOutcomeFromCommitment(commitment, salt) {
 export function getAppealRulingOptions(currentOutcome) {
   return VALID_OUTCOMES.filter(
     outcome => outcome !== currentOutcome
-  ).map(outcome => ({ outcome, description: voteToString(outcome) }))
+  ).map(outcome => ({ outcome, description: appealOptionToString(outcome) }))
 }
 
 export function filterByValidOutcome(totalValidOutcomes) {
@@ -132,11 +141,4 @@ export function isvoteLeaked(outcome) {
 
 export function getTotalOutcomeWeight(outcomes) {
   return outcomes.reduce((acc, { weight }) => acc + weight, 0)
-}
-
-export function getOutcomeColor(outcome, theme) {
-  if (outcome === OUTCOMES.InFavor) return theme.positive
-  if (outcome === OUTCOMES.Against) return theme.negative
-
-  return theme.hint
 }

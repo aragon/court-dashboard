@@ -29,3 +29,21 @@ export const Juror = gql`
     }
   }
 `
+
+export const FirstANJActivationMovement = gql`
+  query Juror($id: ID!) {
+    juror(id: $id) {
+      movements(
+        where: { type: "Activation" }
+        orderBy: createdAt
+        orderDirection: asc
+        first: 1
+      ) {
+        amount
+        effectiveTermId
+        createdAt
+        type
+      }
+    }
+  }
+`

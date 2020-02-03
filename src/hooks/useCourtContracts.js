@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -294,4 +294,33 @@ export function useAppealFeeAllowance(owner) {
   }, [disputeManagerAddress, feeTokenContract, owner])
 
   return allowance
+}
+
+export function useTotalActiveBalancePolling(termId) {
+  const jurorRegistryContract = useCourtContract(
+    CourtModuleType.JurorsRegistry,
+    jurorRegistryAbi
+  )
+  const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
+
+  const timeoutId = useRef(null)
+
+  const fetchTotalActiveBalance = useCallback(() => {
+    timeoutId.current = setTimeout(() => {
+      return jurorRegistryContract
+        .totalActiveBalanceAt(termId)
+        .then(balance => {
+          setTotalActiveBalance(balance)
+          fetchTotalActiveBalance()
+        })
+    }, 500)
+  }, [jurorRegistryContract, termId])
+
+  useEffect(() => {
+    fetchTotalActiveBalance()
+
+    return () => clearTimeout(timeoutId.current)
+  }, [fetchTotalActiveBalance])
+
+  return totalActiveBalance
 }

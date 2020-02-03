@@ -8,7 +8,7 @@ const NO_ERROR = Symbol('NO_ERROR')
 
 const MAX_INPUT_DECIMAL_BASE = 3
 
-function ANJForm({
+const ANJForm = React.memo(function ANJForm({
   actionLabel,
   onDone,
   onSubmit,
@@ -73,6 +73,6 @@ function ANJForm({
       {errorMessage && <span>{errorMessage}</span>}
     </form>
   )
-}
+})
 
 export default ANJForm
