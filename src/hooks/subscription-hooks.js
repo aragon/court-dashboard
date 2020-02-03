@@ -113,7 +113,7 @@ export function useCourtSubscription(courtAddress) {
 }
 
 // Single dispute
-export default function useSingleDisputeSubscription(id) {
+export function useSingleDisputeSubscription(id) {
   const [{ data, error }] = useSubscription({
     query: SingleDispute,
     variables: { id },
@@ -160,9 +160,12 @@ export function useTasksSubscription() {
     variables: subscriptionVariables,
   })
 
-  const tasks = data ? data.adjudicationRounds : []
+  const tasks = useMemo(
+    () => (data && data.adjudicationRounds ? data.adjudicationRounds : null),
+    [data]
+  )
 
-  return { tasks, errors: error }
+  return { tasks, fetching: !data && !error, error }
 }
 
 export function useCourtConfigSubscription(courtAddress) {

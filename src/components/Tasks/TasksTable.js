@@ -11,21 +11,25 @@ import {
 import TasksFilters from './TasksFilters'
 import TaskStatus from './TaskStatus'
 import TaskDueDate from './TaskDueDate'
+import NoFilterResults from '../NoFilterResults'
 
 const ENTRIES_PER_PAGE = 6
 
 const TaskTable = React.memo(function TaskTable({
   tasks,
+  emptyFilterResults,
+  onClearFilters,
   dateRangeFilter,
   onDateRangeChange,
   phaseFilter,
   onPhaseChange,
   phaseTypes,
-  fromDashboard,
+  onlyTable,
 }) {
   const theme = useTheme()
   const { below } = useViewport()
   const compactMode = below('medium')
+
   return (
     <DataView
       entriesPerPage={ENTRIES_PER_PAGE}
@@ -48,18 +52,24 @@ const TaskTable = React.memo(function TaskTable({
               Upcoming tasks
             </div>
           </div>
-          {!compactMode && !fromDashboard && (
-            <TasksFilters
-              dateRangeFilter={dateRangeFilter}
-              onDateRangeChange={onDateRangeChange}
-              phaseFilter={phaseFilter}
-              onPhaseChange={onPhaseChange}
-              phaseTypes={phaseTypes}
-            />
+          {!compactMode && !onlyTable && (
+            <React.Fragment>
+              <TasksFilters
+                dateRangeFilter={dateRangeFilter}
+                onDateRangeChange={onDateRangeChange}
+                phaseFilter={phaseFilter}
+                onPhaseChange={onPhaseChange}
+                phaseTypes={phaseTypes}
+              />
+            </React.Fragment>
           )}
         </>
       }
-      fields={['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']}
+      fields={
+        emptyFilterResults
+          ? []
+          : ['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']
+      }
       entries={tasks}
       renderEntry={({ phase, disputeId, juror, open, dueDate }) => {
         return [
@@ -77,6 +87,14 @@ const TaskTable = React.memo(function TaskTable({
           <TaskDueDate dueDate={dueDate} />,
         ]
       }}
+      status={emptyFilterResults ? 'empty-filters' : 'default'}
+      statusEmptyFilters={
+        <NoFilterResults
+          onClearFilters={onClearFilters}
+          paragraph="We couldn’t find any task matching your filter selection."
+          noBorder
+        />
+      }
     />
   )
 })
