@@ -16,6 +16,7 @@ function CourtConfigProvider({ children }) {
   const courtAddress = networks[getNetworkName(CHAIN_ID)].court
   const courtConfig = useCourtConfigSubscription(courtAddress.toLowerCase())
 
+  console.log('courtconfig', courtConfig)
   const convertedCourtConfig = courtConfig
     ? {
         ...courtConfig, // TODO: Move data conversion to subscription handler

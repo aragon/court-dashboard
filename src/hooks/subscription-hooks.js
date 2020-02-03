@@ -215,7 +215,7 @@ export function useAppealsByUserSubscription(jurorId, settled) {
 
   const errors = [makerAppealsError, takerAppealsError].filter(err => err)
 
-  return { appeals, fetching: !appeals && errors.legnth === 0, errors }
+  return { appeals, fetching: !appeals && errors.length === 0, errors }
 }
 
 export function useTasksSubscription() {

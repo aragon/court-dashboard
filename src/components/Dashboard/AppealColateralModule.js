@@ -4,53 +4,61 @@ import { Box, GU, Link, useTheme } from '@aragon/ui'
 import { formatUnits } from '../../lib/math-utils'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import iconLock from '../../assets/IconLock.svg'
+import Loading from './Loading'
 
 const AppealColateralModule = React.memo(function AppealColateralModule({
   appeals,
+  loading,
 }) {
   const { feeToken } = useCourtConfig()
   const theme = useTheme()
+
   return (
     <Box heading="Appeal collateral" padding={0}>
-      {appeals.map(({ amountStaked, disputeId }) => (
-        <div
-          css={`
-            padding: ${3 * GU}px;
-            border-bottom: 1px solid ${theme.border};
-          `}
-        >
+      {loading ? (
+        <Loading />
+      ) : (
+        appeals.map(({ amountStaked, disputeId }, index) => (
           <div
+            key={index}
             css={`
-              margin-bottom: ${1 * GU}px;
+              padding: ${3 * GU}px;
+              border-bottom: 1px solid ${theme.border};
             `}
           >
-            <img
-              src={iconLock}
-              height="14"
+            <div
               css={`
-                margin-right: ${1 * GU}px;
+                margin-bottom: ${1 * GU}px;
               `}
-            />
-            <span>
-              <span
+            >
+              <img
+                src={iconLock}
+                height="14"
                 css={`
-                  color: ${theme.contentSecondary};
-                  margin-right: ${0.5 * GU}px;
+                  margin-right: ${1 * GU}px;
                 `}
-              >
-                {formatUnits(amountStaked, { digits: feeToken.decimals })}{' '}
-                {feeToken.symbol}
+              />
+              <span>
+                <span
+                  css={`
+                    color: ${theme.contentSecondary};
+                    margin-right: ${0.5 * GU}px;
+                  `}
+                >
+                  {formatUnits(amountStaked, { digits: feeToken.decimals })}{' '}
+                  {feeToken.symbol}
+                </span>
+                Staked
               </span>
-              Staked
-            </span>
+            </div>
+            <div>
+              <Link href={`/disputes/${disputeId}`} external={false}>
+                Dispute #{disputeId}
+              </Link>
+            </div>
           </div>
-          <div>
-            <Link href={`/disputes/${disputeId}`} external={false}>
-              Dispute #{disputeId}
-            </Link>
-          </div>
-        </div>
-      ))}
+        ))
+      )}
     </Box>
   )
 })

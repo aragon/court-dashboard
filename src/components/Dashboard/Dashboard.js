@@ -77,8 +77,11 @@ function Dashboard() {
         secondary={
           <>
             <RewardsModule />
-            {appealCollaterals && (
-              <AppealColateralModule appeals={appealCollaterals} />
+            {connectedAccount && (
+              <AppealColateralModule
+                appeals={appealCollaterals}
+                loading={fetching}
+              />
             )}
           </>
         }
