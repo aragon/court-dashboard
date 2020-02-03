@@ -1,36 +1,32 @@
 import React from 'react'
-import { GU, textStyle, useTheme } from '@aragon/ui'
+import { CircleGraph, GU, Help, useTheme } from '@aragon/ui'
 
-import anjSpringIcon from '../../assets/anj-spring.svg'
-import userIcon from '../../assets/user.svg'
-import gavelIcon from '../../assets/gavel.svg'
+import AccountBannerInfo from './AccountBannerInfo'
 
-import {
-  ACCOUNT_STATUS_JUROR_ACTIVE,
-  // ACCOUNT_STATUS_INACTIVE,
-} from '../../types/account-status-types'
-import { formatUnits } from '../../lib/math-utils'
 import { useCourtConfig } from '../../providers/CourtConfig'
+import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
+import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
+import { useCourtClock } from '../../providers/CourtClock'
 
-const getInformationAttributes = (
+import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
+import { formatUnits, getPercentage } from '../../lib/math-utils'
+import { getProbabilityText } from '../../utils/account-utils'
+
+import anjSpringIcon from '../../assets/IconANJSpring.svg'
+import userIcon from '../../assets/IconUser.svg'
+import gavelIcon from '../../assets/IconGavel.svg'
+import { useJurorDrafted } from '../../hooks/useJurorDraft'
+
+const getBannerAttributes = (
   status,
   drafted,
+  isFirstTimeActivating,
   minActiveBalance,
   decimals,
   theme
 ) => {
-  // TODO: Finish all possible states
   if (status === ACCOUNT_STATUS_JUROR_ACTIVE) {
-    if (!drafted) {
-      return {
-        icon: userIcon,
-        iconBackground: theme.positive.alpha(0.2),
-        title: 'You are elegible to be drafted',
-        titleColor: theme.positive,
-        paragraph: 'You are eligible to be drafted starting from the next term',
-      }
-    }
-
+    // NOTE: This one could not be included in the final version
     if (drafted) {
       return {
         icon: gavelIcon,
@@ -41,6 +37,19 @@ const getInformationAttributes = (
           'You can start reviewing the evidence and then commit your vote',
       }
     }
+
+    if (isFirstTimeActivating) {
+      return {
+        icon: userIcon,
+        iconBackground: theme.positive.alpha(0.2),
+        title: 'You are eligible to be drafted',
+        titleColor: theme.positive,
+        paragraph: 'You are eligible to be drafted starting from the next term',
+        showTimer: true,
+      }
+    }
+
+    return { showProbability: true }
   }
 
   return {
@@ -52,31 +61,78 @@ const getInformationAttributes = (
   }
 }
 
-function AccountBanner({ status, minActiveBalance, drafted }) {
+function AccountBanner({ status, minActiveBalance, activeBalance }) {
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
+
+  // check if juror has been drafted in this current term
+  const isJurorDrafted = useJurorDrafted({
+    pause: status !== ACCOUNT_STATUS_JUROR_ACTIVE,
+  })
+
+  // check if it's the first time activating ANJ
+  const isFirstTimeActivating = useJurorFirstTimeANJActivation({
+    pause: isJurorDrafted || status !== ACCOUNT_STATUS_JUROR_ACTIVE,
+  })
+
+  const attributes = getBannerAttributes(
+    status,
+    isJurorDrafted,
+    isFirstTimeActivating,
+    minActiveBalance,
+    anjToken.decimals,
+    theme
+  )
+
+  if (attributes.showProbability)
+    return <BannerWithProbability activeBalance={activeBalance} />
+
   const {
     icon,
     title,
     titleColor,
     paragraph,
     iconBackground,
-  } = getInformationAttributes(
-    status,
-    drafted,
-    minActiveBalance,
-    anjToken.decimals,
-    theme
+    showTimer,
+  } = attributes
+
+  return (
+    <Wrapper
+      mainIcon={
+        <div
+          css={`
+            display: flex;
+            align-items: center;
+            background: ${iconBackground};
+            height: ${6 * GU}px;
+            width: ${iconBackground ? 6 * GU + 'px' : 'auto'};
+            border-radius: 50%;
+          `}
+        >
+          <img
+            css={`
+              display: block;
+              margin: 0 auto;
+            `}
+            height={iconBackground ? 3 * GU : 6 * GU}
+            src={icon}
+            alt=""
+          />
+        </div>
+      }
+      information={
+        <AccountBannerInfo
+          title={title}
+          titleColor={titleColor}
+          paragraph={paragraph}
+          showTimer={showTimer}
+        />
+      }
+    />
   )
+}
 
-  const iconBackgroundStyle = iconBackground
-    ? `   
-      background: ${iconBackground};
-      height: ${6 * GU}px;
-      padding: ${1.5 * GU}px;
-      border-radius: 50%;`
-    : ''
-
+const Wrapper = ({ mainIcon, information }) => {
   return (
     <div
       css={`
@@ -88,43 +144,69 @@ function AccountBanner({ status, minActiveBalance, drafted }) {
           margin-right: ${1.5 * GU}px;
         `}
       >
-        <div css={iconBackgroundStyle}>
-          <img
-            css={`
-              display: block;
-            `}
-            height={iconBackground ? 3 * GU : 6 * GU}
-            src={icon}
-            alt="info-icon"
-          />
-        </div>
+        {mainIcon}
       </div>
-      <div
-        css={`
-          display: flex;
-          flex-direction: column;
-          justify-content: space-around;
-          height: ${6 * GU}px;
-        `}
-      >
-        <span
-          css={`
-            ${textStyle('title4')}
-            color: ${titleColor};
-          `}
-        >
-          {title}
-        </span>
-        <span
-          css={`
-            color: ${theme.contentSecondary};
-            display: block;
-          `}
-        >
-          {paragraph}
-        </span>
-      </div>
+      {information}
     </div>
+  )
+}
+
+const BannerWithProbability = ({ activeBalance }) => {
+  const theme = useTheme()
+  const { currentTermId } = useCourtClock()
+
+  // Calculate juror's active balance and total active balance for current term
+  const {
+    amount: activeAmount,
+    amountNotEffective: activeAmountNotEffective,
+  } = activeBalance
+  const activeBalanceCurrentTerm = activeAmount.sub(activeAmountNotEffective)
+  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
+    currentTermId
+  )
+
+  const totalPercentage = getPercentage(
+    activeBalanceCurrentTerm,
+    totalActiveBalanceCurrentTerm
+  )
+
+  // Calculate probability (since the total active balance is asynconous
+  // it can happen that it has not been updated yet when the juror active balance has)
+  const draftingProbability = Math.min(1, totalPercentage / 100)
+  const probabilityText = getProbabilityText(draftingProbability)
+
+  const title = (
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+      `}
+    >
+      <span css="margin-right: 8px">
+        <span
+          css={`
+            color: ${theme.accent};
+          `}
+        >
+          {probabilityText} probability{' '}
+        </span>
+        to be drafted
+      </span>
+      <Help hint="How is the probability calculated?">
+        Probability of being drafted depends on the total ANJ you have activated
+        and the total ANJ activated for a given term
+      </Help>
+    </div>
+  )
+
+  const paragraph =
+    'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute'
+
+  return (
+    <Wrapper
+      mainIcon={<CircleGraph value={draftingProbability} size={6 * GU} />}
+      information={<AccountBannerInfo title={title} paragraph={paragraph} />}
+    />
   )
 }
 

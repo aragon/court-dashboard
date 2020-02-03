@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react'
 
-import { useCourtActions } from './hooks/useCourt'
+import { useCourtActions } from './hooks/useCourtContracts'
 import { useSidePanel } from './hooks/useSidePanel'
+import { useANJBalances } from './hooks/useANJ'
 
 export const REQUEST_MODE = {
   ACTIVATE: Symbol('ACTIVATE'),
@@ -65,6 +66,8 @@ export function useDashboardLogic() {
     withdrawANJ,
   } = useCourtActions()
 
+  const balances = useANJBalances()
+
   const panelState = useSidePanel()
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
@@ -78,6 +81,7 @@ export function useDashboardLogic() {
 
   return {
     actions,
+    balances,
     mode,
     panelState,
     requests,

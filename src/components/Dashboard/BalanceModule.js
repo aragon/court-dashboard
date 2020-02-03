@@ -3,14 +3,14 @@ import { Box, GU, Split, useLayout, useTheme } from '@aragon/ui'
 
 import Profile from './Profile'
 import Balance from './Balance'
-import Information from './AccountBanner'
+import AccountBanner from './AccountBanner'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 // TODO: import icons from aragon-ui when available
-import walletIcon from '../../assets/wallet.svg'
-import inactiveANJIcon from '../../assets/anj-inactive.svg'
-import activeANJIcon from '../../assets/anj-active.svg'
+import walletIcon from '../../assets/IconWallet.svg'
+import inactiveANJIcon from '../../assets/IconANJInactive.svg'
+import activeANJIcon from '../../assets/IconANJActive.svg'
 
 import { getAccountStatus } from '../../utils/account-utils'
 import { useConnectedAccount } from '../../providers/Web3'
@@ -18,7 +18,6 @@ import { useConnectedAccount } from '../../providers/Web3'
 const BalanceModule = React.memo(
   ({
     balances,
-    movements,
     onRequestActivate,
     onRequestDeactivate,
     onRequestStakeActivate,
@@ -29,14 +28,19 @@ const BalanceModule = React.memo(
     const connectedAccount = useConnectedAccount()
     const { minActiveBalance } = useCourtConfig()
 
-    const {
-      walletMovement,
-      inactiveBalanceMovement,
-      activeBalanceMovement,
-    } = movements
-
     const oneColumn = layout === 'small' || layout === 'medium'
     const status = getAccountStatus(balances, minActiveBalance)
+
+    const {
+      walletBalance,
+      activeBalance,
+      inactiveBalance,
+      deactivationBalance,
+    } = balances
+
+    const effectiveInactiveBalance = inactiveBalance.amount
+      .add(deactivationBalance.amount)
+      .sub(inactiveBalance.amountNotEffective)
 
     return (
       <Split
@@ -54,9 +58,10 @@ const BalanceModule = React.memo(
               `}
               padding={3 * GU}
             >
-              <Information
+              <AccountBanner
                 status={status}
                 minActiveBalance={minActiveBalance}
+                activeBalance={activeBalance}
               />
             </Box>
             <div
@@ -75,12 +80,11 @@ const BalanceModule = React.memo(
                 `}
               >
                 <Balance
-                  amount={balances.availableBalance}
+                  amount={effectiveInactiveBalance}
                   label="Inactive"
                   mainIcon={inactiveANJIcon}
-                  mainIconBackground="#FEF3F1"
+                  mainIconBackground={theme.accent.alpha(0.2)}
                   actions={[
-                    // TODO: Memoize array
                     { label: 'Withdraw', onClick: onRequestWithdraw },
                     {
                       label: 'Activate',
@@ -88,7 +92,7 @@ const BalanceModule = React.memo(
                       onClick: onRequestActivate,
                     },
                   ]}
-                  activity={inactiveBalanceMovement}
+                  activity={inactiveBalance.latestMovement}
                 />
               </Box>
               <Box
@@ -99,14 +103,14 @@ const BalanceModule = React.memo(
                 `}
               >
                 <Balance
-                  amount={balances.activeBalance}
+                  amount={activeBalance.amount}
                   label="Active"
                   mainIcon={activeANJIcon}
                   mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
                   actions={[
                     { label: 'Deactivate', onClick: onRequestDeactivate },
-                  ]} // TODO: Memoize array
-                  activity={activeBalanceMovement}
+                  ]}
+                  activity={activeBalance.latestMovement}
                 />
               </Box>
             </div>
@@ -129,18 +133,18 @@ const BalanceModule = React.memo(
               `}
             >
               <Balance
-                amount={balances.walletBalance}
+                amount={walletBalance.amount}
                 label="My wallet"
                 mainIcon={walletIcon}
-                mainIconBackground="#FEF3F1"
+                mainIconBackground={theme.accent.alpha(0.2)}
                 actions={[
                   {
                     label: 'Activate',
                     mode: 'strong',
                     onClick: onRequestStakeActivate,
                   },
-                ]} // TODO: Memoize array
-                activity={walletMovement}
+                ]}
+                activity={walletBalance.latestMovement}
               />
             </div>
           </Box>

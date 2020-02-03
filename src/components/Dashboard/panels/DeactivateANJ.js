@@ -24,7 +24,6 @@ const DeactivateANJ = React.memo(function DeactivateANJ({
       actionLabel="Deactivate"
       onSubmit={onDeactivateANJ}
       onDone={onDone}
-      panelOpened={panelOpened}
       validateForm={validation}
       errorToMessage={errorToMessage}
     />
