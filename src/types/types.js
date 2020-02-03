@@ -45,7 +45,7 @@ const endedStringMapping = {
   [Phase.JuryDrafting]: 'Jury drafted',
   [Phase.VotingPeriod]: 'Voting period',
   [Phase.RevealVote]: 'Vote revealed',
-  [Phase.AppealRuling]: 'Appeal confirmed',
+  [Phase.AppealRuling]: 'Appeal ruling',
   [Phase.ConfirmAppeal]: 'Confirm appeal',
   [Phase.ClaimRewards]: 'Claim rewards',
   [Phase.Invalid]: 'Invalid',
@@ -69,6 +69,14 @@ const symbolMapping = {
   Created: Phase.Created,
 }
 
+const taskActionsMapping = {
+  [Phase.All]: 'All',
+  [Phase.VotingPeriod]: 'Commit vote',
+  [Phase.RevealVote]: 'Reveal vote',
+  [Phase.AppealRuling]: 'Appeal ruling',
+  [Phase.ConfirmAppeal]: 'Confirm appeal',
+}
+
 export function convertFromString(str) {
   return symbolMapping[str]
 }
@@ -83,4 +91,8 @@ export function getPhaseStringForStatus(symbol, active) {
   } else {
     return endedStringMapping[symbol]
   }
+}
+
+export function getTaskActionString(symbol) {
+  return taskActionsMapping[symbol]
 }

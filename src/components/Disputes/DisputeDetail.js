@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { Header, SyncIndicator, BackButton, Bar, Box, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-import useDisputeSubscription from '../../hooks/useDisputeSubscription'
+import useDispute from '../../hooks/useDispute'
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
@@ -12,9 +12,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
   const { id: disputeId } = match.params
 
-  const { dispute, fetching: disputeFetching } = useDisputeSubscription(
-    disputeId
-  )
+  const { dispute, fetching: disputeFetching } = useDispute(disputeId)
 
   const subject = dispute && dispute.subject
 

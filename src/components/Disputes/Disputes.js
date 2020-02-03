@@ -4,14 +4,15 @@ import { useHistory } from 'react-router-dom'
 
 import DisputeList from './DisputeList'
 import useDisputes from '../../hooks/useDisputes'
-import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
+import { useJurorDraftQuery } from '../../hooks/query-hooks'
+import { useConnectedAccount } from '../../providers/Web3'
 
 import ANJIcon from '../../assets/IconANJButton.svg'
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
   const [disputes] = useDisputes()
-  const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
+  const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
 
   const history = useHistory()

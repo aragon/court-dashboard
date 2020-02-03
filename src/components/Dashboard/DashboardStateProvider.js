@@ -33,7 +33,7 @@ const WithSubscription = ({ Provider, connectedAccount, children }) => {
     balances,
     movements,
     fetching,
-    errros: balanceErrors,
+    errors: balanceErrors,
   } = useJurorBalancesSubscription(account)
   const nonSettledAppeals = useAppealsByUserSubscription(account, false) // Non settled appeals
 
