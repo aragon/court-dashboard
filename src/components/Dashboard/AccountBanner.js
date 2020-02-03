@@ -4,12 +4,12 @@ import { CircleGraph, GU, Help, useTheme } from '@aragon/ui'
 import AccountBannerInfo from './AccountBannerInfo'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useTotalActiveBalancePolling } from '../../hooks/useCourt'
+import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
-import { formatUnits, getPercentage } from '../../lib/math-utils'
+import { formatUnits, getPercentageBN } from '../../lib/math-utils'
 import { getProbabilityText } from '../../utils/account-utils'
 
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
@@ -165,7 +165,7 @@ const BannerWithProbability = ({ activeBalance }) => {
     currentTermId
   )
 
-  const totalPercentage = getPercentage(
+  const totalPercentage = getPercentageBN(
     activeBalanceCurrentTerm,
     totalActiveBalanceCurrentTerm
   )

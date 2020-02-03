@@ -73,6 +73,15 @@ export function round(value, precision = 2) {
   return roundedValue.toString()
 }
 
+export function getPercentageBN(value, totalValue) {
+  const PERCENT = 100
+  const PERCENT_BN = bigNum(PERCENT)
+
+  if (totalValue.lte(0)) return 0
+
+  return parseInt(value.mul(PERCENT_BN).div(totalValue), 10)
+}
+
 export function getPercentage(value, totalValue) {
   const PERCENT = 100
   const PERCENT_BN = bigNum(PERCENT)
