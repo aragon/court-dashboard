@@ -11,7 +11,6 @@ const ActivateANJ = React.memo(function ActivateANJ({
   activeBalance,
   walletBalance,
   onDone,
-  panelOpened,
 }) {
   const { anjToken, minActiveBalance } = useCourtConfig()
 
@@ -49,7 +48,6 @@ const ActivateANJ = React.memo(function ActivateANJ({
       actionLabel="Activate"
       onSubmit={onActivateANJ}
       onDone={onDone}
-      panelOpened={panelOpened}
       validateForm={validation}
       errorToMessage={errorToMessage}
     />

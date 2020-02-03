@@ -1,12 +1,12 @@
 import React from 'react'
 import { Timer } from '@aragon/ui'
 
-import { useClock } from '../providers/Clock'
+import { useCourtClock } from '../providers/CourtClock'
 
 // Useful component to validate the different transitions
 // ONLY FOR DEVELOPMENT
 export default function Clock() {
-  const { currentTermId, currentTermEndDate } = useClock()
+  const { currentTermId, currentTermEndDate } = useCourtClock()
   return (
     <div
       css={`

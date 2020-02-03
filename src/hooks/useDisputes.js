@@ -2,7 +2,8 @@ import { useMemo } from 'react'
 
 import useNow from './useNow'
 import { useCourtConfig } from '../providers/CourtConfig'
-import useSingleDisputeSubscription, {
+import {
+  useSingleDisputeSubscription,
   useDisputesSubscription,
 } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'

@@ -24,7 +24,6 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
       actionLabel="Withdraw"
       onSubmit={onWithdrawANJ}
       onDone={onDone}
-      panelOpened={panelOpened}
       validateForm={validation}
       errorToMessage={errorToMessage}
     />

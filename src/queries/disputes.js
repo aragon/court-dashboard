@@ -12,15 +12,15 @@ export const AllDisputes = gql`
       state
       metadata
       createdAt
-      subject {
-        id
-        evidence {
-          id
-          submitter
-          data
-          createdAt
-        }
-      }
+      # subject {
+      #   id
+      #   evidence {
+      #     id
+      #     submitter
+      #     data
+      #     createdAt
+      #   }
+      # }
       rounds {
         id
         state
@@ -71,15 +71,15 @@ export const SingleDispute = gql`
       state
       metadata
       createdAt
-      subject {
-        id
-        evidence {
-          id
-          submitter
-          data
-          createdAt
-        }
-      }
+      # subject {
+      #   id
+      #   evidence {
+      #     id
+      #     submitter
+      #     data
+      #     createdAt
+      #   }
+      # }
       rounds {
         id
         state
@@ -182,6 +182,18 @@ export const JurorDrafts = gql`
             }
           }
         }
+      }
+    }
+  }
+`
+
+export const CurrentTermJurorDrafts = gql`
+  subscription JurorDrafts($id: ID!, $from: BigInt!) {
+    juror(id: $id) {
+      id
+      drafts(where: { createdAt_gt: $from }) {
+        id
+        createdAt
       }
     }
   }

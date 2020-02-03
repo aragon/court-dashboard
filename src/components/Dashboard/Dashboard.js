@@ -6,9 +6,9 @@ import DashboardStats from './DashboardStats'
 import TaskTable from './TaskTable'
 import { tasks } from '../../mock-data'
 import Welcome from './Welcome'
-import { BalancesProvider, useBalances } from './BalancesProvider'
+import { DashboardStateProvider } from './DashboardStateProvider'
 
-import ANJIcon from '../../assets/anjButton.svg'
+import ANJIcon from '../../assets/IconANJButton.svg'
 import { useConnectedAccount } from '../../providers/Web3'
 import {
   getRequestModeString,
@@ -21,8 +21,8 @@ import WithdrawANJ from './panels/WithdrawANJ'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
-  const { actions, mode, panelState, requests } = useDashboardLogic()
-  const { balances, movements } = useBalances()
+  const { actions, balances, mode, panelState, requests } = useDashboardLogic()
+
   return (
     <React.Fragment>
       <Header
@@ -41,13 +41,14 @@ function Dashboard() {
             label="Buy ANJ"
             mode="strong"
             display="all"
+            href="https://anj.aragon.org/"
+            target="_blank"
           />
         }
       />
       {connectedAccount ? (
         <BalanceModule
           balances={balances}
-          movements={movements}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
           onRequestStakeActivate={requests.stakeActivateANJ}
@@ -91,7 +92,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     case REQUEST_MODE.DEACTIVATE:
       return (
         <DeactivateANJ
-          activeBalance={activeBalance}
+          activeBalance={activeBalance.amount}
           onDeactivateANJ={deactivateANJ}
           {...props}
         />
@@ -99,7 +100,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     case REQUEST_MODE.WITHDRAW:
       return (
         <WithdrawANJ
-          inactiveBalance={inactiveBalance}
+          inactiveBalance={inactiveBalance.amount}
           onWithdrawANJ={withdrawANJ}
           {...props}
         />
@@ -107,8 +108,8 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     default:
       return (
         <ActivateANJ
-          activeBalance={activeBalance}
-          walletBalance={walletBalance}
+          activeBalance={activeBalance.amount}
+          walletBalance={walletBalance.amount}
           onActivateANJ={activateANJ}
           {...props}
         />
@@ -118,8 +119,8 @@ function PanelComponent({ mode, actions, balances, ...props }) {
 
 export default function DashboardWithSubscritpion(props) {
   return (
-    <BalancesProvider>
+    <DashboardStateProvider>
       <Dashboard {...props} />
-    </BalancesProvider>
+    </DashboardStateProvider>
   )
 }
