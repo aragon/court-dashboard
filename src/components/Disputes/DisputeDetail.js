@@ -9,6 +9,7 @@ import {
   Split,
   SyncIndicator,
 } from '@aragon/ui'
+
 import { useHistory } from 'react-router-dom'
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
@@ -33,8 +34,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     panelState,
     requests,
   } = useDisputeLogic(disputeId)
-
-  console.log('dispute', dispute)
 
   const subject = dispute && dispute.subject
 

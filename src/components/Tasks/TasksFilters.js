@@ -23,7 +23,7 @@ const TasksFilters = ({
         items={phaseTypes}
         selected={phaseFilter}
         onChange={onPhaseChange}
-        width="128px"
+        width={`${16 * GU}px`}
       />
       <DateRangePicker
         startDate={dateRangeFilter.start}

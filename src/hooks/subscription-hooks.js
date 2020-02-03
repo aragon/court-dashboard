@@ -2,19 +2,20 @@ import { useMemo } from 'react'
 import { useSubscription } from 'urql'
 import dayjs from 'dayjs'
 
-import { bigNum } from '../lib/math-utils'
-import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
+import { useCourtConfig } from '../providers/CourtConfig'
 
 import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
 import {
   CurrentTermJurorDrafts,
-  AllDisputes,
   SingleDispute,
+  AllDisputes,
 } from '../queries/disputes'
 import { OpenTasks } from '../queries/tasks'
-import { useCourtConfig } from '../providers/CourtConfig'
+
+import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
+import { bigNum } from '../lib/math-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -99,19 +100,6 @@ export function useJurorBalancesSubscription(jurorId) {
   }
 }
 
-// Court config
-export function useCourtSubscription(courtAddress) {
-  const [result] = useSubscription({
-    query: CourtConfig,
-    variables: { id: courtAddress },
-  })
-
-  // TODO: handle possible errors
-  const courtConfig = result.data && result.data.courtConfig
-
-  return courtConfig
-}
-
 // Single dispute
 export default function useSingleDisputeSubscription(id) {
   const [{ data, error }] = useSubscription({
@@ -153,20 +141,6 @@ export function useDisputesSubscription() {
   const disputes = result.data || []
 
   return { disputes, errors: result.errors, fetching: result.fetching }
-}
-
-export function useTasksSubscription() {
-  // 1- Committing, 4-Confirming Appeal , 5- Ended
-  const subscriptionVariables = { state: [1, 4] }
-
-  const [{ data, error }] = useSubscription({
-    query: OpenTasks,
-    variables: subscriptionVariables,
-  })
-
-  const tasks = data ? data.adjudicationRounds : []
-
-  return { tasks, errors: error }
 }
 
 export function useCourtConfigSubscription(courtAddress) {
@@ -242,4 +216,18 @@ export function useAppealsByUserSubscription(jurorId, settled) {
   const errors = [makerAppealsError, takerAppealsError].filter(err => err)
 
   return { appeals, fetching: !appeals && errors.legnth === 0, errors }
+}
+
+export function useTasksSubscription() {
+  // 1- Committing, 4-Confirming Appeal , 5- Ended
+  const subscriptionVariables = { state: [1, 4] }
+
+  const [{ data, error }] = useSubscription({
+    query: OpenTasks,
+    variables: subscriptionVariables,
+  })
+
+  const tasks = data ? data.adjudicationRounds : []
+
+  return { tasks, error: error }
 }

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useConnectedAccount } from '../../providers/Web3'
 import { useCourtConfig } from '../../providers/CourtConfig'
-import useJurorBalances from '../../hooks/useJurorBalances'
+import { useJurorBalancesSubscription } from '../../hooks/subscription-hooks'
 import { useANJMovements } from '../../hooks/useANJMovements'
 
 const BalancesContext = React.createContext()
@@ -10,7 +10,7 @@ function BalancesProvider({ children }) {
   const connectedAccount = useConnectedAccount()
   const { anjToken } = useCourtConfig()
 
-  const { balances, movements } = useJurorBalances(
+  const { balances, movements } = useJurorBalancesSubscription(
     connectedAccount ? connectedAccount.toLowerCase() : ''
   )
 

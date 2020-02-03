@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
+
 import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
 import {
   IconFlag,
@@ -167,32 +168,36 @@ function ItemStep({ item, index, roundStepContainer }) {
 }
 
 function PhaseIcon({ phase, active }) {
-  let icon
-
-  if (
-    phase === DisputesTypes.Phase.Created ||
-    phase === DisputesTypes.Phase.NotStarted
-  ) {
-    icon = IconFlag
-  } else if (phase === DisputesTypes.Phase.Evidence) {
-    icon = IconFolder
-  } else if (phase === DisputesTypes.Phase.JuryDrafting) {
-    icon = IconUsers
-  } else if (
-    phase === DisputesTypes.Phase.VotingPeriod ||
-    phase === DisputesTypes.Phase.RevealVote
-  ) {
-    icon = IconVoting
-  } else if (
-    phase === DisputesTypes.Phase.AppealRuling ||
-    phase === DisputesTypes.Phase.ConfirmAppeal
-  ) {
-    icon = IconThinking
-  } else if (phase === DisputesTypes.Phase.ExecuteRuling) {
-    icon = IconRuling
-  } else {
-    icon = IconRewards
-  }
+  const icon = useMemo(() => {
+    if (
+      phase === DisputesTypes.Phase.Created ||
+      phase === DisputesTypes.Phase.NotStarted
+    ) {
+      return IconFlag
+    }
+    if (phase === DisputesTypes.Phase.Evidence) {
+      return IconFolder
+    }
+    if (phase === DisputesTypes.Phase.JuryDrafting) {
+      return IconUsers
+    }
+    if (
+      phase === DisputesTypes.Phase.VotingPeriod ||
+      phase === DisputesTypes.Phase.RevealVote
+    ) {
+      return IconVoting
+    }
+    if (
+      phase === DisputesTypes.Phase.AppealRuling ||
+      phase === DisputesTypes.Phase.ConfirmAppeal
+    ) {
+      return IconThinking
+    }
+    if (phase === DisputesTypes.Phase.ExecuteRuling) {
+      return IconRuling
+    }
+    return IconRewards
+  }, [phase])
 
   return (
     <img
@@ -200,7 +205,7 @@ function PhaseIcon({ phase, active }) {
         height: ${GU * 6}px;
       `}
       src={active ? icon.active : icon.inactive}
-      alt="phase-icon"
+      alt=""
     />
   )
 }
