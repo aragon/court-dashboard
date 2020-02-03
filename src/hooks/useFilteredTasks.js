@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react'
+import { useCallback, useState, useMemo } from 'react'
 import useTasks from './useTasks'
 import { addressesEqual } from '../lib/web3-utils'
 import dayjs from '../lib/dayjs'
-import * as DisputesTypes from '../types/types'
+import * as DisputesTypes from '../types/dispute-status-types'
 
 const ALL_FILTER = 0
 const UNSELECTED_PHASE = -1
@@ -15,16 +15,16 @@ const TASKS_ACTIONS_TYPES = [
   DisputesTypes.Phase.ConfirmAppeal,
 ]
 
-function useFilteredTasks(tabIndex, connectedAccount) {
+function useFilteredTasks(jurorTasksSelected, connectedAccount) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_PHASE)
-  const jurorTasksSelected = tabIndex === 0
+  const [filtersSelected, setFiltersSelected] = useState(false)
   // If My Tasks is selected we need to only show ALL-COMMIT-REVEAL actions
   const TASKS_ACTIONS_TYPES_STRING = jurorTasksSelected
     ? TASKS_ACTIONS_TYPES.slice(0, 3).map(DisputesTypes.getTaskActionString)
     : TASKS_ACTIONS_TYPES.map(DisputesTypes.getTaskActionString)
 
-  const { openTasks: tasks, error } = useTasks()
+  const { openTasks: tasks, fetching, error } = useTasks()
 
   const jurorTasks = useMemo(
     () =>
@@ -38,18 +38,20 @@ function useFilteredTasks(tabIndex, connectedAccount) {
     [connectedAccount, tasks]
   )
 
-  const handleSelectedDateRangeChange = React.useCallback(
+  const tasksToFilter = jurorTasksSelected ? jurorTasks : tasks
+
+  const handleSelectedDateRangeChange = useCallback(
     range => {
+      setFiltersSelected(range !== INITIAL_DATE_RANGE)
       setSelectedDateRange(range)
     },
     [setSelectedDateRange]
   )
 
-  const handleSelectedPhaseChange = React.useCallback(index => {
-    setSelectedPhase(index)
+  const handleSelectedPhaseChange = useCallback(index => {
+    setFiltersSelected(index !== ALL_FILTER)
+    setSelectedPhase(index || UNSELECTED_PHASE)
   }, [])
-
-  const tasksToFilter = jurorTasksSelected ? jurorTasks : tasks
 
   const filteredTasks = useMemo(
     () =>
@@ -74,9 +76,24 @@ function useFilteredTasks(tabIndex, connectedAccount) {
     ]
   )
 
+  const handleClearFilters = useCallback(() => {
+    setSelectedPhase(UNSELECTED_PHASE)
+    setSelectedDateRange(INITIAL_DATE_RANGE)
+    setFiltersSelected(false)
+  }, [])
+
+  const emptyFilterResults =
+    !filteredTasks.length &&
+    (selectedPhase > 1 || selectedDateRange.start || selectedDateRange.end)
+
   return {
     tasks: filteredTasks,
+    fetching,
     error,
+    filtersSelected,
+    setFiltersSelected,
+    emptyFilterResults,
+    handleClearFilters,
     selectedDateRange,
     handleSelectedDateRangeChange,
     selectedPhase,

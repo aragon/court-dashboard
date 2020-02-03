@@ -1,19 +1,40 @@
 import React, { useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
-import ANJIcon from '../../assets/anjButton.svg'
+import ANJIcon from '../../assets/IconANJButton.svg'
 // import TaskBox from './TasksBox'
 import TaskTable from './TasksTable'
 import NoTasks from './NoTasks'
+import NoMyTasks from './NoMyTasks'
+import TasksLoading from '../Loading'
+import ErrorLoading from '../ErrorLoading'
 import { useConnectedAccount } from '../../providers/Web3'
 import useFilteredTasks from '../../hooks/useFilteredTasks'
 
-const Tasks = React.memo(() => {
+const Tasks = React.memo(({ onlyTable }) => {
   const connectedAccount = useConnectedAccount()
+
   const [screenIndex, setScreenIndex] = useState(0)
+
+  const getMyTasksSelected = () => {
+    if (onlyTable) {
+      if (connectedAccount) {
+        return true
+      }
+      return false
+    }
+    return screenIndex === 0
+  }
+
+  const myTasksSelected = getMyTasksSelected()
 
   const {
     tasks,
-    error,
+    fetching: tasksFetching,
+    error: errorLoading,
+    filtersSelected,
+    setFiltersSelected,
+    emptyFilterResults,
+    handleClearFilters,
     selectedDateRange,
     handleSelectedDateRangeChange,
     selectedPhase,
@@ -21,84 +42,104 @@ const Tasks = React.memo(() => {
     openTasksNumber,
     jurorOpenTaskNumber,
     taskActionsString,
-  } = useFilteredTasks(screenIndex, connectedAccount)
+  } = useFilteredTasks(myTasksSelected, connectedAccount)
 
   const handleTabChange = screenIndex => {
+    setFiltersSelected(false)
+    handleClearFilters()
     setScreenIndex(screenIndex)
   }
 
   return (
     <>
-      <Header
-        primary="Tasks"
-        secondary={
-          <Button
-            icon={
-              <div
-                css={`
-                  display: flex;
-                  height: ${GU * 3}px;
-                  width: ${GU * 3}px;
-                  margin-right: -6px;
-                `}
-              >
-                <img
-                  src={ANJIcon}
+      {!onlyTable && (
+        <Header
+          primary="Tasks"
+          secondary={
+            <Button
+              icon={
+                <div
                   css={`
-                    margin: auto;
-                    width: 14px;
-                    height: 16px;
+                    display: flex;
+                    height: ${GU * 3}px;
+                    width: ${GU * 3}px;
+                    margin-right: -6px;
                   `}
-                />
-              </div>
-            }
-            label="Buy ANJ"
-            display="all"
-            mode="strong"
-          />
-        }
-      />
+                >
+                  <img
+                    src={ANJIcon}
+                    css={`
+                      margin: auto;
+                      width: 14px;
+                      height: 16px;
+                    `}
+                  />
+                </div>
+              }
+              label="Buy ANJ"
+              display="all"
+              mode="strong"
+            />
+          }
+        />
+      )}
       {/* Commented since we are not launching V1 with this component
       <TaskBox
         openTasks={openTasks}
         completedTasks={completedTasks}
         incompleteTasks={incompleteTasks}
       /> */}
-      <div
-        css={`
-          margin-top: ${2 * GU}px;
-        `}
-      >
-        <Tabs
+      {!onlyTable && (
+        <div
           css={`
-            margin-bottom: 0px;
+            margin-top: ${2 * GU}px;
           `}
-          items={[
-            <div>
-              <span>My Tasks </span>
-              <Tag limitDigits={4} label={jurorOpenTaskNumber} size="small" />
-            </div>,
-            <div>
-              <span>All Tasks </span>
-              <Tag limitDigits={4} label={openTasksNumber} size="small" />
-            </div>,
-          ]}
-          selected={screenIndex}
-          onChange={handleTabChange}
-        />
-      </div>
-      {tasks.length === 0 && !error ? (
-        <NoTasks />
-      ) : (
-        <TaskTable
-          tasks={tasks}
-          dateRangeFilter={selectedDateRange}
-          onDateRangeChange={handleSelectedDateRangeChange}
-          phaseFilter={selectedPhase}
-          onPhaseChange={handleSelectedPhaseChange}
-          phaseTypes={taskActionsString}
-        />
+        >
+          <Tabs
+            css={`
+              margin-bottom: 0px;
+            `}
+            items={[
+              <div>
+                <span>My Tasks </span>
+                <Tag limitDigits={4} label={jurorOpenTaskNumber} size="small" />
+              </div>,
+              <div>
+                <span>All Tasks </span>
+                <Tag limitDigits={4} label={openTasksNumber} size="small" />
+              </div>,
+            ]}
+            selected={screenIndex}
+            onChange={handleTabChange}
+          />
+        </div>
       )}
+
+      {(() => {
+        if (errorLoading) {
+          return <ErrorLoading subject="tasks" error={errorLoading.message} />
+        }
+        if (tasksFetching) {
+          return <TasksLoading />
+        }
+
+        if (!filtersSelected && tasks.length === 0) {
+          return myTasksSelected ? <NoMyTasks /> : <NoTasks />
+        }
+        return (
+          <TaskTable
+            tasks={tasks}
+            emptyFilterResults={emptyFilterResults}
+            onClearFilters={handleClearFilters}
+            dateRangeFilter={selectedDateRange}
+            onDateRangeChange={handleSelectedDateRangeChange}
+            phaseFilter={selectedPhase}
+            onPhaseChange={handleSelectedPhaseChange}
+            phaseTypes={taskActionsString}
+            onlyTable={onlyTable}
+          />
+        )
+      })()}
     </>
   )
 })

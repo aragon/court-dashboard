@@ -7,7 +7,7 @@ import { convertToString } from '../types/types'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
-  const disputes = useDisputesSubscription()
+  const { disputes } = useDisputesSubscription()
   const now = useNow()
 
   const disputesPhases = disputes.map(d =>

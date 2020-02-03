@@ -1,6 +1,6 @@
 import React from 'react'
 import dayjs from '../../lib/dayjs'
-import * as DisputesTypes from '../../types/types'
+import * as DisputesTypes from '../../types/dispute-status-types'
 
 import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
 

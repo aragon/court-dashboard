@@ -1,11 +1,11 @@
 import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import ANJIcon from '../../assets/anj.svg'
-import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
-import {
-  movementDirection,
-  convertToString,
-} from '../../types/anj-movement-types'
+import { formatUnits } from '../../lib/math-utils'
+// import {
+//   movementDirection,
+//   convertToString,
+// } from '../../types/anj-movement-types'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
@@ -117,11 +117,11 @@ const Balance = React.memo(function Balance({
           color: ${theme.contentSecondary};
         `}
       >
-        {activity ? (
+        {/* {activity ? (
           <LatestActivity activity={activity} tokenSymbol={symbol} />
         ) : (
           <span>No recent 24h activity</span>
-        )}
+        )} */}
       </div>
 
       {amount.gt(0) && (
@@ -152,33 +152,33 @@ const Balance = React.memo(function Balance({
   )
 })
 
-const LatestActivity = ({ activity }) => {
-  const theme = useTheme()
-  const { anjToken } = useCourtConfig()
-  const isIncoming = activity.direction === movementDirection.Incoming
-  const displaySign =
-    activity.direction === movementDirection.Incoming ||
-    activity.direction === movementDirection.Outgoing
+// const LatestActivity = ({ activity }) => {
+//   const theme = useTheme()
+//   const { anjToken } = useCourtConfig()
+//   const isIncoming = activity.direction === movementDirection.Incoming
+//   const displaySign =
+//     activity.direction === movementDirection.Incoming ||
+//     activity.direction === movementDirection.Outgoing
 
-  let color
-  if (displaySign) color = isIncoming ? theme.positive : theme.negative
+//   let color
+//   if (displaySign) color = isIncoming ? theme.positive : theme.negative
 
-  return (
-    <span>
-      <span
-        css={`
-          color: ${color};
-        `}
-      >{`
-      ${formatTokenAmount(
-        activity.amount,
-        isIncoming,
-        anjToken.decimals,
-        displaySign
-      )} ${anjToken.symbol}`}</span>{' '}
-      {convertToString(activity.type)}
-    </span>
-  )
-}
+//   return (
+//     <span>
+//       <span
+//         css={`
+//           color: ${color};
+//         `}
+//       >{`
+//       ${formatTokenAmount(
+//         activity.amount,
+//         isIncoming,
+//         anjToken.decimals,
+//         displaySign
+//       )} ${anjToken.symbol}`}</span>{' '}
+//       {convertToString(activity.type)}
+//     </span>
+//   )
+// }
 
 export default Balance

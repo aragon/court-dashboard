@@ -3,8 +3,9 @@ import { Button, GU, Header, SidePanel, Split } from '@aragon/ui'
 
 import BalanceModule from './BalanceModule'
 import DashboardStats from './DashboardStats'
-import TaskTable from './TaskTable'
-import { tasks } from '../../mock-data'
+import Tasks from '../../components/Tasks/Tasks'
+
+// import { tasks } from '../../mock-data'
 import Welcome from './Welcome'
 import { BalancesProvider, useBalances } from './BalancesProvider'
 
@@ -58,10 +59,7 @@ function Dashboard() {
         <Welcome />
       )}
 
-      <Split
-        primary={<TaskTable tasks={tasks} />}
-        secondary={<DashboardStats />}
-      />
+      <Split primary={<Tasks onlyTable />} secondary={<DashboardStats />} />
       <SidePanel
         title={`${getRequestModeString(mode)} ANJ`}
         opened={panelState.visible}
