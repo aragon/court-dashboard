@@ -51,7 +51,7 @@ const Balance = React.memo(function Balance({
   const convertedAmount = useBalanceToUsd(symbol, decimals, amount) // TODO: Change to symbol once price available
 
   const springProps = useSpring({
-    opacity: 1,
+    to: { opacity: 1 },
     from: { opacity: 0 },
     delay: 200,
   })
