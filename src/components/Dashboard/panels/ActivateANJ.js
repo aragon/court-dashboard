@@ -2,11 +2,7 @@ import React, { useCallback } from 'react'
 
 import { useCourtConfig } from '../../../providers/CourtConfig'
 import ANJForm from './ANJForm'
-import { formatUnits, parseUnits } from '../../../lib/math-utils'
-
-const INVALID_MINIMUM_AMOUNT_ERROR = Symbol('IVALID_AMOUNT')
-const AMOUNT_NOT_ZERO_ERORR = Symbol('AMOUNT_NOT_ZERO_ERORR')
-const INSUFFICIENT_FUNDS_ERROR = Symbol('INSUFFICIENT_FUNDS_ERROR')
+import { formatUnits } from '../../../lib/math-utils'
 
 const ActivateANJ = React.memo(function ActivateANJ({
   onActivateANJ,
@@ -28,28 +24,8 @@ const ActivateANJ = React.memo(function ActivateANJ({
   })
 
   const validation = useCallback(
-    amount => {
-      const amountBN = parseUnits(amount, anjToken.decimals)
-
+    amountBN => {
       if (amountBN.gt(maxAmount)) {
-        return INSUFFICIENT_FUNDS_ERROR
-      }
-
-      if (amountBN.eq(0)) {
-        return AMOUNT_NOT_ZERO_ERORR
-      }
-
-      if (activeBalance.add(amountBN).lt(minActiveBalance))
-        return INVALID_MINIMUM_AMOUNT_ERROR
-
-      return null
-    },
-    [activeBalance, anjToken.decimals, maxAmount, minActiveBalance]
-  )
-
-  const errorToMessage = useCallback(
-    error => {
-      if (error === INSUFFICIENT_FUNDS_ERROR) {
         return `Insufficient funds, your ${
           fromWallet
             ? 'wallet balance is'
@@ -57,17 +33,21 @@ const ActivateANJ = React.memo(function ActivateANJ({
         } ${maxAmountFormatted} ${anjToken.symbol} `
       }
 
-      if (error === AMOUNT_NOT_ZERO_ERORR) {
-        return 'Amount must not be zero'
-      }
-
-      if (error === INVALID_MINIMUM_AMOUNT_ERROR) {
+      if (activeBalance.add(amountBN).lt(minActiveBalance)) {
         return `You must have at least ${minActiveBalanceFormatted} ${anjToken.symbol} activated`
       }
 
-      return ''
+      return null
     },
-    [anjToken.symbol, fromWallet, maxAmountFormatted, minActiveBalanceFormatted]
+    [
+      activeBalance,
+      anjToken.symbol,
+      fromWallet,
+      maxAmount,
+      maxAmountFormatted,
+      minActiveBalance,
+      minActiveBalanceFormatted,
+    ]
   )
 
   return (
@@ -76,8 +56,7 @@ const ActivateANJ = React.memo(function ActivateANJ({
       maxAmount={maxAmount}
       onSubmit={onActivateANJ}
       onDone={onDone}
-      validateForm={validation}
-      errorToMessage={errorToMessage}
+      runParentValidation={validation}
     />
   )
 })

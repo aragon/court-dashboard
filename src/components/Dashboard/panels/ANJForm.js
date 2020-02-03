@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import {
+  ButtonBase,
   Button,
   Field,
   GU,
@@ -9,30 +10,47 @@ import {
   useTheme,
 } from '@aragon/ui'
 
-import { parseUnits, formatUnits } from '../../../lib/math-utils'
+import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
-
-const NO_ERROR = Symbol('NO_ERROR')
 
 const ANJForm = React.memo(function ANJForm({
   actionLabel,
   maxAmount,
   onDone,
   onSubmit,
-  validateForm,
-  errorToMessage,
+  runParentValidation,
 }) {
-  const [amount, setAmount] = useState({ value: '0', error: NO_ERROR })
+  const [amount, setAmount] = useState({
+    value: '0',
+    valueBN: bigNum(0),
+    error: null,
+  })
   const { anjToken } = useCourtConfig()
   const theme = useTheme()
   const inputRef = useSidePanelFocusOnReady()
 
   // Change amount handler
-  const handleAmountChange = useCallback(event => {
-    const newAmount = event.target.value
-    setAmount(amount => ({ ...amount, value: newAmount }))
-  }, [])
+  const handleAmountChange = useCallback(
+    event => {
+      const newAmount = event.target.value
+      let newAmountBN
 
+      try {
+        newAmountBN = parseUnits(newAmount, anjToken.decimals)
+      } catch (err) {
+        newAmountBN = bigNum(-1)
+      }
+
+      setAmount(amount => ({
+        ...amount,
+        value: newAmount,
+        valueBN: newAmountBN,
+      }))
+    },
+    [anjToken.decimals]
+  )
+
+  // Max value selection handler
   const handleOnSelectMaxValue = useCallback(() => {
     setAmount(amount => ({
       ...amount,
@@ -41,14 +59,28 @@ const ANJForm = React.memo(function ANJForm({
         commas: false,
         precision: anjToken.decimals,
       }),
+      valueBN: maxAmount,
     }))
   }, [anjToken.decimals, maxAmount])
+
+  // Form valdiation
+  const validateForm = useCallback(() => {
+    if (amount.valueBN.eq(0)) {
+      return 'Amount must not be zero'
+    }
+
+    if (amount.valueBN.eq(-1)) {
+      return 'Wrong amount format'
+    }
+
+    return runParentValidation(amount.valueBN)
+  }, [amount.valueBN, runParentValidation])
 
   // Form submit
   const handleSubmit = async event => {
     event.preventDefault()
 
-    const error = validateForm(amount.value)
+    const error = validateForm(amount.valueBN)
     if (error) {
       setAmount(amount => ({ ...amount, error }))
       return
@@ -57,7 +89,7 @@ const ANJForm = React.memo(function ANJForm({
     setAmount(amount => ({ ...amount, error: '' }))
 
     try {
-      const tx = await onSubmit(parseUnits(amount.value, anjToken.decimals))
+      const tx = await onSubmit(amount.valueBN)
       await tx.wait()
     } catch (err) {
       console.log('Error submitting tx: ', err) // TODO: How should we handle errors ?
@@ -65,7 +97,7 @@ const ANJForm = React.memo(function ANJForm({
     onDone()
   }
 
-  const errorMessage = errorToMessage(amount.error)
+  const errorMessage = amount.error
 
   return (
     <form onSubmit={handleSubmit}>
@@ -83,16 +115,15 @@ const ANJForm = React.memo(function ANJForm({
           ref={inputRef}
           required
           adornment={
-            <span
+            <ButtonBase
               css={`
                 margin-right: ${1 * GU}px;
                 color: ${theme.accent};
-                cursor: pointer;
               `}
               onClick={handleOnSelectMaxValue}
             >
               MAX
-            </span>
+            </ButtonBase>
           }
           adornmentPosition="end"
         />
