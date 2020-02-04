@@ -1,7 +1,7 @@
 import React from 'react'
 import { GU, LoadingRing, textStyle } from '@aragon/ui'
 
-function Loading() {
+function Loading({ height }) {
   return (
     <div
       css={`
@@ -9,7 +9,7 @@ function Loading() {
         align-items: center;
         width: 150px;
         margin: 0 auto;
-        height: 50px;
+        height: ${height ? `${height}px` : 'auto'};
         padding-bottom: ${1 * GU}px;
       `}
     >

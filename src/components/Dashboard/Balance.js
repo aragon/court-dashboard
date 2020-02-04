@@ -2,15 +2,16 @@ import React from 'react'
 import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
 import { useSpring, animated } from 'react-spring'
 
-import ANJIcon from '../../assets/IconANJ.svg'
-import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
-import { movementDirection, convertToString } from '../../types/anj-types'
-import { useCourtConfig } from '../../providers/CourtConfig'
+import Loading from './Loading'
 
+import { useCourtConfig } from '../../providers/CourtConfig'
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
 
+import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
+import { movementDirection, convertToString } from '../../types/anj-types'
+
+import ANJIcon from '../../assets/IconANJ.svg'
 import lockIcon from '../../assets/IconLock.svg'
-import Loading from './Loading'
 
 const splitAmount = amount => {
   const [integer, fractional] = amount.split('.')
@@ -64,7 +65,7 @@ const Balance = React.memo(function Balance({
         `}
       >
         {loading ? (
-          <Loading />
+          <Loading height={86} />
         ) : (
           <animated.div
             style={springProps}
@@ -128,7 +129,7 @@ const Balance = React.memo(function Balance({
       {loading ? (
         <div
           css={`
-            height: 50px;
+            height: 96px;
           `}
         />
       ) : (
