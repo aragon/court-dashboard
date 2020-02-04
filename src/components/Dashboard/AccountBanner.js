@@ -85,7 +85,7 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
     theme
   )
 
-  if (loading) return <Loading height={49} />
+  if (loading) return <Loading height={48} />
 
   if (attributes.showProbability)
     return <BannerWithProbability activeBalance={activeBalance} />
