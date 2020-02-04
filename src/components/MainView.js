@@ -1,5 +1,5 @@
 import React from 'react'
-import { GU, Layout, Main, useViewport, useTheme } from '@aragon/ui'
+import { GU, Layout, useViewport } from '@aragon/ui'
 import NavBar from './NavBar'
 import Header from './Header'
 
@@ -7,7 +7,7 @@ const NAV_BAR_WIDTH = 25 * GU
 
 function MainView({ children }) {
   const { width: vw } = useViewport()
-  const theme = useTheme()
+  // const theme = useTheme()
   return (
     <div
       css={`
@@ -46,14 +46,7 @@ function MainView({ children }) {
             padding-bottom: ${4 * GU}px;
           `}
         >
-          <Main
-            assetsUrl="/aragon-ui/"
-            layout={false}
-            scrollView={false}
-            theme={theme}
-          >
-            <Layout parentWidth={vw - NAV_BAR_WIDTH}>{children}</Layout>
-          </Main>
+          <Layout parentWidth={vw - NAV_BAR_WIDTH}>{children}</Layout>
         </div>
       </div>
     </div>
