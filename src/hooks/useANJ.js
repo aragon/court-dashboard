@@ -105,7 +105,7 @@ function useConvertedMovements(movements) {
 }
 
 // Calculates the latest movement for each balance
-// In case the balance is active or ianctive, we must also calculate all non effective movements to get the effective balance at current term
+// In case the balance is active or inactive, we must also calculate all non effective movements to get the effective balance at current term
 function useBalanceWithMovements(balance, movements, balanceType) {
   const acceptedMovements = acceptedMovementsPerBalance.get(balanceType)
   const filteredMovements = useFilteredMovements(movements, acceptedMovements)

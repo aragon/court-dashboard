@@ -94,22 +94,10 @@ export function useJurorBalancesSubscription(jurorId) {
 
   return {
     balances,
-    fetching: !balances && errors.length === 0,
     movements,
+    fetching: !balances && errors.length === 0,
+    errors,
   }
-}
-
-// Court config
-export function useCourtSubscription(courtAddress) {
-  const [result] = useSubscription({
-    query: CourtConfig,
-    variables: { id: courtAddress },
-  })
-
-  // TODO: handle possible errors
-  const courtConfig = result.data && result.data.courtConfig
-
-  return courtConfig
 }
 
 // Single dispute

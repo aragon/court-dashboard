@@ -32,6 +32,7 @@ function Dashboard() {
     appealCollaterals,
     balances,
     fetching,
+    // errorsFetching, //TODO: handle errors
     mode,
     panelState,
     requests,
