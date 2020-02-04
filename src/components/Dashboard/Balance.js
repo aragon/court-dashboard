@@ -3,14 +3,16 @@ import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
 
 import { useSpring, animated } from 'react-spring'
 
-import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
-import { movementDirection, convertToString } from '../../types/anj-types'
+import Loading from './Loading'
+
 import { useCourtConfig } from '../../providers/CourtConfig'
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
 
+import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
+import { movementDirection, convertToString } from '../../types/anj-types'
+
 import ANJIcon from '../../assets/IconANJ.svg'
 import lockIcon from '../../assets/IconLock.svg'
-import Loading from './Loading'
 
 const splitAmount = amount => {
   const [integer, fractional] = amount.split('.')
@@ -51,7 +53,7 @@ const Balance = React.memo(function Balance({
   const convertedAmount = useBalanceToUsd(symbol, decimals, amount) // TODO: Change to symbol once price available
 
   const springProps = useSpring({
-    opacity: 1,
+    to: { opacity: 1 },
     from: { opacity: 0 },
     delay: 200,
   })
@@ -64,7 +66,7 @@ const Balance = React.memo(function Balance({
         `}
       >
         {loading ? (
-          <Loading />
+          <Loading height={86} />
         ) : (
           <animated.div
             style={springProps}
@@ -110,7 +112,7 @@ const Balance = React.memo(function Balance({
                 `}
               >
                 {splitAmount(formatUnits(amount, { digits: decimals }))}
-                <img height="20px" width="18px" src={ANJIcon} />
+                <img height="20" width="18" src={ANJIcon} alt="ANJ" />
               </div>
               <span
                 css={`
@@ -128,7 +130,7 @@ const Balance = React.memo(function Balance({
       {loading ? (
         <div
           css={`
-            height: 50px;
+            height: 96px;
           `}
         />
       ) : (

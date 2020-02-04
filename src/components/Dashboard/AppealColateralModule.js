@@ -16,7 +16,7 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
   return (
     <Box heading="Appeal collateral" padding={0}>
       {loading ? (
-        <Loading />
+        <Loading height={50} />
       ) : (
         appeals.map(({ amountStaked, disputeId }, index) => (
           <div
