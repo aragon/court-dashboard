@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Button } from '@aragon/ui'
-// import { Transition, animated } from 'react-spring'
-import { animated } from 'react-spring'
+import { Button, springs } from '@aragon/ui'
+import { Transition, animated } from 'react-spring'
 import { ReactSpringStateType } from '../../prop-types'
 import RemoteImage from '../RemoteImage'
 
@@ -31,13 +30,13 @@ const HighlightScreen = ({
   visual,
 }) => {
   const visualSrc = compactMode && visual.small ? visual.small : visual.large
-  console.log('visuaaaaaaaal ', visualSrc)
   const [leaving, setLeaving] = useState(false)
   useEffect(() => {
     if (state === 'leave') {
       setLeaving(true)
     }
   }, [state])
+
   return (
     <div
       css={`
@@ -145,22 +144,38 @@ const HighlightScreen = ({
       <RemoteImage src={visualSrc}>
         {({ exists }) =>
           exists && (
-            <AnimDiv
-              css={`
-                overflow: hidden;
-                position: relative;
-                z-index: 2;
-                flex-shrink: 1;
-                width: 100%;
-                height: ${verticalMode ? `${RATIO_TOP * 100}%` : '100%'};
-                background: ${`
-                      url(${visualSrc})
-                      ${verticalMode ? '50% 40%' : '0 50%'} / cover
-                      no-repeat,
-                    `};
-              `}
-              style={{ opacity: leaving ? 0 : 1 }}
-            />
+            <Transition
+              native
+              items={exists}
+              from={{ opacity: 0 }}
+              enter={{ opacity: 1 }}
+              leave={{ opacity: 0 }}
+              config={springs.lazy}
+            >
+              {exists =>
+                exists &&
+                (({ opacity }) => (
+                  <AnimDiv
+                    css={`
+                      overflow: hidden;
+                      position: relative;
+                      z-index: 2;
+                      flex-shrink: 1;
+                      width: 100%;
+                      height: ${verticalMode ? `${RATIO_TOP * 100}%` : '100%'};
+                      background: ${`
+                url(${visualSrc})
+                ${verticalMode ? '50% 40%' : '0 50%'} / cover
+                no-repeat;
+              `};
+                    `}
+                    style={{ opacity }}
+                  />
+                ))
+
+              /* eslint-enable react/prop-types */
+              }
+            </Transition>
           )
         }
       </RemoteImage>

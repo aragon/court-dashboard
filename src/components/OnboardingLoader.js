@@ -2,16 +2,24 @@ import React, { useCallback, useState } from 'react'
 import OnboardingModal from './Onboarding/OnboardingModal'
 
 function OnboardingLoader({ children }) {
-  const [onboardingVisible, setOnboardingVisible] = useState(true)
+  const [onboardingCompleted, setOnboardingCompleted] = useState(
+    localStorage.getItem('onboardingCompleted')
+  )
 
-  const handleCloseModal = useCallback(() => {
-    setOnboardingVisible(false)
+  const handleStartCourt = useCallback(() => {
+    localStorage.setItem('onboardingCompleted', true)
+    setOnboardingCompleted(true)
   }, [])
 
-  console.log('visible ', onboardingVisible)
   return (
     <React.Fragment>
-      <OnboardingModal visible={onboardingVisible} onClose={handleCloseModal} />
+      {!onboardingCompleted && (
+        <OnboardingModal
+          visible={!onboardingCompleted}
+          onStartCourt={handleStartCourt}
+        />
+      )}
+
       <React.Fragment>{children}</React.Fragment>
     </React.Fragment>
   )
