@@ -17,6 +17,7 @@
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
+    "react-spring": "^7.2.10",
     "styled-components": "^4.4.1",
     "subscriptions-transport-ws": "^0.9.16",
     "urql": "^1.6.3"
@@ -75,7 +76,6 @@
     "eslint-plugin-standard": "^4.0.1",
     "prettier": "^1.19.1",
     "react-app-rewired": "^2.1.5",
-    "react-spring": "^7.2.10",
     "subscriptions-transport-ws": "^0.9.16",
     "svgo": "^1.3.2"
   }

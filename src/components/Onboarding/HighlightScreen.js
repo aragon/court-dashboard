@@ -205,7 +205,6 @@ HighlightScreen.propTypes = {
   visual: PropTypes.shape({
     small: PropTypes.string,
     large: PropTypes.string.isRequired,
-    color: PropTypes.string.isRequired,
   }).isRequired,
 }
 
