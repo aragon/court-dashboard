@@ -86,7 +86,7 @@ const ANJForm = React.memo(function ANJForm({
       return
     }
 
-    setAmount(amount => ({ ...amount, error: '' }))
+    setAmount(amount => ({ ...amount, error: null }))
 
     try {
       const tx = await onSubmit(amount.valueBN)
