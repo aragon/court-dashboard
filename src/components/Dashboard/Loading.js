@@ -20,7 +20,7 @@ function Loading() {
           margin-left: ${1 * GU}px;
         `}
       >
-        Loading...
+        Loading…
       </span>
     </div>
   )
