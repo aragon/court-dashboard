@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ButtonBase, springs } from '@aragon/ui'
-import { useSpring, animated } from 'react-spring/hooks'
+import { useSpring, animated } from 'react-spring'
 import arrowSvg from './assets/arrow.svg'
 
 const buttonTransitionStyles = show => ({

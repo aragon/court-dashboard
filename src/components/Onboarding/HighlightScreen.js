@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Button, springs } from '@aragon/ui'
-import { Transition, animated } from 'react-spring'
+import { Transition, animated } from 'react-spring/renderprops'
+
 import { ReactSpringStateType } from '../../prop-types'
 import RemoteImage from '../RemoteImage'
 
@@ -205,7 +206,6 @@ HighlightScreen.propTypes = {
   visual: PropTypes.shape({
     small: PropTypes.string,
     large: PropTypes.string.isRequired,
-    color: PropTypes.string.isRequired,
   }).isRequired,
 }
 

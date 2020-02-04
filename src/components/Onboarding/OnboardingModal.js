@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Modal, springs, Viewport } from '@aragon/ui'
-import { Transition } from 'react-spring'
+import { Transition } from 'react-spring/renderprops'
 import { useArrows, useSteps } from '../../hooks/useOnboarding'
 import { highlights } from './content'
 import Navigation from './Navigation'
