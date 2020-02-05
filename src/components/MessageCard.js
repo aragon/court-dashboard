@@ -23,6 +23,7 @@ export default function MessageCard({
       >
         <img
           src={icon}
+          alt=""
           css={`
             display: block;
             width: 100%;
@@ -49,7 +50,7 @@ export default function MessageCard({
                 ${textStyle('title2')}
               `}
             >
-              Loading...
+              Loading…
             </span>
           </div>
         ) : (
@@ -65,7 +66,7 @@ export default function MessageCard({
               css={`
                 ${textStyle('body2')}
                 color: ${theme.contentSecondary};
-                margin-top: ${GU * 1.5}px;
+                margin-top: ${1.5 * GU}px;
                 width: ${55 * GU}px;
                 display: flex;
                 text-align: center; 
