@@ -106,7 +106,7 @@ const BalanceModule = React.memo(
                 `}
               >
                 <Balance
-                  amount={unlockedActiveBalance && unlockedActiveBalance}
+                  amount={unlockedActiveBalance}
                   label="Active"
                   mainIcon={activeANJIcon}
                   mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
