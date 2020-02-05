@@ -69,6 +69,7 @@ export function formatUnits(
  */
 export function round(value, precision = 2) {
   let [whole, decimal] = value.split('.')
+
   if (!decimal || decimal.length <= precision) return value
 
   // Round and keep the last `precision` digits
