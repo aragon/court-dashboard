@@ -14,6 +14,10 @@ import activeANJIcon from '../../assets/IconANJActive.svg'
 
 import { getAccountStatus } from '../../utils/account-utils'
 import { useConnectedAccount } from '../../providers/Web3'
+import {
+  getTotalUnlockedActiveBalance,
+  getTotalEffectiveInactiveBalance,
+} from '../../utils/balance-utils'
 
 const BalanceModule = React.memo(
   ({
@@ -32,18 +36,12 @@ const BalanceModule = React.memo(
     const oneColumn = layout === 'small' || layout === 'medium'
     const status = balances && getAccountStatus(balances, minActiveBalance)
 
-    const {
-      walletBalance,
-      activeBalance,
-      inactiveBalance,
-      deactivationBalance,
-    } = balances || {}
+    const { walletBalance, activeBalance, inactiveBalance } = balances || {}
 
+    const unlockedActiveBalance =
+      balances && getTotalUnlockedActiveBalance(balances)
     const effectiveInactiveBalance =
-      inactiveBalance &&
-      inactiveBalance.amount
-        .add(deactivationBalance.amount)
-        .sub(inactiveBalance.amountNotEffective)
+      balances && getTotalEffectiveInactiveBalance(balances)
 
     return (
       <Split
@@ -108,7 +106,7 @@ const BalanceModule = React.memo(
                 `}
               >
                 <Balance
-                  amount={activeBalance && activeBalance.amount}
+                  amount={unlockedActiveBalance}
                   label="Active"
                   mainIcon={activeANJIcon}
                   mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
