@@ -204,7 +204,6 @@ const BannerWithProbability = ({ activeBalance }) => {
 
   const paragraph =
     'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute'
-
   return (
     <Wrapper
       mainIcon={<CircleGraph value={draftingProbability} size={6 * GU} />}

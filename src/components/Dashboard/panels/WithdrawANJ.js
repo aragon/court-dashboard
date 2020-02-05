@@ -1,16 +1,12 @@
 import React, { useCallback } from 'react'
 import ANJForm from './ANJForm'
-import { formatUnits, parseUnits } from '../../../lib/math-utils'
+import { formatUnits } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
-
-const AMOUNT_NOT_ZERO_ERORR = Symbol('AMOUNT_NOT_ZERO_ERORR')
-const INSUFFICIENT_FUNDS_ERROR = Symbol('INSUFFICIENT_FUNDS_ERROR')
 
 const WithdrawANJ = React.memo(function WithdrawANJ({
   onWithdrawANJ,
   inactiveBalance,
   onDone,
-  panelOpened,
 }) {
   const { anjToken } = useCourtConfig()
 
@@ -21,35 +17,14 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
   })
 
   const validation = useCallback(
-    amount => {
-      const amountBN = parseUnits(amount, anjToken.decimals)
-
+    amountBN => {
       if (amountBN.gt(maxAmount)) {
-        return INSUFFICIENT_FUNDS_ERROR
-      }
-
-      if (amountBN.eq(0)) {
-        return AMOUNT_NOT_ZERO_ERORR
+        return `Insufficient funds, you cannnot withdraw more than ${maxAmountFormatted} ${anjToken.symbol}`
       }
 
       return null
     },
-    [anjToken.decimals, maxAmount]
-  )
-
-  const errorToMessage = useCallback(
-    error => {
-      if (error === INSUFFICIENT_FUNDS_ERROR) {
-        return `Insufficient funds, you cannnot withdraw more than ${maxAmountFormatted} ${anjToken.symbol}`
-      }
-
-      if (error === AMOUNT_NOT_ZERO_ERORR) {
-        return 'Amount must not be zero'
-      }
-
-      return ''
-    },
-    [anjToken.symbol, maxAmountFormatted]
+    [anjToken.symbol, maxAmount, maxAmountFormatted]
   )
 
   return (
@@ -58,8 +33,7 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
       maxAmount={maxAmount}
       onSubmit={onWithdrawANJ}
       onDone={onDone}
-      validateForm={validation}
-      errorToMessage={errorToMessage}
+      runParentValidation={validation}
     />
   )
 })
