@@ -97,7 +97,7 @@ const DisputeInfo = React.memo(function({
           </div>
         </div>
         {loading ? (
-          <Loading noBorder />
+          <Loading border={false} />
         ) : (
           <div
             css={`

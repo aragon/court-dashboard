@@ -6,11 +6,11 @@ export default function MessageCard({
   title,
   paragraph,
   loading,
-  noBorder,
+  border = true,
 }) {
   const theme = useTheme()
 
-  const Container = noBorder ? 'div' : Box
+  const Container = border ? Box : 'div'
   return (
     <Container>
       <div
@@ -26,7 +26,7 @@ export default function MessageCard({
           css={`
             display: block;
             width: 100%;
-            max-width: 237px;
+            max-width: ${30 * GU}px;
             height: auto;
             margin: ${4 * GU}px 0;
           `}
@@ -66,7 +66,7 @@ export default function MessageCard({
                 ${textStyle('body2')}
                 color: ${theme.contentSecondary};
                 margin-top: ${GU * 1.5}px;
-                width: 450px;
+                width: ${55 * GU}px;
                 display: flex;
                 text-align: center; 
               `}

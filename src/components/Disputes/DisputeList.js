@@ -1,17 +1,17 @@
 import React, { useCallback, useState } from 'react'
 import { Bar, CardLayout, GU, useTheme } from '@aragon/ui'
 
-import * as DisputesTypes from '../../types/dispute-status-types'
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
-import MessageCard from '../MessageCard'
 import DisputesLoading from './Loading'
-
-import noDataSvg from '../../assets/noData.svg'
-import noDraftSvg from '../../assets/noDraft.svg'
+import ErrorLoading from '../ErrorLoading'
+import MessageCard from '../MessageCard'
 
 import dayjs from '../../lib/dayjs'
-import ErrorLoading from '../ErrorLoading'
+
+import noDataSvg from '../../assets/noData.svg'
+import * as DisputesTypes from '../../types/dispute-status-types'
+import noDraftSvg from '../../assets/noDraft.svg'
 
 const ALL_FILTER = 0
 const UNSELECTED_FILTER = -1
