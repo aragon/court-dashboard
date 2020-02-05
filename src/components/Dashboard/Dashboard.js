@@ -3,7 +3,6 @@ import { Button, GU, Header, SidePanel } from '@aragon/ui'
 
 import BalanceModule from './BalanceModule'
 import Tasks from '../../components/Tasks/Tasks'
-// import { tasks } from '../../mock-data'
 import Welcome from './Welcome'
 import { BalancesProvider, useBalances } from './BalancesProvider'
 
