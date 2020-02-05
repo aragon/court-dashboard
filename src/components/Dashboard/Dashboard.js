@@ -26,7 +26,15 @@ import {
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
-  const { actions, balances, mode, panelState, requests } = useDashboardLogic()
+  const {
+    actions,
+    balances,
+    fetching,
+    // errorsFetching, //TODO: handle errors
+    mode,
+    panelState,
+    requests,
+  } = useDashboardLogic()
 
   return (
     <React.Fragment>
@@ -54,6 +62,7 @@ function Dashboard() {
       {connectedAccount ? (
         <BalanceModule
           balances={balances}
+          loading={fetching}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
           onRequestStakeActivate={requests.stakeActivateANJ}
