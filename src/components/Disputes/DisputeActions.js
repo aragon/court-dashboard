@@ -147,7 +147,7 @@ const InformationSection = ({
           `}
         >
           <img
-            alt="vote-info-icon"
+            alt=""
             src={icon}
             height="42"
             css={`
