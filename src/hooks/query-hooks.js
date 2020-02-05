@@ -1,4 +1,5 @@
 import { useQuery } from 'urql'
+
 import { JurorDrafts } from '../queries/disputes'
 import { FirstANJActivationMovement } from '../queries/balances'
 
