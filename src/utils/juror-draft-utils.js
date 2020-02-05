@@ -13,7 +13,6 @@ export function jurorVoted(jurorDraft) {
   return !!jurorDraft.commitment
 }
 
-//
 export function canJurorReveal(jurorDraft) {
   const hasNotRevealed = !jurorDraft.outcome
   return (

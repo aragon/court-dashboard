@@ -47,7 +47,7 @@ function DisputeActions({
     return <DisputeDraft disputeId={dispute.id} onDraft={onDraft} />
   }
 
-  const jurorDraft = getJurorDraft(lastRound, connectedAccount)
+  const jurorDraft = getJurorDraft(lastRound, connectedAccount) // TODO: Should we also show results for past rounds ?
   const isJurorDrafted = !!jurorDraft
   const hasJurorVoted = isJurorDrafted && jurorVoted(jurorDraft)
 
@@ -69,24 +69,27 @@ function DisputeActions({
         lastRound={lastRound}
       />
       {(() => {
+        // Means juror has already voted
         if (phase === DisputePhase.VotingPeriod) return null
 
-        if (isJurorDrafted && hasJurorVoted) {
-          if (phase === DisputePhase.RevealVote) {
-            return (
-              canJurorReveal(jurorDraft) && (
-                <DisputeReveal
-                  disputeId={dispute.id}
-                  roundId={dispute.lastRoundId}
-                  commitment={jurorDraft.commitment}
-                  onRequestReveal={onRequestReveal}
-                />
-              )
-            )
-          } else {
-            return null
-          }
-        }
+        // If we are past the voting period && juror not drafted
+        // or juror drafted and hasn't voted
+        if (!isJurorDrafted || !hasJurorVoted) return null
+
+        // If reveal period has already pass
+        if (phase !== DisputePhase.RevealVote) return null
+
+        // If juror cannot reveal (has already revealed || voted leaked)
+        if (!canJurorReveal(jurorDraft)) return null
+
+        return (
+          <DisputeReveal
+            disputeId={dispute.id}
+            roundId={dispute.lastRoundId}
+            commitment={jurorDraft.commitment}
+            onRequestReveal={onRequestReveal}
+          />
+        )
       })()}
 
       {(phase === DisputePhase.AppealRuling ||
@@ -108,12 +111,7 @@ function DisputeActions({
   )
 }
 
-const InformationSection = ({
-  phase,
-  jurorDraft,
-  hasJurorVoted,
-  lastRound,
-}) => {
+function InformationSection({ phase, jurorDraft, hasJurorVoted, lastRound }) {
   const theme = useTheme()
 
   const { title, paragraph, background, icon, hint } = useInfoAttributes(
@@ -191,8 +189,9 @@ const useInfoAttributes = (
   return useMemo(() => {
     if (!jurorDraft) return {}
 
-    const isOpen =
-      phase !== DisputePhase.Ruled && phase !== DisputePhase.ClaimRewards
+    // If the dispute is in the execute ruling phase it means that the final
+    // ruling can already be ensured regarding if the ruling was computed or not
+    const finalRulingConfirmed = phase === DisputePhase.ExecuteRuling
 
     // Note that we can assume that the evidence submission and drafting phases have already passed since we do an early return above
     const votingPeriodEnded =
@@ -207,9 +206,9 @@ const useInfoAttributes = (
           ? 'Unfortunately, your vote has been leaked'
           : "Your vote wasn't casted on time.",
         paragraph: <ANJDiscountedMessage />,
-        backgroud: negativeBackground,
+        background: negativeBackground,
         icon: IconGavelRed,
-        hintText: voteLeaked ? 'Vote leaked (complete)' : null,
+        hintText: voteLeaked ? 'Vote leaked (complete)' : null, // TODO: Add hint for leaked vote
       }
     }
 
@@ -223,25 +222,47 @@ const useInfoAttributes = (
           background: negativeBackground,
           icon: IconGavelRed,
         }
-      } else {
-        // Juror has revealed
-        const hasVotedInConsensus =
-          jurorDraft.outcome === lastRound.vote.winningOutcome
+      }
 
+      // Juror has revealed
+      // Check if has voted in consensus with the mayority for the last round
+      const hasVotedInConsensus =
+        lastRound.vote && jurorDraft.outcome === lastRound.vote.winningOutcome
+
+      // We must check if the penalties were already settled so we can tell the jurors
+      // wether their ANJ locked balance has been discounted or they can claim rewards
+      // Note that if the penalties for the round are settled it means that the dispute has already ended
+      const settledPenalties = lastRound.settledPenalties
+
+      const title = hasVotedInConsensus
+        ? 'You have voted in consensus with the mayority'
+        : 'You have not voted in consensus with the mayority'
+      const background = hasVotedInConsensus
+        ? positiveBackground
+        : negativeBackground
+
+      // If penalties settled then the locked ANJ has been redistributed
+      if (settledPenalties) {
         return {
-          title: hasVotedInConsensus
-            ? 'You have voted in consensus with the mayority'
-            : 'You have not voted in consensus with the mayority',
+          title,
           paragraph: hasVotedInConsensus ? (
-            <ANJRewardsMessage isOpen={isOpen} />
+            <ANJRewardsMessage />
           ) : (
-            <ANJDiscountedMessage />
+            <ANJSlashedMessage />
           ),
-          background: hasVotedInConsensus
-            ? positiveBackground
-            : negativeBackground,
-          icon: IconRewardsGreen, // TODO: ask for an Icon rewards red
+          background,
+          icon: hasVotedInConsensus ? IconRewardsGreen : IconGavelRed,
         }
+      }
+
+      // Includes the cases where penalties weren't settled or the last round hasn't ended
+      return {
+        title,
+        paragraph: (
+          <ANJLockedMessage finalRulingConfirmed={finalRulingConfirmed} />
+        ),
+        background,
+        icon: hasVotedInConsensus ? IconGavelOrange : IconGavelRed,
       }
     }
 
@@ -255,6 +276,7 @@ const useInfoAttributes = (
   }, [
     hasJurorVoted,
     jurorDraft,
+    lastRound.settledPenalties,
     lastRound.vote,
     negativeBackground,
     phase,
@@ -263,8 +285,31 @@ const useInfoAttributes = (
   ])
 }
 
+const ANJLockedMessage = ({ finalRulingConfirmed }) => {
+  return (
+    <ANJMessage
+      result={`will remain locked until ${
+        finalRulingConfirmed
+          ? 'penalties are settled'
+          : 'final ruling is confirmed'
+      }. `}
+    />
+  )
+}
+
 const ANJDiscountedMessage = () => {
+  return <ANJMessage result="will be discounted" />
+}
+
+const ANJSlashedMessage = () => {
+  return (
+    <ANJMessage result="has been slashed and redistributed to other jurors" />
+  )
+}
+
+const ANJMessage = ({ result }) => {
   const theme = useTheme()
+
   return (
     <span>
       Your{' '}
@@ -275,28 +320,27 @@ const ANJDiscountedMessage = () => {
       >
         ANJ locked balance
       </span>{' '}
-      will be discounted
+      {result}
     </span>
   )
 }
 
-const ANJRewardsMessage = ({ isOpen }) => {
+const ANJRewardsMessage = () => {
   const theme = useTheme()
 
-  const Rewards = (
-    <span
-      css={`
-        color: ${theme.help};
-      `}
-    >
-      rewards
+  return (
+    <span>
+      You can now claim your
+      <span
+        css={`
+          color: ${theme.help};
+        `}
+      >
+        {' '}
+        rewards
+      </span>{' '}
+      in the dashboard.
     </span>
-  )
-
-  return isOpen ? (
-    <span>Your {Rewards} will be available when the dispute is closed</span>
-  ) : (
-    <span>You can now claim your {Rewards} in the dashboard</span>
   )
 }
 
