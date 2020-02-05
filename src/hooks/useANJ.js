@@ -140,9 +140,12 @@ function useBalanceWithMovements(balance, movements, balanceType) {
       // If the latest movement for the inactive balance is a deactivation, we must check that the deactivation is effective
       if (latestMovementType === anjMovementTypes.Deactivation) {
         if (!latestMovement.isEffective) {
-          // In case the deactivation is not effective, we'll get the second latest movement for the inactive balance
+          // In case the deactivation is not effective, we'll get the most recent effective movement for the inactive balance
+          // Note that the array is orderer by most recent desc
           if (balanceType === anjBalanceTypes.Inactive) {
-            latestMovement = filteredMovements.shift()
+            latestMovement = filteredMovements.find(
+              movement => movement.isEffective
+            )
           } else {
             // In case the deactivation is not effective, we'll show a deactivation process movement for the active Balance
             // Deactivation is between active and inactive balance so we can make sure that the current balanceType is the active
