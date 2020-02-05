@@ -28,7 +28,11 @@ const Tasks = React.memo(() => {
   }
 
   return (
-    <>
+    <div
+      css={`
+        padding-bottom: ${3 * GU}px;
+      `}
+    >
       <Header
         primary="Tasks"
         secondary={
@@ -99,7 +103,7 @@ const Tasks = React.memo(() => {
           phaseTypes={taskActionsString}
         />
       )}
-    </>
+    </div>
   )
 })
 
