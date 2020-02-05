@@ -7,9 +7,8 @@ import NoTasks from './NoTasks'
 import { useConnectedAccount } from '../../providers/Web3'
 import useFilteredTasks from '../../hooks/useFilteredTasks'
 
-const Tasks = React.memo(({ fromDashboard }) => {
+const Tasks = React.memo(({ onlyTable }) => {
   const connectedAccount = useConnectedAccount()
-  console.log('connected accccccount ', connectedAccount)
   const [screenIndex, setScreenIndex] = useState(0)
   const getScreenIndex = () => {
     if (connectedAccount) {
@@ -28,7 +27,7 @@ const Tasks = React.memo(({ fromDashboard }) => {
     jurorOpenTaskNumber,
     taskActionsString,
   } = useFilteredTasks(
-    fromDashboard ? getScreenIndex() : screenIndex,
+    onlyTable ? getScreenIndex() : screenIndex,
     connectedAccount
   )
 
@@ -38,7 +37,7 @@ const Tasks = React.memo(({ fromDashboard }) => {
 
   return (
     <>
-      {!fromDashboard && (
+      {!onlyTable && (
         <Header
           primary="Tasks"
           secondary={
@@ -75,7 +74,7 @@ const Tasks = React.memo(({ fromDashboard }) => {
         completedTasks={completedTasks}
         incompleteTasks={incompleteTasks}
       /> */}
-      {!fromDashboard && (
+      {!onlyTable && (
         <div
           css={`
             margin-top: ${2 * GU}px;
@@ -110,7 +109,7 @@ const Tasks = React.memo(({ fromDashboard }) => {
           phaseFilter={selectedPhase}
           onPhaseChange={handleSelectedPhaseChange}
           phaseTypes={taskActionsString}
-          fromDashboard
+          onlyTable
         />
       )}
     </>

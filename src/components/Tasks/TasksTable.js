@@ -21,7 +21,7 @@ const TaskTable = React.memo(function TaskTable({
   phaseFilter,
   onPhaseChange,
   phaseTypes,
-  fromDashboard,
+  onlyTable,
 }) {
   const theme = useTheme()
   const { below } = useViewport()
@@ -48,7 +48,7 @@ const TaskTable = React.memo(function TaskTable({
               Upcoming tasks
             </div>
           </div>
-          {!compactMode && !fromDashboard && (
+          {!compactMode && !onlyTable && (
             <TasksFilters
               dateRangeFilter={dateRangeFilter}
               onDateRangeChange={onDateRangeChange}

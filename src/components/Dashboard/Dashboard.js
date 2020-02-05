@@ -55,7 +55,7 @@ function Dashboard() {
         <Welcome />
       )}
 
-      <Tasks fromDashboard />
+      <Tasks onlyTable />
       <SidePanel
         title={`${getRequestModeString(mode)} ANJ`}
         opened={panelState.visible}
