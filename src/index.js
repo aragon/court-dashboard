@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import {
   createClient,
-  Provider,
+  Provider as UrqlProvider,
   cacheExchange,
   debugExchange,
   fetchExchange,
@@ -31,8 +31,8 @@ const client = createClient({
 })
 
 ReactDOM.render(
-  <Provider value={client}>
+  <UrqlProvider value={client}>
     <App />
-  </Provider>,
+  </UrqlProvider>,
   document.getElementById('root')
 )

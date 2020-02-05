@@ -7,27 +7,38 @@ import Web3ConnectProvider from './providers/Web3'
 import { CourtConfigProvider } from './providers/CourtConfig'
 import AppLoader from './components/AppLoader'
 import Routes from './Routes'
+import { UseWalletProvider } from 'use-wallet'
+import env, { PROVIDERS } from './environment'
+
+const connectors = PROVIDERS.reduce((connectors, provider) => {
+  if (provider.useWalletConf) {
+    connectors[provider.id] = provider.useWalletConf
+  }
+  return connectors
+}, {})
 
 function App() {
   return (
-    <BrowserRouter>
-      <Main
-        assetsUrl="/aragon-ui/"
-        layout={false}
-        scrollView={false}
-        theme={theme}
-      >
-        <Web3ConnectProvider>
-          <CourtConfigProvider>
-            <MainView>
-              <AppLoader>
-                <Routes />
-              </AppLoader>
-            </MainView>
-          </CourtConfigProvider>
-        </Web3ConnectProvider>
-      </Main>
-    </BrowserRouter>
+    <UseWalletProvider chainId={env('CHAIN_ID')} connectors={connectors}>
+      <BrowserRouter>
+        <Main
+          assetsUrl="/aragon-ui/"
+          layout={false}
+          scrollView={false}
+          theme={theme}
+        >
+          <Web3ConnectProvider>
+            <CourtConfigProvider>
+              <MainView>
+                <AppLoader>
+                  <Routes />
+                </AppLoader>
+              </MainView>
+            </CourtConfigProvider>
+          </Web3ConnectProvider>
+        </Main>
+      </BrowserRouter>
+    </UseWalletProvider>
   )
 }
 
