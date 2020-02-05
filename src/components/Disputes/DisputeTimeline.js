@@ -10,6 +10,11 @@ import {
   IconCheck,
 } from '@aragon/ui'
 
+import Stepper from '../Stepper'
+import Step from '../Step'
+
+import { useCourtConfig } from '../../providers/CourtConfig'
+
 import {
   IconFlag,
   IconFolder,
@@ -20,10 +25,6 @@ import {
   IconRewards,
   IconGavelNoFill,
 } from '../../utils/dispute-icons'
-
-import Stepper from '../Stepper'
-import Step from '../Step'
-import { useCourtConfig } from '../../providers/CourtConfig'
 
 import {
   Phase as DisputePhase,
@@ -51,76 +52,76 @@ const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
         {disputeTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
             return <ItemStep key={index} item={item} index={index} />
-          } else {
-            return item.map((round, roundIndex) => {
-              if (roundIndex === 0) {
-                return round.map((roundItem, phaseIndex) => (
-                  <ItemStep
-                    key={phaseIndex}
-                    item={roundItem}
-                    index={phaseIndex}
-                  />
-                ))
-              } else {
-                return (
-                  <Step
-                    key={roundIndex}
-                    active={false}
-                    content={
-                      <div
-                        css={`
-                          width: 100%;
-                        `}
-                      >
-                        <StyledAccordion>
-                          <Accordion
-                            key={roundIndex}
-                            items={[
-                              [
-                                <div
-                                  css={`
-                                    display: flex;
-                                    align-items: center;
-                                  `}
-                                >
-                                  <img
-                                    alt={18}
-                                    src={IconGavelNoFill}
-                                    css={`
-                                      margin-right: ${1 * GU}px;
-                                    `}
-                                  />
-                                  <RoundPill roundId={round[0].roundId} />
-                                </div>,
-
-                                <Stepper
-                                  lineColor={theme.accent.alpha(0.3)}
-                                  lineTop={12}
-                                  css={`
-                                    padding: ${3 * GU}px 0;
-                                  `}
-                                >
-                                  {round.map((roundItem, phaseIndex) => (
-                                    <ItemStep
-                                      key={phaseIndex}
-                                      item={roundItem}
-                                      index={phaseIndex}
-                                      roundStepContainer
-                                    />
-                                  ))}
-                                </Stepper>,
-                              ],
-                            ]}
-                          />
-                        </StyledAccordion>
-                      </div>
-                    }
-                    displayPoint={false}
-                  />
-                )
-              }
-            })
           }
+
+          return item.map((round, roundIndex) => {
+            if (roundIndex === 0) {
+              return round.map((roundItem, phaseIndex) => (
+                <ItemStep
+                  key={phaseIndex}
+                  item={roundItem}
+                  index={phaseIndex}
+                />
+              ))
+            }
+
+            return (
+              <Step
+                key={roundIndex}
+                active={false}
+                content={
+                  <div
+                    css={`
+                      width: 100%;
+                    `}
+                  >
+                    <StyledAccordion>
+                      <Accordion
+                        key={roundIndex}
+                        items={[
+                          [
+                            <div
+                              css={`
+                                display: flex;
+                                align-items: center;
+                              `}
+                            >
+                              <img
+                                alt={18}
+                                src={IconGavelNoFill}
+                                css={`
+                                  margin-right: ${1 * GU}px;
+                                `}
+                              />
+                              <RoundPill roundId={round[0].roundId} />
+                            </div>,
+
+                            <Stepper
+                              lineColor={theme.accent.alpha(0.3)}
+                              lineTop={12}
+                              css={`
+                                padding: ${3 * GU}px 0;
+                              `}
+                            >
+                              {round.map((roundItem, phaseIndex) => (
+                                <ItemStep
+                                  key={phaseIndex}
+                                  item={roundItem}
+                                  index={phaseIndex}
+                                  roundStepContainer
+                                />
+                              ))}
+                            </Stepper>,
+                          ],
+                        ]}
+                      />
+                    </StyledAccordion>
+                  </div>
+                }
+                displayPoint={false}
+              />
+            )
+          })
         })}
       </Stepper>
     </div>
@@ -185,7 +186,7 @@ function ItemStep({ item, index, roundStepContainer }) {
 function Outcome({ outcome, phase }) {
   const theme = useTheme()
   const title =
-    phase && phase === DisputePhase.RevealVote ? 'JURY OUTCOME' : 'OUTCOME'
+    phase && phase === DisputePhase.RevealVote ? 'Jury outcome' : 'Outcome'
 
   return (
     <React.Fragment>
@@ -198,6 +199,7 @@ function Outcome({ outcome, phase }) {
           css={`
             ${textStyle('body3')}
             color:${theme.contentSecondary};
+            text-transform: uppercase;
           `}
         >
           {title}
@@ -209,9 +211,7 @@ function Outcome({ outcome, phase }) {
 }
 
 function OutcomeText({ outcome, phase }) {
-  const theme = useTheme()
-
-  const { Icon, color } = getOutcomeIcon(outcome, theme)
+  const { Icon, color } = useOutcomeStyle(outcome)
 
   let outcomeText
   if (phase === DisputePhase.RevealVote) {
@@ -223,29 +223,29 @@ function OutcomeText({ outcome, phase }) {
 
   return (
     <div>
-      {Icon && (
-        <div
+      <div
+        css={`
+          color: ${color};
+          display: flex;
+          align-items: center;
+        `}
+      >
+        <Icon size="medium" />
+        <span
           css={`
-            color: ${color};
-            display: flex;
-            align-items: center;
+            ${textStyle('body2')}
           `}
         >
-          <Icon size="medium" />
-          <span
-            css={`
-              ${textStyle('body2')}
-            `}
-          >
-            {outcomeText}
-          </span>
-        </div>
-      )}
+          {outcomeText}
+        </span>
+      </div>
     </div>
   )
 }
 
-export function getOutcomeIcon(outcome, theme) {
+export function useOutcomeStyle(outcome) {
+  const theme = useTheme()
+
   if (!outcome || outcome === OUTCOMES.Refused) {
     return {
       Icon: IconClose,

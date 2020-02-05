@@ -19,6 +19,7 @@ import {
 } from '../utils/crvoting-utils'
 import { getModuleAddress } from '../utils/court-utils'
 import { bigNum } from '../lib/math-utils'
+import { retryMax } from '../utils/retry-max'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 900000 // Should be relative to every tx ?
@@ -232,19 +233,26 @@ export function useAppealDeposits(disputeId, roundId) {
   )
 
   useEffect(() => {
-    const getNextRoundDetails = async () => {
-      if (!disputeManagerContract) return
-      const nextRound = await disputeManagerContract.getNextRoundDetails(
-        disputeId,
-        roundId
-      )
+    const fetchNextRoundDetails = async () => {
+      if (!disputeManagerContract) {
+        return
+      }
 
-      const appealDeposit = nextRound[6]
-      const confirmAppealDeposit = nextRound[7]
-      setAppealDeposits([appealDeposit, confirmAppealDeposit])
+      retryMax(() =>
+        disputeManagerContract
+          .getNextRoundDetails(disputeId, roundId)
+          .then(nextRound => {
+            const appealDeposit = nextRound[6]
+            const confirmAppealDeposit = nextRound[7]
+            setAppealDeposits([appealDeposit, confirmAppealDeposit])
+          })
+          .catch(err => {
+            console.error(`Error fetching appeal deposits: ${err}`)
+          })
+      )
     }
 
-    getNextRoundDetails()
+    fetchNextRoundDetails()
   }, [disputeId, disputeManagerContract, roundId])
 
   return appealDeposits
@@ -259,8 +267,13 @@ export function useFeeBalanceOf(account) {
     const getFeeBalance = async () => {
       if (!feeTokenContract) return
 
-      const balance = await feeTokenContract.balanceOf(account)
-      setBalance(balance)
+      retryMax(() => feeTokenContract.balanceOf(account))
+        .then(balance => {
+          setBalance(balance)
+        })
+        .catch(err => {
+          console.error(`Error fetching account's fee balance : ${err}`)
+        })
     }
 
     getFeeBalance()
@@ -283,11 +296,13 @@ export function useAppealFeeAllowance(owner) {
     const getFeeAllowance = async () => {
       if (!feeTokenContract) return
 
-      const allowance = await feeTokenContract.allowance(
-        owner,
-        disputeManagerAddress
-      )
-      setAllowance(allowance)
+      retryMax(() => feeTokenContract.allowance(owner, disputeManagerAddress))
+        .then(allowance => {
+          setAllowance(allowance)
+        })
+        .catch(err => {
+          console.error(`Error fetching fee allowance : ${err}`)
+        })
     }
 
     getFeeAllowance()
@@ -311,6 +326,10 @@ export function useTotalActiveBalancePolling(termId) {
         .totalActiveBalanceAt(termId)
         .then(balance => {
           setTotalActiveBalance(balance)
+          fetchTotalActiveBalance()
+        })
+        .catch(err => {
+          console.log(`Error fetching balance: ${err} retrying...`)
           fetchTotalActiveBalance()
         })
     }, 500)

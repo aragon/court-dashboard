@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import styled from 'styled-components'
-
 import { Card, GU, textStyle, useTheme } from '@aragon/ui'
 
 import DisputeText from './DisputeText'

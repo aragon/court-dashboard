@@ -3,6 +3,7 @@ import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
 
 import DisputeList from './DisputeList'
+
 import useDisputes from '../../hooks/useDisputes'
 import { useJurorDraftQuery } from '../../hooks/query-hooks'
 import { useConnectedAccount } from '../../providers/Web3'

@@ -12,7 +12,7 @@ import DisputeExecuteRuling from './actions/DisputeExecuteRuling'
 import { useConnectedAccount } from '../../providers/Web3'
 import {
   getJurorDraft,
-  jurorVoted,
+  hasJurorVoted,
   canJurorReveal,
 } from '../../utils/juror-draft-utils'
 import {
@@ -49,9 +49,9 @@ function DisputeActions({
 
   const jurorDraft = getJurorDraft(lastRound, connectedAccount) // TODO: Should we also show results for past rounds ?
   const isJurorDrafted = !!jurorDraft
-  const hasJurorVoted = isJurorDrafted && jurorVoted(jurorDraft)
+  const jurorHasVoted = isJurorDrafted && hasJurorVoted(jurorDraft)
 
-  if (phase === DisputePhase.VotingPeriod && !hasJurorVoted) {
+  if (phase === DisputePhase.VotingPeriod && !jurorHasVoted) {
     return (
       <DisputeVoting
         isJurorDrafted={isJurorDrafted}
@@ -65,7 +65,7 @@ function DisputeActions({
       <InformationSection
         phase={phase}
         jurorDraft={jurorDraft}
-        hasJurorVoted={hasJurorVoted}
+        hasJurorVoted={jurorHasVoted}
         lastRound={lastRound}
       />
       {(() => {
@@ -74,7 +74,7 @@ function DisputeActions({
 
         // If we are past the voting period && juror not drafted
         // or juror drafted and hasn't voted
-        if (!isJurorDrafted || !hasJurorVoted) return null
+        if (!isJurorDrafted || !jurorHasVoted) return null
 
         // If reveal period has already pass
         if (phase !== DisputePhase.RevealVote) return null

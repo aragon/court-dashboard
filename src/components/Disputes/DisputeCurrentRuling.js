@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react'
 import { Distribution, GU, Tag, textStyle, useTheme } from '@aragon/ui'
 
+import { useConnectedAccount } from '../../providers/Web3'
+
 import {
   isValidOutcome,
   getTotalOutcomeWeight,
@@ -9,7 +11,6 @@ import {
   OUTCOMES,
 } from '../../utils/crvoting-utils'
 import { getPercentage } from '../../lib/math-utils'
-import { useConnectedAccount } from '../../providers/Web3'
 import { getJurorDraft } from '../../utils/juror-draft-utils'
 import { getDisputeLastRound } from '../../utils/dispute-utils'
 

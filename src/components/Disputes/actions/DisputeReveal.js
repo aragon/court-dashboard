@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, GU, Info } from '@aragon/ui'
 
-function DisputeReveal({ disputeId, roundId, commitment, onRequestReveal }) {
+function DisputeReveal({ onRequestReveal }) {
   return (
     <div>
       <Button

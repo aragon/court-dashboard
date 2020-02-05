@@ -8,12 +8,14 @@ import {
   TransactionBadge,
   useTheme,
 } from '@aragon/ui'
+
 import DisputeStatus from './DisputeStatus'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
+import Loading from './Loading'
+
 import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import iconCourt from '../../assets/courtIcon.svg'
-import Loading from './Loading'
 
 const DisputeInfo = React.memo(function({
   id,

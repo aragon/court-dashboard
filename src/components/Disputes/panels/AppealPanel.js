@@ -91,8 +91,8 @@ const AppealPanel = React.memo(function AppealPanel({
     try {
       event.preventDefault()
 
-      const error = validateForm(selectedOutcome.value)
-      if (error) {
+      const errored = validateForm(selectedOutcome.value)
+      if (errored) {
         return
       }
 
@@ -196,8 +196,10 @@ const AppealPanel = React.memo(function AppealPanel({
       )}
       <Info>
         Please note that if the final ruling outcome is different from your
-        selected appeal, the entire amount of your collateral will be slashed.
-        <Link href="#">Learn more</Link>
+        selected appeal, the entire amount of your collateral will be slashed.{' '}
+        <Link href="#" external={false}>
+          Learn more
+        </Link>
       </Info>
     </form>
   )

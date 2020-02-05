@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Button, GU, Info, textStyle } from '@aragon/ui'
+import { Button, GU, Info } from '@aragon/ui'
 
 import { useConnectedAccount } from '../../../providers/Web3'
 
@@ -18,6 +18,7 @@ function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
       <div
         css={`
           display: flex;
+          justify-content: space-between;
           width: 100%;
           margin-bottom: ${1.5 * GU}px;
         `}
@@ -61,12 +62,7 @@ function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
 }
 
 const VotingButton = styled(Button)`
-  ${textStyle('body2')};
-  width: 50%;
-  margin-right: ${1 * GU}px;
-  &:last-child {
-    margin-right: 0px;
-  }
+  width: calc((100% - ${2 * GU}px) / 3);
 `
 
 export default DisputeVoting

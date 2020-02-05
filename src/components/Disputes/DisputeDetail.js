@@ -10,16 +10,17 @@ import {
   SyncIndicator,
 } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
+
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
 import NoEvidence from './NoEvidence'
-
-import { hexToAscii, toDate } from '../../lib/web3-utils'
-import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
 import CommitPanel from './panels/CommitPanel'
 import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
+
+import { hexToAscii, toDate } from '../../lib/web3-utils'
+import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
@@ -137,20 +138,21 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 const PanelTitle = ({ requestMode, disputeId }) => {
   const { mode, data } = requestMode
 
-  let title
   if (mode === REQUEST_MODE.COMMIT)
-    title = `Commit your vote on dispute #${disputeId}`
-  else if (mode === REQUEST_MODE.REVEAL)
-    title = `Reveal your vote on dispute #${disputeId}`
-  else if (mode === REQUEST_MODE.APPEAL) {
+    return <>Commit your vote on dispute #{disputeId}</>
+
+  if (mode === REQUEST_MODE.REVEAL)
+    return <>Reveal your vote on dispute #{disputeId}</>
+
+  if (mode === REQUEST_MODE.APPEAL) {
     if (data.confirm) {
-      title = `Confirm an appeal on dispute #${disputeId}`
-    } else {
-      title = `Appeal ruling on dispute #${disputeId}`
+      return <>Confirm an appeal on dispute #{disputeId}</>
     }
+
+    return <>Appeal ruling on dispute #{disputeId}</>
   }
 
-  return <span>{title}</span>
+  return null
 }
 
 const PanelComponent = ({
@@ -164,32 +166,35 @@ const PanelComponent = ({
   ...props
 }) => {
   const { mode, data } = requestMode
-  switch (mode) {
-    case REQUEST_MODE.COMMIT: {
-      return (
-        <CommitPanel
-          dispute={dispute}
-          commitment={data.commitment}
-          onCommit={commit}
-          {...props}
-        />
-      )
-    }
-    case REQUEST_MODE.REVEAL:
-      return <RevealPanel dispute={dispute} onReveal={reveal} {...props} />
-    case REQUEST_MODE.APPEAL:
-      return (
-        <AppealPanel
-          dispute={dispute}
-          onApproveFeeDeposit={approveFeeDeposit}
-          onAppeal={data.confirm ? confirmAppeal : appeal}
-          confirm={data.confirm}
-          {...props}
-        />
-      )
-    default:
-      return null
+
+  if (mode === REQUEST_MODE.COMMIT) {
+    return (
+      <CommitPanel
+        dispute={dispute}
+        commitment={data.commitment}
+        onCommit={commit}
+        {...props}
+      />
+    )
   }
+
+  if (mode === REQUEST_MODE.REVEAL) {
+    return <RevealPanel dispute={dispute} onReveal={reveal} {...props} />
+  }
+
+  if (mode === REQUEST_MODE.APPEAL) {
+    return (
+      <AppealPanel
+        dispute={dispute}
+        onApproveFeeDeposit={approveFeeDeposit}
+        onAppeal={data.confirm ? confirmAppeal : appeal}
+        confirm={data.confirm}
+        {...props}
+      />
+    )
+  }
+
+  return null
 }
 
 export default DisputeDetail
