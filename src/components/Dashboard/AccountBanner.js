@@ -16,6 +16,7 @@ import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
 import gavelIcon from '../../assets/IconGavel.svg'
 import { useJurorDrafted } from '../../hooks/useJurorDraft'
+import Loading from './Loading'
 
 const getBannerAttributes = (
   status,
@@ -61,7 +62,7 @@ const getBannerAttributes = (
   }
 }
 
-function AccountBanner({ status, minActiveBalance, activeBalance }) {
+function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
 
@@ -83,6 +84,8 @@ function AccountBanner({ status, minActiveBalance, activeBalance }) {
     anjToken.decimals,
     theme
   )
+
+  if (loading) return <Loading height={48} />
 
   if (attributes.showProbability)
     return <BannerWithProbability activeBalance={activeBalance} />
