@@ -50,7 +50,7 @@ export default function MessageCard({
                 ${textStyle('title2')}
               `}
             >
-              Loading...
+              Loading…
             </span>
           </div>
         ) : (
