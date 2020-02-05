@@ -35,16 +35,16 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     requests,
   } = useDisputeLogic(disputeId)
 
-  const subject = dispute && dispute.subject
+  const evidenceList = dispute && dispute.evidences
 
   const evidences = useMemo(
     () =>
-      ((subject && subject.evidence) || []).map(evidence => ({
+      (evidenceList || []).map(evidence => ({
         ...evidence,
         data: hexToAscii(evidence.data),
         createdAt: toDate(evidence.createdAt),
       })),
-    [subject]
+    [evidenceList]
   )
 
   const handleBack = useCallback(() => {
