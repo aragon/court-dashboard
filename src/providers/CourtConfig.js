@@ -16,17 +16,26 @@ function CourtConfigProvider({ children }) {
   const courtAddress = networks[getNetworkName(CHAIN_ID)].court
   const courtConfig = useCourtConfigSubscription(courtAddress.toLowerCase())
 
-  console.log('courtconfig', courtConfig)
   const convertedCourtConfig = courtConfig
     ? {
         ...courtConfig, // TODO: Move data conversion to subscription handler
+        draftFee: bigNum(courtConfig.draftFee),
+        settleFee: bigNum(courtConfig.settleFee),
+        jurorFee: bigNum(courtConfig.jurorFee),
         minActiveBalance: bigNum(courtConfig.minActiveBalance),
-        termDuration: parseInt(courtConfig.termDuration) * 1000,
-        evidenceTerms: parseInt(courtConfig.evidenceTerms),
-        commitTerms: parseInt(courtConfig.commitTerms),
-        revealTerms: parseInt(courtConfig.revealTerms),
-        appealTerms: parseInt(courtConfig.appealTerms),
-        appealConfirmationTerms: parseInt(courtConfig.appealConfirmationTerms),
+        maxRegularAppealRounds: parseInt(
+          courtConfig.maxRegularAppealRounds,
+          10
+        ),
+        termDuration: parseInt(courtConfig.termDuration, 10) * 1000,
+        evidenceTerms: parseInt(courtConfig.evidenceTerms, 10),
+        commitTerms: parseInt(courtConfig.commitTerms, 10),
+        revealTerms: parseInt(courtConfig.revealTerms, 10),
+        appealTerms: parseInt(courtConfig.appealTerms, 10),
+        appealConfirmationTerms: parseInt(
+          courtConfig.appealConfirmationTerms,
+          10
+        ),
         terms: courtConfig.terms.map(term => ({
           ...term,
           startTime: parseInt(term.startTime, 10) * 1000,

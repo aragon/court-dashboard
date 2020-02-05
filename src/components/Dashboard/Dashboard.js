@@ -19,6 +19,7 @@ import DeactivateANJ from './panels/DeactivateANJ'
 import WithdrawANJ from './panels/WithdrawANJ'
 import AppealColateralModule from './AppealColateralModule'
 import RewardsModule from './RewardsModule'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
@@ -26,7 +27,8 @@ function Dashboard() {
     actions,
     appealCollaterals,
     balances,
-    fetching,
+    rewards,
+    fetchingData,
     // errorsFetching, //TODO: handle errors
     mode,
     panelState,
@@ -36,6 +38,7 @@ function Dashboard() {
   const { name: layout } = useLayout()
   const oneColumn = layout === 'small' || layout === 'medium'
 
+  console.log(useCourtConfig().feeToken)
   return (
     <React.Fragment>
       <Header
@@ -62,7 +65,7 @@ function Dashboard() {
       {connectedAccount ? (
         <BalanceModule
           balances={balances}
-          loading={fetching}
+          loading={fetchingData}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
           onRequestStakeActivate={requests.stakeActivateANJ}
@@ -75,15 +78,20 @@ function Dashboard() {
       <Split
         primary={<TaskTable tasks={tasks} />}
         secondary={
-          <>
-            <RewardsModule />
-            {connectedAccount && (
+          connectedAccount && (
+            <>
+              <RewardsModule
+                rewards={rewards}
+                loading={fetchingData}
+                onSettleReward={actions.settleReward}
+                onSettleAppealDeposit={actions.settleAppealDeposit}
+              />
               <AppealColateralModule
                 appeals={appealCollaterals}
-                loading={fetching}
+                loading={fetchingData}
               />
-            )}
-          </>
+            </>
+          )
         }
         invert={oneColumn ? 'vertical' : 'horizontal'}
       />

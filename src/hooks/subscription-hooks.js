@@ -16,6 +16,9 @@ import { OpenTasks } from '../queries/tasks'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
+import { JurorRewards } from '../queries/rewards'
+import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
+import { transformAppealDataAttributes } from '../utils/appeal-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -203,14 +206,7 @@ export function useAppealsByUserSubscription(jurorId, settled) {
     const makerAppeals = makerAppealsData.appeals
     const takerAppeals = takerAppealsData.appeals
 
-    return [...makerAppeals, ...takerAppeals].map(
-      ({ round, maker, taker, ...appeal }) => ({
-        disputeId: round.dispute.id,
-        amountStaked: bigNum(
-          maker ? appeal.appealDeposit : appeal.confirmAppealDeposit
-        ),
-      })
-    )
+    return [...makerAppeals, ...takerAppeals].map(transformAppealDataAttributes)
   }, [makerAppealsData, takerAppealsData])
 
   const errors = [makerAppealsError, takerAppealsError].filter(err => err)
@@ -230,4 +226,21 @@ export function useTasksSubscription() {
   const tasks = data ? data.adjudicationRounds : []
 
   return { tasks, error: error }
+}
+
+export function useJurorRewardsSubscription(jurorId) {
+  const [{ data, error }] = useSubscription({
+    query: JurorRewards,
+    variables: { id: jurorId },
+  })
+
+  const jurorDrafts = useMemo(() => {
+    if (!data) {
+      return null
+    }
+
+    return data.juror ? data.juror.drafts.map(transformJurorDataAttributes) : []
+  }, [data])
+
+  return { jurorDrafts, fetching: !jurorDrafts && !error, error }
 }

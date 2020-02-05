@@ -12,12 +12,12 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
 }) {
   const { feeToken } = useCourtConfig()
   const theme = useTheme()
-
+  // loading = true
   return (
     <Box heading="Appeal collateral" padding={0}>
       {loading ? (
-        <Loading height={50} />
-      ) : (
+        <Loading height={72} />
+      ) : appeals.length ? (
         appeals.map(({ amountStaked, disputeId }, index) => (
           <div
             key={index}
@@ -58,6 +58,14 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
             </div>
           </div>
         ))
+      ) : (
+        <div
+          css={`
+            padding: ${3 * GU}px;
+          `}
+        >
+          No collaterals
+        </div>
       )}
     </Box>
   )

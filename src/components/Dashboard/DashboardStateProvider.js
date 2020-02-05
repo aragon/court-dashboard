@@ -3,6 +3,7 @@ import { useConnectedAccount } from '../../providers/Web3'
 import {
   useJurorBalancesSubscription,
   useAppealsByUserSubscription,
+  useJurorRewardsSubscription,
 } from '../../hooks/subscription-hooks'
 
 const DashboardContext = React.createContext()
@@ -29,27 +30,39 @@ function DashboardStateProvider({ children }) {
 
 const WithSubscription = ({ Provider, connectedAccount, children }) => {
   const account = connectedAccount.toLowerCase()
+
+  // Juror balances
   const {
     balances,
     movements,
     fetching: balancesFetching,
     errors: balanceErrors,
   } = useJurorBalancesSubscription(account)
+
+  // Appeals
   const {
     appeals,
     fetching: appealsFetching,
     errors: appealErrors,
   } = useAppealsByUserSubscription(account, false) // Non settled appeals
 
-  const fetching = balancesFetching || appealsFetching
-  const errors = [...balanceErrors, ...appealErrors]
+  // Rewards
+  const {
+    jurorDrafts,
+    fetching: jurorDraftsFetching,
+    error: jurorDraftsError,
+  } = useJurorRewardsSubscription(account)
+
+  const fetching = balancesFetching || appealsFetching || jurorDraftsFetching
+  const errors = [...balanceErrors, ...appealErrors, jurorDraftsError]
 
   return (
     <Provider
       value={{
+        appeals,
         balances,
         movements,
-        appealCollaterals: appeals,
+        jurorDrafts,
         fetching,
         errors,
       }}

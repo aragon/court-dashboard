@@ -7,7 +7,7 @@ function Loading({ height }) {
       css={`
         display: flex;
         align-items: center;
-        width: 150px;
+        width: 130px;
         margin: 0 auto;
         height: ${height ? `${height}px` : 'auto'};
         padding-bottom: ${1 * GU}px;

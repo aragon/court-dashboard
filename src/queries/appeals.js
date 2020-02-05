@@ -5,12 +5,22 @@ export const AppealsByMaker = gql`
     appeals(where: { maker: $maker, settled: $settled }) {
       id
       round {
+        number
+        settledPenalties
         dispute {
           id
+          finalRuling
+          lastRoundId
+          rounds {
+            jurorsNumber
+          }
         }
       }
       maker
+      appealedRuling
       appealDeposit
+      opposedRuling
+      confirmAppealDeposit
     }
   }
 `
@@ -20,11 +30,21 @@ export const AppealsByTaker = gql`
     appeals(where: { taker: $taker, settled: $settled }) {
       id
       round {
+        number
+        settledPenalties
         dispute {
           id
+          finalRuling
+          lastRoundId
+          rounds {
+            jurorsNumber
+          }
         }
       }
+      appealedRuling
+      appealDeposit
       taker
+      opposedRuling
       confirmAppealDeposit
     }
   }
