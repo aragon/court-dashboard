@@ -20,7 +20,7 @@ function CourtConfigProvider({ children }) {
     ? {
         ...courtConfig,
         minActiveBalance: bigNum(courtConfig.minActiveBalance),
-        termDuration: parseInt(courtConfig.termDuration) * 1000,
+        termDuration: parseInt(courtConfig.termDuration),
         evidenceTerms: parseInt(courtConfig.evidenceTerms),
         commitTerms: parseInt(courtConfig.commitTerms),
         revealTerms: parseInt(courtConfig.revealTerms),

@@ -9,13 +9,14 @@ import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
-import { formatUnits, getPercentage } from '../../lib/math-utils'
+import { formatUnits, getPercentageBN } from '../../lib/math-utils'
 import { getProbabilityText } from '../../utils/account-utils'
 
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
 import gavelIcon from '../../assets/IconGavel.svg'
 import { useJurorDrafted } from '../../hooks/useJurorDraft'
+import Loading from './Loading'
 
 const getBannerAttributes = (
   status,
@@ -54,14 +55,14 @@ const getBannerAttributes = (
 
   return {
     icon: anjSpringIcon,
-    title: 'Active ANJ to be an active juror',
+    title: 'Activate ANJ to be an active juror',
     paragraph: `You must activate at least ${formatUnits(minActiveBalance, {
       digits: decimals,
     })}  ANJ to be drafted as a juror`,
   }
 }
 
-function AccountBanner({ status, minActiveBalance, activeBalance }) {
+function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
 
@@ -83,6 +84,8 @@ function AccountBanner({ status, minActiveBalance, activeBalance }) {
     anjToken.decimals,
     theme
   )
+
+  if (loading) return <Loading height={48} />
 
   if (attributes.showProbability)
     return <BannerWithProbability activeBalance={activeBalance} />
@@ -165,7 +168,7 @@ const BannerWithProbability = ({ activeBalance }) => {
     currentTermId
   )
 
-  const totalPercentage = getPercentage(
+  const totalPercentage = getPercentageBN(
     activeBalanceCurrentTerm,
     totalActiveBalanceCurrentTerm
   )
@@ -201,7 +204,6 @@ const BannerWithProbability = ({ activeBalance }) => {
 
   const paragraph =
     'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute'
-
   return (
     <Wrapper
       mainIcon={<CircleGraph value={draftingProbability} size={6 * GU} />}
