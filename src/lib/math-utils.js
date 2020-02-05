@@ -34,11 +34,12 @@ export function parseUnits(value, digits) {
  * @param {Number} options.digits Amount of digits on the token.
  * @param {Boolean} options.commas Use comma-separated groups.
  * @param {Boolean} options.replaceZeroBy The string to be returned when value is zero.
+ * @param {Boolean} options.precision The precision of the resulting number
  * @returns {String} value formatted
  */
 export function formatUnits(
   value,
-  { digits = 18, commas = true, replaceZeroBy = '0' } = {}
+  { digits = 18, commas = true, replaceZeroBy = '0', precision = 2 } = {}
 ) {
   if (value.lt(0) || digits < 0) {
     return ''
@@ -54,14 +55,36 @@ export function formatUnits(
   // EthersUtils.formatUnits() adds a decimal even when 0, this removes it.
   valueBeforeCommas = valueBeforeCommas.replace(/\.0$/, '')
 
-  return commas ? EthersUtils.commify(valueBeforeCommas) : valueBeforeCommas
+  const roundedValue = round(valueBeforeCommas, precision)
+
+  return commas ? EthersUtils.commify(roundedValue) : roundedValue
 }
 
-export function getPercentage(value, totalValue) {
-  const PERCENT = 100
-  const PERCENT_BN = bigNum(PERCENT)
+/**
+ * Format an amount of units to be displayed.
+ *
+ * @param {String} value Value to round
+ * @param {Number} precision Rounding precision
+ * @returns {String} Value rounded to `precision` decimals
+ */
+export function round(value, precision = 2) {
+  let [whole, decimal] = value.split('.')
+
+  if (!decimal || decimal.length <= precision) return value
+
+  // Round and keep the last `precision` digits
+  decimal = Math.round(parseInt((decimal || '0').slice(0, precision + 2)) / 100)
+
+  return `${whole}${decimal ? `.${decimal}` : ''}`
+}
+
+export function getPercentageBN(value, totalValue) {
+  const PERCENT_BN = bigNum(100)
 
   if (totalValue.lte(0)) return 0
 
-  return parseInt(value.mul(PERCENT_BN).div(totalValue), 10)
+  return value
+    .mul(PERCENT_BN)
+    .div(totalValue)
+    .toNumber()
 }
