@@ -23,6 +23,7 @@ export default function MessageCard({
       >
         <img
           src={icon}
+          alt=""
           css={`
             display: block;
             width: 100%;
