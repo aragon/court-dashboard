@@ -42,7 +42,7 @@ const RevealPanel = React.memo(function RevealPanel({
         <TextInput
           value={password}
           css={`
-            height: 88px;
+            height: ${11 * GU}px;
           `}
           multiline
           wide
