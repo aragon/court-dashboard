@@ -189,7 +189,12 @@ function Outcome({ outcome, phase }) {
     phase && phase === DisputePhase.RevealVote ? 'Jury outcome' : 'Outcome'
 
   return (
-    <React.Fragment>
+    <div
+      css={`
+        position: relative;
+      `}
+    >
+      <OutcomePoint />
       <div
         css={`
           margin-top: ${1 * GU}px;
@@ -206,7 +211,7 @@ function Outcome({ outcome, phase }) {
         </span>
       </div>
       <OutcomeText outcome={outcome} phase={phase} />
-    </React.Fragment>
+    </div>
   )
 }
 
@@ -243,7 +248,7 @@ function OutcomeText({ outcome, phase }) {
   )
 }
 
-export function useOutcomeStyle(outcome) {
+function useOutcomeStyle(outcome) {
   const theme = useTheme()
 
   if (!outcome || outcome === OUTCOMES.Refused) {
@@ -346,6 +351,36 @@ function DisplayTime({ item }) {
     return <Timer end={dayjs(endTime)} />
   }
   return <>{dateFormat(endTime, 'DD/MM/YY')}</>
+}
+
+function OutcomePoint() {
+  const theme = useTheme()
+
+  return (
+    <div
+      css={`
+        position: absolute;
+        top: 5px;
+        left: -44px;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fef3f1;
+        border-radius: 50%;
+      `}
+    >
+      <div
+        css={`
+          width: 6px;
+          height: 6px;
+          background: ${theme.accent.alpha(0.3)};
+          border-radius: 50%;
+        `}
+      />
+    </div>
+  )
 }
 
 const StyledAccordion = styled.div`
