@@ -63,7 +63,7 @@ const ANJForm = React.memo(function ANJForm({
     }))
   }, [anjToken.decimals, maxAmount])
 
-  // Form valdiation
+  // Form validation
   const validateForm = useCallback(() => {
     if (amount.valueBN.eq(0)) {
       return 'Amount must not be zero'
