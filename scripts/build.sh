@@ -1,20 +1,35 @@
 #!/usr/bin/env sh
 set -e
 
-pwd
-ls -la
-printenv
-
 enable_sentry='0'
-branch=$(git symbolic-ref --short -q HEAD)
+
+# Current branch
+if [ -n "$NOW_GITHUB_COMMIT_REF" ]; then
+  # ZEIT Now (no .git but an env var)
+  branch=$NOW_GITHUB_COMMIT_REF
+else
+  # Other environments
+  branch=$(git symbolic-ref --short -q HEAD)
+fi
 
 if [ "$branch" = 'development' ] || [ "$branch" = 'master' ]; then
   enable_sentry='1'
 fi
 
-build=$(git log --pretty=format:'%h' -n 1)
+# Build number from the short hash
+if [ -n "$NOW_GITHUB_COMMIT_SHA" ]; then
+  build=$(git rev-parse --short "$NOW_GITHUB_COMMIT_SHA")
+else
+  build=$(git log --pretty=format:'%h' -n 1)
+fi
 
-echo "REACT_APP_ENABLE_SENTRY=$enable_sentry"
-echo "REACT_APP_BUILD=$build"
+echo "Branch: $branch"
+echo "Build: $build"
+echo "Enable Sentry: $enable_sentry"
+echo ""
 
-npm run sync-assets && REACT_APP_ENABLE_SENTRY=$enable_sentry REACT_APP_BUILD=$build npx react-app-rewired build
+echo "Building assets…"
+npm run sync-assets
+
+echo "Building app…"
+REACT_APP_ENABLE_SENTRY=$enable_sentry REACT_APP_BUILD=$build npx react-app-rewired build
