@@ -5,6 +5,7 @@ import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
 import DisputesLoading from './Loading'
 import ErrorLoading from '../ErrorLoading'
+import NoFilterResults from './NoFilterResults'
 import MessageCard from '../MessageCard'
 
 import dayjs from '../../lib/dayjs'
@@ -87,12 +88,23 @@ function DisputeList({
     [setSelectedStatus]
   )
 
+  const handleOnClearAllFilters = useCallback(() => {
+    setSelectedDateRange(INITIAL_DATE_RANGE)
+    setSelectedStatus(UNSELECTED_FILTER)
+    setSelectedPhase(UNSELECTED_FILTER)
+  }, [])
+
   const filteredDisputes = getFilteredDisputes({
     disputes,
     selectedDateRange,
     selectedStatus,
     selectedPhase,
   })
+
+  const filtersSelected =
+    selectedDateRange !== INITIAL_DATE_RANGE ||
+    selectedStatus !== UNSELECTED_FILTER ||
+    selectedPhase !== UNSELECTED_FILTER
 
   return (
     <div>
@@ -116,6 +128,9 @@ function DisputeList({
       </Bar>
 
       {(() => {
+        if (filteredDisputes.length === 0 && filtersSelected)
+          return <NoFilterResults onClearFilters={handleOnClearAllFilters} />
+
         if (errorLoading) {
           return <ErrorLoading subject="dispute" error={errorLoading.message} />
         }

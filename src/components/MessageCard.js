@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, GU, LoadingRing, textStyle, useTheme } from '@aragon/ui'
+import { Box, GU, LoadingRing, textStyle, Link, useTheme } from '@aragon/ui'
 
 export default function MessageCard({
   icon,
@@ -7,6 +7,7 @@ export default function MessageCard({
   paragraph,
   loading,
   border = true,
+  link,
 }) {
   const theme = useTheme()
 
@@ -74,6 +75,7 @@ export default function MessageCard({
             >
               {paragraph}
             </div>
+            {link && <Link onClick={link.action}>{link.text}</Link>}
           </>
         )}
       </div>

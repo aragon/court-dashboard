@@ -12,12 +12,6 @@ export const AllDisputes = gql`
       state
       metadata
       createdAt
-      evidences {
-        id
-        submitter
-        data
-        createdAt
-      }
       rounds {
         id
         state
