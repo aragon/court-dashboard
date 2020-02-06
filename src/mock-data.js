@@ -1,18 +1,3 @@
-import {
-  DISPUTE_STATUS_OPEN,
-  DISPUTE_STATUS_CLOSED,
-} from './types/dispute-status-types'
-
-import {
-  IconCoin,
-  IconFolder,
-  IconFlag,
-  IconGroup,
-  IconSearch,
-  IconVote,
-  IconWrite,
-} from '@aragon/ui'
-
 export const balances = {
   wallet: { amount: '3.304,76', value: '3.300' },
   inactive: { amount: '3.304,76', tokenSymbol: 'ANJ', value: '3.300' },
@@ -41,184 +26,33 @@ export const latestActivity = [
   },
 ]
 
-export const disputes = [
-  {
-    id: 0,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_OPEN,
-    creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
-    rewardAmount: 1000,
-    stakedAmount: 746,
-    term: 1,
-    termDate: '15/02/20',
-    evidences: [
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-    ],
-  },
-  {
-    id: 1,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_CLOSED,
-    creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
-    rewardAmount: 1080,
-    stakedAmount: 865,
-    term: 1,
-    termDate: '15/02/20',
-    evidences: [
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-    ],
-  },
-  {
-    id: 2,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_CLOSED,
-    creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
-    rewardAmount: 870,
-    stakedAmount: 500,
-    term: 1,
-    termDate: '15/02/20',
-    evidences: [
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-    ],
-  },
-  {
-    id: 3,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_CLOSED,
-    creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
-    rewardAmount: 908,
-    stakedAmount: 1023,
-    term: 1,
-    termDate: '15/02/20',
-    evidences: [
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-    ],
-  },
-  {
-    id: 4,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_OPEN,
-    creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
-    rewardAmount: 385,
-    stakedAmount: 985,
-    term: 1,
-    termDate: '15/02/20',
-    evidences: [
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-    ],
-  },
-  {
-    id: 5,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_OPEN,
-    creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
-    rewardAmount: 930,
-    stakedAmount: 495,
-    term: 1,
-    termDate: '15/02/20',
-    evidences: [
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-    ],
-  },
-  {
-    id: 6,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    status: DISPUTE_STATUS_OPEN,
-    creator: '0xb4124cEB3451635DAcedd11767f004d8a28c6eE7',
-    rewardAmount: 1093,
-    stakedAmount: 385,
-    term: 1,
-    termDate: '15/02/20',
-    evidences: [
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-      "Agreement Text: An IPFS-hosted text document describing the agreement terms/n Alright, I'm ready. Marty, why are you so nervous? yes, Joey just loves being in his playpen. he cries whenever we take him out so we just leave him in there all the time. Well Marty, I hope you like meatloaf. Oh, then I wanna give her a call, I don't want her to worry about you. Excuse me.",
-    ],
-  },
-]
-
-export const timeline = [
-  {
-    label: 'Open dispute #62',
-    date: '20/11/2019',
-    Icon: IconFlag,
-  },
-  {
-    label: 'Submit evidence',
-    date: '20/11/2019',
-    Icon: IconFolder,
-  },
-  {
-    label: 'Jurors drafted',
-    date: '20/11/2019',
-    Icon: IconGroup,
-  },
-  {
-    label: 'Review evidence',
-    date: '20/11/2019',
-    Icon: IconSearch,
-  },
-  {
-    label: 'Voting period',
-    date: '20/11/2019',
-    Icon: IconVote,
-  },
-  {
-    label: 'Apeal Ruling',
-    date: '20/11/2019',
-    Icon: IconWrite,
-  },
-  {
-    label: 'Claim rewards',
-    date: '20/11/2019',
-    Icon: IconCoin,
-  },
-  {
-    label: 'Milestone',
-    date: '20/11/2019',
-    Icon: IconFlag,
-  },
-]
-
 export const tasks = [
   {
-    taskName: 'Finish reviewing evidence',
+    taskName: 'Commit Vote',
     disputeId: 12,
-    priority: 'High',
+    status: 'open',
     juror: '0x593e1F9809658d0c92e9f092cF01Aad7D0d734f3',
-    dueDate: 1575391948390,
+    dueDate: 1578928467000,
   },
   {
     taskName: 'Reveal vote',
     disputeId: 15,
-    priority: 'Medium',
+    status: 'open',
     juror: '0x099278297012066d61c9505132b3Aa71F625E414',
-    dueDate: 1575592000000,
+    dueDate: 1578928467000,
   },
   {
-    taskName: 'Start reviewing evidence',
+    taskName: 'Commit Vote',
     disputeId: 20,
-    priority: 'Low',
+    status: 'open',
     juror: '0x593e1F9809658d0c92e9f092cF01Aad7D0d734f3',
-    dueDate: 1576393000000,
+    dueDate: 1578928467000,
   },
   {
     taskName: 'Commit vote',
     disputeId: 14,
-    priority: 'Medium',
+    status: 'open',
     juror: '0x099278297012066d61c9505132b3Aa71F625E414',
-    dueDate: 1575394000000,
+    dueDate: 1578928467000,
   },
 ]

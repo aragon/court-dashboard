@@ -1,9 +1,11 @@
 import React from 'react'
 import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
-import folderIcon from '../../assets/folderIcon.svg'
-import { dateFormat } from '../../utils/date-utils'
 
-function DisputeEvidences({ evidences }) {
+import dayjs from '../../lib/dayjs'
+
+import folderIcon from '../../assets/folderIcon.svg'
+
+const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
   const theme = useTheme()
   return (
     <React.Fragment>
@@ -78,7 +80,7 @@ function DisputeEvidences({ evidences }) {
                         ${textStyle('body2')};
                       `}
                     >
-                      {dateFormat(createdAt, 'DD/MM/YY')}
+                      {dayjs(createdAt).format('DD/MM/YY')}
                     </span>
                   </div>
                   <div>
@@ -108,6 +110,6 @@ function DisputeEvidences({ evidences }) {
       })}
     </React.Fragment>
   )
-}
+})
 
 export default DisputeEvidences

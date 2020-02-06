@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 export const CourtConfig = gql`
   subscription CourtConfig($id: ID!) {
     courtConfig(id: $id) {
+      id
       currentTerm
       termDuration
       feeToken {
@@ -40,6 +41,10 @@ export const CourtConfig = gql`
       modules {
         type
         address
+      }
+      terms {
+        id
+        startTime
       }
     }
   }

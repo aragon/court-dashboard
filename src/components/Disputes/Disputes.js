@@ -1,19 +1,26 @@
 import React, { useCallback, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-import DisputeList from './DisputeList'
-import useDisputes from '../../hooks/useDisputes'
-import useJurorDraftQuery from '../../hooks/useJurorDraftQuery'
 
-import ANJIcon from '../../assets/anjButton.svg'
+import DisputeList from './DisputeList'
+
+import useDisputes from '../../hooks/useDisputes'
+import { useJurorDraftQuery } from '../../hooks/query-hooks'
+import { useConnectedAccount } from '../../providers/Web3'
+
+import ANJIcon from '../../assets/IconANJButton.svg'
 
 function Disputes() {
   const [screenIndex, setScreenIndex] = useState(0)
-  const [disputes] = useDisputes()
-  const connectedAccount = '0xe11ba2b4d45eaed5996cd0823791e0c93114882d'
+  const {
+    disputes,
+    fetching: disputesFetching,
+    error: errorFetching,
+  } = useDisputes()
+  const connectedAccount = useConnectedAccount()
   const jurorDisputes = useJurorDraftQuery(connectedAccount)
-  const history = useHistory()
 
+  const history = useHistory()
   const handleSelectDispute = useCallback(
     id => {
       history.push(`/disputes/${id}`)
@@ -58,17 +65,22 @@ function Disputes() {
       />
       <div>
         <Tabs
-          css={`
-            margin-bottom: 0px;
-          `}
           items={[
             <div>
               <span>All disputes </span>
-              <Tag limitDigits={4} label={disputes.length} size="small" />
+              <Tag
+                limitDigits={4}
+                label={disputes ? disputes.length : 0}
+                size="small"
+              />
             </div>,
             <div>
               <span>My disputes </span>
-              <Tag limitDigits={4} label={jurorDisputes.length} size="small" />
+              <Tag
+                limitDigits={4}
+                label={jurorDisputes ? jurorDisputes.length : 0}
+                size="small"
+              />
             </div>,
           ]}
           selected={screenIndex}
@@ -77,12 +89,15 @@ function Disputes() {
       </div>
       <div
         css={`
-          margin-top: -${GU * 1}px;
           width: 100%;
+          margin-top: -${2 * GU}px;
         `}
       >
         <DisputeList
           disputes={screenIndex === 0 ? disputes : jurorDisputes}
+          loading={disputesFetching}
+          errorLoading={errorFetching}
+          myDisputeSelected={screenIndex === 1}
           onSelectDispute={handleSelectDispute}
         />
       </div>

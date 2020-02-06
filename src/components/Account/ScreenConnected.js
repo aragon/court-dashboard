@@ -11,6 +11,7 @@ import {
   useTheme,
 } from '@aragon/ui'
 import { useWallet } from 'use-wallet'
+import { getProviderFromUseWalletId } from '../../ethereum-providers'
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard'
 
 function AccountScreenConnected() {
@@ -18,7 +19,9 @@ function AccountScreenConnected() {
   const theme = useTheme()
   const copy = useCopyToClipboard()
 
-  const walletNetworkName = 'Mainnet'
+  const walletNetworkName = wallet.networkName
+
+  const providerInfo = getProviderFromUseWalletId(wallet.activating)
 
   return (
     <div
@@ -41,7 +44,7 @@ function AccountScreenConnected() {
           `}
         >
           <img
-            src={wallet.providerInfo.image}
+            src={providerInfo.image}
             alt=""
             css={`
               width: ${2.5 * GU}px;

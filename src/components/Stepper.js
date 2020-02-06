@@ -17,17 +17,12 @@ function Stepper({
         & > * {
           display: flex;
           align-items: stretch;
-          padding: ${stepVerticalPadding}px 0;
 
+          padding: ${stepVerticalPadding}px 0;
           &:first-child {
             padding-top: 0;
           }
-
-          &:last-child {
-            padding-bottom: 0;
-          }
         }
-
         & > :not(:last-child) > div > :first-child ::after {
           background: ${lineColor};
           content: '';

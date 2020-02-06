@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useWallet } from 'use-wallet'
 import { Button, GU, springs } from '@aragon/ui'
-import { Transition, animated } from 'react-spring'
+import { Transition, animated } from 'react-spring/renderprops'
 import { PROVIDERS } from '../../environment'
 import AccountButton from './AccountButton'
 import AccountPopover from './AccountPopover'
@@ -9,6 +9,7 @@ import ScreenConnected from './ScreenConnected'
 import ScreenConnecting from './ScreenConnecting'
 import ScreenError from './ScreenError'
 import ScreenProviders from './ScreenProviders'
+import { shortenAddress } from '../../lib/web3-utils'
 
 const SCREENS = [
   {
@@ -27,7 +28,7 @@ const SCREENS = [
   {
     id: 'connected',
     title: 'Active wallet',
-    height: 32 * GU,
+    height: 22 * GU,
   },
   {
     id: 'error',
@@ -138,7 +139,10 @@ function Account() {
       `}
     >
       {screen.id === 'connected' ? (
-        <AccountButton label="ok" onClick={toggle} />
+        <AccountButton
+          label={shortenAddress(wallet.account)}
+          onClick={toggle}
+        />
       ) : (
         <Button label="Connect account" onClick={toggle} />
       )}

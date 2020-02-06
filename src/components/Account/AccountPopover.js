@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { GU, Popover, springs, textStyle, useTheme } from '@aragon/ui'
-import { Spring, animated } from 'react-spring'
+import { Spring, animated } from 'react-spring/renderprops'
 
 const AnimatedSection = animated.section
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { GU, textStyle } from '@aragon/ui'
 import Account from './Account/Account'
+import Clock from './Clock'
 
 const Header = React.memo(function Header() {
   return (
@@ -17,16 +18,34 @@ const Header = React.memo(function Header() {
         padding: 0 ${2 * GU}px;
       `}
     >
-      <h1
+      <div
         css={`
           display: flex;
           height: 100%;
           align-items: center;
-          ${textStyle('body1')};
         `}
       >
-        Aragon Court
-      </h1>
+        <h1
+          css={`
+            display: flex;
+            height: 100%;
+            align-items: center;
+            ${textStyle('body1')};
+          `}
+        >
+          Aragon Court
+        </h1>
+      </div>
+
+      <div
+        css={`
+          display: flex;
+          flex-grow: 1;
+          justify-content: center;
+        `}
+      >
+        <Clock />
+      </div>
 
       <Account />
     </header>

@@ -2,56 +2,61 @@ import React, { useCallback } from 'react'
 
 import { useCourtConfig } from '../../../providers/CourtConfig'
 import ANJForm from './ANJForm'
-import { formatUnits, parseUnits } from '../../../lib/math-utils'
-
-const INVALID_AMOUNT_ERROR = Symbol('IVALID_AMOUNT')
+import { formatUnits } from '../../../lib/math-utils'
 
 const ActivateANJ = React.memo(function ActivateANJ({
   onActivateANJ,
   activeBalance,
   walletBalance,
+  inactiveBalance,
+  fromWallet,
   onDone,
-  panelOpened,
 }) {
   const { anjToken, minActiveBalance } = useCourtConfig()
+  const maxAmount = fromWallet ? walletBalance : inactiveBalance
 
   const minActiveBalanceFormatted = formatUnits(minActiveBalance, {
     digits: anjToken.decimals,
   })
+  const maxAmountFormatted = formatUnits(maxAmount, {
+    digits: anjToken.decimals,
+    precision: anjToken.decimals,
+  })
 
   const validation = useCallback(
-    amount => {
-      const amountBN = parseUnits(amount, anjToken.decimals)
+    amountBN => {
+      if (amountBN.gt(maxAmount)) {
+        return `Insufficient funds, your ${
+          fromWallet
+            ? 'wallet balance is'
+            : 'inactive balance available for activation is'
+        } ${maxAmountFormatted} ${anjToken.symbol} `
+      }
 
-      if (activeBalance.add(amountBN).lt(minActiveBalance))
-        return INVALID_AMOUNT_ERROR
+      if (activeBalance.add(amountBN).lt(minActiveBalance)) {
+        return `You must have at least ${minActiveBalanceFormatted} ${anjToken.symbol} activated`
+      }
 
       return null
     },
-    [activeBalance, anjToken.decimals, minActiveBalance]
-  )
-
-  const errorToMessage = useCallback(
-    error => {
-      if (error === INVALID_AMOUNT_ERROR) {
-        return `You must have at least ${minActiveBalanceFormatted} activated`
-      }
-
-      // TODO: Do validations for max amount depending of wallet balance or inactive Balance
-
-      return ''
-    },
-    [minActiveBalanceFormatted]
+    [
+      activeBalance,
+      anjToken.symbol,
+      fromWallet,
+      maxAmount,
+      maxAmountFormatted,
+      minActiveBalance,
+      minActiveBalanceFormatted,
+    ]
   )
 
   return (
     <ANJForm
       actionLabel="Activate"
+      maxAmount={maxAmount}
       onSubmit={onActivateANJ}
       onDone={onDone}
-      panelOpened={panelOpened}
-      validateForm={validation}
-      errorToMessage={errorToMessage}
+      runParentValidation={validation}
     />
   )
 })

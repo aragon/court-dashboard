@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
-import { Main } from '@aragon/ui'
+import { Main, ToastHub } from '@aragon/ui'
+import { CourtClockProvider } from './providers/CourtClock'
 import theme from './theme-court'
 import MainView from './components/MainView'
 import Web3ConnectProvider from './providers/Web3'
@@ -27,15 +28,19 @@ function App() {
           scrollView={false}
           theme={theme}
         >
-          <Web3ConnectProvider>
-            <CourtConfigProvider>
-              <MainView>
-                <AppLoader>
-                  <Routes />
-                </AppLoader>
-              </MainView>
-            </CourtConfigProvider>
-          </Web3ConnectProvider>
+          <ToastHub threshold={1} timeout={1500}>
+            <Web3ConnectProvider>
+              <CourtConfigProvider>
+                <CourtClockProvider>
+                  <MainView>
+                    <AppLoader>
+                      <Routes />
+                    </AppLoader>
+                  </MainView>
+                </CourtClockProvider>
+              </CourtConfigProvider>
+            </Web3ConnectProvider>
+          </ToastHub>
         </Main>
       </BrowserRouter>
     </UseWalletProvider>
