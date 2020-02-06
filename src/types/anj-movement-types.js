@@ -1,5 +1,6 @@
 export const ANJMovement = {
   Stake: Symbol('STAKE'),
+  StakeActivation: Symbol('StakeActivation'),
   Unstake: Symbol('UNSTAKE'),
   Activation: Symbol('ACTIVATION'),
   Deactivation: Symbol('DEACTIVATION'),
@@ -17,6 +18,7 @@ export const movementDirection = {
 
 const stringMapping = {
   [ANJMovement.Stake]: 'Staked',
+  [ANJMovement.StakeActivation]: 'Activated',
   [ANJMovement.Unstake]: 'Unstaked',
   [ANJMovement.Activation]: 'Activated',
   [ANJMovement.Deactivation]: 'Deactivated',

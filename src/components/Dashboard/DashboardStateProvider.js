@@ -36,6 +36,7 @@ const WithSubscription = ({ Provider, connectedAccount, children }) => {
     errors: balanceErrors,
   } = useJurorBalancesSubscription(account)
   const nonSettledAppeals = useAppealsByUserSubscription(account, false) // Non settled appeals
+  console.log('WithSubscription ', movements)
 
   // TODO: add appeal colateral errors (on next PR)
   const errors = [...balanceErrors]

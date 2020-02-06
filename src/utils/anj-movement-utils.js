@@ -53,6 +53,8 @@ export const acceptedMovementsPerBalance = new Map([
 ])
 
 export function isMovementOf(movements, movementType) {
+  console.log('IS MOVEMENT OF movements', movements)
+  console.log('IS MOVEMENT OF movementType', movementType)
   return movements.some(movement => movement.type === movementType)
 }
 

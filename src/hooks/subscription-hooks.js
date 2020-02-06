@@ -16,6 +16,7 @@ import { OpenTasks } from '../queries/tasks'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
+import { ANJMovement } from '../types/anj-types'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -76,6 +77,32 @@ export function useJurorBalancesSubscription(jurorId) {
       movements = [],
     } = jurorData.juror || {}
 
+    const movementsFiltered = movements => {
+      return movements.reduce((previousList, movement, index, originalList) => {
+        const convertedMovement = {
+          ...movement,
+          effectiveTermId: parseInt(movement.effectiveTermId, 10),
+          amount: bigNum(movement.amount),
+        }
+        if (index === 0) {
+          previousList.push(convertedMovement)
+        } else if (
+          ANJMovement[originalList[index - 1].type] ===
+            ANJMovement.Activation &&
+          ANJMovement[movement.type] === ANJMovement.Stake &&
+          movements[index - 1].createdAt === movement.createdAt
+        ) {
+          previousList[index - 1] = {
+            ...previousList[index - 1],
+            type: ANJMovement.StakeActivation,
+          }
+        } else {
+          previousList.push(convertedMovement)
+        }
+        return previousList
+      }, [])
+    }
+
     return {
       balances: {
         walletBalance: bigNum(walletBalance),
@@ -84,11 +111,7 @@ export function useJurorBalancesSubscription(jurorId) {
         inactiveBalance: bigNum(availableBalance),
         deactivationBalance: bigNum(deactivationBalance),
       },
-      movements: movements.map(movement => ({
-        ...movement,
-        effectiveTermId: parseInt(movement.effectiveTermId, 10),
-        amount: bigNum(movement.amount),
-      })),
+      movements: movementsFiltered(movements),
     }
   }, [anjBalanceData, jurorData])
 
