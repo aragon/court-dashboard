@@ -3,11 +3,11 @@ import OnboardingModal from './Onboarding/OnboardingModal'
 
 function OnboardingLoader({ children }) {
   const [onboardingCompleted, setOnboardingCompleted] = useState(
-    localStorage.getItem('onboardingCompleted')
+    localStorage.getItem('onboardingCompleted') === 'true'
   )
 
   const handleOnComplete = useCallback(() => {
-    localStorage.setItem('onboardingCompleted', true)
+    localStorage.setItem('onboardingCompleted', 'true')
     setOnboardingCompleted(true)
   }, [])
 
