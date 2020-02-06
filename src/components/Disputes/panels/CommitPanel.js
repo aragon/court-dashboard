@@ -5,14 +5,17 @@ import {
   IconCopy,
   IconDownload,
   Info,
+  Link,
   Switch,
   TextInput,
-  textStyle,
   Timer,
+  textStyle,
   useToast,
+  useTheme,
 } from '@aragon/ui'
-import IconKeyCode from '../../../assets/IconKeyCode.svg'
-import useKeyCodeActions from '../../../hooks/useKeyCodeActions'
+import useOneTimeCode from '../../../hooks/useOneTimeCode'
+
+import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
 
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
@@ -23,30 +26,37 @@ const CommitPanel = React.memo(function CommitPanel({
   const [codeSaved, setCodeSaved] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
   const [revealService, setRevealService] = useState(true)
+  const { oneTimeCode, download } = useOneTimeCode()
   const toast = useToast()
-  const { keyCode, downloadKeyCode } = useKeyCodeActions()
 
-  const handleCommit = async event => {
-    try {
-      event.preventDefault()
+  const handleCommit = useCallback(
+    async event => {
+      try {
+        event.preventDefault()
 
-      const lastRoundId = dispute.lastRoundId
-      const tx = await onCommit(dispute.id, lastRoundId, commitment, keyCode)
-      await tx.wait()
-      onDone()
-    } catch (err) {
-      console.log('Error submitting tx: ', err)
-    }
-  }
+        const tx = await onCommit(
+          dispute.id,
+          dispute.lastRoundId,
+          commitment,
+          oneTimeCode
+        )
+        await tx.wait()
+        onDone()
+      } catch (err) {
+        console.log('Error submitting transaction: ', err)
+      }
+    },
+    [commitment, dispute, onCommit, onDone, oneTimeCode]
+  )
 
-  const handleDownloadKeyCode = useCallback(() => {
-    downloadKeyCode()
+  const handleDownloadCode = useCallback(() => {
+    download()
     setCodeSaved(true)
-  }, [downloadKeyCode])
+  }, [download])
 
-  const handleCopyKeyCode = useCallback(() => {
+  const handleCopyCode = useCallback(() => {
     setCodeCopied(true)
-    toast('One Time Password copied to clipboard')
+    toast('One-time-use code copied')
   }, [toast])
 
   const handleRevealService = useCallback(
@@ -63,25 +73,25 @@ const CommitPanel = React.memo(function CommitPanel({
 
   return (
     <form onSubmit={handleCommit}>
-      <CodeSection
-        keyCode={keyCode}
-        onDownloadKeyCode={handleDownloadKeyCode}
-        onCopyKeyCode={handleCopyKeyCode}
+      <OneTimeCode
+        code={oneTimeCode}
+        onDownload={handleDownloadCode}
+        onCopy={handleCopyCode}
       />
       <RevealService
         onRevealServiceChange={handleRevealService}
         revealService={revealService}
       />
       <InfoSection
-        codeCopied={codeCopied}
-        codeSaved={codeSaved}
         commitEndTime={dispute.nextTransition}
+        copiedOrSaved={codeCopied || codeSaved}
+        revealService={revealService}
       />
       <Button
         css={`
           margin-top: ${2 * GU}px;
         `}
-        disabled={!codeSaved && !codeCopied}
+        disabled={!(revealService || codeSaved || codeCopied)}
         onClick={handleCommit}
         type="submit"
         mode="strong"
@@ -93,25 +103,28 @@ const CommitPanel = React.memo(function CommitPanel({
   )
 })
 
-const CodeSection = React.memo(function CodeSection({
-  keyCode,
-  onDownloadKeyCode,
-  onCopyKeyCode,
+const OneTimeCode = React.memo(function OneTimeCode({
+  code,
+  onDownload,
+  onCopy,
 }) {
-  const codeTextAreaRef = useRef(null)
+  const theme = useTheme()
+  const inputRef = useRef(null)
 
-  const handleCopyKeyCode = useCallback(() => {
-    if (codeTextAreaRef.current) {
-      codeTextAreaRef.current.select()
+  const handleInputFocus = useCallback(event => event.target.select(), [])
+
+  const handleCopy = useCallback(() => {
+    if (inputRef.current) {
+      inputRef.current.focus()
 
       try {
         document.execCommand('copy')
-        onCopyKeyCode()
+        onCopy()
       } catch (err) {
-        console.error('error copying the code')
+        console.error('Error copying the one-time-use code')
       }
     }
-  }, [onCopyKeyCode])
+  }, [onCopy])
 
   return (
     <React.Fragment>
@@ -120,12 +133,7 @@ const CodeSection = React.memo(function CodeSection({
           display: flex;
         `}
       >
-        <img
-          css={`
-            height: 50px;
-          `}
-          src={IconKeyCode}
-        />
+        <img height={6 * GU} src={IconOneTimeCode} alt="" />
         <div
           css={`
             margin-left: ${2 * GU}px;
@@ -157,14 +165,22 @@ const CodeSection = React.memo(function CodeSection({
         `}
       >
         <TextInput
-          ref={codeTextAreaRef}
-          value={keyCode}
-          css={`
-            height: 88px;
-          `}
+          ref={inputRef}
+          onFocus={handleInputFocus}
           multiline
-          wide
           readOnly
+          value={code}
+          wide
+          css={`
+            height: ${10 * GU}px;
+            padding: ${1.5 * GU}px ${2 * GU}px;
+            ${textStyle('body1')};
+            font-weight: 600;
+            resize: none;
+            &:read-only {
+              color: ${theme.accent};
+            }
+          `}
         />
       </div>
       <div
@@ -178,7 +194,7 @@ const CodeSection = React.memo(function CodeSection({
             margin-right: ${2 * GU}px;
             flex-grow: 1;
           `}
-          onClick={onDownloadKeyCode}
+          onClick={onDownload}
           icon={<IconDownload />}
           label="Download"
         />
@@ -186,7 +202,7 @@ const CodeSection = React.memo(function CodeSection({
           css={`
             flex-grow: 1;
           `}
-          onClick={handleCopyKeyCode}
+          onClick={handleCopy}
           icon={<IconCopy />}
           label="Copy"
         />
@@ -221,42 +237,36 @@ const RevealService = React.memo(function RevealService({
       <div
         css={`
           margin-top: ${1 * GU}px;
+          ${textStyle('body2')};
         `}
       >
-        <span
-          css={`
-            ${textStyle('body2')};
-          `}
-        >
-          By enabling this feature you trust Aragon One to revel your vote on
-          your behalf in this and following disputes. You can always turn off
-          this service later if you choose. Learn more
-        </span>
+        By enabling this feature you trust Aragon One to reveal your vote on
+        your behalf in this and following disputes. You can always turn off this
+        service later if you choose. <Link>Learn more</Link>
       </div>
     </React.Fragment>
   )
 })
 
 const InfoSection = React.memo(function InfoSection({
-  codeCopied,
-  codeSaved,
   commitEndTime,
+  copiedOrSaved,
+  revealService,
 }) {
-  const copiedOrSaved = codeCopied || codeSaved
-  const content = copiedOrSaved
+  const content = revealService
     ? 'This temporary code will be valid to commit and reveal your vote for this dispute only. You won’t be required to enter this code unless a problem occur with our services.'
-    : `You must copy or download this code before you can commit your vote. You’ll be asked to enter it in order to reveal your vote in:`
+    : 'You must copy or download this code before you can commit your vote. You’ll be asked to enter it in order to reveal your vote in:'
 
   return (
     <Info
       css={`
-        margin-top: ${3 * GU}px;
+        margin-top: ${2 * GU}px;
       `}
-      title={!copiedOrSaved && 'ACTION REQUIREMENT'}
-      mode={copiedOrSaved ? 'info' : 'warning'}
+      title={!revealService && 'Action requirement'}
+      mode={revealService ? 'info' : 'warning'}
     >
       {content}
-      {!copiedOrSaved && (
+      {!revealService && (
         <div
           css={`
             margin-top: ${1 * GU}px;
