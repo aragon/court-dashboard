@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react'
 import useTasks from './useTasks'
 import { addressesEqual } from '../lib/web3-utils'
 import dayjs from '../lib/dayjs'
-import * as DisputesTypes from '../types/types'
+import * as DisputesTypes from '../types/dispute-status-types'
 
 const ALL_FILTER = 0
 const UNSELECTED_PHASE = -1
