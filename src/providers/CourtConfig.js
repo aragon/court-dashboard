@@ -20,7 +20,7 @@ function CourtConfigProvider({ children }) {
     ? {
         ...courtConfig, // TODO: Move data conversion to subscription handler
         minActiveBalance: bigNum(courtConfig.minActiveBalance),
-        termDuration: parseInt(courtConfig.termDuration),
+        termDuration: parseInt(courtConfig.termDuration) * 1000,
         evidenceTerms: parseInt(courtConfig.evidenceTerms),
         commitTerms: parseInt(courtConfig.commitTerms),
         revealTerms: parseInt(courtConfig.revealTerms),
