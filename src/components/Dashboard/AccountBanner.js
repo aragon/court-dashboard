@@ -10,7 +10,6 @@ import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits, getPercentageBN } from '../../lib/math-utils'
-// mport { getProbabilityText } from '../../utils/account-utils'
 
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
