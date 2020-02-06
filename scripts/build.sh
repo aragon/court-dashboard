@@ -10,4 +10,9 @@ fi
 
 build=$(git log --pretty=format:'%h' -n 1)
 
+echo "REACT_APP_ENABLE_SENTRY=$enable_sentry"
+echo "REACT_APP_BUILD=$build"
+pwd
+ls -la
+
 npm run sync-assets && REACT_APP_ENABLE_SENTRY=$enable_sentry REACT_APP_BUILD=$build npx react-app-rewired build
