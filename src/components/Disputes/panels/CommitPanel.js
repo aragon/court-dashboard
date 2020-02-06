@@ -131,15 +131,15 @@ const CodeSection = React.memo(function CodeSection({
             margin-left: ${2 * GU}px;
           `}
         >
-          <span
+          <h2
             css={`
               display: block;
               ${textStyle('body2')};
               font-weight: 600;
             `}
           >
-            One-Time-Use Code
-          </span>
+            One-time-use code
+          </h2>
           <span
             css={`
               display: block;
@@ -147,8 +147,7 @@ const CodeSection = React.memo(function CodeSection({
               margin-top: ${1 * GU}px;
             `}
           >
-            Please save the temporary password displayed below for maximum
-            security.
+            Please save the code displayed below for maximum security.
           </span>
         </div>
       </div>

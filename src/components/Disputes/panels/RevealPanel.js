@@ -38,7 +38,7 @@ const RevealPanel = React.memo(function RevealPanel({
 
   return (
     <form onSubmit={handleReveal}>
-      <Field label="One time code">
+      <Field label="One-time-use code">
         <TextInput
           value={password}
           css={`

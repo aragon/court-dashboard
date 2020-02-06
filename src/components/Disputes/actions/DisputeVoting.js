@@ -53,7 +53,7 @@ function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
             return 'You cannot vote on this dispute because your Ethereum account is not connected.'
 
           return isJurorDrafted
-            ? ' You will be asked a password before you can commit your vote.'
+            ? ' You will be asked a one-time-use code before you can commit your vote.'
             : 'You cannot vote on this dispute with the current enabled address.'
         })()}
       </Info>
