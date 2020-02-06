@@ -8,15 +8,30 @@ import {
   TransactionBadge,
   useTheme,
 } from '@aragon/ui'
-import DisputeStatus from './DisputeStatus'
-import DisputeActions from './DisputeActions'
 
+import DisputeStatus from './DisputeStatus'
+import DisputeCurrentRuling from './DisputeCurrentRuling'
+import DisputeActions from './DisputeActions'
+import Loading from './Loading'
+
+import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import iconCourt from '../../assets/courtIcon.svg'
 
-function DisputeInfo({ dispute, id, loading }) {
+const DisputeInfo = React.memo(function({
+  id,
+  dispute,
+  loading,
+  onDraft,
+  onRequestCommit,
+  onRequestReveal,
+  onLeak,
+  onRequestAppeal,
+  onExecuteRuling,
+}) {
   const theme = useTheme()
+  const { phase } = dispute || {}
 
-  const description = loading ? 'Loading…' : dispute.metadata
+  const description = dispute && dispute.metadata
   const creatorAddress = dispute && dispute.subject && dispute.subject.id
   const transaction = dispute && dispute.txHash
 
@@ -83,33 +98,17 @@ function DisputeInfo({ dispute, id, loading }) {
             </div>
           </div>
         </div>
-        <div
-          css={`
-            display: grid;
-            grid-template-columns: 1fr minmax(250px, auto);
-            grid-gap: ${5 * GU}px;
-            margin-bottom: ${2 * GU}px;
-          `}
-        >
-          <div>
-            <h2
-              css={`
-                ${textStyle('label2')};
-                color: ${theme.surfaceContentSecondary};
-                margin-bottom: ${2 * GU}px;
-              `}
-            >
-              Description
-            </h2>
-            <span
-              css={`
-                ${textStyle('body2')};
-              `}
-            >
-              {description}
-            </span>
-          </div>
-          {creatorAddress && (
+        {loading ? (
+          <Loading border={false} />
+        ) : (
+          <div
+            css={`
+              display: grid;
+              grid-template-columns: 1fr minmax(250px, auto);
+              grid-gap: ${5 * GU}px;
+              margin-bottom: ${2 * GU}px;
+            `}
+          >
             <div>
               <h2
                 css={`
@@ -118,27 +117,64 @@ function DisputeInfo({ dispute, id, loading }) {
                   margin-bottom: ${2 * GU}px;
                 `}
               >
-                Created by
+                Description
               </h2>
-              <div
+              <span
                 css={`
-                  display: flex;
-                  align-items: flex-start;
+                  ${textStyle('body2')};
                 `}
               >
-                <IdentityBadge
-                  // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- add connected account
-                  entity={creatorAddress}
-                />
-              </div>
+                {description}
+              </span>
             </div>
-          )}
-        </div>
-        {dispute && <DisputeActions dispute={dispute} />}
+            {creatorAddress && (
+              <div>
+                <h2
+                  css={`
+                    ${textStyle('label2')};
+                    color: ${theme.surfaceContentSecondary};
+                    margin-bottom: ${2 * GU}px;
+                  `}
+                >
+                  Created by
+                </h2>
+                <div
+                  css={`
+                    display: flex;
+                    align-items: flex-start;
+                  `}
+                >
+                  <IdentityBadge
+                    // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- add connected account
+                    entity={creatorAddress}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {(phase === DisputePhase.AppealRuling ||
+          phase === DisputePhase.ConfirmAppeal ||
+          phase === DisputePhase.ExecuteRuling ||
+          phase === DisputePhase.ClaimRewards) && (
+          <DisputeCurrentRuling dispute={dispute} />
+        )}
+        {!loading && (
+          <DisputeActions
+            dispute={dispute}
+            onDraft={onDraft}
+            onRequestCommit={onRequestCommit}
+            onRequestReveal={onRequestReveal}
+            onLeavk={onLeak}
+            onRequestAppeal={onRequestAppeal}
+            onExecuteRuling={onExecuteRuling}
+          />
+        )}
       </section>
     </Box>
   )
-}
+})
 
 DisputeInfo.propTypes = {
   dispute: PropTypes.object, // TODO: define DisputeType

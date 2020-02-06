@@ -13,7 +13,7 @@ import IconRulingInactive from '../assets/IconRulingInactive.svg'
 import IconRewardsActive from '../assets/IconRewardsActive.svg'
 import IconRewardsInactive from '../assets/IconRewardsInactive.svg'
 
-// export { default as IconGavelNoFill } from '../assets/IconGavelNoFill.svg'
+export { default as IconGavelNoFill } from '../assets/IconGavelNoFill.svg'
 
 export const IconFlag = {
   active: IconFlagActive,

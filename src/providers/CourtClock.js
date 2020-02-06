@@ -23,8 +23,8 @@ function CourtClockProvider({ children }) {
   const courtClock = useMemo(
     () => ({
       currentTermId,
-      currentTermStartDate: new Date(termStartTime * 1000),
-      currentTermEndDate: new Date(termEndTime * 1000),
+      currentTermStartDate: new Date(termStartTime),
+      currentTermEndDate: new Date(termEndTime),
     }),
     [currentTermId, termEndTime, termStartTime]
   )

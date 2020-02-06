@@ -26,7 +26,7 @@ export default function Step({
           <div
             css={`
               position: relative;
-              z-index: 2;
+              z-index: 1;
             `}
           >
             {stepPoint}
