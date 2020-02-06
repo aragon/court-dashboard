@@ -33,7 +33,7 @@ const client = createClient({
   ],
 })
 
-if (env('SENTRY_DSN')) {
+if (env('SENTRY_DSN') && env('ENABLE_SENTRY')) {
   Sentry.init({
     dsn: env('SENTRY_DSN'),
     environment: getNetworkName(env('CHAIN_ID')),
