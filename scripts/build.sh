@@ -3,6 +3,7 @@ set -e
 
 pwd
 ls -la
+printenv
 
 enable_sentry='0'
 branch=$(git symbolic-ref --short -q HEAD)
