@@ -66,7 +66,7 @@ function DisplayTime({ phase, nextTransition }) {
   if (
     phase === Phase.ExecuteRuling ||
     phase === Phase.ClaimRewards ||
-    phase === Phase.ClaimRewards
+    phase === Phase.JuryDrafting
   ) {
     return (
       <div>
