@@ -79,7 +79,7 @@ const OnboardingModal = React.memo(({ visible, onStartCourt }) => {
                     ({ enterProgress, showProgress, status }) => (
                       <HighlightScreen
                         compactMode={compactMode}
-                        onStartCourt={onStartCourt}
+                        onDone={onComplete}
                         verticalMode={verticalMode}
                         enterProgress={enterProgress}
                         showProgress={showProgress}
@@ -117,7 +117,7 @@ const OnboardingModal = React.memo(({ visible, onStartCourt }) => {
 
 OnboardingModal.propTypes = {
   visible: PropTypes.bool.isRequired,
-  onStartCourt: PropTypes.func.isRequired,
+  onComplete: PropTypes.func.isRequired,
 }
 
 export default OnboardingModal

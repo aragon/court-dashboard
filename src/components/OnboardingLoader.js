@@ -6,21 +6,18 @@ function OnboardingLoader({ children }) {
     localStorage.getItem('onboardingCompleted')
   )
 
-  const handleStartCourt = useCallback(() => {
+  const handleOnComplete = useCallback(() => {
     localStorage.setItem('onboardingCompleted', true)
     setOnboardingCompleted(true)
   }, [])
 
   return (
     <React.Fragment>
-      {!onboardingCompleted && (
-        <OnboardingModal
-          visible={!onboardingCompleted}
-          onStartCourt={handleStartCourt}
-        />
-      )}
-
-      <React.Fragment>{children}</React.Fragment>
+      <OnboardingModal
+        visible={!onboardingCompleted}
+        onComplete={handleOnComplete}
+      />
+      {children}
     </React.Fragment>
   )
 }

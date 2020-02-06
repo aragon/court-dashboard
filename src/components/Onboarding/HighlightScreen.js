@@ -15,7 +15,7 @@ const TRANSLATE_VALUE_CONTENT = 60
 const HighlightScreen = ({
   compactMode,
   description,
-  onStartCourt,
+  onDone,
   enterProgress,
   showProgress,
   state,
@@ -125,7 +125,7 @@ const HighlightScreen = ({
               <Button
                 wide
                 mode="strong"
-                onClick={onStartCourt}
+                onClick={onDone}
                 css={`
                   height: 56px;
                   font-size: 18px;
@@ -180,14 +180,14 @@ HighlightScreen.propTypes = {
     large: PropTypes.string.isRequired,
   }),
   enterProgress: PropTypes.object,
-  onStartCourt: PropTypes.func.isRequired,
+  onDone: PropTypes.func.isRequired,
   showProgress: PropTypes.object,
-  state: ReactSpringStateType.isRequired,
-  title: PropTypes.shape({
+  start: PropTypes.shape({
     small: PropTypes.string,
     large: PropTypes.string.isRequired,
   }),
-  start: PropTypes.shape({
+  state: ReactSpringStateType.isRequired,
+  title: PropTypes.shape({
     small: PropTypes.string,
     large: PropTypes.string.isRequired,
   }),
