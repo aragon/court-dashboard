@@ -12,6 +12,10 @@ export const acceptedMovementsPerBalance = new Map([
     [
       { type: anjMovementTypes.Stake, direction: movementDirection.Outgoing },
       { type: anjMovementTypes.Unstake, direction: movementDirection.Incoming },
+      {
+        type: anjMovementTypes.StakeActivation,
+        direction: movementDirection.Outgoing,
+      },
     ],
   ],
   [
@@ -34,6 +38,10 @@ export const acceptedMovementsPerBalance = new Map([
     anjBalanceTypes.Active,
     [
       {
+        type: anjMovementTypes.StakeActivation,
+        direction: movementDirection.Incoming,
+      },
+      {
         type: anjMovementTypes.Activation,
         direction: movementDirection.Incoming,
       },
@@ -53,8 +61,6 @@ export const acceptedMovementsPerBalance = new Map([
 ])
 
 export function isMovementOf(movements, movementType) {
-  console.log('IS MOVEMENT OF movements', movements)
-  console.log('IS MOVEMENT OF movementType', movementType)
   return movements.some(movement => movement.type === movementType)
 }
 

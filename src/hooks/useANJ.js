@@ -31,8 +31,6 @@ export function useANJBalances() {
 
   const convertedMovements = useConvertedMovements(movements)
 
-  console.log('convert3ed ', convertedMovements)
-
   const convertedWalletBalance = useBalanceWithMovements(
     walletBalance,
     convertedMovements,
@@ -109,12 +107,8 @@ function useConvertedMovements(movements) {
 // Calculates the latest movement for each balance
 // In case the balance is active or inactive, we must also calculate all non effective movements to get the effective balance at current term
 function useBalanceWithMovements(balance, movements, balanceType) {
-  console.log('MOVEMENTS USE BALANCE ', movements)
-  console.log('BALANCE TYPE ', balanceType)
   const acceptedMovements = acceptedMovementsPerBalance.get(balanceType)
-  console.log('ACCEPTEDDD ', acceptedMovements)
   const filteredMovements = useFilteredMovements(movements, acceptedMovements)
-  console.log('filteredMovements ', filteredMovements)
 
   return useMemo(() => {
     if (!balance) {
@@ -175,8 +169,6 @@ function useFilteredMovements(movements, acceptedMovements) {
       return null
     }
     return movements.filter(movement => {
-      console.log('useFilteredMovements ', movement)
-      console.log('anjMovementTypes ', anjMovementTypes)
       return isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
     })
   }, [acceptedMovements, movements])

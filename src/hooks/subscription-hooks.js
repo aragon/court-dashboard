@@ -78,6 +78,7 @@ export function useJurorBalancesSubscription(jurorId) {
     } = jurorData.juror || {}
 
     const movementsFiltered = movements => {
+      // If the juror is activating from the wallent we need to just show an incoming movement in the Active balance
       return movements.reduce((previousList, movement, index, originalList) => {
         const convertedMovement = {
           ...movement,
@@ -85,19 +86,19 @@ export function useJurorBalancesSubscription(jurorId) {
           amount: bigNum(movement.amount),
         }
         if (index === 0) {
-          previousList.push(convertedMovement)
+          previousList[0] = convertedMovement
         } else if (
           ANJMovement[originalList[index - 1].type] ===
             ANJMovement.Activation &&
           ANJMovement[movement.type] === ANJMovement.Stake &&
-          movements[index - 1].createdAt === movement.createdAt
+          originalList[index - 1].createdAt === movement.createdAt
         ) {
-          previousList[index - 1] = {
-            ...previousList[index - 1],
-            type: ANJMovement.StakeActivation,
+          previousList[previousList.length - 1] = {
+            ...previousList[previousList.length - 1],
+            type: 'StakeActivation',
           }
         } else {
-          previousList.push(convertedMovement)
+          previousList[previousList.length] = convertedMovement
         }
         return previousList
       }, [])
