@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
+import { ipfsGet } from '../../lib/ipfs-utils'
 
 import dayjs from '../../lib/dayjs'
 
@@ -7,6 +8,17 @@ import folderIcon from '../../assets/folderIcon.svg'
 
 const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
   const theme = useTheme()
+  const [data, setData] = useState()
+
+  useEffect(() => {
+    async function fetchData() {
+      const result = await ipfsGet(evidences[0].data)
+      setData(result.data)
+    }
+    fetchData()
+  }, [evidences])
+
+  console.log('data ', data)
   return (
     <React.Fragment>
       {evidences.map((evidence, index) => {
