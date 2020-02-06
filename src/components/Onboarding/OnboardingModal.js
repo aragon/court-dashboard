@@ -2,17 +2,18 @@ import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Modal, springs, Viewport } from '@aragon/ui'
 import { Transition } from 'react-spring/renderprops'
-import { useArrows, useSteps } from '../../hooks/useOnboarding'
+import { useSteps } from '../../hooks/useOnboarding'
+import useKeyboardArrows from '../../hooks/useKeyboardArrows'
 import { highlights } from './content'
 import Navigation from './Navigation'
 import HighlightScreen, { RATIO_LEFT } from './HighlightScreen'
 
-const OnboardingModal = React.memo(({ visible, onStartCourt }) => {
+const OnboardingModal = React.memo(({ visible, onComplete }) => {
   const content = highlights.latest
   const steps = content.length
   const { step, next, prev, setStep, direction } = useSteps(steps)
 
-  useArrows(visible ? { onLeft: prev, onRight: next } : {})
+  useKeyboardArrows(visible ? { onLeft: prev, onRight: next } : {})
 
   useEffect(() => {
     if (visible) {

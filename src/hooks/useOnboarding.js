@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useReducer } from 'react'
 
-import keycodes from '../keycodes'
-
 function stepsReducer(state, { type, value, steps }) {
   const { step } = state
 
@@ -60,28 +58,4 @@ export function useSteps(steps) {
     setStep,
     step,
   }
-}
-
-export function useArrows({ onUp, onLeft, onDown, onRight } = {}) {
-  useEffect(() => {
-    const actions = [
-      [keycodes.up, onUp],
-      [keycodes.left, onLeft],
-      [keycodes.down, onDown],
-      [keycodes.right, onRight],
-    ]
-    const onKeyDown = e => {
-      for (const [keyCode, cb] of actions) {
-        if (cb && e.keyCode === keyCode) {
-          e.preventDefault()
-          cb()
-          break
-        }
-      }
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [onUp, onLeft, onDown, onRight])
 }
