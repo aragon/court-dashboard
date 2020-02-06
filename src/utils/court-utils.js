@@ -1,8 +1,9 @@
 import dayjs from 'dayjs'
+import { CourtModuleType } from '../types/court-module-types'
 
 function getFirstTermDate(courtConfig) {
   const { terms } = courtConfig
-  return terms[0].startTime * 1000
+  return terms[0].startTime
 }
 
 export function getTermStartTime(term, courtConfig) {
@@ -18,9 +19,7 @@ export function getCurrentTermId(now, terms, termDuration) {
   if (terms.length > 0) {
     const firstTermStartTime = parseInt(terms[0].startTime, 10)
 
-    currentTermId = Math.floor(
-      (dayjs(now).unix() - firstTermStartTime) / termDuration
-    )
+    currentTermId = Math.floor((dayjs(now) - firstTermStartTime) / termDuration)
   }
 
   return currentTermId
@@ -36,4 +35,12 @@ export function getTermStartAndEndTime(termId, terms, termDuration) {
   }
 
   return { termStartTime, termEndTime }
+}
+
+export function getModuleAddress(modules, moduleType) {
+  const courtModule = modules.find(
+    mod => CourtModuleType[mod.type] === moduleType
+  )
+
+  return courtModule ? courtModule.address : null
 }

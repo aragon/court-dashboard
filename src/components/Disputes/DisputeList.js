@@ -1,9 +1,18 @@
 import React, { useCallback, useState } from 'react'
-import { Bar, CardLayout, GU } from '@aragon/ui'
-import * as DisputesTypes from '../../types/types'
+import { Bar, CardLayout, GU, useTheme } from '@aragon/ui'
+
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
+import DisputesLoading from './Loading'
+import ErrorLoading from '../ErrorLoading'
+import NoFilterResults from './NoFilterResults'
+import MessageCard from '../MessageCard'
+
 import dayjs from '../../lib/dayjs'
+
+import noDataSvg from '../../assets/noData.svg'
+import * as DisputesTypes from '../../types/dispute-status-types'
+import noDraftSvg from '../../assets/noDraft.svg'
 
 const ALL_FILTER = 0
 const UNSELECTED_FILTER = -1
@@ -31,13 +40,13 @@ const DISPUTES_PHASE_STRING = DISPUTES_PHASE_TYPES.map(
 )
 
 const getFilteredDisputes = ({
-  disputes,
+  disputes = [],
   selectedDateRange,
   selectedStatus,
   selectedPhase,
 }) => {
   return disputes.filter(
-    ({ createdAt, reducedState, phase }) =>
+    ({ createdAt, status, phase }) =>
       (selectedPhase === UNSELECTED_FILTER ||
         selectedPhase === ALL_FILTER ||
         phase === DISPUTES_PHASE_TYPES[selectedPhase]) &&
@@ -50,11 +59,17 @@ const getFilteredDisputes = ({
         )) &&
       (selectedStatus === UNSELECTED_FILTER ||
         selectedStatus === ALL_FILTER ||
-        reducedState === DISPUTES_STATUS_TYPES[selectedStatus])
+        status === DISPUTES_STATUS_TYPES[selectedStatus])
   )
 }
 
-function DisputeList({ disputes, onSelectDispute }) {
+function DisputeList({
+  disputes,
+  loading,
+  errorLoading,
+  myDisputeSelected,
+  onSelectDispute,
+}) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedStatus, setSelectedStatus] = useState(UNSELECTED_FILTER)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_FILTER)
@@ -73,6 +88,12 @@ function DisputeList({ disputes, onSelectDispute }) {
     [setSelectedStatus]
   )
 
+  const handleOnClearAllFilters = useCallback(() => {
+    setSelectedDateRange(INITIAL_DATE_RANGE)
+    setSelectedStatus(UNSELECTED_FILTER)
+    setSelectedPhase(UNSELECTED_FILTER)
+  }, [])
+
   const filteredDisputes = getFilteredDisputes({
     disputes,
     selectedDateRange,
@@ -80,9 +101,20 @@ function DisputeList({ disputes, onSelectDispute }) {
     selectedPhase,
   })
 
+  const filtersSelected =
+    selectedDateRange !== INITIAL_DATE_RANGE ||
+    selectedStatus !== UNSELECTED_FILTER ||
+    selectedPhase !== UNSELECTED_FILTER
+
   return (
     <div>
-      <Bar>
+      <Bar
+        css={`
+          border-top: 0;
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+        `}
+      >
         <DisputeFilters
           phaseTypes={DISPUTES_PHASE_STRING}
           statusTypes={DISPUTES_STATUS_STRING}
@@ -94,19 +126,65 @@ function DisputeList({ disputes, onSelectDispute }) {
           onStatusChange={handleStatusChange}
         />
       </Bar>
-      <CardLayout columnWidthMin={30 * GU} rowHeight={272}>
-        {filteredDisputes.map(dispute => {
-          return (
-            <DisputeCard
-              key={dispute.id}
-              dispute={dispute}
-              onSelectDispute={onSelectDispute}
-            />
-          )
-        })}
-      </CardLayout>
+
+      {(() => {
+        if (filteredDisputes.length === 0 && filtersSelected)
+          return <NoFilterResults onClearFilters={handleOnClearAllFilters} />
+
+        if (errorLoading) {
+          return <ErrorLoading subject="dispute" error={errorLoading.message} />
+        }
+
+        if (loading) {
+          return <DisputesLoading />
+        }
+
+        if (disputes.length === 0) {
+          return myDisputeSelected ? <NoMyDisputes /> : <NoDisputes />
+        }
+
+        return (
+          <CardLayout columnWidthMin={30 * GU} rowHeight={272}>
+            {filteredDisputes.map(dispute => {
+              return (
+                <DisputeCard
+                  key={dispute.id}
+                  dispute={dispute}
+                  onSelectDispute={onSelectDispute}
+                />
+              )
+            })}
+          </CardLayout>
+        )
+      })()}
     </div>
   )
+}
+
+const NoDisputes = () => {
+  const title = 'No disputes yet!'
+  return <MessageCard title={title} icon={noDataSvg} />
+}
+
+const NoMyDisputes = () => {
+  const theme = useTheme()
+
+  const title = 'You haven’t been drafted to arbitrate a dispute yet'
+  const paragraph = (
+    <span>
+      The more{' '}
+      <span
+        css={`
+          color: ${theme.help};
+        `}
+      >
+        ANJ you activate
+      </span>
+      , more chances you have to be drafted to arbitrate a dispute.
+    </span>
+  )
+
+  return <MessageCard title={title} paragraph={paragraph} icon={noDraftSvg} />
 }
 
 export default DisputeList

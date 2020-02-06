@@ -1,3 +1,6 @@
 [
-  "function approveAndCall(address _owner, uint256 _amount, bytes _extraData) returns (bool success)"
+  "function approveAndCall(address _owner, uint256 _amount, bytes _extraData) returns (bool success)",
+  "function approve(address _spender, uint256 _value) public returns (bool)",
+  "function allowance(address _owner, address _spender) public view returns (uint256)",
+  "function balanceOf(address _who) public view returns (uint256)"
 ]

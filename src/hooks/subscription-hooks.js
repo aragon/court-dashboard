@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useSubscription } from 'urql'
 import dayjs from 'dayjs'
 
@@ -112,6 +112,7 @@ export function useCourtConfigSubscription(courtAddress) {
   return courtConfig
 }
 
+// Single dispute
 export function useSingleDisputeSubscription(id) {
   const [{ data, error }] = useSubscription({
     query: SingleDispute,
@@ -129,30 +130,25 @@ export function useSingleDisputeSubscription(id) {
   return { dispute, fetching: !data && !error, error }
 }
 
+// All disputes
 export function useDisputesSubscription() {
-  const [disputes, setDisputes] = useState([])
   const courtConfig = useCourtConfig()
-  // First argument is the last result from the query , second argument is the current response
-  // See https://formidable.com/open-source/urql/docs/basics/#subscriptions - Usage with hooks
-  const handleSubscription = (disputes = [], response) => {
-    /** Here we are reducing all the response againg because the response is not returning only the new elements or modified elements
-     So we don't have a way to know if some item was updated or not. The first argument is where the previouse subscription response comes
-     */
-    return setDisputes(
-      response.disputes.map(dispute =>
-        transformResponseDisputeAttributes(dispute, courtConfig)
-      )
-    )
-  }
-  useSubscription(
-    {
-      query: AllDisputes,
-      variables: {},
-    },
-    handleSubscription
+
+  const [{ data, error }] = useSubscription({
+    query: AllDisputes,
+  })
+
+  const disputes = useMemo(
+    () =>
+      data && data.disputes
+        ? data.disputes.map(dispute =>
+            transformResponseDisputeAttributes(dispute, courtConfig)
+          )
+        : null,
+    [courtConfig, data]
   )
 
-  return disputes
+  return { disputes, fetching: !data && !error, error }
 }
 
 export function useJurorDraftsSubscription(jurorId, from, pause) {
