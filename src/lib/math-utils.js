@@ -90,5 +90,5 @@ export function getPercentageBN(value, totalValue) {
 
 export function generateRandomNumber() {
   const code = EthersUtils.bigNumberify(EthersUtils.randomBytes(32))
-  return code._hex.slice(2)
+  return code.toHexString().slice(2)
 }
