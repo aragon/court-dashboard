@@ -17,9 +17,22 @@ import ActivateANJ from './panels/ActivateANJ'
 import DeactivateANJ from './panels/DeactivateANJ'
 import WithdrawANJ from './panels/WithdrawANJ'
 
+import {
+  getTotalUnlockedActiveBalance,
+  getTotalEffectiveInactiveBalance,
+} from '../../utils/balance-utils'
+
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
-  const { actions, balances, mode, panelState, requests } = useDashboardLogic()
+  const {
+    actions,
+    balances,
+    fetching,
+    // errorsFetching, //TODO: handle errors
+    mode,
+    panelState,
+    requests,
+  } = useDashboardLogic()
 
   return (
     <React.Fragment>
@@ -47,6 +60,7 @@ function Dashboard() {
       {connectedAccount ? (
         <BalanceModule
           balances={balances}
+          loading={fetching}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
           onRequestStakeActivate={requests.stakeActivateANJ}
@@ -83,11 +97,14 @@ function PanelComponent({ mode, actions, balances, ...props }) {
   const { activateANJ, deactivateANJ, withdrawANJ } = actions
   const { walletBalance, activeBalance, inactiveBalance } = balances
 
+  const unlockedActiveBalance = getTotalUnlockedActiveBalance(balances)
+  const effectiveInactiveBalance = getTotalEffectiveInactiveBalance(balances)
+
   switch (mode) {
     case REQUEST_MODE.DEACTIVATE:
       return (
         <DeactivateANJ
-          activeBalance={activeBalance.amount}
+          activeBalance={unlockedActiveBalance}
           onDeactivateANJ={deactivateANJ}
           {...props}
         />
@@ -95,7 +112,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     case REQUEST_MODE.WITHDRAW:
       return (
         <WithdrawANJ
-          inactiveBalance={inactiveBalance.amount}
+          inactiveBalance={effectiveInactiveBalance}
           onWithdrawANJ={withdrawANJ}
           {...props}
         />
@@ -104,8 +121,10 @@ function PanelComponent({ mode, actions, balances, ...props }) {
       return (
         <ActivateANJ
           activeBalance={activeBalance.amount}
+          inactiveBalance={inactiveBalance.amount}
           walletBalance={walletBalance.amount}
           onActivateANJ={activateANJ}
+          fromWallet={mode === REQUEST_MODE.STAKE_ACTIVATE}
           {...props}
         />
       )

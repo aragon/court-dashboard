@@ -326,13 +326,14 @@ export function useTotalActiveBalancePolling(termId) {
         .totalActiveBalanceAt(termId)
         .then(balance => {
           setTotalActiveBalance(balance)
+          clearTimeout(timeoutId.current)
           fetchTotalActiveBalance()
         })
         .catch(err => {
           console.log(`Error fetching balance: ${err} retrying...`)
           fetchTotalActiveBalance()
         })
-    }, 500)
+    }, 1000)
   }, [jurorRegistryContract, termId])
 
   useEffect(() => {

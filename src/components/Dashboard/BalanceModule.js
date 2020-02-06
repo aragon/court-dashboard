@@ -14,10 +14,15 @@ import activeANJIcon from '../../assets/IconANJActive.svg'
 
 import { getAccountStatus } from '../../utils/account-utils'
 import { useConnectedAccount } from '../../providers/Web3'
+import {
+  getTotalUnlockedActiveBalance,
+  getTotalEffectiveInactiveBalance,
+} from '../../utils/balance-utils'
 
 const BalanceModule = React.memo(
   ({
     balances,
+    loading,
     onRequestActivate,
     onRequestDeactivate,
     onRequestStakeActivate,
@@ -29,18 +34,14 @@ const BalanceModule = React.memo(
     const { minActiveBalance } = useCourtConfig()
 
     const oneColumn = layout === 'small' || layout === 'medium'
-    const status = getAccountStatus(balances, minActiveBalance)
+    const status = balances && getAccountStatus(balances, minActiveBalance)
 
-    const {
-      walletBalance,
-      activeBalance,
-      inactiveBalance,
-      deactivationBalance,
-    } = balances
+    const { walletBalance, activeBalance, inactiveBalance } = balances || {}
 
-    const effectiveInactiveBalance = inactiveBalance.amount
-      .add(deactivationBalance.amount)
-      .sub(inactiveBalance.amountNotEffective)
+    const unlockedActiveBalance =
+      balances && getTotalUnlockedActiveBalance(balances)
+    const effectiveInactiveBalance =
+      balances && getTotalEffectiveInactiveBalance(balances)
 
     return (
       <Split
@@ -60,6 +61,7 @@ const BalanceModule = React.memo(
             >
               <AccountBanner
                 status={status}
+                loading={loading}
                 minActiveBalance={minActiveBalance}
                 activeBalance={activeBalance}
               />
@@ -92,7 +94,8 @@ const BalanceModule = React.memo(
                       onClick: onRequestActivate,
                     },
                   ]}
-                  activity={inactiveBalance.latestMovement}
+                  activity={inactiveBalance && inactiveBalance.latestMovement}
+                  loading={loading}
                 />
               </Box>
               <Box
@@ -103,14 +106,15 @@ const BalanceModule = React.memo(
                 `}
               >
                 <Balance
-                  amount={activeBalance.amount}
+                  amount={unlockedActiveBalance}
                   label="Active"
                   mainIcon={activeANJIcon}
                   mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
                   actions={[
                     { label: 'Deactivate', onClick: onRequestDeactivate },
                   ]}
-                  activity={activeBalance.latestMovement}
+                  activity={activeBalance && activeBalance.latestMovement}
+                  loading={loading}
                 />
               </Box>
             </div>
@@ -133,7 +137,7 @@ const BalanceModule = React.memo(
               `}
             >
               <Balance
-                amount={walletBalance.amount}
+                amount={walletBalance && walletBalance.amount}
                 label="My wallet"
                 mainIcon={walletIcon}
                 mainIconBackground={theme.accent.alpha(0.2)}
@@ -144,7 +148,8 @@ const BalanceModule = React.memo(
                     onClick: onRequestStakeActivate,
                   },
                 ]}
-                activity={walletBalance.latestMovement}
+                activity={walletBalance && walletBalance.latestMovement}
+                loading={loading}
               />
             </div>
           </Box>
