@@ -10,7 +10,7 @@ import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits, getPercentageBN } from '../../lib/math-utils'
-import { getProbabilityText } from '../../utils/account-utils'
+// mport { getProbabilityText } from '../../utils/account-utils'
 
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
@@ -167,7 +167,6 @@ const BannerWithProbability = ({ activeBalance }) => {
   const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
     currentTermId
   )
-
   const totalPercentage = getPercentageBN(
     activeBalanceCurrentTerm,
     totalActiveBalanceCurrentTerm
@@ -176,7 +175,7 @@ const BannerWithProbability = ({ activeBalance }) => {
   // Calculate probability (since the total active balance is asynconous
   // it can happen that it has not been updated yet when the juror active balance has)
   const draftingProbability = Math.min(1, totalPercentage / 100)
-  const probabilityText = getProbabilityText(draftingProbability)
+  const chances = totalPercentage > 0 ? Math.floor(100 / totalPercentage) : 0
 
   const title = (
     <div
@@ -186,14 +185,15 @@ const BannerWithProbability = ({ activeBalance }) => {
       `}
     >
       <span css="margin-right: 8px">
+        You'll be drafted, on average
         <span
           css={`
             color: ${theme.accent};
           `}
         >
-          {probabilityText} probability{' '}
+          {` 1 on every ${chances} times `}
         </span>
-        to be drafted
+        during this term
       </span>
       <Help hint="How is the probability calculated?">
         Probability of being drafted depends on the total ANJ you have activated
