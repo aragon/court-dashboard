@@ -344,7 +344,8 @@ function DisplayTime({ item }) {
   if (active) {
     if (
       phase === DisputePhase.ExecuteRuling ||
-      phase === DisputePhase.ClaimRewards
+      phase === DisputePhase.ClaimRewards ||
+      phase === DisputePhase.JuryDrafting
     ) {
       return 'ANY TIME'
     }

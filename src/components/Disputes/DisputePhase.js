@@ -63,7 +63,11 @@ function DisputePhase({ phase, nextTransition }) {
 function DisplayTime({ phase, nextTransition }) {
   const theme = useTheme()
 
-  if (phase === Phase.ExecuteRuling || phase === Phase.ClaimRewards) {
+  if (
+    phase === Phase.ExecuteRuling ||
+    phase === Phase.ClaimRewards ||
+    phase === Phase.JuryDrafting
+  ) {
     return (
       <div>
         <span
