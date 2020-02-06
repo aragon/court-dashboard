@@ -12,6 +12,8 @@ const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
 
   useEffect(() => {
     async function fetchData() {
+      console.log('evidences ', evidences[0])
+      console.log('evidences data ', evidences[0].data)
       const result = await ipfsGet(evidences[0].data)
       setData(result.data)
     }

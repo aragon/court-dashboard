@@ -1,10 +1,17 @@
 import axios from 'axios'
+// import { toUtf8String } from 'ethers/utils'
 
 // const ipfsEndpoint = 'https://ipfs.io/ipfs'
 
 export const ipfsGet = async hash => {
-  console.log('hash ', String(hash))
-  const endpoint = `http://127.0.0.1:8080/ipfs/QmTyLBQ36N3u7FfFVNpxMBs8QXtG6K7vEKeTCWuwekLrv4"`
+  console.log(
+    'Equals ',
+    hash + '' === 'QmTyLBQ36N3u7FfFVNpxMBs8QXtG6K7vEKeTCWuwekLrv4'
+  )
+  console.log('QmTyLBQ36N3u7FfFVNpxMBs8QXtG6K7vEKeTCWuwekLrv4', hash.toString())
+
+  const endpoint = `http://127.0.0.1:8080/ipfs/${hash}`
+  console.log('endpoint ', endpoint)
   try {
     const { data } = await axios.get(endpoint, {
       responseType: 'text',
