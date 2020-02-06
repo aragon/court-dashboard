@@ -30,7 +30,7 @@
     "start:mainnet": "REACT_APP_CHAIN_ID=1 npm run start",
     "start:ropsten": "REACT_APP_CHAIN_ID=3 npm run start",
     "start:rinkeby": "REACT_APP_CHAIN_ID=4 npm run start",
-    "build": "npm run sync-assets && REACT_APP_ENABLE_SENTRY=$(git symbolic-ref --short -q HEAD | (read branch; test $branch = 'development' -o $branch = 'master' && echo '1' || echo '0';)) REACT_APP_BUILD=$(git log --pretty=format:'%h' -n 1) react-app-rewired build",
+    "build": "./scripts/build.sh",
     "build:rpc": "REACT_APP_CHAIN_ID=1337 npm run build",
     "build:mainnet": "REACT_APP_CHAIN_ID=1 npm run build",
     "build:ropsten": "REACT_APP_CHAIN_ID=3 npm run build",
