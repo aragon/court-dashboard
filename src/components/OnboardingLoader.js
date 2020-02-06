@@ -16,6 +16,7 @@ function OnboardingLoader({ children }) {
       <OnboardingModal
         visible={!onboardingCompleted}
         onComplete={handleOnComplete}
+        onClose={null}
       />
       {children}
     </React.Fragment>

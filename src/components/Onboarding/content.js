@@ -9,6 +9,7 @@ import large5 from './highlights/assets/rinkeby/large/5.png'
 const highlights = {
   heading: 'Aragon Court',
   defaultVisualColor: '#FF9780',
+  defaultButtonColor: '#FFFFFF',
 }
 
 highlights.rinkeby = [
@@ -50,6 +51,8 @@ highlights.rinkeby = [
     visual: {
       small: null,
       large: large2,
+      color: '#F9FAFC',
+      buttonColor: '#FF9780',
     },
   },
   {
