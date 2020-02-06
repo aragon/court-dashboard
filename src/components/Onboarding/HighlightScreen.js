@@ -14,13 +14,15 @@ const TRANSLATE_VALUE_CONTENT = 60
 
 const HighlightScreen = ({
   compactMode,
+  defaultVisualColor,
   description,
-  onDone,
   enterProgress,
+  heading,
+  onDone,
   showProgress,
+  start,
   state,
   title,
-  start,
   verticalMode,
   visual,
 }) => {
@@ -86,7 +88,7 @@ const HighlightScreen = ({
             ),
           }}
         >
-          Aragon Court
+          {heading}
         </animated.p>
         <animated.h1
           css={`
@@ -139,47 +141,61 @@ const HighlightScreen = ({
         </animated.div>
       </animated.div>
 
-      <Transition
-        native
-        items={visualSrcExists}
-        from={{ opacity: 0 }}
-        enter={{ opacity: 1 }}
-        leave={{ opacity: 0 }}
-        config={springs.lazy}
+      <animated.div
+        css={`
+          overflow: hidden;
+          position: relative;
+          z-index: 2;
+          flex-shrink: 1;
+          width: 100%;
+          height: ${verticalMode ? `${RATIO_TOP * 100}%` : '100%'};
+          background: ${visual.color || defaultVisualColor};
+        `}
+        style={{ opacity: leaving ? 0 : 1 }}
       >
-        {exists =>
-          exists &&
-          (({ opacity }) => (
-            <animated.div
-              css={`
-                overflow: hidden;
-                position: relative;
-                z-index: 2;
-                flex-shrink: 1;
-                width: 100%;
-                height: ${verticalMode ? `${RATIO_TOP * 100}%` : '100%'};
-                background: ${`
-                  url(${visualSrc})
-                  ${verticalMode ? '50% 40%' : '0 50%'} / cover
-                  no-repeat
-                `};
-              `}
-              style={{ opacity }}
-            />
-          ))
-        }
-      </Transition>
+        <Transition
+          native
+          items={visualSrcExists}
+          from={{ opacity: 0 }}
+          enter={{ opacity: 1 }}
+          leave={{ opacity: 0 }}
+          config={springs.lazy}
+        >
+          {exists =>
+            exists &&
+            (({ opacity }) => (
+              <animated.div
+                css={`
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  background: ${`
+                    url(${visualSrc})
+                    ${verticalMode ? '50% 40%' : '0 50%'} / cover
+                    no-repeat
+                  `};
+                `}
+                style={{ opacity }}
+              />
+            ))
+          }
+        </Transition>
+      </animated.div>
     </div>
   )
 }
 
 HighlightScreen.propTypes = {
   compactMode: PropTypes.bool,
+  defaultVisualColor: PropTypes.string,
   description: PropTypes.shape({
     small: PropTypes.string,
     large: PropTypes.string.isRequired,
   }),
   enterProgress: PropTypes.object,
+  heading: PropTypes.node,
   onDone: PropTypes.func.isRequired,
   showProgress: PropTypes.object,
   start: PropTypes.shape({

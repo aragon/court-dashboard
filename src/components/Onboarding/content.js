@@ -1,18 +1,17 @@
 import React from 'react'
+
 import large1 from './highlights/assets/rinkeby/large/1.png'
 import large2 from './highlights/assets/rinkeby/large/2.png'
 import large3 from './highlights/assets/rinkeby/large/3.png'
 import large4 from './highlights/assets/rinkeby/large/4.png'
 import large5 from './highlights/assets/rinkeby/large/5.png'
 
-import small1 from './highlights/assets/rinkeby/small/1.png'
-// import small2 from './highlights/assets/rinkeby/small/2.png'
-import small3 from './highlights/assets/rinkeby/small/3.png'
-import small4 from './highlights/assets/rinkeby/small/4.png'
-import small5 from './highlights/assets/rinkeby/small/5.png'
+const highlights = {
+  heading: 'Aragon Court',
+  defaultVisualColor: '#FF9780',
+}
 
-const highlights = {}
-highlights.latest = [
+highlights.rinkeby = [
   {
     title: {
       small: null,
@@ -20,10 +19,16 @@ highlights.latest = [
     },
     description: {
       small: null,
-      large: `This is a preview release of the official Court Dashboard that will launch on Feb 10th. We'd love for you to explore it and tell us what you think!`,
+      large: (
+        <span>
+          This is a preview release of the official Court Dashboard that will
+          launch on Feb 10th. We'd love for you to explore it and tell us what
+          you think!
+        </span>
+      ),
     },
     visual: {
-      small: small1,
+      small: null,
       large: large1,
     },
   },
@@ -36,18 +41,14 @@ highlights.latest = [
       small: null,
       large: (
         <span>
-          We've airdropped 10,000 test ANJ on Rinkeby to the same Ethereum
-          account you registered with on mainnet. You can use this test ANJ to
+          We’ve airdropped 10,000 test ANJ on Rinkeby to the same Ethereum
+          account you registered with on Mainnet. You can use this test ANJ to
           become an active juror and participate in the arbitration process.
-          <br />
-          <br />
-          <br />
-          <b>Include link to faucet once we have it</b>
         </span>
       ),
     },
     visual: {
-      // small: small2,
+      small: null,
       large: large2,
     },
   },
@@ -58,10 +59,16 @@ highlights.latest = [
     },
     description: {
       small: null,
-      large: `Once you start exploring, you will find some mock disputes with realistic content that will allow you to become familiar with the functionality of this dashboard.`,
+      large: (
+        <span>
+          Once you start exploring, you will find some mock disputes with
+          realistic content that will allow you to become familiar with the
+          functionality of this dashboard.
+        </span>
+      ),
     },
     visual: {
-      small: small3,
+      small: null,
       large: large3,
     },
   },
@@ -72,10 +79,16 @@ highlights.latest = [
     },
     description: {
       small: null,
-      large: `When you vote in favor of the majority ruling, you will be rewarded with arbitration fees. Just note that these rewards will be awarded in Rinkeby tokens for the purpose of this test preview.`,
+      large: (
+        <span>
+          When you vote in favor of the majority ruling, you will be rewarded
+          with arbitration fees. Just note that these rewards will be awarded in
+          Rinkeby tokens for the purpose of this test preview.
+        </span>
+      ),
     },
     visual: {
-      small: small4,
+      small: null,
       large: large4,
     },
   },
@@ -86,14 +99,19 @@ highlights.latest = [
     },
     description: {
       small: null,
-      large: `You will receive email notifications about important Aragon Court announcements, your assigned disputes, and upcoming tasks as a juror.`,
+      large: (
+        <span>
+          You will receive email notifications about important Aragon Court
+          announcements, your assigned disputes, and upcoming tasks as a juror.
+        </span>
+      ),
     },
     visual: {
-      small: small5,
+      small: null,
       large: large5,
     },
     start: {
-      small: 'Discover Aragon Court',
+      small: null,
       large: 'Discover Aragon Court',
     },
   },

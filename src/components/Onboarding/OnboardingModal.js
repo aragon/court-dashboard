@@ -9,7 +9,7 @@ import Navigation from './Navigation'
 import HighlightScreen, { RATIO_LEFT } from './HighlightScreen'
 
 const OnboardingModal = React.memo(({ visible, onComplete }) => {
-  const content = highlights.latest
+  const content = highlights.rinkeby
   const steps = content.length
   const { step, next, prev, setStep, direction } = useSteps(steps)
 
@@ -80,11 +80,13 @@ const OnboardingModal = React.memo(({ visible, onComplete }) => {
                     ({ enterProgress, showProgress, status }) => (
                       <HighlightScreen
                         compactMode={compactMode}
-                        onDone={onComplete}
-                        verticalMode={verticalMode}
+                        defaultVisualColor={highlights.defaultVisualColor}
                         enterProgress={enterProgress}
+                        heading={highlights.heading}
+                        onDone={onComplete}
                         showProgress={showProgress}
                         state={state}
+                        verticalMode={verticalMode}
                         {...content[index]}
                       />
                     )
