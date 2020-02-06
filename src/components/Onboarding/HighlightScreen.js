@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Button, springs } from '@aragon/ui'
+import { Button, springs, useImageExists } from '@aragon/ui'
 import { Transition, animated } from 'react-spring/renderprops'
 import { ReactSpringStateType } from '../../prop-types'
-import RemoteImage from '../RemoteImage'
 
 // Ratios based on the the design files
 export const RATIO_LEFT = 500 / 1055
@@ -12,10 +11,6 @@ export const RATIO_TOP = 560 / 950
 const TRANSLATE_VALUE_TITLE = 20
 const TRANSLATE_VALUE_HEADING = 40
 const TRANSLATE_VALUE_CONTENT = 60
-
-// Helping the styled-components `css` preprocessor
-// by using non-nested components.
-const { div: AnimDiv, h1: AnimH1, p: AnimP } = animated
 
 const HighlightScreen = ({
   compactMode,
@@ -31,6 +26,9 @@ const HighlightScreen = ({
 }) => {
   const visualSrc = compactMode && visual.small ? visual.small : visual.large
   const [leaving, setLeaving] = useState(false)
+
+  const { exists: visualSrcExists } = useImageExists(visualSrc)
+
   useEffect(() => {
     if (state === 'leave') {
       setLeaving(true)
@@ -56,7 +54,7 @@ const HighlightScreen = ({
         text-align: ${verticalMode ? 'center' : 'left'};
       `}
     >
-      <AnimDiv
+      <animated.div
         css={`
           overflow: ${verticalMode ? 'visible' : 'hidden'};
           flex-shrink: 0;
@@ -76,7 +74,7 @@ const HighlightScreen = ({
           ),
         }}
       >
-        <AnimP
+        <animated.p
           css={`
             color: rgba(0, 0, 0, 0.5);
             text-transform: uppercase;
@@ -89,8 +87,8 @@ const HighlightScreen = ({
           }}
         >
           Aragon Court
-        </AnimP>
-        <AnimH1
+        </animated.p>
+        <animated.h1
           css={`
             font-size: ${compactMode ? 30 : 42}px;
             line-height: 1.6;
@@ -103,8 +101,8 @@ const HighlightScreen = ({
           }}
         >
           {(compactMode && title.small) || title.large}
-        </AnimH1>
-        <AnimDiv
+        </animated.h1>
+        <animated.div
           style={{
             transform: enterProgress.interpolate(
               v => `translate3d(${v * TRANSLATE_VALUE_CONTENT}%, 0, 0)`
@@ -138,47 +136,39 @@ const HighlightScreen = ({
               </Button>
             </div>
           )}
-        </AnimDiv>
-      </AnimDiv>
+        </animated.div>
+      </animated.div>
 
-      <RemoteImage src={visualSrc}>
-        {({ exists }) =>
-          exists && (
-            <Transition
-              native
-              items={exists}
-              from={{ opacity: 0 }}
-              enter={{ opacity: 1 }}
-              leave={{ opacity: 0 }}
-              config={springs.lazy}
-            >
-              {exists =>
-                exists &&
-                (({ opacity }) => (
-                  <AnimDiv
-                    css={`
-                      overflow: hidden;
-                      position: relative;
-                      z-index: 2;
-                      flex-shrink: 1;
-                      width: 100%;
-                      height: ${verticalMode ? `${RATIO_TOP * 100}%` : '100%'};
-                      background: ${`
-                url(${visualSrc})
-                ${verticalMode ? '50% 40%' : '0 50%'} / cover
-                no-repeat;
-              `};
-                    `}
-                    style={{ opacity }}
-                  />
-                ))
-
-              /* eslint-enable react/prop-types */
-              }
-            </Transition>
-          )
+      <Transition
+        native
+        items={visualSrcExists}
+        from={{ opacity: 0 }}
+        enter={{ opacity: 1 }}
+        leave={{ opacity: 0 }}
+        config={springs.lazy}
+      >
+        {exists =>
+          exists &&
+          (({ opacity }) => (
+            <animated.div
+              css={`
+                overflow: hidden;
+                position: relative;
+                z-index: 2;
+                flex-shrink: 1;
+                width: 100%;
+                height: ${verticalMode ? `${RATIO_TOP * 100}%` : '100%'};
+                background: ${`
+                  url(${visualSrc})
+                  ${verticalMode ? '50% 40%' : '0 50%'} / cover
+                  no-repeat
+                `};
+              `}
+              style={{ opacity }}
+            />
+          ))
         }
-      </RemoteImage>
+      </Transition>
     </div>
   )
 }
