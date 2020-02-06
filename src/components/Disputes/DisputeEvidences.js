@@ -1,9 +1,11 @@
 import React from 'react'
 import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
-import folderIcon from '../../assets/folderIcon.svg'
+
 import dayjs from '../../lib/dayjs'
 
-function DisputeEvidences({ evidences }) {
+import folderIcon from '../../assets/folderIcon.svg'
+
+const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
   const theme = useTheme()
   return (
     <React.Fragment>
@@ -108,6 +110,6 @@ function DisputeEvidences({ evidences }) {
       })}
     </React.Fragment>
   )
-}
+})
 
 export default DisputeEvidences

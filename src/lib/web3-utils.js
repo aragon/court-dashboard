@@ -1,12 +1,11 @@
-import sha3 from 'js-sha3'
 import { DEFAULT_LOCAL_CHAIN } from '../environment'
+import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
 
-const { keccak_256: keccak256 } = sha3
-
-export const soliditySha3 = keccak256
+export const soliditySha3 = solidityKeccak256
+export const hash256 = keccak256
 
 export function getFunctionSignature(func) {
-  return `0x${keccak256(func).slice(0, 8)}`
+  return keccak256(func).slice(0, 10)
 }
 
 function toChecksumAddress(address) {

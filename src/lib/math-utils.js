@@ -78,6 +78,28 @@ export function round(value, precision = 2) {
   return `${whole}${decimal ? `.${decimal}` : ''}`
 }
 
+const wordNumbers = [
+  'One',
+  'Two',
+  'Three',
+  'Four',
+  'Five',
+  'Six',
+  'Seven',
+  'Eight',
+  'Nine',
+]
+
+export function numberToWord(number) {
+  return wordNumbers[number]
+}
+
+export function getPercentage(value, totalValue) {
+  if (!totalValue > 0) return 0
+
+  return Math.round((value * 100) / totalValue, 2)
+}
+
 export function getPercentageBN(value, totalValue) {
   const PERCENT_BN = bigNum(100)
 
@@ -87,4 +109,9 @@ export function getPercentageBN(value, totalValue) {
     .mul(PERCENT_BN)
     .div(totalValue)
     .toNumber()
+}
+
+export function generateRandomNumber() {
+  const code = EthersUtils.bigNumberify(EthersUtils.randomBytes(32))
+  return code.toHexString().slice(2)
 }
