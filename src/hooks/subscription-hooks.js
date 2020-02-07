@@ -16,6 +16,7 @@ import { OpenTasks } from '../queries/tasks'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
+import { groupMovements } from '../utils/anj-movement-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -84,11 +85,7 @@ export function useJurorBalancesSubscription(jurorId) {
         inactiveBalance: bigNum(availableBalance),
         deactivationBalance: bigNum(deactivationBalance),
       },
-      movements: movements.map(movement => ({
-        ...movement,
-        effectiveTermId: parseInt(movement.effectiveTermId, 10),
-        amount: bigNum(movement.amount),
-      })),
+      movements: groupMovements(movements),
     }
   }, [anjBalanceData, jurorData])
 

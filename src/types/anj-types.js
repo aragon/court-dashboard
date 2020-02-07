@@ -1,7 +1,10 @@
+export const STAKE_ACTIVATION_MOVEMENT = 'StakeActivation'
+
 export const ANJMovement = {
   Stake: Symbol('STAKE'),
   Unstake: Symbol('UNSTAKE'),
   Activation: Symbol('ACTIVATION'),
+  [STAKE_ACTIVATION_MOVEMENT]: Symbol('StakeActivation'),
   Deactivation: Symbol('DEACTIVATION'),
   DeactivationProcess: Symbol('DEACTIVATION_PROCESS'),
   Lock: Symbol('LOCK'),
@@ -26,6 +29,7 @@ const stringMapping = {
     [movementDirection.Outgoing]: 'Withdraw',
   },
   [ANJMovement.Activation]: 'Activated',
+  [ANJMovement.StakeActivation]: 'Activated',
   [ANJMovement.Deactivation]: 'Deactivated',
   [ANJMovement.DeactivationProcess]: 'Deactivation process',
   [ANJMovement.Lock]: 'Locked',
