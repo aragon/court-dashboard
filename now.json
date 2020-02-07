@@ -1,0 +1,7 @@
+{
+  "build": {
+    "env": {
+      "REACT_APP_SENTRY_DSN": "@court-dashboard-sentry-dsn"
+    }
+  }
+}
