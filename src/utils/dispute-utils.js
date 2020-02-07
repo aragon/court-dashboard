@@ -1,7 +1,7 @@
 import { getTermStartTime } from './court-utils'
 import dayjs from '../lib/dayjs'
 import * as DisputesTypes from '../types/dispute-status-types'
-// import { getOutcomeNumber } from './crvoting-utils'
+import { getOutcomeNumber } from './crvoting-utils'
 
 const juryDraftingTerms = 3
 
@@ -31,7 +31,7 @@ export const transformResponseDisputeAttributes = dispute => {
         vote: vote
           ? {
               ...vote,
-              // winningOutcome: getOutcomeNumber(vote.winningOutcome),
+              winningOutcome: getOutcomeNumber(vote.winningOutcome),
             }
           : null,
         appeal: appeal
@@ -300,6 +300,8 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   const isCurrentRound = roundId === currentPhase.roundId
   const { winningOutcome } = vote || {}
 
+  const now = dayjs(new Date())
+
   const disputeDraftStartTime = getTermStartTime(draftTermId, courtConfig)
 
   // Case where we are in a next round and has not yet started
@@ -321,7 +323,6 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms)
 
   const appealEndTime = revealEndTime + termDuration * appealTerms
-
   const confirmAppealEndTime =
     appealEndTime + termDuration * appealConfirmationTerms
 
@@ -351,7 +352,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
         isCurrentRound && DisputesTypes.Phase.RevealVote === currentPhase.phase,
       roundId,
       outcome: winningOutcome,
-      showOutcome: dayjs(new Date()).isAfter(revealEndTime),
+      showOutcome: now.isAfter(revealEndTime),
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
@@ -362,7 +363,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       roundId,
       outcome: roundAppealed ? appeal.appealedRuling : null,
       showOutcome:
-        dayjs(new Date()).isAfter(appealEndTime) ||
+        now.isAfter(appealEndTime) ||
         (roundAppealed && !!appeal.appealedRuling),
     },
     {
@@ -374,7 +375,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       roundId,
       outcome: roundAppealed ? appeal.opposedRuling : null,
       showOutcome:
-        dayjs(new Date()).isAfter(confirmAppealEndTime) ||
+        now.isAfter(confirmAppealEndTime) ||
         (roundAppealed && !!appeal.opposedRuling),
     },
   ]

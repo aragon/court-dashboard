@@ -1,12 +1,13 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
-import { Main } from '@aragon/ui'
+import { Main, ToastHub } from '@aragon/ui'
 import theme from './theme-court'
 import MainView from './components/MainView'
 import Web3ConnectProvider from './providers/Web3'
 import { CourtConfigProvider } from './providers/CourtConfig'
 import AppLoader from './components/AppLoader'
 import Routes from './Routes'
+import { CourtClockProvider } from './providers/CourtClock'
 
 function App() {
   return (
@@ -17,15 +18,19 @@ function App() {
         scrollView={false}
         theme={theme}
       >
-        <Web3ConnectProvider>
-          <CourtConfigProvider>
-            <MainView>
-              <AppLoader>
-                <Routes />
-              </AppLoader>
-            </MainView>
-          </CourtConfigProvider>
-        </Web3ConnectProvider>
+        <ToastHub threshold={1} timeout={1500}>
+          <Web3ConnectProvider>
+            <CourtConfigProvider>
+              <CourtClockProvider>
+                <MainView>
+                  <AppLoader>
+                    <Routes />
+                  </AppLoader>
+                </MainView>
+              </CourtClockProvider>
+            </CourtConfigProvider>
+          </Web3ConnectProvider>
+        </ToastHub>
       </Main>
     </BrowserRouter>
   )

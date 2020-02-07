@@ -2,104 +2,112 @@ import { useMemo } from 'react'
 import { useSubscription } from 'urql'
 import dayjs from 'dayjs'
 
-import { bigNum } from '../lib/math-utils'
-import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
+import { useCourtConfig } from '../providers/CourtConfig'
 
 import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
-import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
+import { AppealsByUser } from '../queries/appeals'
 import {
-  // CurrentTermJurorDrafts,
-  AllDisputes,
+  CurrentTermJurorDrafts,
   SingleDispute,
+  AllDisputes,
 } from '../queries/disputes'
 import { OpenTasks } from '../queries/tasks'
 
-import { useCourtConfig } from '../providers/CourtConfig'
+import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
+import { bigNum } from '../lib/math-utils'
 
 const NO_AMOUNT = bigNum(0)
 
+// Subscription to get juror's wallet balance
 function useANJBalance(jurorId) {
-  const [result] = useSubscription({
+  const [{ data, error }] = useSubscription({
     query: ANJBalance,
     variables: { id: jurorId },
   })
-  const data = result.data ? result.data.anjbalance : undefined
 
-  return { ...result, data }
+  return { data, error }
 }
 
+// Subscription to get juror's active, inactive and
+// locked balances and all 24 hrs movements
 function useJuror(jurorId) {
   // get 24hs from current time (seconds)
   const yesterday = dayjs()
     .subtract(1, 'day')
     .unix()
 
-  const [result] = useSubscription({
+  const [{ data, error }] = useSubscription({
     query: Juror,
     variables: { id: jurorId, from: yesterday },
   })
 
-  const data = result.data ? result.data.juror : undefined
-  return { ...result, data }
+  return { data, error }
 }
 
 export function useJurorBalancesSubscription(jurorId) {
   // My wallet balance
-  const {
-    data: anjBalanceData,
-    error: anjBalanceError,
-    fetching: anjBalanceFetching,
-  } = useANJBalance(jurorId)
+  const { data: anjBalanceData, error: anjBalanceError } = useANJBalance(
+    jurorId
+  )
 
   // Active, inactive, locked balance
-  const {
-    data: jurorData,
-    error: jurorError,
-    fetching: jurorFetching,
-  } = useJuror(jurorId)
+  const { data: jurorData, error: jurorError } = useJuror(jurorId)
 
-  const fetching = anjBalanceFetching || jurorFetching
   const errors = [anjBalanceError, jurorError].filter(err => err)
 
-  const { amount: walletBalance = NO_AMOUNT } = anjBalanceData || {}
-  const {
-    activeBalance = NO_AMOUNT,
-    lockedBalance = NO_AMOUNT,
-    availableBalance = NO_AMOUNT,
-    deactivationBalance = NO_AMOUNT,
-    movements = [],
-  } = jurorData || {}
+  const { balances, movements } = useMemo(() => {
+    // Means it's still fetching
+    if (!jurorData || !anjBalanceData) {
+      return {}
+    }
 
-  const balances = {
-    walletBalance: bigNum(walletBalance),
-    activeBalance: bigNum(activeBalance),
-    lockedBalance: bigNum(lockedBalance),
-    inactiveBalance: bigNum(availableBalance),
-    deactivationBalance: bigNum(deactivationBalance),
-  }
+    // If the account doesn't hold any ANJ we set 0 as default
+    const { amount: walletBalance = NO_AMOUNT } =
+      anjBalanceData.anjbalance || {}
+
+    // If the juror is null then means that the connnected account is not a juror but we are already done fetching
+    // We set 0 as default values
+    const {
+      activeBalance = NO_AMOUNT,
+      lockedBalance = NO_AMOUNT,
+      availableBalance = NO_AMOUNT,
+      deactivationBalance = NO_AMOUNT,
+      movements = [],
+    } = jurorData.juror || {}
+
+    return {
+      balances: {
+        walletBalance: bigNum(walletBalance),
+        activeBalance: bigNum(activeBalance),
+        lockedBalance: bigNum(lockedBalance),
+        inactiveBalance: bigNum(availableBalance),
+        deactivationBalance: bigNum(deactivationBalance),
+      },
+      movements: movements.map(movement => ({
+        ...movement,
+        effectiveTermId: parseInt(movement.effectiveTermId, 10),
+        amount: bigNum(movement.amount),
+      })),
+    }
+  }, [anjBalanceData, jurorData])
 
   return {
     balances,
-    fetching,
+    movements,
+    fetching: !balances && errors.length === 0,
     errors,
-    movements: movements.map(movement => ({
-      ...movement,
-      effectiveTermId: parseInt(movement.effectiveTermId, 10),
-      amount: bigNum(movement.amount),
-    })),
   }
 }
 
-// Court config
-export function useCourtSubscription(courtAddress) {
+export function useCourtConfigSubscription(courtAddress) {
   const [result] = useSubscription({
     query: CourtConfig,
     variables: { id: courtAddress },
   })
 
   // TODO: handle possible errors
-  const courtConfig = result.data && result.data.courtConfig
+  const { courtConfig } = result.data || {}
 
   return courtConfig
 }
@@ -125,26 +133,44 @@ export function useSingleDisputeSubscription(id) {
 // All disputes
 export function useDisputesSubscription() {
   const courtConfig = useCourtConfig()
-  // First argument is the last result from the query , second argument is the current response
-  // See https://formidable.com/open-source/urql/docs/basics/#subscriptions - Usage with hooks
-  const handleSubscription = (disputes = [], response) => {
-    /** Here we are reducing all the response againg because the response is not returning only the new elements or modified elements
-     So we don't have a way to know if some item was updated or not. The first argument is where the previouse subscription response comes
-     */
-    return response.disputes.map(dispute =>
-      transformResponseDisputeAttributes(dispute, courtConfig)
-    )
-  }
 
-  const [result] = useSubscription(
-    {
-      query: AllDisputes,
-    },
-    handleSubscription
+  const [{ data, error }] = useSubscription({
+    query: AllDisputes,
+  })
+
+  const disputes = useMemo(
+    () =>
+      data && data.disputes
+        ? data.disputes.map(dispute =>
+            transformResponseDisputeAttributes(dispute, courtConfig)
+          )
+        : null,
+    [courtConfig, data]
   )
-  const disputes = result.data || []
 
-  return { disputes, errors: result.errors, fetching: result.fetching }
+  return { disputes, fetching: !data && !error, error }
+}
+
+export function useJurorDraftsSubscription(jurorId, from, pause) {
+  const [result] = useSubscription({
+    query: CurrentTermJurorDrafts,
+    variables: { id: jurorId, from },
+    pause,
+  })
+
+  const { juror } = result.data || {}
+  return juror && juror.drafts ? juror.drafts : []
+}
+
+export function useAppealsByUserSubscription(jurorId, settled) {
+  const [result] = useSubscription({
+    query: AppealsByUser,
+    variables: { id: jurorId, settled },
+  })
+
+  const { appeals } = result.data || []
+
+  return appeals
 }
 
 export function useTasksSubscription() {
@@ -162,62 +188,4 @@ export function useTasksSubscription() {
   )
 
   return { tasks, fetching: !data && !error, error }
-}
-
-export function useCourtConfigSubscription(courtAddress) {
-  const [result] = useSubscription({
-    query: CourtConfig,
-    variables: { id: courtAddress },
-  })
-
-  // TODO: handle possible errors
-  const { courtConfig } = result.data || {}
-
-  return courtConfig
-}
-
-export function useJurorDraftsSubscription(jurorId, from, pause) {
-  // const [result] = useSubscription({
-  //   query: CurrentTermJurorDrafts,
-  //   variables: { id: jurorId, from },
-  //   pause,
-  // })
-  // const { juror } = result.data || {}
-  // return juror && juror.drafts ? juror.drafts : []
-}
-
-function useAppealsByMaker(jurorId, settled) {
-  const [result] = useSubscription({
-    query: AppealsByMaker,
-    variables: { maker: jurorId, settled },
-  })
-
-  const { appeals } = result.data || []
-
-  return appeals || []
-}
-
-function useAppealsByTaker(jurorId, settled) {
-  const [result] = useSubscription({
-    query: AppealsByTaker,
-    variables: { taker: jurorId, settled },
-  })
-
-  const { appeals } = result.data || []
-
-  return appeals || []
-}
-
-export function useAppealsByUserSubscription(jurorId, settled) {
-  const makerAppeals = useAppealsByMaker(jurorId, settled)
-  const takerAppeals = useAppealsByTaker(jurorId, settled)
-
-  return [...makerAppeals, ...takerAppeals].map(
-    ({ round, maker, taker, ...appeal }) => ({
-      disputeId: round.dispute.id,
-      amountStaked: bigNum(
-        maker ? appeal.appealDeposit : appeal.confirmAppealDeposit
-      ),
-    })
-  )
 }

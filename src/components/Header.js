@@ -1,6 +1,8 @@
 import React from 'react'
 import { Button, useTheme } from '@aragon/ui'
 import { useWeb3Connect } from '../providers/Web3'
+import Clock from './Clock'
+import { shortenAddress } from '../lib/web3-utils'
 
 function Header() {
   const { account, activate } = useWeb3Connect()
@@ -30,7 +32,7 @@ function Header() {
         >
           <span>Court Demo</span>
         </div>
-
+        <Clock />
         <div
           css={`
             margin-right: 12px;
@@ -45,7 +47,7 @@ function Header() {
                 border-radius: 5px;
               `}
             >
-              {account}
+              {shortenAddress(account)}
             </span>
           ) : (
             <Button

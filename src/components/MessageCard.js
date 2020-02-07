@@ -1,17 +1,17 @@
 import React from 'react'
-import { Box, GU, LoadingRing, textStyle, useTheme, Link } from '@aragon/ui'
+import { Box, GU, LoadingRing, textStyle, Link, useTheme } from '@aragon/ui'
 
 export default function MessageCard({
   icon,
   title,
   paragraph,
   loading,
-  noBorder,
+  border = true,
   link,
 }) {
   const theme = useTheme()
 
-  const Container = noBorder ? 'div' : Box
+  const Container = border ? Box : 'div'
   return (
     <Container>
       <div
@@ -24,10 +24,11 @@ export default function MessageCard({
       >
         <img
           src={icon}
+          alt=""
           css={`
             display: block;
             width: 100%;
-            max-width: 237px;
+            max-width: ${30 * GU}px;
             height: auto;
             margin: ${4 * GU}px 0;
           `}
@@ -50,7 +51,7 @@ export default function MessageCard({
                 ${textStyle('title2')}
               `}
             >
-              Loading...
+              Loading…
             </span>
           </div>
         ) : (
@@ -66,8 +67,8 @@ export default function MessageCard({
               css={`
                 ${textStyle('body2')}
                 color: ${theme.contentSecondary};
-                margin: ${1.5 * GU}px 0 ;
-                width: 450px;
+                margin-top: ${1.5 * GU}px;
+                width: ${55 * GU}px;
                 display: flex;
                 text-align: center; 
               `}

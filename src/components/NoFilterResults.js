@@ -3,7 +3,7 @@ import React from 'react'
 import noResults from '../assets/noResults.svg'
 import MessageCard from './MessageCard'
 
-function NoFilterResults({ onClearFilters, paragraph, noBorder }) {
+function NoFilterResults({ onClearFilters, paragraph, border }) {
   const title = 'No results found'
 
   const link = {
@@ -17,7 +17,7 @@ function NoFilterResults({ onClearFilters, paragraph, noBorder }) {
       paragraph={paragraph}
       icon={noResults}
       link={link}
-      noBorder={noBorder}
+      border={border}
     />
   )
 }

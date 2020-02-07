@@ -92,7 +92,7 @@ const TaskTable = React.memo(function TaskTable({
         <NoFilterResults
           onClearFilters={onClearFilters}
           paragraph="We couldn’t find any task matching your filter selection."
-          noBorder
+          border={false}
         />
       }
     />

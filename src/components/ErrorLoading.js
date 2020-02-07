@@ -18,7 +18,7 @@ function ErrorLoading({ subject, error }) {
           `}
         >
           {' '}
-          tell us what went wrong
+          tell us what went wrong {/* TODO: add link */}
         </span>{' '}
         if the problem persists.
       </span>
