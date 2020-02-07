@@ -1,8 +1,10 @@
+export const STAKE_ACTIVATION_MOVEMENT = 'StakeActivation'
+
 export const ANJMovement = {
   Stake: Symbol('STAKE'),
   Unstake: Symbol('UNSTAKE'),
   Activation: Symbol('ACTIVATION'),
-  StakeActivation: Symbol('StakeActivation'),
+  [STAKE_ACTIVATION_MOVEMENT]: Symbol('StakeActivation'),
   Deactivation: Symbol('DEACTIVATION'),
   DeactivationProcess: Symbol('DEACTIVATION_PROCESS'),
   Lock: Symbol('LOCK'),

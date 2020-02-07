@@ -16,7 +16,7 @@ import { OpenTasks } from '../queries/tasks'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
-import { ANJMovement } from '../types/anj-types'
+import { groupMovements } from '../utils/anj-movement-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -77,33 +77,6 @@ export function useJurorBalancesSubscription(jurorId) {
       movements = [],
     } = jurorData.juror || {}
 
-    const movementsFiltered = movements => {
-      // If the juror is activating from the wallent we need to just show an incoming movement in the Active balance
-      return movements.reduce((previousList, movement, index, originalList) => {
-        const convertedMovement = {
-          ...movement,
-          effectiveTermId: parseInt(movement.effectiveTermId, 10),
-          amount: bigNum(movement.amount),
-        }
-        if (index === 0) {
-          previousList[0] = convertedMovement
-        } else if (
-          ANJMovement[originalList[index - 1].type] ===
-            ANJMovement.Activation &&
-          ANJMovement[movement.type] === ANJMovement.Stake &&
-          originalList[index - 1].createdAt === movement.createdAt
-        ) {
-          previousList[previousList.length - 1] = {
-            ...previousList[previousList.length - 1],
-            type: 'StakeActivation',
-          }
-        } else {
-          previousList[previousList.length] = convertedMovement
-        }
-        return previousList
-      }, [])
-    }
-
     return {
       balances: {
         walletBalance: bigNum(walletBalance),
@@ -112,7 +85,7 @@ export function useJurorBalancesSubscription(jurorId) {
         inactiveBalance: bigNum(availableBalance),
         deactivationBalance: bigNum(deactivationBalance),
       },
-      movements: movementsFiltered(movements),
+      movements: groupMovements(movements),
     }
   }, [anjBalanceData, jurorData])
 
