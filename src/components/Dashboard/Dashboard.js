@@ -1,5 +1,4 @@
 import React from 'react'
-
 import { Button, GU, Header, SidePanel, Split, useLayout } from '@aragon/ui'
 
 import BalanceModule from './BalanceModule'

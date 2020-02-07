@@ -9,7 +9,6 @@ import {
   Split,
   SyncIndicator,
 } from '@aragon/ui'
-
 import { useHistory } from 'react-router-dom'
 
 import DisputeInfo from './DisputeInfo'

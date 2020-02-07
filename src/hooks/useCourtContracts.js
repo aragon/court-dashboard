@@ -11,7 +11,6 @@ import disputeManagerAbi from '../abi/DisputeManager.json'
 import votingAbi from '../abi/CRVoting.json'
 
 import { getFunctionSignature } from '../lib/web3-utils'
-
 import {
   hashVote,
   getOutcomeFromCommitment,
