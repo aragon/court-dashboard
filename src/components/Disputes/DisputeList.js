@@ -33,6 +33,7 @@ const DISPUTES_PHASE_TYPES = [
   DisputesTypes.Phase.VotingPeriod,
   DisputesTypes.Phase.AppealRuling,
   DisputesTypes.Phase.ConfirmAppeal,
+  DisputesTypes.Phase.ExecuteRuling,
   DisputesTypes.Phase.ClaimRewards,
 ]
 const DISPUTES_PHASE_STRING = DISPUTES_PHASE_TYPES.map(
