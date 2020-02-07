@@ -182,10 +182,7 @@ export function useTasksSubscription() {
     variables: subscriptionVariables,
   })
 
-  const tasks = useMemo(
-    () => (data && data.adjudicationRounds ? data.adjudicationRounds : null),
-    [data]
-  )
+  const tasks = data?.adjudicationRounds || null
 
   return { tasks, fetching: !data && !error, error }
 }

@@ -1,10 +1,10 @@
 import React from 'react'
-import noTasks from '../../assets/noTasks.svg'
+import noData from '../../assets/noData.svg'
 import MessageCard from '../MessageCard'
 
 function NoTasks() {
   const title = 'No tasks yet!'
-  return <MessageCard icon={noTasks} title={title} />
+  return <MessageCard icon={noData} title={title} />
 }
 
 export default NoTasks

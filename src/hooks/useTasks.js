@@ -9,8 +9,9 @@ export default function useTasks() {
   const courtConfig = useCourtConfig()
   const { tasks, fetching, error } = useTasksSubscription()
   const now = useNow()
+  const openTasks = useOpenTasks(tasks, now, courtConfig)
 
-  return { openTasks: useOpenTasks(tasks, now, courtConfig), fetching, error }
+  return { openTasks, fetching, error }
 }
 
 function useOpenTasks(tasks, now, courtSettings) {
