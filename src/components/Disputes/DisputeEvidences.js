@@ -3,7 +3,7 @@ import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
 import useEvidences from '../../hooks/useEvidences'
 import dayjs from '../../lib/dayjs'
 import { addressesEqual } from '../../lib/web3-utils'
-import { Loading } from '../Loading'
+import Loading from '../Loading'
 import folderIcon from '../../assets/folderIcon.svg'
 
 const DisputeEvidences = React.memo(function DisputeEvidences({
@@ -26,6 +26,7 @@ const DisputeEvidences = React.memo(function DisputeEvidences({
       {transformedEvidences &&
         transformedEvidences.map((evidence, index) => {
           const { createdAt, submitter, metadata } = evidence
+          console.log('EVIDENCE DATA ', metadata)
           return (
             <Accordion
               key={index}

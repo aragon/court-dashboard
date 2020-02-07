@@ -19,7 +19,7 @@ import CommitPanel from './panels/CommitPanel'
 import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
 
-import { hexToAscii, toDate } from '../../lib/web3-utils'
+import { toDate } from '../../lib/web3-utils'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
@@ -43,7 +43,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     () =>
       (evidenceList || []).map(evidence => ({
         ...evidence,
-        data: hexToAscii(evidence.data),
         createdAt: toDate(evidence.createdAt),
       })),
     [evidenceList]
