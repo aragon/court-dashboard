@@ -18,7 +18,7 @@ fi
 
 # Build number from the short hash
 if [ -n "$NOW_GITHUB_COMMIT_SHA" ]; then
-  build=$(git rev-parse --short "$NOW_GITHUB_COMMIT_SHA")
+  build=$(echo "$NOW_GITHUB_COMMIT_SHA" | cut -c1-7)
 else
   build=$(git log --pretty=format:'%h' -n 1)
 fi
