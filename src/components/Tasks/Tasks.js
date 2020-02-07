@@ -51,7 +51,11 @@ const Tasks = React.memo(({ onlyTable }) => {
   }
 
   return (
-    <>
+    <div
+      css={`
+        padding-bottom: ${3 * GU}px;
+      `}
+    >
       {!onlyTable && (
         <Header
           primary="Tasks"
@@ -140,7 +144,7 @@ const Tasks = React.memo(({ onlyTable }) => {
           />
         )
       })()}
-    </>
+    </div>
   )
 })
 
