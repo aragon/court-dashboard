@@ -19,6 +19,7 @@ import { bigNum } from '../lib/math-utils'
 import { JurorRewards } from '../queries/rewards'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
+import { OUTCOMES } from '../utils/crvoting-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -229,9 +230,12 @@ export function useTasksSubscription() {
 }
 
 export function useJurorRewardsSubscription(jurorId) {
+  // Ideally we would check that the round is not settled
+  // but since we cannot do nested filters we at least can
+  // check that the juror has voted in the round and the vote hasn't been leaked (outcome > 1)
   const [{ data, error }] = useSubscription({
     query: JurorRewards,
-    variables: { id: jurorId },
+    variables: { id: jurorId, minOutcome: OUTCOMES.Refused },
   })
 
   const jurorDrafts = useMemo(() => {

@@ -34,7 +34,7 @@ export function shouldAppealerBeRewarded(appeal) {
     return true
   }
 
-  const finalRuling = round.dispute
+  const { finalRuling } = round.dispute
   // If maker && appealed for the wininig outcome
   if (maker && appealedRuling === finalRuling) {
     return true
@@ -66,7 +66,7 @@ export function getAppealerFees(appeal, totalFees) {
     return appealDeposit
   }
 
-  const finalRuling = round.dispute
+  const { finalRuling } = round.dispute
   const totalDeposit = appealDeposit.add(confirmAppealDeposit)
 
   // if appealed for the wininig outcome

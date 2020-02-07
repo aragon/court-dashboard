@@ -19,7 +19,6 @@ import DeactivateANJ from './panels/DeactivateANJ'
 import WithdrawANJ from './panels/WithdrawANJ'
 import AppealColateralModule from './AppealColateralModule'
 import RewardsModule from './RewardsModule'
-import { useCourtConfig } from '../../providers/CourtConfig'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
@@ -38,7 +37,6 @@ function Dashboard() {
   const { name: layout } = useLayout()
   const oneColumn = layout === 'small' || layout === 'medium'
 
-  console.log(useCourtConfig().feeToken)
   return (
     <React.Fragment>
       <Header

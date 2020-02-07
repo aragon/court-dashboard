@@ -25,7 +25,10 @@ export default function useJurorRewards() {
     // Get ruling and disputes fees
     // Only jurors that voted in consensus with the winning outcome can claim rewards (coherent jurors)
     const { rulingFees, arbitrableFees } = jurorDrafts
-      .filter(isJurorCoherent)
+      .filter(
+        jurorDraft =>
+          jurorDraft.round.settledPenalties && isJurorCoherent(jurorDraft)
+      )
       .reduce(
         ({ rulingFees, arbitrableFees }, { weight, round }) => {
           const { jurorFees, coherentJurors, collectedTokens, dispute } = round
@@ -53,7 +56,8 @@ export default function useJurorRewards() {
     // We also need to check that the appealer should be rewarded.
     const appealFees = appeals
       .filter(
-        appeal => appeal.round.settledPenalties && shouldAppealerBeRewarded
+        appeal =>
+          appeal.round.settledPenalties && shouldAppealerBeRewarded(appeal)
       )
       .reduce((appealsFee, appeal) => {
         const { round } = appeal
@@ -85,7 +89,7 @@ export default function useJurorRewards() {
 
 /**
  * Adds or updates a fee entry on the map
- * @param {Map} feeMap Map coantianing fee data
+ * @param {Map} feeMap Map contianing fee data
  * @param {Number} disputeId Id of the dispute
  * @param {Number} roundId Id of the round
  * @param {BigNum} feeAmount Amount of fees to add to the entry
@@ -132,7 +136,7 @@ function getTotalDisputesFees(artbitrableFeesMap, appealFeesMap) {
     disputeFees.push({ disputeId, amount: feeAmount })
   }
 
-  // Add the reaminaing appealing fees in case there wasn't an arbitrable reward
+  // Add the reaminaing appealing fees in case there wasn't an arbitrable reward in the remaining disputes
   for (const [disputeId, { amount }] of appealFeesMapCopy.entries()) {
     disputeFees.push({ disputeId, amount })
   }

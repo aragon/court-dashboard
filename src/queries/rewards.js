@@ -1,13 +1,10 @@
 import gql from 'graphql-tag'
 
-// Ideally we would check that the round is not settled
-// but since we cannot do nested filters we at least can
-// check that the juror has voted in the round and the vote hasn't been leaked
 export const JurorRewards = gql`
-  subscription JurorDraft($id: ID!) {
+  subscription JurorDraft($id: ID!, $minOutcome: Int!) {
     juror(id: $id) {
       id
-      drafts(where: { rewarded: false, outcome_gt: 1 }) {
+      drafts(where: { rewarded: false, outcome_gte: $minOutcome }) {
         id
         rewarded
         weight
@@ -27,5 +24,3 @@ export const JurorRewards = gql`
     }
   }
 `
-
-export const AppealRewards = null
