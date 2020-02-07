@@ -11,11 +11,9 @@ const DisputeEvidences = React.memo(function DisputeEvidences({
   disputeCreator,
 }) {
   const theme = useTheme()
-  // const [data, setData] = useState()
 
   const transformedEvidences = useEvidences(evidences)
 
-  console.log('newEvidences  ', transformedEvidences)
   // TODO - ADD ERROR HANDLING I THINK THAT WE NEED DESIGNS
   return (
     <React.Fragment>
