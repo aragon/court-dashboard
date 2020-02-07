@@ -1,17 +1,11 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import {
-  Accordion,
-  GU,
-  textStyle,
-  useTheme,
-  Timer,
-  IconClose,
-  IconCheck,
-} from '@aragon/ui'
+import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
 
 import Stepper from '../Stepper'
 import Step from '../Step'
+import DisputeRoundPill from './DisputeRoundPill'
+import DisputeOutcomeText from './DisputeOutcomeText'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
 
@@ -33,12 +27,6 @@ import {
 import dayjs from '../../lib/dayjs'
 import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
-import { numberToWord } from '../../lib/math-utils'
-import {
-  juryOutcomeToString,
-  appealRulingToString,
-  OUTCOMES,
-} from '../../utils/crvoting-utils'
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   const theme = useTheme()
@@ -93,7 +81,7 @@ const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
                                   margin-right: ${1 * GU}px;
                                 `}
                               />
-                              <RoundPill roundId={round[0].roundId} />
+                              <DisputeRoundPill roundId={round[0].roundId} />
                             </div>,
 
                             <Stepper
@@ -168,7 +156,7 @@ function ItemStep({ item, index, roundStepContainer }) {
                 <DisplayTime item={item} />
               </span>
             </div>
-            {item.active && <RoundPill roundId={item.roundId} />}
+            {item.active && <DisputeRoundPill roundId={item.roundId} />}
             {item.showOutcome && (
               <Outcome outcome={item.outcome} phase={item.phase} />
             )}
@@ -210,67 +198,9 @@ function Outcome({ outcome, phase }) {
           {title}
         </span>
       </div>
-      <OutcomeText outcome={outcome} phase={phase} />
+      <DisputeOutcomeText outcome={outcome} phase={phase} />
     </div>
   )
-}
-
-function OutcomeText({ outcome, phase }) {
-  const { Icon, color } = useOutcomeStyle(outcome)
-
-  let outcomeText
-  if (phase === DisputePhase.RevealVote) {
-    outcomeText = juryOutcomeToString(outcome)
-  } else {
-    const confirm = phase === DisputePhase.ConfirmAppeal
-    outcomeText = appealRulingToString(outcome, confirm)
-  }
-
-  return (
-    <div>
-      <div
-        css={`
-          color: ${color};
-          display: flex;
-          align-items: center;
-        `}
-      >
-        <Icon size="medium" />
-        <span
-          css={`
-            ${textStyle('body2')}
-          `}
-        >
-          {outcomeText}
-        </span>
-      </div>
-    </div>
-  )
-}
-
-function useOutcomeStyle(outcome) {
-  const theme = useTheme()
-
-  if (!outcome || outcome === OUTCOMES.Refused) {
-    return {
-      Icon: IconClose,
-      color: theme.disabledIcon,
-    }
-  }
-
-  if (outcome === OUTCOMES.Against) {
-    return {
-      Icon: IconClose,
-      color: theme.negative,
-    }
-  }
-
-  if (outcome === OUTCOMES.InFavor) {
-    return {
-      Icon: IconCheck,
-      color: theme.positive,
-    }
-  }
 }
 
 function PhaseIcon({ phase, active }) {
@@ -310,32 +240,6 @@ function PhaseIcon({ phase, active }) {
       src={active ? icon.active : icon.inactive}
       alt=""
     />
-  )
-}
-
-function RoundPill({ roundId }) {
-  if (roundId === undefined) return null
-
-  const label = `Round ${numberToWord(roundId)}`
-
-  return (
-    <span
-      css={`
-        padding: 1px 16px;
-        border-radius: 100px;
-        background: linear-gradient(
-          13.81deg,
-          rgba(255, 179, 109, 0.3) -0.55%,
-          rgba(255, 136, 136, 0.3) 88.44%
-        );
-        text-transform: uppercase;
-        font-size: 12px;
-        color: #e9756c;
-        margin-top: 2px;
-      `}
-    >
-      {label}
-    </span>
   )
 }
 
