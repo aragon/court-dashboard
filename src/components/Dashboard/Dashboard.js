@@ -1,24 +1,30 @@
 import React from 'react'
+
 import { Button, GU, Header, SidePanel, Split, useLayout } from '@aragon/ui'
 
 import BalanceModule from './BalanceModule'
-import TaskTable from './TaskTable'
-import { tasks } from '../../mock-data'
+import Tasks from '../Tasks/Tasks'
 import Welcome from './Welcome'
-import { DashboardStateProvider } from './DashboardStateProvider'
+import ActivateANJ from './panels/ActivateANJ'
+import DeactivateANJ from './panels/DeactivateANJ'
+import WithdrawANJ from './panels/WithdrawANJ'
+import AppealColateralModule from './AppealColateralModule'
+import RewardsModule from './RewardsModule'
 
-import ANJIcon from '../../assets/IconANJButton.svg'
+import { DashboardStateProvider } from './DashboardStateProvider'
 import { useConnectedAccount } from '../../providers/Web3'
 import {
   getRequestModeString,
   useDashboardLogic,
   REQUEST_MODE,
 } from '../../dashboard-logic'
-import ActivateANJ from './panels/ActivateANJ'
-import DeactivateANJ from './panels/DeactivateANJ'
-import WithdrawANJ from './panels/WithdrawANJ'
-import AppealColateralModule from './AppealColateralModule'
-import RewardsModule from './RewardsModule'
+
+import {
+  getTotalUnlockedActiveBalance,
+  getTotalEffectiveInactiveBalance,
+} from '../../utils/balance-utils'
+
+import ANJIcon from '../../assets/IconANJButton.svg'
 
 function Dashboard() {
   const connectedAccount = useConnectedAccount()
@@ -74,7 +80,7 @@ function Dashboard() {
       )}
 
       <Split
-        primary={<TaskTable tasks={tasks} />}
+        primary={<Tasks onlyTable />}
         secondary={
           connectedAccount && (
             <>
@@ -93,6 +99,7 @@ function Dashboard() {
         }
         invert={oneColumn ? 'vertical' : 'horizontal'}
       />
+
       <SidePanel
         title={`${getRequestModeString(mode)} ANJ`}
         opened={panelState.visible}
@@ -119,11 +126,14 @@ function PanelComponent({ mode, actions, balances, ...props }) {
   const { activateANJ, deactivateANJ, withdrawANJ } = actions
   const { walletBalance, activeBalance, inactiveBalance } = balances
 
+  const unlockedActiveBalance = getTotalUnlockedActiveBalance(balances)
+  const effectiveInactiveBalance = getTotalEffectiveInactiveBalance(balances)
+
   switch (mode) {
     case REQUEST_MODE.DEACTIVATE:
       return (
         <DeactivateANJ
-          activeBalance={activeBalance.amount}
+          activeBalance={unlockedActiveBalance}
           onDeactivateANJ={deactivateANJ}
           {...props}
         />
@@ -131,7 +141,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
     case REQUEST_MODE.WITHDRAW:
       return (
         <WithdrawANJ
-          inactiveBalance={inactiveBalance.amount}
+          inactiveBalance={effectiveInactiveBalance}
           onWithdrawANJ={withdrawANJ}
           {...props}
         />
@@ -140,8 +150,10 @@ function PanelComponent({ mode, actions, balances, ...props }) {
       return (
         <ActivateANJ
           activeBalance={activeBalance.amount}
+          inactiveBalance={inactiveBalance.amount}
           walletBalance={walletBalance.amount}
           onActivateANJ={activateANJ}
+          fromWallet={mode === REQUEST_MODE.STAKE_ACTIVATE}
           {...props}
         />
       )

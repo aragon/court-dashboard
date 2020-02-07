@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, GU, Info } from '@aragon/ui'
 
-function DisputeReveal({ disputeId, roundId, commitment, onRequestReveal }) {
+function DisputeReveal({ onRequestReveal }) {
   return (
     <div>
       <Button
@@ -15,7 +15,7 @@ function DisputeReveal({ disputeId, roundId, commitment, onRequestReveal }) {
         Reveal your vote
       </Button>
       <Info mode="description">
-        You will be asked a password before you can reveal your vote.
+        You will be asked a one-time-use code before you can reveal your vote.
       </Info>
     </div>
   )

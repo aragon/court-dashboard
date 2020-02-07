@@ -1,7 +1,9 @@
 import React from 'react'
 import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
-import folderIcon from '../../assets/folderIcon.svg'
+
 import dayjs from '../../lib/dayjs'
+
+import folderIcon from '../../assets/folderIcon.svg'
 
 const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
   const theme = useTheme()

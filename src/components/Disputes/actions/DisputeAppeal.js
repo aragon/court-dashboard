@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react'
-
 import { Button, Info, GU, useTheme } from '@aragon/ui'
 
-function DisputeAppeal({ onRequestAppeal, onRequestConfirmAppeal, confirm }) {
+function DisputeAppeal({ onRequestAppeal, confirm }) {
   const theme = useTheme()
 
   const actionLabel = confirm ? 'Confirm appeal' : 'Appeal Ruling'

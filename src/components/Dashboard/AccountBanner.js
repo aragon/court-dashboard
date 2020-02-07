@@ -55,7 +55,7 @@ const getBannerAttributes = (
 
   return {
     icon: anjSpringIcon,
-    title: 'Active ANJ to be an active juror',
+    title: 'Activate ANJ to be an active juror',
     paragraph: `You must activate at least ${formatUnits(minActiveBalance, {
       digits: decimals,
     })}  ANJ to be drafted as a juror`,
@@ -204,7 +204,6 @@ const BannerWithProbability = ({ activeBalance }) => {
 
   const paragraph =
     'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute'
-
   return (
     <Wrapper
       mainIcon={<CircleGraph value={draftingProbability} size={6 * GU} />}

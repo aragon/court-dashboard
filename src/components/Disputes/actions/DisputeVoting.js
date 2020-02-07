@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Button, GU, Info, textStyle } from '@aragon/ui'
+import { Button, GU, Info } from '@aragon/ui'
+
+import { useConnectedAccount } from '../../../providers/Web3'
 
 import {
   VOTE_OPTION_REFUSE,
@@ -9,11 +11,14 @@ import {
 } from '../../../utils/crvoting-utils'
 
 function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
+  const connectedAccount = useConnectedAccount()
+
   return (
     <div>
       <div
         css={`
           display: flex;
+          justify-content: space-between;
           width: 100%;
           margin-bottom: ${1.5 * GU}px;
         `}
@@ -43,21 +48,21 @@ function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
         </VotingButton>
       </div>
       <Info mode={isJurorDrafted ? 'description' : 'warning'}>
-        {isJurorDrafted
-          ? ' You will be asked a password before you can commit your vote.'
-          : 'You cannot vote on this dispute with the current enabled address.'}
+        {(() => {
+          if (!connectedAccount)
+            return 'You cannot vote on this dispute because your Ethereum account is not connected.'
+
+          return isJurorDrafted
+            ? ' You will be asked a one-time-use code before you can commit your vote.'
+            : 'You cannot vote on this dispute with the current enabled address.'
+        })()}
       </Info>
     </div>
   )
 }
 
 const VotingButton = styled(Button)`
-  ${textStyle('body2')};
-  width: 50%;
-  margin-right: ${1 * GU}px;
-  &:last-child {
-    margin-right: 0px;
-  }
+  width: calc((100% - ${2 * GU}px) / 3);
 `
 
 export default DisputeVoting

@@ -9,9 +9,7 @@ export function useSidePanel() {
     setOpened(false)
   }, [])
 
-  const endTransition = useCallback(() => {
-    return setOpened
-  }, [setOpened])
+  const endTransition = setOpened
 
   const requestClose = useCallback(() => {
     setVisible(false)

@@ -1,11 +1,11 @@
 import React from 'react'
-import dayjs from '../../lib/dayjs'
-import * as DisputesTypes from '../../types/dispute-status-types'
-
 import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
 
+import dayjs from '../../lib/dayjs'
+import { Phase, convertToString } from '../../types/dispute-status-types'
+
 function DisputePhase({ phase, nextTransition }) {
-  const stringPhase = DisputesTypes.convertToString(phase)
+  const stringPhase = convertToString(phase)
   return (
     <div
       css={`
@@ -62,9 +62,11 @@ function DisputePhase({ phase, nextTransition }) {
 
 function DisplayTime({ phase, nextTransition }) {
   const theme = useTheme()
+
   if (
-    phase === DisputesTypes.Phase.ExecuteRuling ||
-    phase === DisputesTypes.Phase.ClaimRewards
+    phase === Phase.ExecuteRuling ||
+    phase === Phase.ClaimRewards ||
+    phase === Phase.JuryDrafting
   ) {
     return (
       <div>

@@ -12,27 +12,55 @@ export const OUTCOMES = {
 export const VOTE_OPTION_REFUSE = OUTCOMES.Refused
 export const VOTE_OPTION_AGAINST = OUTCOMES.Against
 export const VOTE_OPTION_IN_FAVOR = OUTCOMES.InFavor
+export const NOBODY_APPEALED = 'Nobody appealed'
+export const NOBODY_CONFIRMED = 'No confirmation'
 
-const optionStringMapping = {
+const voteOptionStringMapping = {
   [VOTE_OPTION_REFUSE]: 'REFUSE TO VOTE',
   [VOTE_OPTION_AGAINST]: 'AGAINST',
   [VOTE_OPTION_IN_FAVOR]: 'IN FAVOR',
 }
 
 export function voteToString(outcome) {
-  return optionStringMapping[outcome]
+  return voteOptionStringMapping[outcome]
+}
+
+const appealOptionStringMapping = {
+  [VOTE_OPTION_REFUSE]: 'Refuse',
+  [VOTE_OPTION_AGAINST]: 'Against',
+  [VOTE_OPTION_IN_FAVOR]: 'In favor',
+}
+
+export function appealOptionToString(outcome) {
+  return appealOptionStringMapping[outcome]
 }
 
 const outcomeStringMapping = {
-  [OUTCOMES.Missing]: 'Refused to vote',
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused to vote',
   [OUTCOMES.Against]: 'Voted against',
   [OUTCOMES.InFavor]: 'Voted in favor',
 }
 
-export function outcomeToString(outcome) {
+const appealRulingStringMapping = {
+  [OUTCOMES.Leaked]: 'Invalid ruling',
+  [OUTCOMES.Refused]: 'Refused',
+  [OUTCOMES.Against]: 'Ruled against',
+  [OUTCOMES.InFavor]: 'Ruled in favor',
+}
+
+export function juryOutcomeToString(outcome) {
+  if (!outcome) {
+    return outcomeStringMapping[OUTCOMES.Refused]
+  }
   return outcomeStringMapping[outcome]
+}
+
+export function appealRulingToString(outcome, confirm) {
+  if (!outcome) {
+    return confirm ? NOBODY_CONFIRMED : NOBODY_APPEALED
+  }
+  return appealRulingStringMapping[outcome]
 }
 
 const VALID_OUTCOMES = [OUTCOMES.Refused, OUTCOMES.Against, OUTCOMES.InFavor]
@@ -64,7 +92,7 @@ export function getOutcomeFromCommitment(commitment, salt) {
 export function getAppealRulingOptions(currentOutcome) {
   return VALID_OUTCOMES.filter(
     outcome => outcome !== currentOutcome
-  ).map(outcome => ({ outcome, description: voteToString(outcome) }))
+  ).map(outcome => ({ outcome, description: appealOptionToString(outcome) }))
 }
 
 export function filterByValidOutcome(totalValidOutcomes) {
@@ -78,7 +106,7 @@ export function filterByValidOutcome(totalValidOutcomes) {
   })
 }
 
-export const getVoteId = (disputeId, roundId) => {
+export function getVoteId(disputeId, roundId) {
   return bigNum(2)
     .pow(bigNum(128))
     .mul(bigNum(disputeId))
@@ -113,11 +141,4 @@ export function isvoteLeaked(outcome) {
 
 export function getTotalOutcomeWeight(outcomes) {
   return outcomes.reduce((acc, { weight }) => acc + weight, 0)
-}
-
-export function getOutcomeColor(outcome, theme) {
-  if (outcome === OUTCOMES.InFavor) return theme.positive
-  if (outcome === OUTCOMES.Against) return theme.negative
-
-  return theme.hint
 }

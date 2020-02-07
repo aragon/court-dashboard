@@ -12,15 +12,6 @@ export const AllDisputes = gql`
       state
       metadata
       createdAt
-      # subject {
-      #   id
-      #   evidence {
-      #     id
-      #     submitter
-      #     data
-      #     createdAt
-      #   }
-      # }
       rounds {
         id
         state
@@ -71,15 +62,12 @@ export const SingleDispute = gql`
       state
       metadata
       createdAt
-      # subject {
-      #   id
-      #   evidence {
-      #     id
-      #     submitter
-      #     data
-      #     createdAt
-      #   }
-      # }
+      evidences {
+        id
+        submitter
+        data
+        createdAt
+      }
       rounds {
         id
         state
@@ -144,15 +132,6 @@ export const JurorDrafts = gql`
             state
             metadata
             createdAt
-            # subject {
-            #   id
-            #   evidence {
-            #     id
-            #     submitter
-            #     data
-            #     createdAt
-            #   }
-            # }
             rounds {
               state
               number

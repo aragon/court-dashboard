@@ -50,12 +50,12 @@ const Balance = React.memo(function Balance({
     anjToken: { symbol, decimals },
   } = useCourtConfig()
 
-  const convertedAmount = useBalanceToUsd(symbol, decimals, amount) // TODO: Change to symbol once price available
+  const convertedAmount = useBalanceToUsd(symbol, decimals, amount)
 
   const springProps = useSpring({
     to: { opacity: 1 },
     from: { opacity: 0 },
-    delay: 200,
+    delay: 300,
   })
 
   return (

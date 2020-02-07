@@ -10,16 +10,15 @@ export function getJurorDraft(round, jurorId) {
   )
 }
 
-export function jurorVoted(jurorDraft) {
+export function hasJurorVoted(jurorDraft) {
   return !!jurorDraft.commitment
 }
 
-//
 export function canJurorReveal(jurorDraft) {
   const hasNotRevealed = !jurorDraft.outcome
   return (
     hasNotRevealed &&
-    jurorVoted(jurorDraft) &&
+    hasJurorVoted(jurorDraft) &&
     !isvoteLeaked(jurorDraft.outcome)
   )
 }

@@ -38,11 +38,11 @@ const RevealPanel = React.memo(function RevealPanel({
 
   return (
     <form onSubmit={handleReveal}>
-      <Field label="One time code">
+      <Field label="One-time-use code">
         <TextInput
           value={password}
           css={`
-            height: 88px;
+            height: ${11 * GU}px;
           `}
           multiline
           wide

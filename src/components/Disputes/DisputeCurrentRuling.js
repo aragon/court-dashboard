@@ -1,17 +1,25 @@
 import React, { useMemo } from 'react'
 import { Distribution, GU, Tag, textStyle, useTheme } from '@aragon/ui'
 
+import { useConnectedAccount } from '../../providers/Web3'
+
 import {
   isValidOutcome,
   getTotalOutcomeWeight,
   filterByValidOutcome,
-  outcomeToString,
-  getOutcomeColor,
+  juryOutcomeToString,
+  OUTCOMES,
 } from '../../utils/crvoting-utils'
 import { getPercentage } from '../../lib/math-utils'
-import { useConnectedAccount } from '../../providers/Web3'
 import { getJurorDraft } from '../../utils/juror-draft-utils'
 import { getDisputeLastRound } from '../../utils/dispute-utils'
+
+const getOutcomeColor = (outcome, theme) => {
+  if (outcome === OUTCOMES.InFavor) return theme.positive
+  if (outcome === OUTCOMES.Against) return theme.negative
+
+  return theme.hint
+}
 
 function DisputeCurrentRuling({ dispute }) {
   const theme = useTheme()
@@ -46,7 +54,7 @@ function DisputeCurrentRuling({ dispute }) {
           </span>
         }
         items={distribution.map(({ outcome, weight }) => ({
-          item: outcomeToString(outcome),
+          item: juryOutcomeToString(outcome),
           percentage: weight,
         }))}
         renderFullLegendItem={({ color, item, index, percentage }) => (
