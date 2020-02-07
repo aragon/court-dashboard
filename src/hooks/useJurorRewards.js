@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
 import { useCourtConfig } from '../providers/CourtConfig'
 
-import { bigNum } from '../lib/math-utils'
+import { bigNum, formatUnits } from '../lib/math-utils'
 import { isJurorCoherent } from '../utils/juror-draft-utils'
 import {
   getAppealerFees,
@@ -71,7 +71,11 @@ export default function useJurorRewards() {
 
         const totalFees = getRoundFees(nextRound, courtConfig)
 
-        const appealerFees = getAppealerFees(appeal, totalFees)
+        const appealerFees = getAppealerFees(
+          appeal,
+          totalFees,
+          connectedAccount
+        )
 
         return setOrUpdateFee(
           appealsFee,

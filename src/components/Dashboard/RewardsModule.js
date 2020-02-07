@@ -11,6 +11,7 @@ import {
 } from '@aragon/ui'
 
 import Loading from './Loading'
+import NoRewards from './NoRewards'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { useConnectedAccount } from '../../providers/Web3'
@@ -38,6 +39,8 @@ const RewardsModule = React.memo(function RewardsModule({
   onSettleAppealDeposit,
 }) {
   const connectedAccount = useConnectedAccount()
+
+  // Form submission
   const handleFormSubmit = async event => {
     event.preventDefault()
 
@@ -70,24 +73,21 @@ const RewardsModule = React.memo(function RewardsModule({
     }
   }
 
-  return (
-    <Box heading="Rewards" padding={0}>
-      {(() => {
-        if (loading) return <Loading height={72} />
+  const hasRewardsToClaim =
+    rewards &&
+    (rewards.rulingFees.gt(0) || rewards.totalDisputesFees.length > 0)
 
-        if (
-          !rewards ||
-          (rewards.rulingFees.eq(0) && !rewards.totalDisputesFees.length)
-        )
-          return (
-            <div
-              css={`
-                padding: ${3 * GU}px;
-              `}
-            >
-              No rewards
-            </div>
-          )
+  const showHeading = !loading && hasRewardsToClaim
+
+  return (
+    <Box
+      heading={showHeading && 'Rewards'}
+      padding={hasRewardsToClaim ? 0 : 3 * GU}
+    >
+      {(() => {
+        if (loading) return <Loading height={150} />
+
+        if (!hasRewardsToClaim) return <NoRewards />
       })()}
       <div>
         {rewards && rewards.rulingFees.gt(0) && (

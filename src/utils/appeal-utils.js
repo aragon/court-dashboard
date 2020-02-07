@@ -1,4 +1,4 @@
-import { bigNum } from '../lib/math-utils'
+import { bigNum, formatUnits } from '../lib/math-utils'
 import { addressesEqual } from '../lib/web3-utils'
 
 export function transformAppealDataAttributes(appeal) {
@@ -66,8 +66,8 @@ export function getAppealerFees(appeal, totalFees, connectedAccount) {
     round,
   } = appeal
 
-  const isMaker = connectedAccount === maker
-  const isTaker = connectedAccount === taker
+  const isMaker = addressesEqual(connectedAccount, maker)
+  const isTaker = addressesEqual(connectedAccount, taker)
 
   // If appealer is maker and the appeal wasn't confirmed
   if (isMaker && !opposedRuling) {
