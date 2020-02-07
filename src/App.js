@@ -6,6 +6,7 @@ import MainView from './components/MainView'
 import Web3ConnectProvider from './providers/Web3'
 import { CourtConfigProvider } from './providers/CourtConfig'
 import AppLoader from './components/AppLoader'
+import OnboardingLoader from './components/OnboardingLoader'
 import Routes from './Routes'
 import { CourtClockProvider } from './providers/CourtClock'
 
@@ -23,9 +24,11 @@ function App() {
             <CourtConfigProvider>
               <CourtClockProvider>
                 <MainView>
-                  <AppLoader>
-                    <Routes />
-                  </AppLoader>
+                  <OnboardingLoader>
+                    <AppLoader>
+                      <Routes />
+                    </AppLoader>
+                  </OnboardingLoader>
                 </MainView>
               </CourtClockProvider>
             </CourtConfigProvider>

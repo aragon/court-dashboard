@@ -3,8 +3,8 @@ export default {
   _appearance: 'light',
 
   accent: '#FF9780',
-  accentStart: '#FF8888',
-  accentEnd: '#FFB36D',
+  accentStart: '#FFB36D',
+  accentEnd: '#FF8888',
   accentContent: '#FFFFFF',
 
   selected: '#FF9780',
