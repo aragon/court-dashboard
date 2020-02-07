@@ -1,4 +1,4 @@
-import { bigNum, formatUnits } from '../lib/math-utils'
+import { bigNum } from '../lib/math-utils'
 import { addressesEqual } from '../lib/web3-utils'
 
 export function transformAppealDataAttributes(appeal) {
