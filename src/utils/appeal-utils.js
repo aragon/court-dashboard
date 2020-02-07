@@ -1,4 +1,5 @@
 import { bigNum } from '../lib/math-utils'
+import { addressesEqual } from '../lib/web3-utils'
 
 export function transformAppealDataAttributes(appeal) {
   const {
@@ -26,22 +27,26 @@ export function transformAppealDataAttributes(appeal) {
   }
 }
 
-export function shouldAppealerBeRewarded(appeal) {
+export function shouldAppealerBeRewarded(appeal, connectedAccount) {
   const { maker, taker, appealedRuling, opposedRuling, round } = appeal
 
+  const isMaker = addressesEqual(connectedAccount, maker)
+
   // If appealer is maker and the appeal wasn't confirmed
-  if (maker && !opposedRuling) {
+  if (isMaker && !opposedRuling) {
     return true
   }
 
   const { finalRuling } = round.dispute
   // If maker && appealed for the wininig outcome
-  if (maker && appealedRuling === finalRuling) {
+  if (isMaker && appealedRuling === finalRuling) {
     return true
   }
 
+  const isTaker = addressesEqual(connectedAccount, taker)
+
   // If taker && confirmed appealed for the winning outcome
-  if (taker && opposedRuling === finalRuling) {
+  if (isTaker && opposedRuling === finalRuling) {
     return true
   }
 
@@ -50,7 +55,7 @@ export function shouldAppealerBeRewarded(appeal) {
 }
 
 // Assumes the appealer should be rewarded
-export function getAppealerFees(appeal, totalFees) {
+export function getAppealerFees(appeal, totalFees, connectedAccount) {
   const {
     maker,
     appealDeposit,
@@ -61,8 +66,11 @@ export function getAppealerFees(appeal, totalFees) {
     round,
   } = appeal
 
+  const isMaker = connectedAccount === maker
+  const isTaker = connectedAccount === taker
+
   // If appealer is maker and the appeal wasn't confirmed
-  if (maker && !opposedRuling) {
+  if (isMaker && !opposedRuling) {
     return appealDeposit
   }
 
@@ -71,8 +79,8 @@ export function getAppealerFees(appeal, totalFees) {
 
   // if appealed for the wininig outcome
   if (
-    (maker && appealedRuling === finalRuling) ||
-    (taker && opposedRuling === finalRuling)
+    (isMaker && appealedRuling === finalRuling) ||
+    (isTaker && opposedRuling === finalRuling)
   ) {
     return totalDeposit.sub(totalFees)
   }
@@ -80,5 +88,5 @@ export function getAppealerFees(appeal, totalFees) {
   // Note that since we assume that the appealer should be rewarded, we can ensure
   // that the finalRuling is different from the appealedRuling and the opossedRuling
   const feesRefund = totalFees.div(2)
-  return (maker ? appealDeposit : confirmAppealDeposit).sub(feesRefund)
+  return (isMaker ? appealDeposit : confirmAppealDeposit).sub(feesRefund)
 }

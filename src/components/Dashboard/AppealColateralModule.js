@@ -12,7 +12,7 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
 }) {
   const { feeToken } = useCourtConfig()
   const theme = useTheme()
-  // loading = true
+
   return (
     <Box heading="Appeal collateral" padding={0}>
       {loading ? (

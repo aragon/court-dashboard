@@ -7,6 +7,7 @@ import { useCourtConfig } from '../providers/CourtConfig'
 import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
+import { JurorRewards } from '../queries/rewards'
 import {
   CurrentTermJurorDrafts,
   SingleDispute,
@@ -16,7 +17,6 @@ import { OpenTasks } from '../queries/tasks'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
-import { JurorRewards } from '../queries/rewards'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
 import { OUTCOMES } from '../utils/crvoting-utils'

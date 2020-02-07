@@ -19,6 +19,7 @@ export const AppealsByMaker = gql`
       maker
       appealedRuling
       appealDeposit
+      taker
       opposedRuling
       confirmAppealDeposit
     }
@@ -41,6 +42,7 @@ export const AppealsByTaker = gql`
           }
         }
       }
+      maker
       appealedRuling
       appealDeposit
       taker

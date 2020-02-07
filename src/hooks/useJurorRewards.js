@@ -10,9 +10,11 @@ import {
   shouldAppealerBeRewarded,
 } from '../utils/appeal-utils'
 import { getRoundFees } from '../utils/dispute-utils'
+import { useConnectedAccount } from '../providers/Web3'
 
 export default function useJurorRewards() {
   const courtConfig = useCourtConfig()
+  const connectedAccount = useConnectedAccount()
   const { jurorDrafts, appeals } = useDashboardState()
 
   // For arbitrable and appeal fees we will use a map where map = [disputeId, { amount, rounds }]
@@ -57,7 +59,8 @@ export default function useJurorRewards() {
     const appealFees = appeals
       .filter(
         appeal =>
-          appeal.round.settledPenalties && shouldAppealerBeRewarded(appeal)
+          appeal.round.settledPenalties &&
+          shouldAppealerBeRewarded(appeal, connectedAccount)
       )
       .reduce((appealsFee, appeal) => {
         const { round } = appeal
@@ -84,7 +87,7 @@ export default function useJurorRewards() {
       appealFees: mapToArray(appealFees),
       totalDisputesFees: getTotalDisputesFees(arbitrableFees, appealFees),
     }
-  }, [appeals, courtConfig, jurorDrafts])
+  }, [appeals, connectedAccount, courtConfig, jurorDrafts])
 }
 
 /**
