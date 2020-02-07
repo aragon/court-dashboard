@@ -3,7 +3,7 @@ import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
 import useEvidences from '../../hooks/useEvidences'
 import dayjs from '../../lib/dayjs'
 import { addressesEqual } from '../../lib/web3-utils'
-
+import { Loading } from '../Loading'
 import folderIcon from '../../assets/folderIcon.svg'
 
 const DisputeEvidences = React.memo(function DisputeEvidences({
@@ -14,9 +14,12 @@ const DisputeEvidences = React.memo(function DisputeEvidences({
 
   const {
     fetchedData: transformedEvidences,
-    // loading: evidencesLoading,
+    loading: evidencesLoading,
   } = useEvidences(evidences)
 
+  if (evidencesLoading) {
+    return <Loading />
+  }
   // TODO - ADD ERROR HANDLING I THINK THAT WE NEED DESIGNS
   return (
     <React.Fragment>
