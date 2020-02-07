@@ -143,7 +143,7 @@ const Balance = React.memo(function Balance({
             {activity ? (
               <LatestActivity activity={activity} tokenSymbol={symbol} />
             ) : (
-              <span>No recent 24h activity</span>
+              <span>No activity in the last 24h</span>
             )}
           </div>
 
