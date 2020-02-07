@@ -12,7 +12,10 @@ const DisputeEvidences = React.memo(function DisputeEvidences({
 }) {
   const theme = useTheme()
 
-  const transformedEvidences = useEvidences(evidences)
+  const {
+    fetchedData: transformedEvidences,
+    // loading: evidencesLoading,
+  } = useEvidences(evidences)
 
   // TODO - ADD ERROR HANDLING I THINK THAT WE NEED DESIGNS
   return (

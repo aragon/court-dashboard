@@ -5,7 +5,7 @@ import { ERROR_TYPES } from '../types/evidences-status-types'
 
 export default function useEvidences(evidences) {
   const [fetchedData, setFetchedData] = useState()
-
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     async function getEvidenceData() {
       const evidenceFetchedData = await Promise.all(
@@ -56,9 +56,10 @@ export default function useEvidences(evidences) {
       )
 
       setFetchedData(evidenceFetchedData)
+      setLoading(false)
     }
     getEvidenceData()
   }, [evidences])
 
-  return fetchedData
+  return { fetchedData, loading }
 }
