@@ -24,6 +24,10 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
             css={`
               padding: ${3 * GU}px;
               border-bottom: 1px solid ${theme.border};
+
+              &:last-child {
+                border: 0;
+              }
             `}
           >
             <div
