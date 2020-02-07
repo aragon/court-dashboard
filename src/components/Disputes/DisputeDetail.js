@@ -35,6 +35,8 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     requests,
   } = useDisputeLogic(disputeId)
 
+  const creatorAddress = dispute && dispute.subject && dispute.subject.id
+
   const evidenceList = dispute && dispute.evidences
 
   const evidences = useMemo(
@@ -92,7 +94,12 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
               if (evidences.length === 0) {
                 return <NoEvidence />
               }
-              return <DisputeEvidences evidences={evidences} />
+              return (
+                <DisputeEvidences
+                  evidences={evidences}
+                  creatorAddress={creatorAddress}
+                />
+              )
             })()}
           </React.Fragment>
         }

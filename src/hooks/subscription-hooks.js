@@ -119,6 +119,8 @@ export function useSingleDisputeSubscription(id) {
     variables: { id },
   })
 
+  console.log('SINGLE DISPUTE ', data)
+
   const dispute = useMemo(
     () =>
       data && data.dispute
