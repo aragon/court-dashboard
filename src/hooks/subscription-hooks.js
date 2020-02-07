@@ -184,7 +184,7 @@ export function useTasksSubscription() {
     variables: subscriptionVariables,
   })
 
-  const tasks = data ? data.adjudicationRounds : []
+  const tasks = data?.adjudicationRounds || null
 
-  return { tasks, error: error }
+  return { tasks, fetching: !data && !error, error }
 }
