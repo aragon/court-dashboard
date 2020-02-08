@@ -88,7 +88,7 @@ function AccountButton({ label, onClick }) {
                   color: ${theme.positive};
                 `}
               >
-                Connected.
+                Connected
               </div>
             </div>
 
