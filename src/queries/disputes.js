@@ -62,6 +62,9 @@ export const SingleDispute = gql`
       state
       metadata
       createdAt
+      subject {
+        id
+      }
       evidences {
         id
         submitter
