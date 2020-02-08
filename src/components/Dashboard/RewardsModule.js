@@ -88,6 +88,7 @@ const RewardsModule = React.memo(function RewardsModule({
         if (loading) return <Loading height={150} />
 
         if (!hasRewardsToClaim) return <NoRewards />
+        return null
       })()}
       <div>
         {rewards && rewards.rulingFees.gt(0) && (
