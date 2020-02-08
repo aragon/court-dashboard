@@ -171,9 +171,9 @@ function useFilteredMovements(movements, acceptedMovements) {
     if (!movements) {
       return null
     }
-    return movements.filter(movement =>
-      isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
-    )
+    return movements.filter(movement => {
+      return isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
+    })
   }, [acceptedMovements, movements])
 }
 
