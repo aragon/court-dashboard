@@ -19,7 +19,7 @@ import { getNetworkName } from './lib/web3-utils'
 const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
 
 const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {
-  reconnectionAttempts: 5,
+  reconnectionAttempts: 10,
 })
 
 const client = createClient({
