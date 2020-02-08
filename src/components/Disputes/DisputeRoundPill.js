@@ -13,7 +13,7 @@ function DisputeRoundPill({ roundId }) {
         background: linear-gradient(
           14deg,
           rgba(255, 179, 109, 0.3) 0,
-          rgba(255, 136, 136, 0.3) 88.44%
+          rgba(255, 136, 136, 0.3) 88%
         );
         text-transform: uppercase;
         font-size: 12px;
