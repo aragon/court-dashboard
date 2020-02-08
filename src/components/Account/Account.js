@@ -80,6 +80,10 @@ function Account() {
 
   // Always show the “connecting…” screen, even if there are no delay
   useEffect(() => {
+    if (activationError) {
+      setActivatingDelayed(null)
+    }
+
     if (activating) {
       setActivatingDelayed(activating)
       return
@@ -88,10 +92,11 @@ function Account() {
     const timer = setTimeout(() => {
       setActivatingDelayed(null)
     }, 500)
+
     return () => {
       clearTimeout(timer)
     }
-  }, [activating])
+  }, [activating, activationError])
 
   const previousScreenIndex = useRef(-1)
 
