@@ -18,7 +18,9 @@ import { getNetworkName } from './lib/web3-utils'
 
 const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
 
-const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {})
+const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {
+  reconnectionAttempts: 5,
+})
 
 const client = createClient({
   url: GRAPH_API_ENDPOINT_HTTP,
@@ -33,13 +35,29 @@ const client = createClient({
   ],
 })
 
-if (env('SENTRY_DSN') && env('ENABLE_SENTRY')) {
+const sentryEnabled = !!(env('SENTRY_DSN') && env('ENABLE_SENTRY'))
+
+if (sentryEnabled) {
   Sentry.init({
     dsn: env('SENTRY_DSN'),
     environment: getNetworkName(env('CHAIN_ID')),
     release: 'court-dashboard@' + env('BUILD'),
   })
 }
+
+let connectionAttempts = 0
+subscriptionClient.onConnected(() => (connectionAttempts = 0))
+
+// Check for connection errors and if reaches max attempts send error log to Sentry
+subscriptionClient.onError(err => {
+  if (sentryEnabled && ++connectionAttempts) {
+    Sentry.captureException(
+      `Connection error, could not connect to ${err.target.url}`
+    )
+  }
+  console.log('Retrying connection...')
+  subscriptionClient.reconnect = true
+})
 
 ReactDOM.render(
   <Provider value={client}>
