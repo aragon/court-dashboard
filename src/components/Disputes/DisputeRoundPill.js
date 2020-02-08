@@ -8,7 +8,7 @@ function DisputeRoundPill({ roundId }) {
   return (
     <span
       css={`
-        padding: 1px 16px;
+        padding: 1px ${2 * GU}px;
         border-radius: 100px;
         background: linear-gradient(
           13.81deg,
