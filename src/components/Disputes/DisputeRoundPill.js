@@ -1,7 +1,11 @@
 import React from 'react'
+import { GU, textStyle, useTheme } from '@aragon/ui'
+
 import { numberToWord } from '../../lib/math-utils'
 
 function DisputeRoundPill({ roundId }) {
+  const theme = useTheme()
+
   if (roundId === undefined) return null
 
   const label = `Round ${numberToWord(roundId)}`
@@ -12,12 +16,11 @@ function DisputeRoundPill({ roundId }) {
         border-radius: 100px;
         background: linear-gradient(
           14deg,
-          rgba(255, 179, 109, 0.3) 0,
-          rgba(255, 136, 136, 0.3) 88%
+          ${theme.accentStart.alpha(0.3)} 0,
+          ${theme.accentEnd.alpha(0.3)}88%
         );
-        text-transform: uppercase;
-        font-size: 12px;
-        color: #e9756c;
+        ${textStyle('label2')}
+        color: ${theme.red};
         margin-top: 2px;
       `}
     >

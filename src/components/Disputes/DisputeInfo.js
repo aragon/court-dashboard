@@ -77,7 +77,6 @@ const DisputeInfo = React.memo(function({
                 <Field
                   label="Round number"
                   value={<DisputeRoundPill roundId={dispute.lastRoundId} />}
-                  isNode
                 />
               </Row>
             )}
@@ -170,7 +169,7 @@ function DisputeHeader({ id, dispute }) {
   )
 }
 
-function Field({ label, value, isNode }) {
+function Field({ label, value }) {
   const theme = useTheme()
   const connectedAccount = useConnectedAccount()
 
@@ -185,35 +184,27 @@ function Field({ label, value, isNode }) {
       >
         {label}
       </h2>
-
-      {(() => {
-        if (isAddress(value))
-          return (
-            <div
-              css={`
-                display: flex;
-                align-items: flex-start;
-              `}
-            >
-              <IdentityBadge
-                connectedAccount={addressesEqual(value, connectedAccount)}
-                entity={value}
-              />
-            </div>
-          )
-
-        if (isNode) return <>{value}</>
-
-        return (
-          <span
-            css={`
-              ${textStyle('body2')};
-            `}
-          >
-            {value}
-          </span>
-        )
-      })()}
+      {isAddress(value) ? (
+        <div
+          css={`
+            display: flex;
+            align-items: flex-start;
+          `}
+        >
+          <IdentityBadge
+            connectedAccount={addressesEqual(value, connectedAccount)}
+            entity={value}
+          />
+        </div>
+      ) : (
+        <div
+          css={`
+            ${textStyle('body2')};
+          `}
+        >
+          {value}
+        </div>
+      )}
     </div>
   )
 }
