@@ -166,7 +166,7 @@ const DisputeInfo = React.memo(function({
             onDraft={onDraft}
             onRequestCommit={onRequestCommit}
             onRequestReveal={onRequestReveal}
-            onLeavk={onLeak}
+            onLeak={onLeak}
             onRequestAppeal={onRequestAppeal}
             onExecuteRuling={onExecuteRuling}
           />

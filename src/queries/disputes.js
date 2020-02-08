@@ -132,15 +132,6 @@ export const JurorDrafts = gql`
             state
             metadata
             createdAt
-            subject {
-              id
-              evidence {
-                id
-                submitter
-                data
-                createdAt
-              }
-            }
             rounds {
               state
               number

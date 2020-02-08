@@ -61,7 +61,7 @@ export const acceptedMovementsPerBalance = new Map([
     [
       { type: anjMovementTypes.Stake, direction: movementDirection.Incoming },
       { type: anjMovementTypes.Unstake, direction: movementDirection.Outgoing },
-      { type: anjMovementTypes.Rewards, direction: movementDirection.Incoming },
+      { type: anjMovementTypes.Reward, direction: movementDirection.Incoming },
       {
         type: anjMovementTypes.Activation,
         direction: movementDirection.Outgoing,

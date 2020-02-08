@@ -49,6 +49,7 @@ function DisputeActions({
 
   const jurorDraft = getJurorDraft(lastRound, connectedAccount) // TODO: Should we also show results for past rounds ?
   const isJurorDrafted = !!jurorDraft
+
   const jurorHasVoted = isJurorDrafted && hasJurorVoted(jurorDraft)
 
   if (phase === DisputePhase.VotingPeriod && !jurorHasVoted) {
