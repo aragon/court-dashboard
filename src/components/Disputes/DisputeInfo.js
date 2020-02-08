@@ -84,7 +84,7 @@ const DisputeInfo = React.memo(function({
             <Row>
               <Field label="Description" value={description} />
               {creatorAddress && (
-                <Field label="Plantiff" value={creatorAddress} />
+                <Field label="Plaintiff" value={creatorAddress} />
               )}
             </Row>
           </>
