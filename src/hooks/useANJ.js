@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { useCourtClock } from '../providers/CourtClock'
-
 import {
   ANJMovement as anjMovementTypes,
   ANJBalance as anjBalanceTypes,
@@ -12,11 +11,10 @@ import {
   isMovementEffective,
   getTotalNotEffectiveByType,
 } from '../utils/anj-movement-utils'
-
 import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
 import { bigNum } from '../lib/math-utils'
 import { useFirstANJActivation } from './query-hooks'
-import { useConnectedAccount } from '../providers/Web3'
+import { useWallet } from '../providers/Wallet'
 
 export function useANJBalances() {
   const { balances, movements } = useDashboardState()
@@ -200,10 +198,10 @@ function convertMovement(acceptedMovements, movement) {
  * @return {Boolean} true if account's first ANJ activation happened on current term
  */
 export function useJurorFirstTimeANJActivation(options) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
   const { currentTermId } = useCourtClock()
   const firstANJActivation = useFirstANJActivation(
-    connectedAccount.toLowerCase(),
+    wallet.account.toLowerCase(),
     options
   )
 

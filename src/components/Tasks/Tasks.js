@@ -7,17 +7,17 @@ import NoTasks from './NoTasks'
 import NoMyTasks from './NoMyTasks'
 import TasksLoading from '../Loading'
 import ErrorLoading from '../ErrorLoading'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 import useFilteredTasks from '../../hooks/useFilteredTasks'
 
 const Tasks = React.memo(({ onlyTable }) => {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   const [screenIndex, setScreenIndex] = useState(0)
 
   const getMyTasksSelected = () => {
     if (onlyTable) {
-      if (connectedAccount) {
+      if (wallet.account) {
         return true
       }
       return false
@@ -42,7 +42,7 @@ const Tasks = React.memo(({ onlyTable }) => {
     openTasksNumber,
     jurorOpenTaskNumber,
     taskActionsString,
-  } = useFilteredTasks(myTasksSelected, connectedAccount)
+  } = useFilteredTasks(myTasksSelected, wallet.account)
 
   const handleTabChange = screenIndex => {
     setFiltersSelected(false)

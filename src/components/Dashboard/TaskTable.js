@@ -12,15 +12,15 @@ import dayjs from '../../lib/dayjs'
 import { dateFormat } from '../../utils/date-utils'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { addressesEqual } from '../../lib/web3-utils'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 
 const ENTRIES_PER_PAGE = 5
 const INITIAL_DATE_RANGE = { start: null, end: null }
 
-const getFilteredTasks = ({ tasks, connectedAccount, selectedDateRange }) => {
+function getFilteredTasks(tasks, account, selectedDateRange) {
   return tasks.filter(
     ({ taskName, disputeId, priority, juror, dueDate }) =>
-      (connectedAccount === '' || addressesEqual(juror, connectedAccount)) &&
+      (account === '' || addressesEqual(juror, account)) &&
       (!selectedDateRange.start ||
         !selectedDateRange.end ||
         dayjs(dueDate).isBetween(
@@ -31,11 +31,11 @@ const getFilteredTasks = ({ tasks, connectedAccount, selectedDateRange }) => {
   )
 }
 
-const TaskTable = ({ tasks }) => {
+function TaskTable({ tasks }) {
+  const wallet = useWallet()
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [page, setPage] = useState(0)
   const { below } = useViewport()
-  const connectedAccount = useConnectedAccount()
   const compactMode = below('medium')
 
   const handleSelectedDateRangeChange = range => {
@@ -43,11 +43,11 @@ const TaskTable = ({ tasks }) => {
     setSelectedDateRange(range)
   }
 
-  const filteredTasks = getFilteredTasks({
+  const filteredTasks = getFilteredTasks(
     tasks,
-    connectedAccount,
-    selectedDateRange,
-  })
+    wallet.account,
+    selectedDateRange
+  )
 
   const sortedTasks = useMemo(
     () =>

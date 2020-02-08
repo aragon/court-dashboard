@@ -1,14 +1,15 @@
-import { useConnectedAccount } from '../providers/Web3'
-import { useCourtClock } from '../providers/CourtClock'
 import dayjs from 'dayjs'
+import { useWallet } from '../providers/Wallet'
+import { useCourtClock } from '../providers/CourtClock'
 import { useJurorDraftsSubscription } from './subscription-hooks'
 
 export function useJurorDrafted({ pause }) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
   const { currentTermStartDate } = useCourtClock()
 
-  const account = connectedAccount.toLowerCase()
+  const account = wallet.account.toLowerCase()
   const currnetTermStartTime = dayjs(currentTermStartDate).unix()
+
   const jurorDrafts = useJurorDraftsSubscription(
     account,
     currnetTermStartTime,
