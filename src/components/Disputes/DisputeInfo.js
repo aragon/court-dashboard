@@ -134,7 +134,7 @@ function DisputeHeader({ id, dispute }) {
               ${theme.accentStart} 91%
             );
             border-radius: 50%;
-            padding: 12px;
+            padding: ${1.5 * GU}px;
             display: inline-block;
           `}
         >
