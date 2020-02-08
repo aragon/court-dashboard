@@ -11,7 +11,7 @@ function DisputeRoundPill({ roundId }) {
         padding: 1px ${2 * GU}px;
         border-radius: 100px;
         background: linear-gradient(
-          13.81deg,
+          14deg,
           rgba(255, 179, 109, 0.3) 0,
           rgba(255, 136, 136, 0.3) 88.44%
         );
