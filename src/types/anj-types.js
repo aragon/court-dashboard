@@ -19,11 +19,11 @@ export const movementDirection = {
 const stringMapping = {
   [ANJMovement.Stake]: {
     [movementDirection.Incoming]: 'Deposit',
-    [movementDirection.Outgoing]: 'Withdraw',
+    [movementDirection.Outgoing]: 'Withdrawal',
   },
   [ANJMovement.Unstake]: {
     [movementDirection.Incoming]: 'Deposit',
-    [movementDirection.Outgoing]: 'Withdraw',
+    [movementDirection.Outgoing]: 'Withdrawal',
   },
   [ANJMovement.Activation]: 'Activated',
   [ANJMovement.Deactivation]: 'Deactivated',

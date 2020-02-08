@@ -87,8 +87,8 @@ export default function useJurorRewards() {
 
     return {
       rulingFees,
-      arbitrableFees: mapToArray(arbitrableFees),
-      appealFees: mapToArray(appealFees),
+      arbitrableFees: feeMapToArray(arbitrableFees),
+      appealFees: feeMapToArray(appealFees),
       totalDisputesFees: getTotalDisputesFees(arbitrableFees, appealFees),
     }
   }, [appeals, connectedAccount, courtConfig, jurorDrafts])
@@ -156,7 +156,7 @@ function getTotalDisputesFees(artbitrableFeesMap, appealFeesMap) {
  * @param {Map} feeMap Map to convert to an array
  * @returns {Array} New array containing map data
  */
-function mapToArray(feeMap) {
+function feeMapToArray(feeMap) {
   const arr = []
   for (const [disputeId, { amount, rounds }] of feeMap) {
     arr.push({ disputeId, amount, rounds: Array.from(rounds).sort() })

@@ -385,12 +385,13 @@ function OutcomePoint() {
 }
 
 const StyledAccordion = styled.div`
+  padding: 0;
+
   & > div:first-child {
     border-radius: 0px;
     border-left: 0;
     border-right: 0;
   }
-  padding: 0;
 `
 
 export default DisputeTimeline

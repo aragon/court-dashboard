@@ -48,26 +48,28 @@ const RewardsModule = React.memo(function RewardsModule({
 
     try {
       // Claim all arbitrable fee rewards
+      const arbitrableTxs = []
       for (const arbitrableFee of rewards.arbitrableFees) {
         const { disputeId, rounds } = arbitrableFee
         for (const roundId of rounds) {
-          const rewardTx = await onSettleReward(
-            disputeId,
-            roundId,
-            connectedAccount
+          arbitrableTxs.push(
+            await onSettleReward(disputeId, roundId, connectedAccount)
           )
-          await rewardTx.wait()
         }
       }
 
+      await Promise.all(arbitrableTxs.map(tx => tx.wait()))
+
       // Claim all appeal fee rewards
+      const appealTxs = []
       for (const appealFee of rewards.appealFees) {
         const { disputeId, rounds } = appealFee
         for (const roundId of rounds) {
-          const rewardTx = await onSettleAppealDeposit(disputeId, roundId)
-          await rewardTx.wait()
+          appealTxs.push(await onSettleAppealDeposit(disputeId, roundId))
         }
       }
+
+      await Promise.all(appealTxs.map(tx => tx.wait()))
     } catch (err) {
       console.log(`Error claiming rewards: ${err}`)
     }

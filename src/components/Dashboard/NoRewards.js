@@ -1,6 +1,7 @@
 import React from 'react'
-import noDraftSVG from '../../assets/noDraft.svg'
 import MessageCard from '../MessageCard'
+
+import noDraftSVG from '../../assets/noDraft.svg'
 
 function NoRewards() {
   const title = 'No rewards yet!'

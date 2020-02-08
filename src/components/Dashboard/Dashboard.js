@@ -78,26 +78,30 @@ function Dashboard() {
         <Welcome />
       )}
 
-      <Split
-        primary={<Tasks onlyTable />}
-        secondary={
-          connectedAccount && (
-            <>
-              <RewardsModule
-                rewards={rewards}
-                loading={fetchingData}
-                onSettleReward={actions.settleReward}
-                onSettleAppealDeposit={actions.settleAppealDeposit}
-              />
-              <AppealColateralModule
-                appeals={appealCollaterals}
-                loading={fetchingData}
-              />
-            </>
-          )
-        }
-        invert={oneColumn ? 'vertical' : 'horizontal'}
-      />
+      {!connectedAccount ? (
+        <Tasks onlyTable />
+      ) : (
+        <Split
+          primary={<Tasks onlyTable />}
+          secondary={
+            connectedAccount && (
+              <>
+                <RewardsModule
+                  rewards={rewards}
+                  loading={fetchingData}
+                  onSettleReward={actions.settleReward}
+                  onSettleAppealDeposit={actions.settleAppealDeposit}
+                />
+                <AppealColateralModule
+                  appeals={appealCollaterals}
+                  loading={fetchingData}
+                />
+              </>
+            )
+          }
+          invert={oneColumn ? 'vertical' : 'horizontal'}
+        />
+      )}
 
       <SidePanel
         title={`${getRequestModeString(mode)} ANJ`}
