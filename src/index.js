@@ -50,7 +50,9 @@ subscriptionClient.onConnected(() => (connectionAttempts = 0))
 
 // Check for connection errors and if reaches max attempts send error log to Sentry
 subscriptionClient.onError(err => {
-  if (sentryEnabled && ++connectionAttempts) {
+  const maxReconnectionAttempts = subscriptionClient.reconnectionAttempts
+
+  if (sentryEnabled && maxReconnectionAttempts === ++connectionAttempts) {
     Sentry.captureException(
       `Connection error, could not connect to ${err.target.url}`
     )
