@@ -2,9 +2,9 @@ import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { ButtonBase, GU, Link, RADIUS, useTheme, textStyle } from '@aragon/ui'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
-import { PROVIDERS } from '../../environment'
+import { getUseWalletProviders } from '../../lib/web3-utils'
 
-const PROVIDERS_INFO = PROVIDERS.map(provider => [
+const PROVIDERS_INFO = getUseWalletProviders().map(provider => [
   provider.id,
   getProviderFromUseWalletId(provider.id),
 ])

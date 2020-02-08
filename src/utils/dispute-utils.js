@@ -1,7 +1,12 @@
-import { getTermStartTime } from './court-utils'
 import dayjs from '../lib/dayjs'
+
+import { getTermStartTime } from './court-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { getOutcomeNumber } from './crvoting-utils'
+import { bigNum } from '../lib/math-utils'
+
+export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
+export const PCT_BASE = bigNum(10000)
 
 const juryDraftingTerms = 3
 
@@ -427,4 +432,26 @@ export function getRevealEndTime(round, courtConfig) {
 
 export function getDisputeLastRound(dispute) {
   return dispute.rounds[dispute.lastRoundId]
+}
+
+export function getRoundFees(round, courtConfig) {
+  const {
+    draftFee,
+    settleFee,
+    jurorFee,
+    finalRoundReduction,
+    maxRegularAppealRounds,
+  } = courtConfig
+
+  // Final round
+  if (round.number === maxRegularAppealRounds)
+    return round.jurorsNumber
+      .mul(jurorFee)
+      .div(FINAL_ROUND_WEIGHT_PRECISION.mul(finalRoundReduction).div(PCT_BASE))
+
+  // Regular round
+  return draftFee
+    .add(settleFee)
+    .add(jurorFee)
+    .mul(round.jurorsNumber)
 }

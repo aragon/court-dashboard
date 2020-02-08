@@ -1,11 +1,41 @@
-import { DEFAULT_LOCAL_CHAIN } from '../environment'
+import env from '../environment'
 import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
 
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
+export const DEFAULT_LOCAL_CHAIN = 'rpc'
 
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
+}
+
+export function getUseWalletProviders() {
+  const providers = [{ id: 'injected' }, { id: 'frame' }]
+
+  if (env('FORTMATIC_API_KEY')) {
+    providers.push({
+      id: 'fortmatic',
+      useWalletConf: { apiKey: env('FORTMATIC_API_KEY') },
+    })
+  }
+
+  if (env('PORTIS_DAPP_ID')) {
+    providers.push({
+      id: 'portis',
+      useWalletConf: { dAppId: env('PORTIS_DAPP_ID') },
+    })
+  }
+
+  return providers
+}
+
+export function getUseWalletConnectors() {
+  return getUseWalletProviders().reduce((connectors, provider) => {
+    if (provider.useWalletConf) {
+      connectors[provider.id] = provider.useWalletConf
+    }
+    return connectors
+  }, {})
 }
 
 function toChecksumAddress(address) {

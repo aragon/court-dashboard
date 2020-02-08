@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@aragon/ui": "^1.2.0",
+    "@sentry/browser": "^5.12.1",
     "@web3-react/core": "^6.0.2",
     "@web3-react/injected-connector": "^6.0.3",
     "bn.js": "^5.1.1",
@@ -26,12 +27,12 @@
     "use-wallet": "^0.3.1"
   },
   "scripts": {
-    "start": "npm run sync-assets && react-app-rewired start",
+    "start": "npm run sync-assets && REACT_APP_BUILD=$(git log --pretty=format:'%h' -n 1) react-app-rewired start",
     "start:rpc": "REACT_APP_CHAIN_ID=1337 npm run start ",
     "start:mainnet": "REACT_APP_CHAIN_ID=1 npm run start",
     "start:ropsten": "REACT_APP_CHAIN_ID=3 npm run start",
     "start:rinkeby": "REACT_APP_CHAIN_ID=4 npm run start",
-    "build": "npm run sync-assets && react-app-rewired build",
+    "build": "./scripts/build.sh",
     "build:rpc": "REACT_APP_CHAIN_ID=1337 npm run build",
     "build:mainnet": "REACT_APP_CHAIN_ID=1 npm run build",
     "build:ropsten": "REACT_APP_CHAIN_ID=3 npm run build",

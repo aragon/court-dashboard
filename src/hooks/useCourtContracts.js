@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -22,7 +22,7 @@ import { bigNum } from '../lib/math-utils'
 import { retryMax } from '../utils/retry-max'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 900000 // Should be relative to every tx ?
+const GAS_LIMIT = 1200000 // Should be relative to every tx ?
 
 // ANJ contract
 function useANJTokenContract() {
@@ -60,7 +60,7 @@ function useCourtContract(moduleType, abi) {
  * All ANJ interactions
  * @returns {Object} all available functions around ANJ balances
  */
-function useANJActions() {
+export function useANJActions() {
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
@@ -105,14 +105,6 @@ function useANJActions() {
   )
 
   return { activateANJ, deactivateANJ, stakeActivateANJ, withdrawANJ }
-}
-
-export function useCourtActions() {
-  const anjActions = useANJActions()
-
-  return {
-    ...anjActions,
-  }
 }
 
 /**
@@ -216,6 +208,33 @@ export function useDisputeActions() {
     confirmAppeal,
     executeRuling,
   }
+}
+
+export function useRewardActions() {
+  const disputeManagerContract = useCourtContract(
+    CourtModuleType.DisputeManager,
+    disputeManagerAbi
+  )
+
+  const settleReward = useCallback(
+    (disputeId, roundId, juror) => {
+      return disputeManagerContract.settleReward(disputeId, roundId, juror, {
+        gasLimit: GAS_LIMIT,
+      })
+    },
+    [disputeManagerContract]
+  )
+
+  const settleAppealDeposit = useCallback(
+    (disputeId, roundId, juror) => {
+      return disputeManagerContract.settleAppealDeposit(disputeId, roundId, {
+        gasLimit: GAS_LIMIT,
+      })
+    },
+    [disputeManagerContract]
+  )
+
+  return { settleReward, settleAppealDeposit }
 }
 
 /**

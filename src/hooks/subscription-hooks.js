@@ -6,7 +6,8 @@ import { useCourtConfig } from '../providers/CourtConfig'
 
 import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
-import { AppealsByUser } from '../queries/appeals'
+import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
+import { JurorRewards } from '../queries/rewards'
 import {
   CurrentTermJurorDrafts,
   SingleDispute,
@@ -16,6 +17,10 @@ import { OpenTasks } from '../queries/tasks'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
+import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
+import { transformAppealDataAttributes } from '../utils/appeal-utils'
+import { OUTCOMES } from '../utils/crvoting-utils'
+import { groupMovements } from '../utils/anj-movement-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -84,11 +89,7 @@ export function useJurorBalancesSubscription(jurorId) {
         inactiveBalance: bigNum(availableBalance),
         deactivationBalance: bigNum(deactivationBalance),
       },
-      movements: movements.map(movement => ({
-        ...movement,
-        effectiveTermId: parseInt(movement.effectiveTermId, 10),
-        amount: bigNum(movement.amount),
-      })),
+      movements: groupMovements(movements),
     }
   }, [anjBalanceData, jurorData])
 
@@ -162,15 +163,49 @@ export function useJurorDraftsSubscription(jurorId, from, pause) {
   return juror && juror.drafts ? juror.drafts : []
 }
 
-export function useAppealsByUserSubscription(jurorId, settled) {
-  const [result] = useSubscription({
-    query: AppealsByUser,
-    variables: { id: jurorId, settled },
+function useAppealsByMaker(jurorId, settled) {
+  const [{ data, error }] = useSubscription({
+    query: AppealsByMaker,
+    variables: { maker: jurorId, settled },
   })
 
-  const { appeals } = result.data || []
+  return { data, error }
+}
 
-  return appeals
+function useAppealsByTaker(jurorId, settled) {
+  const [{ data, error }] = useSubscription({
+    query: AppealsByTaker,
+    variables: { taker: jurorId, settled },
+  })
+
+  return { data, error }
+}
+
+// Since we cannot do or operators on graphql queries, we need to get appeals by taker and maker separately
+export function useAppealsByUserSubscription(jurorId, settled) {
+  const {
+    data: makerAppealsData,
+    error: makerAppealsError,
+  } = useAppealsByMaker(jurorId, settled)
+  const {
+    data: takerAppealsData,
+    error: takerAppealsError,
+  } = useAppealsByTaker(jurorId, settled)
+
+  const appeals = useMemo(() => {
+    if (!makerAppealsData || !takerAppealsData) {
+      return null
+    }
+
+    const makerAppeals = makerAppealsData.appeals
+    const takerAppeals = takerAppealsData.appeals
+
+    return [...makerAppeals, ...takerAppeals].map(transformAppealDataAttributes)
+  }, [makerAppealsData, takerAppealsData])
+
+  const errors = [makerAppealsError, takerAppealsError].filter(err => err)
+
+  return { appeals, fetching: !appeals && errors.length === 0, errors }
 }
 
 export function useTasksSubscription() {
@@ -182,7 +217,27 @@ export function useTasksSubscription() {
     variables: subscriptionVariables,
   })
 
-  const tasks = data ? data.adjudicationRounds : []
+  const tasks = data?.adjudicationRounds || null
 
-  return { tasks, error: error }
+  return { tasks, fetching: !data && !error, error }
+}
+
+export function useJurorRewardsSubscription(jurorId) {
+  // Ideally we would check that the round is not settled
+  // but since we cannot do nested filters we at least can
+  // check that the juror has voted in the round and the vote hasn't been leaked (outcome > 1)
+  const [{ data, error }] = useSubscription({
+    query: JurorRewards,
+    variables: { id: jurorId, minOutcome: OUTCOMES.Refused },
+  })
+
+  const jurorDrafts = useMemo(() => {
+    if (!data) {
+      return null
+    }
+
+    return data.juror ? data.juror.drafts.map(transformJurorDataAttributes) : []
+  }, [data])
+
+  return { jurorDrafts, fetching: !jurorDrafts && !error, error }
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { GU, Layout, useViewport } from '@aragon/ui'
+import { GU, Layout, Root, ScrollView, useViewport } from '@aragon/ui'
 import NavBar from './NavBar'
 import Header from './Header'
 
@@ -24,11 +24,11 @@ function MainView({ children }) {
       </div>
       <div
         css={`
+          position: relative;
           flex-grow: 1;
           flex-shrink: 1;
           height: 0;
           display: flex;
-          height: 100%;
         `}
       >
         <div
@@ -40,18 +40,18 @@ function MainView({ children }) {
         >
           <NavBar />
         </div>
-        <div
+        <Root.Provider
           css={`
             flex-grow: 1;
-            position: relative;
-            z-index: 0;
-            width: 100%;
             height: 100%;
-            overflow-y: auto;
           `}
         >
-          <Layout parentWidth={vw - NAV_BAR_WIDTH}>{children}</Layout>
-        </div>
+          <ScrollView>
+            <Layout parentWidth={vw - NAV_BAR_WIDTH} paddingBottom={0}>
+              {children}
+            </Layout>
+          </ScrollView>
+        </Root.Provider>
       </div>
     </div>
   )

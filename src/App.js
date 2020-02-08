@@ -7,20 +7,18 @@ import MainView from './components/MainView'
 import Web3ConnectProvider from './providers/Web3'
 import { CourtConfigProvider } from './providers/CourtConfig'
 import AppLoader from './components/AppLoader'
+import OnboardingLoader from './components/OnboardingLoader'
 import Routes from './Routes'
 import { UseWalletProvider } from 'use-wallet'
-import env, { PROVIDERS } from './environment'
-
-const connectors = PROVIDERS.reduce((connectors, provider) => {
-  if (provider.useWalletConf) {
-    connectors[provider.id] = provider.useWalletConf
-  }
-  return connectors
-}, {})
+import { getUseWalletConnectors } from './lib/web3-utils'
+import env from './environment'
 
 function App() {
   return (
-    <UseWalletProvider chainId={env('CHAIN_ID')} connectors={connectors}>
+    <UseWalletProvider
+      chainId={env('CHAIN_ID')}
+      connectors={getUseWalletConnectors()}
+    >
       <BrowserRouter>
         <Main
           assetsUrl="/aragon-ui/"
@@ -33,9 +31,11 @@ function App() {
               <CourtConfigProvider>
                 <CourtClockProvider>
                   <MainView>
-                    <AppLoader>
-                      <Routes />
-                    </AppLoader>
+                    <OnboardingLoader>
+                      <AppLoader>
+                        <Routes />
+                      </AppLoader>
+                    </OnboardingLoader>
                   </MainView>
                 </CourtClockProvider>
               </CourtConfigProvider>

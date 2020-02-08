@@ -173,7 +173,7 @@ const BannerWithProbability = ({ activeBalance }) => {
     totalActiveBalanceCurrentTerm
   )
 
-  // Calculate probability (since the total active balance is asynconous
+  // Calculate probability (since the total active balance is asynchronous
   // it can happen that it has not been updated yet when the juror active balance has)
   const draftingProbability = Math.min(1, totalPercentage / 100)
   const probabilityText = getProbabilityText(draftingProbability)
