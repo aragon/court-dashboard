@@ -43,6 +43,7 @@ function Account() {
   const [animate, setAnimate] = useState(false)
   const [activatingDelayed, setActivatingDelayed] = useState(false)
   const [activationError, setActivationError] = useState(null)
+  const popoverFocusElement = useRef()
 
   const { account, activating } = wallet
 
@@ -131,6 +132,14 @@ function Account() {
     [screenId]
   )
 
+  // Prevents to lose the focus on the popover when a screen leaves while an
+  // element inside is focused (e.g. when clicking on the “disconnect” button).
+  useEffect(() => {
+    if (popoverFocusElement.current) {
+      popoverFocusElement.current.focus()
+    }
+  }, [screenId])
+
   return (
     <div
       ref={buttonRef}
@@ -160,53 +169,63 @@ function Account() {
         screenId={screenId}
         visible={opened}
       >
-        <Transition
-          native
-          immediate={!animate}
-          config={springs.smooth}
-          items={{ screen, activating: activatingDelayed }}
-          keys={({ screen }) => screen.id + activatingDelayed}
-          from={{
-            opacity: 0,
-            transform: `translate3d(${3 * GU * direction}px, 0, 0)`,
-          }}
-          enter={{ opacity: 1, transform: `translate3d(0, 0, 0)` }}
-          leave={{
-            opacity: 0,
-            transform: `translate3d(${3 * GU * -direction}px, 0, 0)`,
-          }}
-        >
-          {({ screen, activating }) => ({ opacity, transform }) => (
-            <animated.div
-              style={{ opacity, transform }}
-              css={`
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-              `}
-            >
-              {(() => {
-                if (screen.id === 'connecting') {
-                  return (
-                    <ScreenConnecting
-                      providerId={activating}
-                      onCancel={handleCancelConnection}
-                    />
-                  )
-                }
-                if (screen.id === 'connected') {
-                  return <ScreenConnected />
-                }
-                if (screen.id === 'error') {
-                  return <ScreenError onBack={clearError} />
-                }
-                return <ScreenProviders onActivate={activate} />
-              })()}
-            </animated.div>
-          )}
-        </Transition>
+        <div ref={popoverFocusElement} tabIndex="0" css="outline: 0">
+          <Transition
+            native
+            immediate={!animate}
+            config={springs.smooth}
+            items={{
+              screen,
+              // This is needed because use-wallet throws an error when the
+              // activation fails before React updates the state of `activating`.
+              // A future version of use-wallet might return an
+              // `activationError` object instead, making this unnecessary.
+              activating: screen.id === 'error' ? null : activatingDelayed,
+              wallet,
+            }}
+            keys={({ screen }) => screen.id + activatingDelayed}
+            from={{
+              opacity: 0,
+              transform: `translate3d(${3 * GU * direction}px, 0, 0)`,
+            }}
+            enter={{ opacity: 1, transform: `translate3d(0, 0, 0)` }}
+            leave={{
+              opacity: 0,
+              transform: `translate3d(${3 * GU * -direction}px, 0, 0)`,
+            }}
+          >
+            {({ screen, activating, wallet }) => ({ opacity, transform }) => (
+              <animated.div
+                style={{ opacity, transform }}
+                css={`
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                `}
+              >
+                {(() => {
+                  if (screen.id === 'connecting') {
+                    return (
+                      <ScreenConnecting
+                        providerId={activating}
+                        onCancel={handleCancelConnection}
+                      />
+                    )
+                  }
+                  if (screen.id === 'connected') {
+                    return <ScreenConnected wallet={wallet} />
+                  }
+                  if (screen.id === 'error') {
+                    return <ScreenError onBack={clearError} />
+                  }
+                  return <ScreenProviders onActivate={activate} />
+                })()}
+              </animated.div>
+            )}
+          </Transition>
+        </div>
       </AccountPopover>
     </div>
   )
