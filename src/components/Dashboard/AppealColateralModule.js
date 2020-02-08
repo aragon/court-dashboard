@@ -40,6 +40,7 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
               <img
                 src={iconLock}
                 height="14"
+                alt=""
                 css={`
                   margin-right: ${1 * GU}px;
                 `}
