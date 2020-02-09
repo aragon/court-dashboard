@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>AppleEventBridge | Apple event type mappings</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Apple event type mappings</h1>
+                <div class="navbar"><a href="creating-and-using-static-glues.html">back</a> | <a href="index.html">index</a> | <a href="application-objects.html">next</a></div>
+                <h2>Overview</h2>
+
+<p>[TO DO: finish updating this chapter]</p>
+
+<p>Standard Apple event descriptor types are mapped to and from Foundation/AppleEventBridge classes as follows:</p>
+
+<p><table width="100%" summary="AE-Foundation type mappings">
+<thead>
+<tr><th>AppleScript type</th><th>Descriptor type</th><th><code>AEBSymbol</code> name</th><th>Cocoa class</th></tr>
+</thead>
+<tbody>
+<tr><td>(no data)</td><td><code>typeNull</code></td><td><code>null</code></td><td><code>NSNull</code></td></tr>
+<tr><td><code>boolean</code></td><td><code>typeBoolean</code></td><td><code>boolean</code></td><td><code>NSNumber</code> (equiv. <code>CFBoolean</code>)</td></tr>
+<tr><td><code>integer</code></td><td><code>typeSInt32</code></td><td><code>integer</code></td><td><code>NSNumber</code></td></tr>
+<tr><td><code>real</code></td><td><code>typeIEEE64BitFloatingPoint</code></td><td><code>float</code></td><td><code>NSNumber</code></td></tr>
+<tr><td><code>text</code> [1]</td><td><code>typeUnicodeText</code></td><td><code>unicodeText</code></td><td><code>NSString</code></td></tr>
+<tr><td><code>list</code></td><td><code>typeAEList</code></td><td><code>list</code></td><td><code>NSArray</code></td></tr>
+<tr><td><code>record</code></td><td><code>typeAERecord</code></td><td><code>record</code></td><td><code>NSDictionary</code></td></tr>
+<tr><td><code>date</code></td><td><code>typeLongDateTime</code></td><td><code>date</code></td><td><code>NSDate</code></td></tr>
+<tr><td><code>when the corresponding terminology is available, otherwise they are unpacked as <code>AEMType</code>, <code>AEMEnum</code>, and <code>AEMProperty</code> respectively, e.g.:</p>
+
+<pre><code>[AEMType typeWithCode: 'abcd']
+[AEMEnum enumWithCode: 'xyz ']
+</code></pre>
+
+<h3>Other types</h3>
+
+<p>The Apple Event Manager defines many other AE types whose names and codes are defined by AppleEventBridge for completeness. A few of these types are of occasional interest to users, the rest can simply be ignored. In most cases, values of these types will be represented by <code>NSAppleEventDescriptor</code> instances as AppleEventBridge doesn't automatically convert them.</p>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="creating-and-using-static-glues.html">back</a> | <a href="index.html">index</a> | <a href="application-objects.html">next</a></div></div>
+    </body>
+</html>

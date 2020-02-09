@@ -1,0 +1,27 @@
+#
+# break — this script runs when a Focus session breaks
+#
+# The text here is a special kind of text called BASH script.
+# This is a programming language that lets you run special commands
+# when a Focus session breaks, like adding functionality that doesn't
+# exist yet—or integrating with other applications.
+#
+# Hint: Lines that start with '#' are comments, and are ignored.
+#
+# Hint: Remove the leading '#' below to run some of the examples.
+#
+# Example 1: A voice will say "Focus is starting". Edit this to be whatever you want!
+# say "Focus is starting"
+#
+# Example 2: Play a custom sound (view /System/Library/Sounds for a full list or provide your own)
+# afplay /System/Library/Sounds/Funk.aiff
+#
+# Example 3: Show a custom notification
+# osascript -e 'display notification "Get to work!" with title "Focusing"'
+#
+# This just scratches the surface of what's possible with scripting. You can
+# also integrate with other applications, like Slack and enable things like
+# Do Not Disturb mode on your Mac.
+#
+# Visit https://heyfocus.com/docs/features/scripting/ to learn more.
+#

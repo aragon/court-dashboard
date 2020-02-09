@@ -1,0 +1,334 @@
+//
+// «GLUE_NAME»
+// «APP_NAME» «APP_VERSION»
+// «FRAMEWORK_NAME» «FRAMEWORK_VERSION»
+// «AEBGLUE_COMMAND»
+//
+
+import Foundation
+import AppleEventBridge
+
+
+/******************************************************************************/
+// «PREFIX»Formatter is used by «PREFIX»Specifier to generate description strings
+
+
+class «PREFIX»Formatter: SwiftAEFormatter {
+
+    override var prefix: String {return "«PREFIX»"}
+    override var appClassName: String {return "«APP_CLASS_NAME»"}
+    override var symbolClass: AEBSymbol.Type {return «PREFIX»Symbol.self}
+
+    override func propertyByCode(code: OSType) -> String? {
+        switch code {
+«+PROPERTY_FORMATTER»
+        case «CODE»: return "«NAME»"
+«-PROPERTY_FORMATTER»
+        default: return super.propertyByCode(code)
+        }
+    }
+    override func elementsByCode(code: OSType) -> String? {
+        switch (code) {
+«+ELEMENTS_FORMATTER»
+        case «CODE»: return "«NAME»"
+«-ELEMENTS_FORMATTER»
+        default: return super.elementsByCode(code)
+        }
+    }
+}
+
+
+/******************************************************************************/
+// «PREFIX»Symbol instances represent built-in and app-defined type, enum, and property names
+
+
+class «PREFIX»Symbol: SwiftAESymbol {
+
+override var aebPrefix: String {return "«PREFIX»"}
+
+override class func aebSymbolForCode(code_: OSType) -> AEBSymbol {
+switch (code_) {
+«+SYMBOL_SWITCH»
+case «CODE»: return self.«NAME»
+«-SYMBOL_SWITCH»
+default: return super.aebSymbolForCode(code_)
+}
+}
+
+// Types/properties    // TO DO: add 'override' if var is already defined in AEBSymbol
+«+TYPE_SYMBOL»
+static var «NAME»: «PREFIX»Symbol {return «PREFIX»Symbol(name: "«NAME»", type: 0x74797065, code: «CODE»)}
+«-TYPE_SYMBOL»
+
+// Enumerators    // TO DO: add 'override' if var is already defined in AEBSymbol
+«+ENUM_SYMBOL»
+static var «NAME»: «PREFIX»Symbol {return «PREFIX»Symbol(name: "«NAME»", type: 0x656e756d, code: «CODE»)}
+«-ENUM_SYMBOL»
+}
+
+
+/******************************************************************************/
+// «PREFIX»Specifier instances represent Apple event queries (aka 'specifiers'/'references')
+
+
+class «PREFIX»Specifier: SwiftAESpecifier {
+        
+    override var description: String { return «PREFIX»Formatter.formatObject(aemQuery, appData: aebAppData) }
+    
+    // Raw property and element specifiers, e.g. TextEdit.elementsByFourCharCode("docu") => TextEdit.documents
+
+    // TO DO: userProperty(name:String)
+
+    func propertyByCode(code: OSType) -> «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("specify a property")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.property(code), queryError: queryError)
+    }
+    func elementsByCode(code: OSType) -> «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("specify elements")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.elements(code), queryError: queryError)
+    }
+    func propertyByFourCharCode(code: String) -> «PREFIX»Specifier {
+        return self.propertyByCode(AEM4CC(code))
+    }
+    func elementsByFourCharCode(code: String) -> «PREFIX»Specifier {
+        return self.elementsByCode(AEM4CC(code))
+    }
+    
+    // Element(s) selectors
+    // important: by-index selectors use Apple event-style 1-indexing, NOT Swift-style 0-indexing
+
+    subscript(index: AnyObject) -> «PREFIX»Specifier! { // by-index, by-name, by-test
+
+        var baseQuery: AEMMultipleElementsSpecifier?, newQuery: AEMQuery?, queryError: NSError?
+        switch (index) {
+        case is String:
+            (baseQuery, queryError) = self.aemElementsSpecifer("select element named \(index)")
+            newQuery = baseQuery?.byName(index)
+        case is AEMQueryProtocol:
+            (baseQuery, queryError) = self.aemElementsSpecifer("select elements where \(index)")
+            if let testClause = (index as! AEMQueryProtocol).aemQuery as? AEMTestClause {
+                // TO DO: also need to check that testClause.root == AEMQuery.its()
+                newQuery = baseQuery?.byTest(testClause)
+            } else {
+                // TO DO: set queryError, or pack by-index/by-name specifier? check how AS does it, e.g. for SysEv (disk item (alias...))
+            }
+        default:
+            (baseQuery, queryError) = self.aemElementsSpecifer("select element \(index)")
+            newQuery = baseQuery?.byIndex(index)
+        }
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: newQuery, queryError: queryError)
+    }
+    func named(name: AnyObject) -> «PREFIX»Specifier { // by-name; use this if name is not a String, else use subscript
+        let (baseQuery, queryError) = self.aemElementsSpecifer("select element named \(name)")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.byName(name), queryError: queryError)
+    }
+    func ID(elementID: AnyObject) -> «PREFIX»Specifier { // by-id
+        let (baseQuery, queryError) = self.aemElementsSpecifer("select element with id \(elementID)")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.byID(elementID), queryError: queryError)
+    }
+    subscript(from: AnyObject, to: AnyObject!) -> «PREFIX»Specifier! { // by-range
+        let (baseQuery, queryError) = self.aemElementsSpecifer("select elements \(from) thru \(to)")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.byRange(from, to: to), queryError: queryError)
+    }
+
+    func previous(elementClass: AEBSymbol) -> «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("select previous element")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.previous(elementClass.aebCode), queryError: queryError)
+    }
+    func next(elementClass: AEBSymbol) -> «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("select next element")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.next(elementClass.aebCode), queryError: queryError)
+    }
+    
+    var first: «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemElementsSpecifer("select first element")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.first(), queryError: queryError)
+    }
+    var middle: «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemElementsSpecifer("select middle element")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.middle(), queryError: queryError)
+    }
+    var last: «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemElementsSpecifer("select last element")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.last(), queryError: queryError)
+    }
+    var any: «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemElementsSpecifer("select any element")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.any(), queryError: queryError)
+    }
+
+    var beginning: «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("select beginning")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.beginning(), queryError: queryError)
+    }
+    var end: «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("select end")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.end(), queryError: queryError)
+    }
+    var before: «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("select before")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.before(), queryError: queryError)
+    }
+    var after: «PREFIX»Specifier {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("select after")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.after(), queryError: queryError)
+    }
+
+    // Test clause constructors, e.g. «PREFIX»its.name.beginsWith("foo")
+    
+    func beginsWith(input: AnyObject!) -> «PREFIX»Specifier! {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("test")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.beginsWith(input), queryError: queryError)
+    }
+    func endsWith(input: AnyObject!) -> «PREFIX»Specifier! {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("test")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.endsWith(input), queryError: queryError)
+    }
+    func contains(input: AnyObject!) -> «PREFIX»Specifier! {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("test")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.contains(input), queryError: queryError)
+    }
+    func isIn(input: AnyObject!) -> «PREFIX»Specifier! {
+        let (baseQuery, queryError) = self.aemObjectSpecifer("test")
+        return «PREFIX»Specifier(appData: aebAppData, aemQuery: baseQuery?.isIn(input), queryError: queryError)
+    }
+    
+    // Properties
+    
+«+PROPERTY_SPECIFIER»
+    var «NAME»: «PREFIX»Specifier {return self.propertyByCode(«CODE»)}
+«-PROPERTY_SPECIFIER»
+    
+    // Elements
+    
+«+ELEMENTS_SPECIFIER»
+    var «NAME»: «PREFIX»Specifier {return self.elementsByCode(«CODE»)}
+«-ELEMENTS_SPECIFIER»
+    
+    // Commands
+    
+«+COMMAND»
+    func «COMMAND_NAME»(directParameter: AnyObject = AEBNoParameter,
+«+PARAMETER»
+            «NAME»: AnyObject = AEBNoParameter,
+«-PARAMETER»
+            returnType: AEBReturnType? = nil, waitReply: Bool? = nil, withTimeout: NSTimeInterval? = nil,
+            considering: AEBConsiderIgnoreType? = nil, ignoring: AEBConsiderIgnoreType? = nil) throws -> AnyObject! {
+        return try self.sendAppleEvent("«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», parameters: [
+                (nil, 0x2d2d2d2d, directParameter),
+«+PARAMETER»
+                ("«NAME»", «CODE», «NAME»),
+«-PARAMETER»
+            ], returnType: returnType, waitReply: waitReply, withTimeout: withTimeout, considering: considering, ignoring: ignoring)
+    }
+«-COMMAND»
+}
+
+
+/******************************************************************************/
+// «APP_CLASS_NAME» instances identify the target process(es) to which Apple events will be sent
+
+
+class «APP_CLASS_NAME»: «PREFIX»Specifier {
+    private init(targetType: AEBTargetType, targetData: AnyObject?, launchOptions: NSWorkspaceLaunchOptions, relaunchMode: AEBRelaunchMode) {
+        let data = SwiftAEAppData(targetType: targetType,
+                                  targetData: targetData,
+                               launchOptions: launchOptions,
+                                relaunchMode: relaunchMode,
+                              specifierClass: «PREFIX»Specifier.self,
+                                 symbolClass: «PREFIX»Symbol.self)
+        super.init(appData: data, aemQuery: AEMQuery.app(), queryError: nil)
+    }
+    convenience init(launchOptions: NSWorkspaceLaunchOptions = .WithoutActivation, relaunchMode: AEBRelaunchMode = .Limited) { // TO DO: delete this initializer/or have it raise an error if BUNDLE_ID is unknown
+        self.init(bundleIdentifier: "«BUNDLE_ID»", launchOptions: launchOptions, relaunchMode: relaunchMode)
+    }
+    convenience init(name: NSString, launchOptions: NSWorkspaceLaunchOptions = .WithoutActivation, relaunchMode: AEBRelaunchMode = .Limited) {
+        self.init(targetType: .Name, targetData: name, launchOptions: launchOptions, relaunchMode: relaunchMode)
+    }
+    convenience init(url: NSURL, launchOptions: NSWorkspaceLaunchOptions = .WithoutActivation, relaunchMode: AEBRelaunchMode = .Limited) {
+        self.init(targetType: .URL, targetData: url, launchOptions: launchOptions, relaunchMode: relaunchMode)
+    }
+    convenience init(bundleIdentifier: NSString, launchOptions: NSWorkspaceLaunchOptions = .WithoutActivation, relaunchMode: AEBRelaunchMode = .Limited) {
+        self.init(targetType: .BundleID, targetData: bundleIdentifier, launchOptions: launchOptions, relaunchMode: relaunchMode)
+    }
+    convenience init(processIdentifier: Int, launchOptions: NSWorkspaceLaunchOptions = .WithoutActivation, relaunchMode: AEBRelaunchMode = .Limited) {
+        self.init(targetType: .ProcessID, targetData: processIdentifier, launchOptions: launchOptions, relaunchMode: relaunchMode)
+    }
+    convenience init(descriptor: NSAppleEventDescriptor, launchOptions: NSWorkspaceLaunchOptions = .WithoutActivation, relaunchMode: AEBRelaunchMode = .Limited) {
+        self.init(targetType: .Descriptor, targetData: descriptor, launchOptions: launchOptions, relaunchMode: relaunchMode)
+    }
+    static let currentApplication = «APP_CLASS_NAME»(targetType: .Current, targetData: nil, launchOptions: .WithoutActivation, relaunchMode: .Limited)
+
+    // Construct a «PREFIX»Specifier using a raw AEMQuery or other custom object
+    // (e.g. if app's terminology is broken or when dealing with especially cranky old apps)
+    
+    func customRoot(object: AnyObject!) -> «PREFIX»Specifier {
+        if object is «PREFIX»Specifier {
+            return «PREFIX»Specifier(appData: aebAppData, aemQuery: (object as! «PREFIX»Specifier).aemQuery, queryError: nil)
+        } else if object is AEMQuery {
+            return «PREFIX»Specifier(appData: aebAppData, aemQuery: (object as! AEMQuery), queryError: nil)
+        } else if object == nil {
+            return «PREFIX»Specifier(appData: aebAppData, aemQuery: AEMQuery.app(), queryError: nil)
+        } else {
+            return «PREFIX»Specifier(appData: aebAppData, aemQuery: AEMQuery.customRoot(object), queryError: nil)
+        }
+    }
+}
+
+
+// test clause constructors, e.g. «PREFIX»its.name != "foo"
+// note: the == operator will return a «PREFIX»Specifier when used in elements[...] specifier; however, when
+// binding its result to a variable, it must be explicitly typed as (e.g.) AnyObject or Swift will infer Bool
+
+func == (left: «PREFIX»Specifier!, right: AnyObject!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = left.aemObjectSpecifer("test")
+    return «PREFIX»Specifier(appData: left.aebAppData, aemQuery: baseQuery?.equals(right), queryError: queryError)
+}
+func != (left: «PREFIX»Specifier!, right: AnyObject!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = left.aemObjectSpecifer("test")
+    return «PREFIX»Specifier(appData: left.aebAppData, aemQuery: baseQuery?.notEquals(right), queryError: queryError)
+}
+func < (left: «PREFIX»Specifier!, right: AnyObject!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = left.aemObjectSpecifer("test")
+    return «PREFIX»Specifier(appData: left.aebAppData, aemQuery: baseQuery?.lessThan(right), queryError: queryError)
+}
+func > (left: «PREFIX»Specifier!, right: AnyObject!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = left.aemObjectSpecifer("test")
+    return «PREFIX»Specifier(appData: left.aebAppData, aemQuery: baseQuery?.greaterThan(right), queryError: queryError)
+}
+func <= (left: «PREFIX»Specifier!, right: AnyObject!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = left.aemObjectSpecifer("test")
+    return «PREFIX»Specifier(appData: left.aebAppData, aemQuery: baseQuery?.lessOrEquals(right), queryError: queryError)
+}
+func >= (left: «PREFIX»Specifier!, right: AnyObject!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = left.aemObjectSpecifer("test")
+    return «PREFIX»Specifier(appData: left.aebAppData, aemQuery: baseQuery?.greaterOrEquals(right), queryError: queryError)
+}
+func && (left: «PREFIX»Specifier!, right: «PREFIX»Specifier!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = left.aemTestClause("test")
+    return «PREFIX»Specifier(appData: left.aebAppData, aemQuery: baseQuery?.AND(right), queryError: queryError)
+}
+func || (left: «PREFIX»Specifier!, right: «PREFIX»Specifier!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = left.aemTestClause("test")
+    return «PREFIX»Specifier(appData: left.aebAppData, aemQuery: baseQuery?.OR(right), queryError: queryError)
+}
+prefix func ! (input: «PREFIX»Specifier!) -> «PREFIX»Specifier! {
+    let (baseQuery, queryError) = input.aemTestClause("test")
+    return «PREFIX»Specifier(appData: input.aebAppData, aemQuery: baseQuery?.NOT(), queryError: queryError)
+}
+
+
+/******************************************************************************/
+// TOP-LEVEL CONSTANTS
+
+// Namespace for built-in and application-defined symbols, e.g. «PREFIX».documentFile, «PREFIX».unicodeText
+let «PREFIX» = «PREFIX»Symbol.self
+
+
+// Generic specifier roots. These can be used to construct «PREFIX»Specifiers for use in other
+// «PREFIX»Specifiers and «PREFIX»Commands, though only real specifiers constructed from a
+// «APP_CLASS_NAME» application instance can be used to send commands to the target application.
+let «PREFIX»App = «PREFIX»Specifier(appData: nil, aemQuery: AEMQuery.app(), queryError: nil)
+let «PREFIX»Con = «PREFIX»Specifier(appData: nil, aemQuery: AEMQuery.con(), queryError: nil)
+let «PREFIX»Its = «PREFIX»Specifier(appData: nil, aemQuery: AEMQuery.its(), queryError: nil)
+

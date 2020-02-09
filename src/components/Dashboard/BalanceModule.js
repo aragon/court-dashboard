@@ -17,6 +17,7 @@ import { useConnectedAccount } from '../../providers/Web3'
 import {
   getTotalUnlockedActiveBalance,
   getTotalEffectiveInactiveBalance,
+  getTotalLockedActiveBalance,
 } from '../../utils/balance-utils'
 
 const BalanceModule = React.memo(
@@ -40,6 +41,11 @@ const BalanceModule = React.memo(
 
     const unlockedActiveBalance =
       balances && getTotalUnlockedActiveBalance(balances)
+    const lockedActiveBalance =
+      balances && getTotalLockedActiveBalance(balances)
+
+    console.log('lockedActiveBalance', lockedActiveBalance)
+
     const effectiveInactiveBalance =
       balances && getTotalEffectiveInactiveBalance(balances)
 

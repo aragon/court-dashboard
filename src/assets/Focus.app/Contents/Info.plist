@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BuildMachineOSBuild</key>
+	<string>19A583</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>Focus</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>Focus Help.help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>com.bradjasper.Focus-Help</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
+	<key>CFBundleIdentifier</key>
+	<string>BradJasper.focus</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Focus</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.11</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Focus URL</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>focus</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>1.11</string>
+	<key>DTCompiler</key>
+	<string>com.apple.compilers.llvm.clang.1_0</string>
+	<key>DTPlatformBuild</key>
+	<string>11A1027</string>
+	<key>DTPlatformVersion</key>
+	<string>GM</string>
+	<key>DTSDKBuild</key>
+	<string>19A547</string>
+	<key>DTSDKName</key>
+	<string>macosx10.15</string>
+	<key>DTXcode</key>
+	<string>1110</string>
+	<key>DTXcodeBuild</key>
+	<string>11A1027</string>
+	<key>Fabric</key>
+	<dict>
+		<key>APIKey</key>
+		<string>bedcb5f2cda1a4ea5ae52013b44f3e6ff0dc9d27</string>
+		<key>Kits</key>
+		<array>
+			<dict>
+				<key>KitInfo</key>
+				<dict/>
+				<key>KitName</key>
+				<string>Crashlytics</string>
+			</dict>
+		</array>
+	</dict>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.10</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>MDItemKeywords</key>
+	<string>focus,distraction,block,productivity,facebook,reddit,twitter,zen,game,pomodoro,work,school</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Focus requires permission to browsers to block them</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>SMPrivilegedExecutables</key>
+	<dict>
+		<key>BradJasper.focus.HelperTool</key>
+		<string>anchor apple generic and identifier "BradJasper.focus.HelperTool" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = J6KYVU254V)</string>
+	</dict>
+	<key>SUFeedURL</key>
+	<string>https://heyfocus.com/appcast.xml</string>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
+</dict>
+</plist>

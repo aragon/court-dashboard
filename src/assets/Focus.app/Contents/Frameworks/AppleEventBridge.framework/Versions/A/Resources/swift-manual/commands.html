@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>AppleEventBridge | Commands</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Commands</h1>
+                <div class="navbar"><a href="object-specifiers.html">back</a> | <a href="index.html">index</a> | <a href="examples.html">next</a></div>
+                <p>// TO DO: this chapter is still rough, and there's little commonality between ObjC and Swift text; the ObjC API is also not finalized and may change slightly/drastically in future</p>
+
+<h2>Syntax</h2>
+
+<p>For convenience, AppleEventBridge makes application commands available as methods on every object specifier. (Note: due to the limitations of aete-based terminology, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.) All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:</p>
+
+<pre><code>func <var>commandName</var>(directParameter: AnyObject = AEBNoParameter,
+                 <var>namedParameter1:</var> AnyObject = AEBNoParameter,
+                 <var>namedParameter2:</var> AnyObject = AEBNoParameter,
+                 ...
+                 returnType:      AEBReturnType?         = nil,
+                 waitReply:       Bool?                  = nil,
+                 withTimeout:     NSTimeInterval?        = nil,
+                 considering:     AEBConsiderIgnoreType? = nil,
+                 ignoring:        AEBConsiderIgnoreType? = nil) throws -> AnyObject!</code></pre>
+
+<ul>
+<li><p><code>directParameter:</code> -- An application command can have either zero or one direct parameters. The application's dictionary indicates which commands take a direct parameter, and if it is optional or required.</p></li>
+<li><p><code>namedParameterN:</code>An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.</p></li>
+<li><p><code>returnType:</code> -- Some applications may allow the return value's type to be specified for certain commands (typically <code>get</code>). For example, the Finder's <code>get</code> command returns filesystem references as alias objects if the resulttype is <code>FIN.alias</code>. [TO DO: this is preliminary and subject to change]</p></li>
+<li><p><code>waitReply:</code> -- If <code>true</code> (the default), the command will block until the application sends a reply or the request times out. If <code>false</code>, it will return as soon as the request is sent, ignoring any return values or application errors.</p></li>
+<li><p><code>withTimeout:</code> -- The number of seconds to wait for the application to reply before raising a timeout error. The default timeout (<code>AEBDefaultTimeout</code>) is 120 seconds but this can be changed if necessary; use <code>AEBNoTimeout</code> to wait indefinitely. For example, a longer timeout may be needed to prevent a timeout error occurring during a particularly long-running application command. Note: due to a quirk in the Apple Event Manager API, timeout errors may be reported as either error -1712 (the Apple event timed out) or -609 (connection invalid, which is also raised when an application unexpectedly quits while handling a command).</p></li>
+<li><p><code>considering:</code>/<code>ignoring:</code> -- Some applications may allow the client to specify text attributes that should be considered or ignored when performing string comparisons, e.g. when resolving by-test references. When specifying the attributes to ignore, the list should contain zero or more of the following enumerators: <code>XX.case</code>, <code>XX.diacriticals</code>, <code>XX.numericStrings</code>, <code>XX.hyphens</code>, <code>XX.punctuation</code>, <code>XX.whitespace</code> [TO DO: these are standard terms so should eventually be defined on AEBSymbol base class, allowing <code>AEB.case</code>, etc to be used across all apps, but for now must use the glue's own prefix code, e.g. <code>TED.case</code>]. Note that most applications currently ignore this setting and always use the default behaviour, which is to ignore case but consider everything else.</p></li>
+</ul>
+
+<h2>Examples</h2>
+
+<pre><code>  // tell application "TextEdit" to activate
+  TextEdit().activate()
+
+  // tell application "TextEdit" to open fileList
+  TextEdit().open(fileList)
+
+  // tell application "Finder" to get version
+  Finder().version.get()
+
+  // tell application "Finder" to set name of file "foo.txt" of home to "bar.txt"
+  Finder().home.files["foo.txt"].name.set(to: "bar.txt")
+
+  // tell application "TextEdit" to count (text of first document) each paragraph
+  TextEdit().documents.first.text.count(each: TED.paragraph)
+
+  // tell application "TextEdit" to make new document at end of documents
+  TextEdit().documents.end.make(new: TED.document)
+
+  // tell application "Finder" to get items of home as alias list
+  Finder().home.items.get(returnType: FIN.alias)
+</code></pre>
+
+<h2>Special cases</h2>
+
+<p>The following special-case behaviours are implemented for convenience:</p>
+
+<ul>
+<li><p>Commands that take an object specifier as a direct parameter may be written in the following form:</p>
+
+<pre><code>    objSpec.command(namedParameter1:, namedParameter2:, ...)
+
+The conventional form is also supported should you ever wish (or need) to use it:
+
+    appObj.command(objSpec, namedParameter1:, namedParameter2:, ...)
+</code></pre></li>
+</ul>
+
+<p>The two forms are equivalent (<code>AEBSpecifier</code> converts the first form to the second behind the scenes) although the first form is preferred for conciseness.</p>
+
+<ul>
+<li><p>If a command that already has a direct parameter is called on an object specifier, i.e.:</p>
+
+<pre><code>    objSpec.command(directParameter:, ...)
+</code></pre></li>
+</ul>
+
+<p>the object specifier upon which it is called will be packed as the Apple event's "subject" attribute (<code>keySubjectAttr</code>).</p>
+
+<ul>
+<li><p>If the <code>make</code> command is called on an insertion location specifier (<code>before</code>/<code>after</code>/<code>beginning</code>/<code>end</code>), AEB will pack that specifier as the Apple event's <code>at:</code> parameter if it doesn't already have one; i.e.:</p>
+
+<pre><code>    insertionLoc.make(new: className)
+</code></pre>
+
+<p>is equivalent to:</p>
+
+<pre><code>    appObj.make(new: className, at: insertionLoc)
+</code></pre>
+
+<p>If the <code>make</code> command is called on an object specifier, AEB will pack that specifier as the Apple event's "subject" attribute. Be aware that some applications may not handle this attribute correctly, in which case the specifier should be passed via the <code>make</code> command's <code>at:</code> parameter.</p></li>
+</ul>
+
+<h2>Command errors</h2>
+
+<p>If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a <a href="objc-ae-type-mappings.html">supported type</a>, an <code>NSError</code> is thrown. AppleEventBridge errors have the domain <code>AEBErrorDomain</code>, an error code that is typically an <code>OSStatus</code> value or custom value defined by the target application, and a <code>userInfo</code> dictionary containing a standard <code>NSLocalizedDescription</code> key containing the error description string, plus zero or more of the following AEB-defined keys:</p>
+
+<ul>
+<li><p>Standard Apple event/OSA error information:</p>
+
+<ul>
+<li><code>AEBErrorNumber</code> – the error code (<code>Int</code>); this is the same as <code>NSError.code</code></li>
+<li><code>AEBErrorMessage</code> – the error message (<code>String</code>) provided by the application, if any, otherwise a default description if the error number is a standard AE error code</li>
+<li><code>AEBErrorBriefMessage</code> – short version of the above; not normally used by applications, but included here for completeness</li>
+<li><code>AEBErrorExpectedType</code> – if a coercion error (-1700) occurred, an <code>AEBSymbol</code> describing the type of value that was required</li>
+<li><code>AEBErrorOffendingObject</code> – the parameter (<code>AnyObject</code>) that caused the error, where relevant</li>
+</ul></li>
+<li><p>Additional error information: </p>
+
+<ul>
+<li><code>AEBErrorFailedCommandDescription</code> – the source code <code>String</code> representation of the failed command</li>
+<li><code>AEBErrorFailedAEMEvent</code> – the underlying <code>AEMEvent</code> instance that was constructed by the Swift glue</li>
+</ul></li>
+</ul>
+
+<h2>Note to AppleScript users</h2>
+
+<p>Unlike AppleScript, which implicitly sends a <code>get</code> command to any unresolved application object references at the end of evaluating an expression, AEB only resolves a reference when it receives an appropriate command. For example:</p>
+
+<pre><code>let o = TextEdit().documents
+</code></pre>
+
+<p>is <em>not</em> the same as:</p>
+
+<pre><code>set o to documents of application "TextEdit"
+</code></pre>
+
+<p>even though the two statements may look equivalent. In the Swift example, the value assigned to <code>o</code> is an instance of <code>TEDSpecifier</code>, <code>TextEdit(name:"/Applications/TextEdit.app").documents</code>, i.e. an <em>object specifier</em>. Whereas, in the AppleScript example, the evaluating the <code>documents of application "TextEdit"</code> expression not only constructs the same specifier, it <em>also</em> automatically sends a <code>get</code> event to the target application in order to retrieve the specified data, then assigns the result of that request to <code>o</code>:</p>
+
+<pre><code>set o to documents of application "TextEdit"
+o
+--> {document "Untitled" of application "TextEdit", document "Untitled 2" of application "TextEdit"}</code></pre>
+
+<p>This "implicit <code>get</code>" behavior is built directly into the AppleScript interpreter itself, and automatically applied to any specifier literal that does not already appear as a parameter to an application command, as a <code>tell</code> block target, or as the sole operand to AppleScript's' <code>a reference to</code> operator:</p>
+
+<pre><code>set o to <strong>a reference to</strong> documents of application "TextEdit"
+o
+--> every document of application "TextEdit"</code></pre>
+
+<p>In contrast, AEB has no invisible "magic" behaviors attempting to infer your actual intent: it only ever sends an Apple event when you <em>explicitly</em> instruct it to do so:</p>
+
+<pre><code>let o = TextEdit().documents<strong>.get()</strong>
+print(o)
+// [TextEdit(...).documents["Untitled"], TextEdit(...).documents["Untitled 2"]]</code></pre>
+
+<p>New users coming from AppleScript or OO language backgrounds may find this unintuitive at first, but AEB's clean separation between query construction and event dispatch ensures AEB's behavior is completely straightforward and predictable, and avoids the hidden gotchas that can bite AppleScript users in various unexpected and confusing ways.</p>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="object-specifiers.html">back</a> | <a href="index.html">index</a> | <a href="examples.html">next</a></div></div>
+    </body>
+</html>

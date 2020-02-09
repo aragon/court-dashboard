@@ -5,6 +5,13 @@ export function getTotalUnlockedActiveBalance({
   return activeBalance.amount.sub(lockedBalance.amount)
 }
 
+export function getTotalLockedActiveBalance({
+  inactiveBalance,
+  lockedBalance,
+}) {
+  return lockedBalance.amount.add(inactiveBalance.amountNotEffective)
+}
+
 export function getTotalEffectiveInactiveBalance({
   inactiveBalance,
   deactivationBalance,

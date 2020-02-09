@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>AppleEventBridge | Examples</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Examples</h1>
+                <div class="navbar"><a href="commands.html">back</a> | <a href="index.html">index</a> | <a href="optimizing-performance.html">next</a></div>
+                <p>// TO DO: include corresponding aebglue commands as comments</p>
+
+<h2>Application objects</h2>
+
+<pre><code>  // application id "com.apple.Finder"
+
+  FINApplication *finder = [FINApplication application]; // (use the glue's default bundle ID)
+
+  FINApplication *finder = [Finder applicationWithBundleID: @"com.apple.finder"];
+
+  // application "Adobe InDesign CS6"
+
+  INDApplication *indesign = [INDApplication applicationWithName: @"Adobe InDesign CS6"];
+
+  // application "Macintosh HD:Applications:TextEdit.app:"
+
+  TEDApplication *textedit = [TEDApplication applicationWithName: @"/Applications/TextEdit.app"];
+
+  // application "iTunes" of machine "eppc://jsmith@media-mac.local"
+
+  ITUApplication *itunes = [ITUApplication applicationWithURL: 
+                            [NSURL URLWithString @"eppc://jsmith@media-mac.local/iTunes"]];
+</code></pre>
+
+<h2>Property references</h2>
+
+<pre><code>  // a reference to startup disk of application "Finder"
+  finder.startupDisk
+
+  // a reference to name of folder 1 of home of application "Finder"
+  finder.home.folders[1].name
+
+  // a reference to name of every item of home of application "Finder"
+  finder.home.items.name
+
+  // a reference to text of every document of application "TextEdit"
+  textedit.documents.text
+
+  // a reference to color of character 1 of every paragraph of text ¬
+  //     of document 1 of application "TextEdit"
+  textedit.documents[1].text.paragraphs.characters[1].color
+</code></pre>
+
+<h2>All elements references</h2>
+
+<pre><code>  // a reference to disks of application "Finder"
+  finder.disks
+
+  // a reference to every word of every paragraph ¬
+  //     of text of every document of application "TextEdit"
+  textedit.documents.text.paragraphs.words
+</code></pre>
+
+<h2>Single element references</h2>
+
+<pre><code>  // a reference to disk 1 of application "Finder"
+  finder.disks[1]
+
+  // a reference to file "ReadMe.txt" of folder "Documents" of home of application "Finder"
+  finder.home.folders[@"Documents"].files[@"ReadMe.txt"]
+
+  // a reference to paragraph -1 of text of document 1 of application "TextEdit"
+  textedit.documents[1].text.paragraphs[-1]
+
+  // a reference to middle paragraph of text of last document of application "TextEdit"
+  textedit.documents.last.text.paragraphs.middle
+
+  // a reference to any file of home of application "Finder"
+  finder.home.files.any
+</code></pre>
+
+<h2>Relative references</h2>
+
+<pre><code>  // a reference to paragraph before paragraph 6 of text of document 1 of application "TextEdit"
+  [textedit.documents[1].text.paragraphs[6] previous: TED.paragraph]
+
+  // a reference to paragraph after character 30 of document 1 of application "Tex-Edit Plus"
+  [texeditplus.documents[1].characters[30] next: TEP.paragraph]
+</code></pre>
+
+<h2>Element range references</h2>
+
+<pre><code>  // a reference to words 1 thru 4 of text of document 1 of application "TextEdit"
+  [textedit.documents[1].text.words from: @1 to: @4]
+
+
+  // a reference to paragraphs 2 thru -1 of text of document 1 of application "TextEdit"
+  [textedit.documents[1].text.paragraphs from: @2 to: @-1]
+
+  // a reference to folders "Documents" thru "Music" of home of application "Finder"
+  [finder.home.folders from: @"Documents" to: @"Music"]
+
+  // a reference to text (word 3) thru (paragraph 7) of document 1 of application "Tex-Edit Plus"
+  [texeditplus.documents[1].text from: TEPCon.words[3] to: TEPCon.paragraphs[7]]
+</code></pre>
+
+<h2>Test references</h2>
+
+<pre><code>  // a reference to every document of application "TextEdit" whose text is "\n"
+  textedit.documents[[TEDIts.text eq: @"\n"]]
+
+  // a reference to every paragraph of document 1 of application "Tex-Edit Plus" ¬
+  //      whose first character is last character
+  texeditplus.documents[1].paragraphs[[TEPIts.characters.first eq: TEPIts.characters.last]]
+
+  // a reference to every file of folder "Documents" of home of application "Finder" ¬
+  //      whose name extension is "txt" and size &lt; 10240
+  finder.home.folders[@"Documents"].files[[[FINIts.nameExtension eq: @"txt"] 
+                                            AND: [FINIts.size lt: @10240]]
+</code></pre>
+
+<h2>Insertion location references</h2>
+
+<pre><code>  // a reference to end of documents of application "TextEdit"
+  textedit.documents.end
+
+  // a reference to before paragraph 1 of text of document 1 of application "TextEdit"
+  textedit.documents[1].text.paragraphs[1].before
+</code></pre>
+
+<h2><code>get</code> command</h2>
+
+<p>Get the name of every folder in the user's home folder:</p>
+
+<pre><code>  NSError *error = nil;
+  id result = [[finder get: FINApp.home.folders.name] sendWithError: &amp;error];
+  if (result == nil) { /* a nil result means command failed, so handle error here */ }
+</code></pre>
+
+<p>If error details are not required, the <code>-send</code> shortcut can be used instead:</p>
+
+<pre><code>  id result = [[finder get: FINApp.home.folders.name] send];
+  if (result == nil) { /* a nil result means command failed, so handle error here */ }
+</code></pre>
+
+<p>Subsequent examples omit error handling for clarity.</p>
+
+<p>Note that if the direct parameter is omitted from the argument list, the reference that the command is invoked on is used instead. For example, the above example would normally be written as:</p>
+
+<pre><code>  id result = [[finder.home.folders.name get] sendWithError: &amp;error];
+
+  id result = [[finder.home.folders.name get] send];
+</code></pre>
+
+<p>Furthermore, the <code>AEBObjCSpecifier</code> base class defines a number of shortcut methods for performing common <code>get</code> and <code>set</code> commands when no extra attributes are required, allowing the above to be further reduced:</p>
+
+<pre><code>  id result = [finder.home.folders.name getItemWithError: &amp;error];
+
+  id result = [finder.home.folders.name getItem];
+</code></pre>
+
+<p>See <code>AEBObjCSpecifier.h</code> for a full list of shortcuts.</p>
+
+<h2><code>set</code> command</h2>
+
+<p>Set the content of a TextEdit document:</p>
+
+<pre><code>  // tell application "TextEdit" to set text of document 1 to "Hello World"
+  [[[textedit.documents[1].text set] to: @"Hello World"] send]);
+</code></pre>
+
+<p>As with the <code>get</code> command, the <code>set</code> command can be written more concisely using the <code>-setItem:error:</code> or <code>-setItem:</code> shortcut when no extra attributes are required:</p>
+
+<pre><code>  [textedit.documents[1].text setItem: @"Hello World"]
+</code></pre>
+
+<h2><code>count</code> command</h2>
+
+<p>Count the words in a TextEdit document:</p>
+
+<pre><code>  // tell application "TextEdit" to count words of document 1
+  [[textedit.documents[1].words count] send]
+</code></pre>
+
+<p>Count the items in the current user's home folder:</p>
+
+<pre><code>  // tell application "Finder" to count items of home
+  [[[finder.home count] each: FIN.item] send]
+</code></pre>
+
+<p>(Note that Finder and many other Carbon applications require the <code>count</code> command's <code>each</code> parameter to be given.)</p>
+
+<h2><code>make</code> command</h2>
+
+<p>Create a new TextEdit document:</p>
+
+<pre><code>  // tell application "TextEdit" to make new document ¬
+  //     with properties {text:"Hello World\n"}
+  [[[textedit make] new: TED.document] withProperties: @{TED.text: @"Hello World\n"}]
+</code></pre>
+
+<p>Append text to a TextEdit document:</p>
+
+<pre><code>  // tell application "TextEdit" to make new paragraph ¬
+  //     at end of text of document 1 ¬
+  //     with properties {text:"Yesterday\nToday\nTomorrow\n"}
+  [[[[[textedit make] new: TED.paragraph] 
+                       at: TEDApp.documents[1].text.end]
+                 withData: @"Yesterday\nToday\nTomorrow\n"] send]
+</code></pre>
+
+<h2><code>duplicate</code> command</h2>
+
+<p>Duplicate a folder to a disk, replacing an existing item if one exists:</p>
+
+<pre><code>  // tell application "Finder"
+  //     duplicate folder "Projects" of home to disk "Work" with replacing
+  // end tell
+  [[[[finder.home.folders[@"Projects"] duplicate] to: FINApp.disks[@"Backup"]] 
+                                           replacing: @YES] send]
+</code></pre>
+
+<h2><code>add</code> command</h2>
+
+<p>Add every person with a known birthday to a group named "Birthdays": </p>
+
+<pre><code>  // tell application "Contacts"
+  //     add every person whose birth date is not missing value to group "Birthdays"
+  // end tell
+  [[[contacts.people[[CONIts.birthDate ne: CON.missingValue]] 
+                  add] to: CONApp.groups[@"Birthdays"]] send]
+</code></pre>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="commands.html">back</a> | <a href="index.html">index</a> | <a href="optimizing-performance.html">next</a></div></div>
+    </body>
+</html>

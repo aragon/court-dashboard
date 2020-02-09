@@ -1,0 +1,127 @@
+# Below are a list of hostnames that are blocked by Focus
+#
+# Lines that start with a '#' are ignored, so you can comment stuff out easily
+#
+# You only have to specify a base hostname, so 'twitter.com' applies to both 'api.twitter.com' and 'www.twitter.com'
+#
+# The sites are organized into categories. You'll likely want to remove sites that you find productive and add more sites that you find distracting
+#
+# NOTE: After editing this file you'll have to toggle Focus for the changes to become active.
+
+# mail
+gmail.com
+mail.google.com
+mail.yahoo.com
+
+# social
+facebook.com
+twitter.com
+pinterest.com
+tumblr.com
+instagram.com
+vine.co
+flickr.com
+meetup.com
+ask.fm
+
+# aggregators
+news.ycombinator.com
+slashdot.org
+reddit.com
+digg.com
+techmeme.com
+producthunt.com
+fark.com
+popurls.com
+metafilter.com
+quora.com
+medium.com
+
+# media
+netflix.com
+youtube.com
+hulu.com
+imgur.com
+vimeo.com
+ted.com
+blogger.com
+imdb.com
+deviantart.com
+break.com
+collegehumor.com
+funnyordie.com
+liveleak.com
+twitch.tv
+soundcloud.com
+
+# if checking bitcoin prices is getting out of hand
+coinbase.com
+blockchain.info
+coinmarketcap.com
+
+# commerce
+ebay.com
+craigslist.org
+etsy.com
+amazon.com
+
+# blogs
+techcrunch.com
+mashable.com
+engadget.com
+gizmodo.com
+gigaom.com
+boingboing.net
+wired.com
+theverge.com
+lifehacker.com
+readwrite.com
+recode.net
+arstechnica.com
+macrumors.com
+tomshardware.com
+thenextweb.com
+9to5mac.com
+zdnet.com
+venturebeat.com
+
+
+# news
+bbc.com
+forbes.com
+economist.com
+nbcnews.com
+yahoo.com
+nytimes.com
+bloomberg.com
+usatoday.com
+washingtonpost.com
+theguardian.com
+npr.org
+wsj.com
+time.com
+news.google.com
+cnet.com
+cnbc.com
+
+# sports
+bleacherreport.com
+espn.com
+foxsports.com
+cbssports.com
+mlb.com
+nfl.com
+nhl.com
+nba.com
+
+# faux news
+foxnews.com
+cnn.com
+msnbc.com
+huffingtonpost.com
+businessinsider.com
+buzzfeed.com
+theonion.com
+cracked.com
+tmz.com
+vice.com
