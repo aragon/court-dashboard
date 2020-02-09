@@ -1,24 +1,22 @@
 import React, { useCallback, useState } from 'react'
 import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-
 import DisputeList from './DisputeList'
-
 import useDisputes from '../../hooks/useDisputes'
 import { useJurorDraftQuery } from '../../hooks/query-hooks'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 
 import ANJIcon from '../../assets/IconANJButton.svg'
 
 function Disputes() {
+  const wallet = useWallet()
   const [screenIndex, setScreenIndex] = useState(0)
   const {
     disputes,
     fetching: disputesFetching,
     error: errorFetching,
   } = useDisputes()
-  const connectedAccount = useConnectedAccount()
-  const jurorDisputes = useJurorDraftQuery(connectedAccount)
+  const jurorDisputes = useJurorDraftQuery(wallet.account)
 
   const history = useHistory()
   const handleSelectDispute = useCallback(

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 import {
   useJurorBalancesSubscription,
   useAppealsByUserSubscription,
@@ -9,14 +9,14 @@ import {
 const DashboardContext = React.createContext()
 
 function DashboardStateProvider({ children }) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   const Provider = DashboardContext.Provider
 
   // Workaround to not subscribe when no connected account
-  if (connectedAccount)
+  if (wallet.account)
     return (
-      <WithSubscription Provider={Provider} connectedAccount={connectedAccount}>
+      <WithSubscription Provider={Provider} connectedAccount={wallet.account}>
         {children}
       </WithSubscription>
     )
@@ -28,7 +28,7 @@ function DashboardStateProvider({ children }) {
   )
 }
 
-const WithSubscription = ({ Provider, connectedAccount, children }) => {
+function WithSubscription({ Provider, connectedAccount, children }) {
   const account = connectedAccount.toLowerCase()
 
   // Juror balances

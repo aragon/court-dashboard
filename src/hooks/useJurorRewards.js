@@ -1,8 +1,6 @@
 import { useMemo } from 'react'
-
 import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
 import { useCourtConfig } from '../providers/CourtConfig'
-
 import { bigNum } from '../lib/math-utils'
 import { isJurorCoherent } from '../utils/juror-draft-utils'
 import {
@@ -10,11 +8,11 @@ import {
   shouldAppealerBeRewarded,
 } from '../utils/appeal-utils'
 import { getRoundFees } from '../utils/dispute-utils'
-import { useConnectedAccount } from '../providers/Web3'
+import { useWallet } from '../providers/Wallet'
 
 export default function useJurorRewards() {
   const courtConfig = useCourtConfig()
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
   const { jurorDrafts, appeals } = useDashboardState()
 
   // For arbitrable and appeal fees we will use a map where map = [disputeId, { amount, rounds }]
@@ -60,7 +58,7 @@ export default function useJurorRewards() {
       .filter(
         appeal =>
           appeal.round.settledPenalties &&
-          shouldAppealerBeRewarded(appeal, connectedAccount)
+          shouldAppealerBeRewarded(appeal, wallet.account)
       )
       .reduce((appealsFee, appeal) => {
         const { round } = appeal
@@ -71,11 +69,7 @@ export default function useJurorRewards() {
 
         const totalFees = getRoundFees(nextRound, courtConfig)
 
-        const appealerFees = getAppealerFees(
-          appeal,
-          totalFees,
-          connectedAccount
-        )
+        const appealerFees = getAppealerFees(appeal, totalFees, wallet.account)
 
         return setOrUpdateFee(
           appealsFee,
@@ -91,7 +85,7 @@ export default function useJurorRewards() {
       appealFees: feeMapToArray(appealFees),
       totalDisputesFees: getTotalDisputesFees(arbitrableFees, appealFees),
     }
-  }, [appeals, connectedAccount, courtConfig, jurorDrafts])
+  }, [appeals, wallet, courtConfig, jurorDrafts])
 }
 
 /**

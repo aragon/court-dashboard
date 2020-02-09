@@ -1,15 +1,11 @@
 import { useMemo } from 'react'
 
+import { useWallet } from '../providers/Wallet'
 import { useCourtClock } from '../providers/CourtClock'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
-import { useConnectedAccount } from '../providers/Web3'
 import { useFirstANJActivationQuery } from './query-hooks'
+import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
 
-import {
-  ANJBalance as anjBalanceTypes,
-  ANJMovement as anjMovementTypes,
-} from '../types/anj-types'
 import {
   isMovementOf,
   convertMovement,
@@ -21,6 +17,7 @@ import {
 } from '../utils/anj-movement-utils'
 import { getTermStartTime } from '../utils/court-utils'
 import { getDraftLockAmount } from '../utils/dispute-utils'
+import { ANJBalance, ANJMovement } from '../types/anj-types'
 
 export function useANJBalances() {
   const { balances, movements } = useDashboardState()
@@ -38,19 +35,19 @@ export function useANJBalances() {
   const convertedWalletBalance = useBalanceWithMovements(
     walletBalance,
     convertedMovements,
-    anjBalanceTypes.Wallet
+    ANJBalance.Wallet
   )
 
   const convertedInactiveBalance = useBalanceWithMovements(
     inactiveBalance,
     convertedMovements,
-    anjBalanceTypes.Inactive
+    ANJBalance.Inactive
   )
 
   const convertedActiveBalance = useBalanceWithMovements(
     activeBalance,
     convertedMovements,
-    anjBalanceTypes.Active
+    ANJBalance.Active
   )
 
   // Use ANJ Locked distribution
@@ -106,8 +103,7 @@ function useConvertedMovements(movements) {
       // but only Deactivations don't update the balance immediately, we'll use another attr (isImmediate) to differentiate these cases
       return movements
         .map((mov, i) => {
-          const isImmediate =
-            anjMovementTypes[mov.type] !== anjMovementTypes.Deactivation
+          const isImmediate = ANJMovement[mov.type] !== ANJMovement.Deactivation
 
           let updatesBalanceAt = mov.createdAt
           if (!isImmediate && mov.effectiveTermId && effectiveStates[i]) {
@@ -172,7 +168,7 @@ function useBalanceWithMovements(balance, movements, balanceType) {
     )
 
     // Update latest movement if necessary
-    if (balanceType === anjBalanceTypes.Active) {
+    if (balanceType === ANJBalance.Active) {
       if (lockedBalance?.gt(0))
         latestMovement = getUpdatedLockedMovement(lockedBalance, latestMovement)
     }
@@ -198,7 +194,7 @@ function useFilteredMovements(movements, acceptedMovements) {
       return null
     }
     return movements.filter(movement => {
-      return isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
+      return isMovementOf(acceptedMovements, ANJMovement[movement.type])
     })
   }, [acceptedMovements, movements])
 }
@@ -209,10 +205,10 @@ function useFilteredMovements(movements, acceptedMovements) {
  * @return {Boolean} true if account's first ANJ activation happened on current term
  */
 export function useJurorFirstTimeANJActivation(options) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
   const { currentTermId } = useCourtClock()
   const firstANJActivation = useFirstANJActivationQuery(
-    connectedAccount.toLowerCase(),
+    wallet.account.toLowerCase(),
     options
   )
 

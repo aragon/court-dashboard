@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Field, GU, TextInput } from '@aragon/ui'
-
-import { useConnectedAccount } from '../../../providers/Web3'
+import { useWallet } from '../../../providers/Wallet'
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import { getJurorDraft } from '../../../utils/juror-draft-utils'
 
@@ -10,11 +9,11 @@ const RevealPanel = React.memo(function RevealPanel({
   onReveal,
   onDone,
 }) {
+  const wallet = useWallet()
   const [password, setPassword] = useState('')
-  const connectedAccount = useConnectedAccount()
   const lastRound = getDisputeLastRound(dispute)
 
-  const jurorDraft = getJurorDraft(lastRound, connectedAccount)
+  const jurorDraft = getJurorDraft(lastRound, wallet.account)
 
   const handlePasswordChange = event => setPassword(event.target.value)
 
@@ -25,7 +24,7 @@ const RevealPanel = React.memo(function RevealPanel({
       const tx = await onReveal(
         dispute.id,
         dispute.lastRoundId,
-        connectedAccount,
+        wallet.account,
         jurorDraft.commitment,
         password
       )

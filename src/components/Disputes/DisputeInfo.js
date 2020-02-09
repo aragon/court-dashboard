@@ -15,7 +15,7 @@ import DisputeStatus from './DisputeStatus'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
 import Loading from './Loading'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 
 import {
   Phase as DisputePhase,
@@ -171,7 +171,7 @@ function DisputeHeader({ id, dispute }) {
 
 function Field({ label, value }) {
   const theme = useTheme()
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   return (
     <div>
@@ -192,7 +192,7 @@ function Field({ label, value }) {
           `}
         >
           <IdentityBadge
-            connectedAccount={addressesEqual(value, connectedAccount)}
+            connectedAccount={addressesEqual(value, wallet.account)}
             entity={value}
           />
         </div>
