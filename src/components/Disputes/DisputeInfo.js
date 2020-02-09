@@ -69,7 +69,7 @@ const DisputeInfo = React.memo(function({
                   value={
                     <DisputeOutcomeText
                       outcome={
-                        dispute.rounds[dispute.lastRoundId].vote.winningOutcome
+                        dispute.rounds[dispute.lastRoundId].vote?.winningOutcome
                       }
                       phase={dispute.phase}
                       disputeEnded={isFinalRulingEnsured}
@@ -138,8 +138,8 @@ function DisputeHeader({ id, dispute }) {
           css={`
             background: linear-gradient(
               233deg,
-              ${theme.accentEnd} -50%,
-              ${theme.accentStart} 91%
+              ${theme.accentStart} -50%,
+              ${theme.accentEnd} 91%
             );
             border-radius: 50%;
             padding: ${1.5 * GU}px;
