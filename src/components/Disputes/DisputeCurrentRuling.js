@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react'
 import { Distribution, GU, Tag, textStyle, useTheme } from '@aragon/ui'
-
-import { useConnectedAccount } from '../../providers/Web3'
-
+import { useWallet } from '../../providers/Wallet'
 import {
   isValidOutcome,
   getTotalOutcomeWeight,
@@ -23,10 +21,10 @@ const getOutcomeColor = (outcome, theme) => {
 
 function DisputeCurrentRuling({ dispute }) {
   const theme = useTheme()
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   const lastRound = getDisputeLastRound(dispute)
-  const jurorDraft = getJurorDraft(lastRound, connectedAccount)
+  const jurorDraft = getJurorDraft(lastRound, wallet.account)
 
   const { outcome: myOutcome = 0 } = jurorDraft || {}
   const distribution = useOutcomeDistribution(lastRound)

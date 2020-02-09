@@ -1,6 +1,5 @@
 import React from 'react'
 import { Button, GU, Header, SidePanel, Split, useLayout } from '@aragon/ui'
-
 import BalanceModule from './BalanceModule'
 import Tasks from '../Tasks/Tasks'
 import Welcome from './Welcome'
@@ -9,15 +8,13 @@ import DeactivateANJ from './panels/DeactivateANJ'
 import WithdrawANJ from './panels/WithdrawANJ'
 import AppealColateralModule from './AppealColateralModule'
 import RewardsModule from './RewardsModule'
-
 import { DashboardStateProvider } from './DashboardStateProvider'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 import {
   getRequestModeString,
   useDashboardLogic,
   REQUEST_MODE,
 } from '../../dashboard-logic'
-
 import {
   getTotalUnlockedActiveBalance,
   getTotalEffectiveInactiveBalance,
@@ -26,7 +23,7 @@ import {
 import ANJIcon from '../../assets/IconANJButton.svg'
 
 function Dashboard() {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
   const {
     actions,
     appealCollaterals,
@@ -65,7 +62,7 @@ function Dashboard() {
           />
         }
       />
-      {connectedAccount ? (
+      {wallet.account ? (
         <BalanceModule
           balances={balances}
           loading={fetchingData}
@@ -78,26 +75,24 @@ function Dashboard() {
         <Welcome />
       )}
 
-      {!connectedAccount ? (
+      {!wallet.account ? (
         <Tasks onlyTable />
       ) : (
         <Split
           primary={<Tasks onlyTable />}
           secondary={
-            connectedAccount && (
-              <>
-                <RewardsModule
-                  rewards={rewards}
-                  loading={fetchingData}
-                  onSettleReward={actions.settleReward}
-                  onSettleAppealDeposit={actions.settleAppealDeposit}
-                />
-                <AppealColateralModule
-                  appeals={appealCollaterals}
-                  loading={fetchingData}
-                />
-              </>
-            )
+            <>
+              <RewardsModule
+                rewards={rewards}
+                loading={fetchingData}
+                onSettleReward={actions.settleReward}
+                onSettleAppealDeposit={actions.settleAppealDeposit}
+              />
+              <AppealColateralModule
+                appeals={appealCollaterals}
+                loading={fetchingData}
+              />
+            </>
           }
           invert={oneColumn ? 'vertical' : 'horizontal'}
         />

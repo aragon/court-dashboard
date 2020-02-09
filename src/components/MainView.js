@@ -15,7 +15,13 @@ function MainView({ children }) {
         height: 100vh;
       `}
     >
-      <Header />
+      <div
+        css={`
+          flex-shrink: 0;
+        `}
+      >
+        <Header />
+      </div>
       <div
         css={`
           position: relative;
