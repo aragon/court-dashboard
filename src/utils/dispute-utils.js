@@ -457,7 +457,6 @@ export function getRoundFees(round, courtConfig) {
 }
 
 export function getDraftLockAmount(minActiveBalance, penaltyPct, weight) {
-  console.log(minActiveBalance, penaltyPct, weight)
   return minActiveBalance
     .mul(penaltyPct)
     .div(PCT_BASE)

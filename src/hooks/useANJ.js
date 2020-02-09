@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
-import { useCourtClock } from '../providers/CourtClock'
 
-import { useConnectedAccount } from '../providers/Web3'
+import { useCourtClock } from '../providers/CourtClock'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { useFirstANJActivationQuery } from './query-hooks'
 import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
+import { useConnectedAccount } from '../providers/Web3'
+import { useFirstANJActivationQuery } from './query-hooks'
 
 import {
   ANJBalance as anjBalanceTypes,

@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
-
 import { useSpring, animated } from 'react-spring'
 
 import Loading from './Loading'
+import ANJLockedDistribution from './ANJLockedDistribution'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
 
+import { PCT_BASE } from '../../utils/dispute-utils'
 import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
 import { movementDirection, convertToString } from '../../types/anj-types'
 
@@ -39,11 +40,12 @@ const splitAmount = amount => {
 const Balance = React.memo(function Balance({
   label,
   amount,
-  mainIcon,
-  mainIconBackground,
-  activity,
-  actions,
   loading,
+  actions,
+  mainIcon,
+  activity,
+  distribution,
+  mainIconBackground,
 }) {
   const theme = useTheme()
   const {
@@ -97,7 +99,7 @@ const Balance = React.memo(function Balance({
               <span
                 css={`      
                 ${textStyle('body2')}
-                color: ${theme.contentSecondary};
+                color: ${theme.gray};
                 display:block;
               `}
               >
@@ -117,7 +119,7 @@ const Balance = React.memo(function Balance({
               <span
                 css={`
                 ${textStyle('body4')}
-                color: ${theme.contentSecondary};
+                color: ${theme.gray};
                 display:block;
               `}
               >
@@ -142,7 +144,11 @@ const Balance = React.memo(function Balance({
             `}
           >
             {activity ? (
-              <LatestActivity activity={activity} tokenSymbol={symbol} />
+              <LatestActivity
+                activity={activity}
+                tokenSymbol={symbol}
+                distribution={distribution}
+              />
             ) : (
               <span>No recent 24h activity</span>
             )}
@@ -178,7 +184,7 @@ const Balance = React.memo(function Balance({
   )
 })
 
-const LatestActivity = ({ activity }) => {
+const LatestActivity = ({ activity, distribution }) => {
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
   const isIncoming = activity.direction === movementDirection.Incoming
@@ -186,7 +192,7 @@ const LatestActivity = ({ activity }) => {
     activity.direction === movementDirection.Incoming ||
     activity.direction === movementDirection.Outgoing
 
-  let color = theme.contentSecondary
+  let color = theme.gray
   // If sign shouldn't be displayed it means it's a Locked movement
   if (displaySign) color = isIncoming ? theme.positive : theme.negative
 
@@ -236,26 +242,87 @@ const LatestActivity = ({ activity }) => {
           {convertToString(activity.type, activity.direction)}
         </span>
       </div>
-      {!displaySign && (
-        <div
-          css={`
-            display: flex;
-            align-items: center;
-          `}
-        >
-          <span
-            css={`
-              color: ${theme.help};
-              margin-right: ${0.5 * GU}px;
-            `}
-          >
-            Why{' '}
-          </span>
-          <Help hint="This is a hint">This is a hint</Help>
-        </div>
-      )}
+      {distribution && <ANJLockedHelp distribution={distribution} />}
     </div>
   )
+}
+
+const ANJLockedHelp = ({ distribution }) => {
+  const theme = useTheme()
+
+  const { showDistribution, text } = useHintAttributes(distribution)
+
+  return (
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+      `}
+    >
+      <span
+        css={`
+          color: ${theme.help};
+          margin-right: ${0.5 * GU}px;
+        `}
+      >
+        {showDistribution ? 'ANJ Distribution ' : 'why'}
+      </span>
+      <Help hint="This is a hint">
+        {showDistribution ? (
+          <ANJLockedDistribution distribution={distribution} text={text} />
+        ) : (
+          text
+        )}
+      </Help>
+    </div>
+  )
+}
+
+function useHintAttributes(distribution) {
+  const { anjToken, minActiveBalance, penaltyPct } = useCourtConfig()
+
+  return useMemo(() => {
+    if (distribution.inProcess.gt(0)) {
+      return {
+        showDistribution: !!distribution.lockedPerDispute, // If juror has  ANJ locked in disputes, we'll show distribution
+        text:
+          'When deactivating ANJ, this action won’t happen immediately. It must go through a deactivation period that lasts until the next Court term begins.',
+      }
+    }
+
+    const { lockedPerDispute } = distribution
+
+    const onlyOneDispute = lockedPerDispute.length === 1
+    const isJurorDraftedMultipleTimesSameDispute = lockedPerDispute.some(lock =>
+      lock.weight.gt(1)
+    )
+
+    let text
+    const { decimals, symbol } = anjToken
+    const penaltyPercentage = PCT_BASE.div(penaltyPct)
+    const minActiveBalanceFormatted = formatUnits(minActiveBalance, {
+      digits: decimals,
+    })
+    const minLockedAmountFormatted = formatUnits(
+      minActiveBalance.div(penaltyPercentage),
+      { digits: decimals }
+    )
+
+    if (isJurorDraftedMultipleTimesSameDispute) {
+      text =
+        'The same juror can be drafted multiple times to arbitrate the same dispute for the same round.  When that happens, their voting weight will be proportional to the number of times is drafted, as well as the % of ANJ locked in the Active balance.'
+    } else {
+      text = onlyOneDispute
+        ? `A portion of your active ANJ will be locked until the final ruling is confirmed. The exact locked amount corresponds to the ${penaltyPercentage}% of the minimum active balance for each time you get drafted. The minimum active balance is currently ${minActiveBalanceFormatted} ${symbol}, therefore the amount locked would be ${minLockedAmountFormatted} ANJ.`
+        : ''
+    }
+
+    return {
+      text,
+      showDistribution:
+        !onlyOneDispute || isJurorDraftedMultipleTimesSameDispute,
+    }
+  }, [anjToken, distribution, minActiveBalance, penaltyPct])
 }
 
 export default Balance

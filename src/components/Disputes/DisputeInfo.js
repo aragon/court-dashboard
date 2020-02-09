@@ -67,7 +67,7 @@ const DisputeInfo = React.memo(function({
                   value={
                     <DisputeOutcomeText
                       outcome={
-                        dispute.rounds[dispute.lastRoundId].vote.winningOutcome
+                        dispute.rounds[dispute.lastRoundId].vote?.winningOutcome
                       }
                       phase={dispute.phase}
                       disputeEnded={isFinalRulingEnsured}

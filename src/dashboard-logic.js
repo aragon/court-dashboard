@@ -75,8 +75,6 @@ export function useDashboardLogic() {
   const appealCollaterals = useJurorAppealCollaterals()
   const { fetching: fetchingData, errors: errorsFetching } = useDashboardState()
 
-  console.log('balances', balances)
-
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
 

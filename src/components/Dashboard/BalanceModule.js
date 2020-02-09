@@ -6,18 +6,17 @@ import Balance from './Balance'
 import AccountBanner from './AccountBanner'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
+import { useConnectedAccount } from '../../providers/Web3'
 
-// TODO: import icons from aragon-ui when available
 import walletIcon from '../../assets/IconWallet.svg'
-import inactiveANJIcon from '../../assets/IconANJInactive.svg'
 import activeANJIcon from '../../assets/IconANJActive.svg'
+import inactiveANJIcon from '../../assets/IconANJInactive.svg'
 
 import { getAccountStatus } from '../../utils/account-utils'
-import { useConnectedAccount } from '../../providers/Web3'
 import {
   getTotalUnlockedActiveBalance,
+  getTotalLockedANJDistribution,
   getTotalEffectiveInactiveBalance,
-  getTotalLockedActiveBalance,
 } from '../../utils/balance-utils'
 
 const BalanceModule = React.memo(
@@ -39,13 +38,10 @@ const BalanceModule = React.memo(
 
     const { walletBalance, activeBalance, inactiveBalance } = balances || {}
 
+    const lockedBalanceDistribution =
+      balances && getTotalLockedANJDistribution(balances)
     const unlockedActiveBalance =
       balances && getTotalUnlockedActiveBalance(balances)
-    const lockedActiveBalance =
-      balances && getTotalLockedActiveBalance(balances)
-
-    console.log('lockedActiveBalance', lockedActiveBalance)
-
     const effectiveInactiveBalance =
       balances && getTotalEffectiveInactiveBalance(balances)
 
@@ -120,6 +116,7 @@ const BalanceModule = React.memo(
                     { label: 'Deactivate', onClick: onRequestDeactivate },
                   ]}
                   activity={activeBalance && activeBalance.latestMovement}
+                  distribution={lockedBalanceDistribution}
                   loading={loading}
                 />
               </Box>
