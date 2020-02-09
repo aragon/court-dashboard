@@ -286,7 +286,7 @@ function useHintAttributes(distribution) {
       return {
         showDistribution: !!distribution.lockedPerDispute, // If juror has  ANJ locked in disputes, we'll show distribution
         text:
-          'When deactivating ANJ, this action won’t happen immediately. It must go through a deactivation period that lasts until the next Court term begins.',
+          'Deactivating ANJ does not happen immediately and requires one term before it can be processed.',
       }
     }
 
@@ -310,10 +310,10 @@ function useHintAttributes(distribution) {
 
     if (isJurorDraftedMultipleTimesSameDispute) {
       text =
-        'The same juror can be drafted multiple times to arbitrate the same dispute for the same round.  When that happens, their voting weight will be proportional to the number of times is drafted, as well as the % of ANJ locked in the Active balance.'
+        'The same juror can be drafted multiple times to arbitrate the same dispute for the same round.  When that happens, their voting weight will be proportional to the number of times they are drafted, as well as the % of ANJ locked in the Active balance.'
     } else {
       text = onlyOneDispute
-        ? `A portion of your active ANJ will be locked until the final ruling is confirmed. The exact locked amount corresponds to the ${penaltyPercentage}% of the minimum active balance for each time you get drafted. The minimum active balance is currently ${minActiveBalanceFormatted} ${symbol}, therefore the amount locked would be ${minLockedAmountFormatted} ANJ.`
+        ? `A portion of your active ANJ has been locked because you were drafted in a dispute. This amount will be locked until the dispute has been resolved. The exact locked amount corresponds to the ${penaltyPercentage}% of the minimum active balance for each time you get drafted. The minimum active balance is currently ${minActiveBalanceFormatted} ${symbol}, therefore the amount locked would be ${minLockedAmountFormatted} ANJ.`
         : ''
     }
 

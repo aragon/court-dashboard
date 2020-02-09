@@ -173,7 +173,7 @@ function useBalanceWithMovements(balance, movements, balanceType) {
 
     // Update latest movement if necessary
     if (balanceType === anjBalanceTypes.Active) {
-      if (lockedBalance && lockedBalance.gt(0))
+      if (lockedBalance?.gt(0))
         latestMovement = getUpdatedLockedMovement(lockedBalance, latestMovement)
     }
 

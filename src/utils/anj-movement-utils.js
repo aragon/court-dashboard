@@ -278,10 +278,7 @@ export function getUpdatedLockedMovement(lockedBalance, latestMovement) {
   let newLockedAmount = lockedBalance
 
   // If active balance latest movement is a deactivation process, we must update the amount
-  if (
-    latestMovement &&
-    latestMovement.type === anjMovementTypes.DeactivationProcess
-  ) {
+  if (latestMovement?.type === anjMovementTypes.DeactivationProcess) {
     newLockedAmount = newLockedAmount.add(latestMovement.amount)
   }
 

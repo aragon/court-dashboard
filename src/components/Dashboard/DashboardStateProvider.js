@@ -3,7 +3,7 @@ import { useConnectedAccount } from '../../providers/Web3'
 import {
   useJurorBalancesSubscription,
   useAppealsByUserSubscription,
-  useJurorDraftsNotRewaredSubscription,
+  useJurorDraftsNotRewardedSubscription,
 } from '../../hooks/subscription-hooks'
 
 const DashboardContext = React.createContext()
@@ -51,7 +51,7 @@ const WithSubscription = ({ Provider, connectedAccount, children }) => {
     jurorDrafts,
     fetching: jurorDraftsFetching,
     error: jurorDraftsError,
-  } = useJurorDraftsNotRewaredSubscription(account)
+  } = useJurorDraftsNotRewardedSubscription(account)
 
   const fetching = balancesFetching || appealsFetching || jurorDraftsFetching
   const errors = [...balanceErrors, ...appealErrors, jurorDraftsError]

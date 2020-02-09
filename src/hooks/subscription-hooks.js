@@ -199,7 +199,7 @@ export function useCurrentTermJurorDraftsSubscription(
  * @param {String} jurorId Address of the juror
  * @returns {Object} All `jurorId` drafts not yet rewarded
  */
-export function useJurorDraftsNotRewaredSubscription(jurorId) {
+export function useJurorDraftsNotRewardedSubscription(jurorId) {
   const [{ data, error }] = useSubscription({
     query: JurorDraftsNotRewarded,
     variables: { id: jurorId },
