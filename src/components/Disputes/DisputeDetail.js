@@ -1,14 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import {
-  BackButton,
-  Bar,
-  Box,
-  GU,
-  Header,
-  SidePanel,
-  Split,
-  SyncIndicator,
-} from '@aragon/ui'
+import { BackButton, Bar, Box, GU, Header, SidePanel, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
 
 import DisputeInfo from './DisputeInfo'
@@ -67,7 +58,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   return (
     <React.Fragment>
-      <SyncIndicator visible={disputeFetching} label="Loading dispute…" />
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
