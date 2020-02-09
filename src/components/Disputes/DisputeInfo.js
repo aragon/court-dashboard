@@ -41,7 +41,6 @@ const DisputeInfo = React.memo(function({
   const { phase, status, description, plaintiff, defendant, agreementText } =
     dispute || {}
 
-  // const description = dispute?.description
   const creator = plaintiff || dispute?.subject?.id
 
   const isFinalRulingEnsured =
