@@ -1,40 +1,43 @@
 import React from 'react'
-import { Button, GU, Header, SidePanel, Split } from '@aragon/ui'
-
+import { Button, GU, Header, SidePanel, Split, useLayout } from '@aragon/ui'
 import BalanceModule from './BalanceModule'
-import DashboardStats from './DashboardStats'
-import TaskTable from './TaskTable'
-import { tasks } from '../../mock-data'
+import Tasks from '../Tasks/Tasks'
 import Welcome from './Welcome'
+import ActivateANJ from './panels/ActivateANJ'
+import DeactivateANJ from './panels/DeactivateANJ'
+import WithdrawANJ from './panels/WithdrawANJ'
+import AppealColateralModule from './AppealColateralModule'
+import RewardsModule from './RewardsModule'
 import { DashboardStateProvider } from './DashboardStateProvider'
-
-import ANJIcon from '../../assets/IconANJButton.svg'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 import {
   getRequestModeString,
   useDashboardLogic,
   REQUEST_MODE,
 } from '../../dashboard-logic'
-import ActivateANJ from './panels/ActivateANJ'
-import DeactivateANJ from './panels/DeactivateANJ'
-import WithdrawANJ from './panels/WithdrawANJ'
-
 import {
   getTotalUnlockedActiveBalance,
   getTotalEffectiveInactiveBalance,
 } from '../../utils/balance-utils'
 
+import ANJIcon from '../../assets/IconANJButton.svg'
+
 function Dashboard() {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
   const {
     actions,
+    appealCollaterals,
     balances,
-    fetching,
+    rewards,
+    fetchingData,
     // errorsFetching, //TODO: handle errors
     mode,
     panelState,
     requests,
   } = useDashboardLogic()
+
+  const { name: layout } = useLayout()
+  const oneColumn = layout === 'small' || layout === 'medium'
 
   return (
     <React.Fragment>
@@ -59,10 +62,10 @@ function Dashboard() {
           />
         }
       />
-      {connectedAccount ? (
+      {wallet.account ? (
         <BalanceModule
           balances={balances}
-          loading={fetching}
+          loading={fetchingData}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
           onRequestStakeActivate={requests.stakeActivateANJ}
@@ -72,10 +75,29 @@ function Dashboard() {
         <Welcome />
       )}
 
-      <Split
-        primary={<TaskTable tasks={tasks} />}
-        secondary={<DashboardStats />}
-      />
+      {!wallet.account ? (
+        <Tasks onlyTable />
+      ) : (
+        <Split
+          primary={<Tasks onlyTable />}
+          secondary={
+            <>
+              <RewardsModule
+                rewards={rewards}
+                loading={fetchingData}
+                onSettleReward={actions.settleReward}
+                onSettleAppealDeposit={actions.settleAppealDeposit}
+              />
+              <AppealColateralModule
+                appeals={appealCollaterals}
+                loading={fetchingData}
+              />
+            </>
+          }
+          invert={oneColumn ? 'vertical' : 'horizontal'}
+        />
+      )}
+
       <SidePanel
         title={`${getRequestModeString(mode)} ANJ`}
         opened={panelState.visible}

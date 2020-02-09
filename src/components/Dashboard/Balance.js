@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
+
 import { useSpring, animated } from 'react-spring'
 
 import Loading from './Loading'
@@ -54,7 +55,7 @@ const Balance = React.memo(function Balance({
   const springProps = useSpring({
     to: { opacity: 1 },
     from: { opacity: 0 },
-    delay: 200,
+    delay: 300,
   })
 
   return (

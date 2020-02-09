@@ -1,5 +1,14 @@
 import React, { useMemo } from 'react'
+import styled from 'styled-components'
 import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
+
+import Stepper from '../Stepper'
+import Step from '../Step'
+import DisputeRoundPill from './DisputeRoundPill'
+import DisputeOutcomeText from './DisputeOutcomeText'
+
+import { useCourtConfig } from '../../providers/CourtConfig'
+
 import {
   IconFlag,
   IconFolder,
@@ -8,43 +17,31 @@ import {
   IconRuling,
   IconVoting,
   IconRewards,
+  IconGavelNoFill,
 } from '../../utils/dispute-icons'
-import dayjs from '../../lib/dayjs'
 
+import {
+  Phase as DisputePhase,
+  getPhaseStringForStatus,
+} from '../../types/dispute-status-types'
+import dayjs from '../../lib/dayjs'
 import { dateFormat } from '../../utils/date-utils'
-import Stepper from '../Stepper'
-import Step from '../Step'
-import * as DisputesTypes from '../../types/types'
-import styled from 'styled-components'
-import { useCourtConfig } from '../../providers/CourtConfig'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 
-function DisputeTimeline({ dispute }) {
+const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
+  const theme = useTheme()
+
   const courtConfig = useCourtConfig()
   const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
 
-  const reverseTimeLine = [...disputeTimeLine].reverse().map(item => {
-    if (Array.isArray(item)) {
-      return [...item].reverse().map(roundPhase => {
-        return [...roundPhase].reverse()
-      })
-    }
-    return item
-  })
-
   return (
     <div>
-      <Stepper
-        lineColor="#FFCDC5"
-        lineTop={13}
-        css={`
-          padding-bottom: ${3 * GU}px;
-        `}
-      >
-        {reverseTimeLine.map((item, index) => {
+      <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={12}>
+        {disputeTimeLine.map((item, index) => {
           if (!Array.isArray(item)) {
             return <ItemStep key={index} item={item} index={index} />
           }
+
           return item.map((round, roundIndex) => {
             if (roundIndex === 0) {
               return round.map((roundItem, phaseIndex) => (
@@ -55,6 +52,7 @@ function DisputeTimeline({ dispute }) {
                 />
               ))
             }
+
             return (
               <Step
                 key={roundIndex}
@@ -70,16 +68,25 @@ function DisputeTimeline({ dispute }) {
                         key={roundIndex}
                         items={[
                           [
-                            <span
+                            <div
                               css={`
-                                margin-left: ${GU * 1.5}px;
+                                display: flex;
+                                align-items: center;
                               `}
                             >
-                              <RoundPill roundId={Number(round[0].roundId)} />
-                            </span>,
+                              <img
+                                alt={18}
+                                src={IconGavelNoFill}
+                                css={`
+                                  margin-right: ${1 * GU}px;
+                                `}
+                              />
+                              <DisputeRoundPill roundId={round[0].roundId} />
+                            </div>,
+
                             <Stepper
-                              lineColor="#FFCDC5"
-                              lineTop={13}
+                              lineColor={theme.accent.alpha(0.3)}
+                              lineTop={12}
                               css={`
                                 padding: ${3 * GU}px 0;
                               `}
@@ -107,10 +114,11 @@ function DisputeTimeline({ dispute }) {
       </Stepper>
     </div>
   )
-}
+})
 
 function ItemStep({ item, index, roundStepContainer }) {
   const theme = useTheme()
+
   return (
     <Step
       key={index}
@@ -123,7 +131,7 @@ function ItemStep({ item, index, roundStepContainer }) {
               : '#FFE2D7'};
             border-radius: 80%;
             position: relative;
-            z-index: 2;
+            z-index: 1;
             display: inline-flex;
           `}
         >
@@ -132,14 +140,10 @@ function ItemStep({ item, index, roundStepContainer }) {
       }
       content={
         <div>
-          <div
-            css={`
-              margin-bottom: ${3 * GU}px;
-            `}
-          >
+          <div>
             <div>
               <span css={textStyle('body1')}>
-                {DisputesTypes.getPhaseStringForStatus(item.phase, item.active)}
+                {getPhaseStringForStatus(item.phase, item.active)}
               </span>
             </div>
             <div>
@@ -152,7 +156,10 @@ function ItemStep({ item, index, roundStepContainer }) {
                 <DisplayTime item={item} />
               </span>
             </div>
-            {item.active && <RoundPill roundId={Number(item.roundId)} />}
+            {item.active && <DisputeRoundPill roundId={item.roundId} />}
+            {item.showOutcome && (
+              <Outcome outcome={item.outcome} phase={item.phase} />
+            )}
           </div>
         </div>
       }
@@ -164,33 +171,62 @@ function ItemStep({ item, index, roundStepContainer }) {
   )
 }
 
+function Outcome({ outcome, phase }) {
+  const theme = useTheme()
+  const title =
+    phase && phase === DisputePhase.RevealVote ? 'Jury outcome' : 'Outcome'
+
+  return (
+    <div
+      css={`
+        position: relative;
+      `}
+    >
+      <OutcomePoint />
+      <div
+        css={`
+          margin-top: ${1 * GU}px;
+        `}
+      >
+        <span
+          css={`
+            ${textStyle('body3')}
+            color:${theme.contentSecondary};
+            text-transform: uppercase;
+          `}
+        >
+          {title}
+        </span>
+      </div>
+      <DisputeOutcomeText outcome={outcome} phase={phase} />
+    </div>
+  )
+}
+
 function PhaseIcon({ phase, active }) {
   const icon = useMemo(() => {
-    if (
-      phase === DisputesTypes.Phase.Created ||
-      phase === DisputesTypes.Phase.NotStarted
-    ) {
+    if (phase === DisputePhase.Created || phase === DisputePhase.NotStarted) {
       return IconFlag
     }
-    if (phase === DisputesTypes.Phase.Evidence) {
+    if (phase === DisputePhase.Evidence) {
       return IconFolder
     }
-    if (phase === DisputesTypes.Phase.JuryDrafting) {
+    if (phase === DisputePhase.JuryDrafting) {
       return IconUsers
     }
     if (
-      phase === DisputesTypes.Phase.VotingPeriod ||
-      phase === DisputesTypes.Phase.RevealVote
+      phase === DisputePhase.VotingPeriod ||
+      phase === DisputePhase.RevealVote
     ) {
       return IconVoting
     }
     if (
-      phase === DisputesTypes.Phase.AppealRuling ||
-      phase === DisputesTypes.Phase.ConfirmAppeal
+      phase === DisputePhase.AppealRuling ||
+      phase === DisputePhase.ConfirmAppeal
     ) {
       return IconThinking
     }
-    if (phase === DisputesTypes.Phase.ExecuteRuling) {
+    if (phase === DisputePhase.ExecuteRuling) {
       return IconRuling
     }
     return IconRewards
@@ -207,51 +243,58 @@ function PhaseIcon({ phase, active }) {
   )
 }
 
-function RoundPill({ roundId }) {
-  let label
-
-  if (roundId === 0) {
-    label = 'Round One'
-  }
-  if (roundId === 1) {
-    label = 'Round Two'
-  }
-  if (roundId === 2) {
-    label = 'Round Three'
-  }
-
-  return (
-    <span
-      css={`
-        padding: 1px 16px;
-        border-radius: 100px;
-        background: linear-gradient(
-          13.81deg,
-          rgba(255, 179, 109, 0.3) -0.55%,
-          rgba(255, 136, 136, 0.3) 88.44%
-        );
-        text-transform: uppercase;
-        font-size: 12px;
-        color: #e9756c;
-        margin-top: 2px;
-      `}
-    >
-      {label}
-    </span>
-  )
-}
-
 function DisplayTime({ item }) {
-  const { endTime, active } = item
+  const { endTime, active, phase } = item
   if (active) {
+    if (
+      phase === DisputePhase.ExecuteRuling ||
+      phase === DisputePhase.ClaimRewards ||
+      phase === DisputePhase.JuryDrafting
+    ) {
+      return 'ANY TIME'
+    }
     return <Timer end={dayjs(endTime)} />
   }
   return <>{dateFormat(endTime, 'DD/MM/YY')}</>
 }
 
+function OutcomePoint() {
+  const theme = useTheme()
+
+  return (
+    <div
+      css={`
+        position: absolute;
+        top: 5px;
+        left: -44px;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fef3f1;
+        border-radius: 50%;
+      `}
+    >
+      <div
+        css={`
+          width: 6px;
+          height: 6px;
+          background: ${theme.accent.alpha(0.3)};
+          border-radius: 50%;
+        `}
+      />
+    </div>
+  )
+}
+
 const StyledAccordion = styled.div`
+  padding: 0;
+
   & > div:first-child {
     border-radius: 0px;
+    border-left: 0;
+    border-right: 0;
   }
 `
 

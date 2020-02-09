@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { useCourtClock } from '../providers/CourtClock'
-
 import {
   ANJMovement as anjMovementTypes,
   ANJBalance as anjBalanceTypes,
@@ -12,11 +11,10 @@ import {
   isMovementEffective,
   getTotalNotEffectiveByType,
 } from '../utils/anj-movement-utils'
-
 import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
 import { bigNum } from '../lib/math-utils'
 import { useFirstANJActivation } from './query-hooks'
-import { useConnectedAccount } from '../providers/Web3'
+import { useWallet } from '../providers/Wallet'
 
 export function useANJBalances() {
   const { balances, movements } = useDashboardState()
@@ -140,9 +138,12 @@ function useBalanceWithMovements(balance, movements, balanceType) {
       // If the latest movement for the inactive balance is a deactivation, we must check that the deactivation is effective
       if (latestMovementType === anjMovementTypes.Deactivation) {
         if (!latestMovement.isEffective) {
-          // In case the deactivation is not effective, we'll get the second latest movement for the inactive balance
+          // In case the deactivation is not effective, we'll get the most recent effective movement for the inactive balance
+          // Note that the array is orderer by most recent desc
           if (balanceType === anjBalanceTypes.Inactive) {
-            latestMovement = filteredMovements.shift()
+            latestMovement = filteredMovements.find(
+              movement => movement.isEffective
+            )
           } else {
             // In case the deactivation is not effective, we'll show a deactivation process movement for the active Balance
             // Deactivation is between active and inactive balance so we can make sure that the current balanceType is the active
@@ -168,9 +169,9 @@ function useFilteredMovements(movements, acceptedMovements) {
     if (!movements) {
       return null
     }
-    return movements.filter(movement =>
-      isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
-    )
+    return movements.filter(movement => {
+      return isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
+    })
   }, [acceptedMovements, movements])
 }
 
@@ -197,10 +198,10 @@ function convertMovement(acceptedMovements, movement) {
  * @return {Boolean} true if account's first ANJ activation happened on current term
  */
 export function useJurorFirstTimeANJActivation(options) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
   const { currentTermId } = useCourtClock()
   const firstANJActivation = useFirstANJActivation(
-    connectedAccount.toLowerCase(),
+    wallet.account.toLowerCase(),
     options
   )
 

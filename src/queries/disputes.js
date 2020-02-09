@@ -12,16 +12,8 @@ export const AllDisputes = gql`
       state
       metadata
       createdAt
-      subject {
-        id
-        evidence {
-          id
-          submitter
-          data
-          createdAt
-        }
-      }
       rounds {
+        id
         state
         number
         draftTermId
@@ -37,6 +29,12 @@ export const AllDisputes = gql`
           juror {
             id
           }
+          commitment
+          outcome
+        }
+        vote {
+          id
+          winningOutcome
         }
         appeal {
           id
@@ -56,6 +54,7 @@ export const SingleDispute = gql`
   subscription Dispute($id: ID!) {
     dispute(id: $id) {
       id
+      txHash
       createTermId
       possibleRulings
       finalRuling
@@ -65,14 +64,15 @@ export const SingleDispute = gql`
       createdAt
       subject {
         id
-        evidence {
-          id
-          submitter
-          data
-          createdAt
-        }
+      }
+      evidences {
+        id
+        submitter
+        data
+        createdAt
       }
       rounds {
+        id
         state
         number
         draftTermId
@@ -88,6 +88,13 @@ export const SingleDispute = gql`
           juror {
             id
           }
+          weight
+          commitment
+          outcome
+        }
+        vote {
+          id
+          winningOutcome
         }
         appeal {
           id
@@ -128,15 +135,6 @@ export const JurorDrafts = gql`
             state
             metadata
             createdAt
-            subject {
-              id
-              evidence {
-                id
-                submitter
-                data
-                createdAt
-              }
-            }
             rounds {
               state
               number
