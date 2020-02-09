@@ -94,9 +94,11 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
                 return <NoEvidence />
               }
               return (
+                // TODO- in next PR will get plaintiff and deffendant from the dispute
                 <DisputeEvidences
                   evidences={evidences}
-                  creatorAddress={creatorAddress}
+                  plaintiff={creatorAddress}
+                  defendant=""
                 />
               )
             })()}
