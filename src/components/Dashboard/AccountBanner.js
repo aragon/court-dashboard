@@ -15,7 +15,7 @@ import { getProbabilityText } from '../../utils/account-utils'
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
 import gavelIcon from '../../assets/IconGavel.svg'
-import { useJurorDrafted } from '../../hooks/useJurorDraft'
+import { useJurorDrafted } from '../../hooks/useJurorDrafted'
 import Loading from './Loading'
 
 const getBannerAttributes = (

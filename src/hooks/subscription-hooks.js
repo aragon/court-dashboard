@@ -7,19 +7,17 @@ import { useCourtConfig } from '../providers/CourtConfig'
 import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
-import { JurorRewards } from '../queries/rewards'
 import {
+  JurorDraftsNotRewarded,
   CurrentTermJurorDrafts,
-  SingleDispute,
-  AllDisputes,
-} from '../queries/disputes'
+} from '../queries/jurorDrafts'
+import { SingleDispute, AllDisputes } from '../queries/disputes'
 import { OpenTasks } from '../queries/tasks'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
-import { OUTCOMES } from '../utils/crvoting-utils'
 import { groupMovements } from '../utils/anj-movement-utils'
 
 const NO_AMOUNT = bigNum(0)
@@ -50,6 +48,12 @@ function useJuror(jurorId) {
   return { data, error }
 }
 
+/**
+ * Subscribes to all juror balances as well as to the latest 24h movements
+ * @param {String} jurorId Address of the juror
+ * @returns {Object} Object containing al juror balances (Wallet, Inactive, Active, Locked, Deactivation Process)
+ * and latest 24h movements
+ */
 export function useJurorBalancesSubscription(jurorId) {
   // My wallet balance
   const { data: anjBalanceData, error: anjBalanceError } = useANJBalance(
@@ -101,6 +105,11 @@ export function useJurorBalancesSubscription(jurorId) {
   }
 }
 
+/**
+ * Subscribes to the court configuration data
+ * @param {String} courtAddress Adrress of the court contract
+ * @returns {Object} Court configuration data
+ */
 export function useCourtConfigSubscription(courtAddress) {
   const [result] = useSubscription({
     query: CourtConfig,
@@ -113,7 +122,11 @@ export function useCourtConfigSubscription(courtAddress) {
   return courtConfig
 }
 
-// Single dispute
+/**
+ * Subscribes to the dispute with id == `id`
+ * @param {String} id Id of the dispute
+ * @returns {Object} Dispute by `id`
+ */
 export function useSingleDisputeSubscription(id) {
   const [{ data, error }] = useSubscription({
     query: SingleDispute,
@@ -131,7 +144,10 @@ export function useSingleDisputeSubscription(id) {
   return { dispute, fetching: !data && !error, error }
 }
 
-// All disputes
+/**
+ * Subscribes to all existing disputes on the court
+ * @returns {Object} All disputes
+ */
 export function useDisputesSubscription() {
   const courtConfig = useCourtConfig()
 
@@ -152,15 +168,52 @@ export function useDisputesSubscription() {
   return { disputes, fetching: !data && !error, error }
 }
 
-export function useJurorDraftsSubscription(jurorId, from, pause) {
+/**
+ * Subscribe to all `jurorId` drafts for the current term
+ * @param {String} jurorId Address of the juror
+ * @param {Number} termStartTime Start time of the term inseconds
+ * @param {Boolean} pause Tells whether to pause the subscription or not
+ * @returns {Object} All `jurorId` drafts for the current term
+ */
+export function useCurrentTermJurorDraftsSubscription(
+  jurorId,
+  termStartTime,
+  pause
+) {
   const [result] = useSubscription({
     query: CurrentTermJurorDrafts,
-    variables: { id: jurorId, from },
+    variables: { id: jurorId, from: termStartTime },
     pause,
   })
 
   const { juror } = result.data || {}
   return juror && juror.drafts ? juror.drafts : []
+}
+
+/**
+ * Subscribes to all `jurorId` drafts that are not yet rewarded
+ * @dev This subscription is useful to get all rewards pending for claiming as well
+ * as for the amount of locked ANJ a juror has per dispute
+ * Ideally we would check that the round is not settled but we cannot do nested filters for now
+ *
+ * @param {String} jurorId Address of the juror
+ * @returns {Object} All `jurorId` drafts not yet rewarded
+ */
+export function useJurorDraftsNotRewaredSubscription(jurorId) {
+  const [{ data, error }] = useSubscription({
+    query: JurorDraftsNotRewarded,
+    variables: { id: jurorId },
+  })
+
+  const jurorDrafts = useMemo(() => {
+    if (!data) {
+      return null
+    }
+
+    return data.juror ? data.juror.drafts.map(transformJurorDataAttributes) : []
+  }, [data])
+
+  return { jurorDrafts, fetching: !jurorDrafts && !error, error }
 }
 
 function useAppealsByMaker(jurorId, settled) {
@@ -181,7 +234,14 @@ function useAppealsByTaker(jurorId, settled) {
   return { data, error }
 }
 
-// Since we cannot do or operators on graphql queries, we need to get appeals by taker and maker separately
+/**
+ * Subscribes to all `jurorId` appeal collaterals that are `!settled ? 'not': ''` settled
+ * @dev Since we cannot do or operators on graphql queries, we need to get appeals by taker and maker separately
+ *
+ * @param {String} jurorId Address of the juror
+ * @param {Boolean} settled Tells if appeals should be settled or not
+ * @returns {Object} All current `jurorId` appeal collaterals
+ */
 export function useAppealsByUserSubscription(jurorId, settled) {
   const {
     data: makerAppealsData,
@@ -220,24 +280,4 @@ export function useTasksSubscription() {
   const tasks = data?.adjudicationRounds || null
 
   return { tasks, fetching: !data && !error, error }
-}
-
-export function useJurorRewardsSubscription(jurorId) {
-  // Ideally we would check that the round is not settled
-  // but since we cannot do nested filters we at least can
-  // check that the juror has voted in the round and the vote hasn't been leaked (outcome > 1)
-  const [{ data, error }] = useSubscription({
-    query: JurorRewards,
-    variables: { id: jurorId, minOutcome: OUTCOMES.Refused },
-  })
-
-  const jurorDrafts = useMemo(() => {
-    if (!data) {
-      return null
-    }
-
-    return data.juror ? data.juror.drafts.map(transformJurorDataAttributes) : []
-  }, [data])
-
-  return { jurorDrafts, fetching: !jurorDrafts && !error, error }
 }

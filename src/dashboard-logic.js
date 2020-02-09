@@ -69,17 +69,18 @@ export function useDashboardLogic() {
     withdrawANJ,
   } = useANJActions()
 
-  const { settleReward, settleAppealDeposit } = useRewardActions()
-
-  const { fetching: fetchingData, errors: errorsFetching } = useDashboardState()
-  const appealCollaterals = useJurorAppealCollaterals()
+  const panelState = useSidePanel()
   const balances = useANJBalances()
   const rewards = useJurorRewards()
+  const appealCollaterals = useJurorAppealCollaterals()
+  const { fetching: fetchingData, errors: errorsFetching } = useDashboardState()
 
-  const panelState = useSidePanel()
+  console.log('balances', balances)
+
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
 
+  const { settleReward, settleAppealDeposit } = useRewardActions()
   const actions = {
     activateANJ:
       mode === REQUEST_MODE.STAKE_ACTIVATE ? stakeActivateANJ : activateANJ,
