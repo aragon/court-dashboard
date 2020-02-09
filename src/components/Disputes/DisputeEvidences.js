@@ -22,6 +22,7 @@ const DisputeEvidences = React.memo(function DisputeEvidences({
 }) {
   const evidenceProcessed = useEvidences(evidences)
   const evidencesFetching = evidenceProcessed.length < evidences.length
+  console.log('calling dispute evidences')
 
   return (
     <React.Fragment>
