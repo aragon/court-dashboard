@@ -25,6 +25,7 @@ import iconCourt from '../../assets/courtIcon.svg'
 import { addressesEqual } from '../../lib/web3-utils'
 import DisputeRoundPill from './DisputeRoundPill'
 import DisputeOutcomeText from './DisputeOutcomeText'
+import { Link } from 'react-router-dom'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -37,10 +38,11 @@ const DisputeInfo = React.memo(function({
   onRequestAppeal,
   onExecuteRuling,
 }) {
-  const { phase, status } = dispute || {}
+  const { phase, status, description, plaintiff, defendant, agreementText } =
+    dispute || {}
 
-  const description = dispute && dispute.metadata
-  const creatorAddress = dispute && dispute.subject && dispute.subject.id
+  // const description = dispute?.description
+  const creator = plaintiff || dispute?.subject?.id
 
   const isFinalRulingEnsured =
     phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
@@ -82,9 +84,16 @@ const DisputeInfo = React.memo(function({
             )}
             <Row>
               <Field label="Description" value={description} />
-              {creatorAddress && (
-                <Field label="Plaintiff" value={creatorAddress} />
+              {creator && <Field label="Plaintiff" value={creator} />}
+            </Row>
+            <Row>
+              {agreementText && (
+                <Field
+                  label="Link to agreement"
+                  value={<Link href={agreementText}>{agreementText}</Link>}
+                />
               )}
+              {defendant && <Field label="Defendant" value={defendant} />}
             </Row>
           </>
         )}
