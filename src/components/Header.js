@@ -30,7 +30,7 @@ const Header = React.memo(function Header() {
         <img
           alt=""
           src={headerLogoSvg}
-          height={6 * GU}
+          width={4 * GU}
           css={`
             margin-right: ${1 * GU}px;
           `}
