@@ -12,6 +12,7 @@ import AppealPanel from './panels/AppealPanel'
 
 import { toDate } from '../../lib/web3-utils'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
+import { utils as EthersUtils } from 'ethers'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
@@ -35,6 +36,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
       (evidenceList || []).map(evidence => ({
         ...evidence,
         createdAt: toDate(evidence.createdAt),
+        data: EthersUtils.toUtf8String(evidence.data),
       })),
     [evidenceList]
   )
