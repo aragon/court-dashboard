@@ -1,4 +1,8 @@
 {
+  "version": 2,
+  "public": true,
+  "scope": "aragon",
+  "alias": "court-rinkeby.aragon.org",
   "build": {
     "env": {
       "REACT_APP_SENTRY_DSN": "@court-dashboard-sentry-dsn"
