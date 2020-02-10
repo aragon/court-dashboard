@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useWallet } from 'use-wallet'
-import { Button, GU, springs } from '@aragon/ui'
+import { Button, GU, IconConnect, springs } from '@aragon/ui'
 import { Transition, animated } from 'react-spring/renderprops'
 import { shortenAddress, getUseWalletProviders } from '../../lib/web3-utils'
 import AccountButton from './AccountButton'
@@ -157,7 +157,11 @@ function Account() {
           onClick={toggle}
         />
       ) : (
-        <Button label="Connect account" onClick={toggle} />
+        <Button
+          icon={<IconConnect />}
+          label="Enable account"
+          onClick={toggle}
+        />
       )}
       <AccountPopover
         animateHeight={animate}
