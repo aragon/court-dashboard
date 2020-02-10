@@ -45,6 +45,8 @@ const DisputeInfo = React.memo(function({
   const isFinalRulingEnsured =
     phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
 
+  const lastRound = dispute?.rounds[dispute.lastRoundId]
+
   return (
     <Box>
       <section
@@ -67,7 +69,8 @@ const DisputeInfo = React.memo(function({
                   value={
                     <DisputeOutcomeText
                       outcome={
-                        dispute.rounds[dispute.lastRoundId].vote?.winningOutcome
+                        lastRound.appeal?.appealedRuling ||
+                        lastRound.vote?.winningOutcome
                       }
                       phase={dispute.phase}
                       disputeEnded={isFinalRulingEnsured}

@@ -32,7 +32,7 @@ export default function Welcome() {
             margin-bottom: ${1 * GU}px;
           `}
         >
-          Welcome to the Aragon Court
+          Welcome to Aragon Court
         </h1>
         <p
           css={`

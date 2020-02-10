@@ -150,7 +150,7 @@ const Balance = React.memo(function Balance({
                 distribution={distribution}
               />
             ) : (
-              <span>No recent 24h activity</span>
+              <span>No activity in the last 24h</span>
             )}
           </div>
 
