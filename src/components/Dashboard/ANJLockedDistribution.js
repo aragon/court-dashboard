@@ -73,7 +73,7 @@ function Row({ label, isLabelLink, amount, symbol, weight }) {
         align-items: center;
         justify-content: space-between;
 
-        ${textStyle('body2')}
+        ${textStyle('body2')};
 
         margin-bottom: ${1 * GU}px;
 
