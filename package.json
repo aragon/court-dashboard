@@ -37,6 +37,7 @@
     "build:mainnet": "REACT_APP_CHAIN_ID=1 npm run build",
     "build:ropsten": "REACT_APP_CHAIN_ID=3 npm run build",
     "build:rinkeby": "REACT_APP_CHAIN_ID=4 npm run build",
+    "lint": "eslint ./src",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "optimize": "npm run optimize:svg",

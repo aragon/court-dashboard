@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
-import ANJIcon from '../../assets/IconANJButton.svg'
-// import TaskBox from './TasksBox'
-import TaskTable from './TasksTable'
+import { GU, Tabs, Tag } from '@aragon/ui'
+
 import NoTasks from './NoTasks'
 import NoMyTasks from './NoMyTasks'
+import TaskTable from './TasksTable'
 import TasksLoading from '../Loading'
+import TitleHeader from '../TitleHeader'
 import ErrorLoading from '../ErrorLoading'
 import { useWallet } from '../../providers/Wallet'
 import useFilteredTasks from '../../hooks/useFilteredTasks'
@@ -56,37 +56,7 @@ const Tasks = React.memo(({ onlyTable }) => {
         padding-bottom: ${3 * GU}px;
       `}
     >
-      {!onlyTable && (
-        <Header
-          primary="Tasks"
-          secondary={
-            <Button
-              icon={
-                <div
-                  css={`
-                    display: flex;
-                    height: ${GU * 3}px;
-                    width: ${GU * 3}px;
-                    margin-right: -6px;
-                  `}
-                >
-                  <img
-                    src={ANJIcon}
-                    css={`
-                      margin: auto;
-                      width: 14px;
-                      height: 16px;
-                    `}
-                  />
-                </div>
-              }
-              label="Buy ANJ"
-              display="all"
-              mode="strong"
-            />
-          }
-        />
-      )}
+      {!onlyTable && <TitleHeader title="Tasks" />}
       {/* Commented since we are not launching V1 with this component
       <TaskBox
         openTasks={openTasks}

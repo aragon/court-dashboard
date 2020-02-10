@@ -289,7 +289,7 @@ const ANJLockedMessage = ({ finalRulingConfirmed }) => {
       result={`will remain locked until ${
         finalRulingConfirmed
           ? 'penalties are settled'
-          : 'final ruling is confirmed'
+          : 'the dispute has been resolved'
       }. `}
     />
   )

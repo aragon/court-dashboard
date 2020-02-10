@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react'
-import { Button, GU, Header, Tabs, Tag } from '@aragon/ui'
+import { GU, Tabs, Tag } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
+
 import DisputeList from './DisputeList'
+import TitleHeader from '../TitleHeader'
 import useDisputes from '../../hooks/useDisputes'
 import { useJurorDraftQuery } from '../../hooks/query-hooks'
 import { useWallet } from '../../providers/Wallet'
-
-import ANJIcon from '../../assets/IconANJButton.svg'
 
 function Disputes() {
   const wallet = useWallet()
@@ -32,35 +32,7 @@ function Disputes() {
 
   return (
     <>
-      <Header
-        primary="Disputes"
-        secondary={
-          <Button
-            icon={
-              <div
-                css={`
-                  display: flex;
-                  height: ${GU * 3}px;
-                  width: ${GU * 3}px;
-                  margin-right: -6px;
-                `}
-              >
-                <img
-                  src={ANJIcon}
-                  css={`
-                    margin: auto;
-                    width: 14px;
-                    height: 16px;
-                  `}
-                />
-              </div>
-            }
-            label="Buy ANJ"
-            display="all"
-            mode="strong"
-          />
-        }
-      />
+      <TitleHeader title="Disputes" />
       <div>
         <Tabs
           items={[

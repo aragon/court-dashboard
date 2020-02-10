@@ -149,7 +149,7 @@ function ItemStep({ item, index, roundStepContainer }) {
             <div>
               <span
                 css={`
-                  color: ${theme.contentSecondary};
+                  color: ${theme.surfaceContentSecondary};
                   opacity: 0.6;
                 `}
               >
@@ -191,7 +191,7 @@ function Outcome({ outcome, phase }) {
         <span
           css={`
             ${textStyle('body3')}
-            color:${theme.contentSecondary};
+            color:${theme.surfaceContentSecondary};
             text-transform: uppercase;
           `}
         >
@@ -295,6 +295,11 @@ const StyledAccordion = styled.div`
     border-radius: 0px;
     border-left: 0;
     border-right: 0;
+  }
+
+  &::after {
+    height: 0px !important;
+    width: 0px !important;
   }
 `
 
