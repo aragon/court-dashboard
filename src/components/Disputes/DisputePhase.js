@@ -72,7 +72,7 @@ function DisplayTime({ phase, nextTransition }) {
       <div>
         <span
           css={`
-            color: ${theme.contentSecondary};
+            color: ${theme.surfaceContentSecondary};
             opacity: 0.6;
           `}
         >

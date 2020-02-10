@@ -196,8 +196,8 @@ const BannerWithProbability = ({ activeBalance }) => {
         to be drafted
       </span>
       <Help hint="How is the probability calculated?">
-        Probability of being drafted depends on the total ANJ you have activated
-        and the total ANJ activated for a given term
+        The probability of being drafted is calculated dividing your active ANJ
+        balance by the total active ANJ in the Court during the current term.
       </Help>
     </div>
   )

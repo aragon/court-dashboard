@@ -31,7 +31,7 @@ function AccountBannerInfo({ title, titleColor = '', paragraph, showTimer }) {
         </span>
         <span
           css={`
-            color: ${theme.gray};
+            color: ${theme.surfaceContentSecondary};
             display: block;
           `}
         >

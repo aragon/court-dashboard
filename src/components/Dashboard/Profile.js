@@ -23,7 +23,7 @@ const getProfileAttributes = (status, theme) => {
     return {
       background: 'linear-gradient(208deg, #FFFAF1 -3%, #FFEBEB 216%)',
       primaryColor: theme.content,
-      secondaryColor: theme.gray,
+      secondaryColor: theme.contentSecondary,
       statusLabel: 'INACTIVE JUROR',
       icon: inactiveJurorIcon,
     }
@@ -31,7 +31,7 @@ const getProfileAttributes = (status, theme) => {
   return {
     background: '#F0F2F7',
     primaryColor: theme.content,
-    secondaryColor: theme.gray,
+    secondaryColor: theme.contentSecondary,
     statusLabel: 'ACCOUNT',
   }
 }

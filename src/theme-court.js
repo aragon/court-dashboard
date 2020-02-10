@@ -15,7 +15,4 @@ export default {
   tagIndicatorContent: '#CD625C',
 
   surfaceOpened: '#FF8D86',
-
-  gray: '#9096B6',
-  red: '#E9756C',
 }

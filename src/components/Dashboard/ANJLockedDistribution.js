@@ -22,10 +22,10 @@ function ANJLockedDistribution({ distribution, text }) {
     >
       <h3
         css={`
-      ${textStyle('label2')}
-      color: ${theme.contentSecondary};
-      margin-bottom: ${2 * GU}px;
-    `}
+          ${textStyle('label2')}
+          color: ${theme.surfaceContentSecondary};
+          margin-bottom: ${2 * GU}px;
+        `}
       >
         Locked {symbol} Distribution
       </h3>
@@ -87,7 +87,7 @@ const Row = ({ label, isLabelLink, amount, symbol, weight }) => {
       ) : (
         <span
           css={`
-            color: ${theme.gray};
+            color: ${theme.surfaceContentSecondary};
           `}
         >
           {label}

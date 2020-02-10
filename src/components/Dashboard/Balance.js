@@ -99,7 +99,7 @@ const Balance = React.memo(function Balance({
               <span
                 css={`      
                 ${textStyle('body2')}
-                color: ${theme.gray};
+                color: ${theme.surfaceContentSecondary};
                 display:block;
               `}
               >
@@ -119,7 +119,7 @@ const Balance = React.memo(function Balance({
               <span
                 css={`
                 ${textStyle('body4')}
-                color: ${theme.gray};
+                color: ${theme.surfaceContentSecondary};
                 display:block;
               `}
               >
@@ -140,7 +140,7 @@ const Balance = React.memo(function Balance({
           <div
             css={`
               margin: ${2 * GU}px 0;
-              color: ${theme.contentSecondary};
+              color: ${theme.surfaceContentSecondary};
             `}
           >
             {activity ? (
@@ -192,7 +192,7 @@ const LatestActivity = ({ activity, distribution }) => {
     activity.direction === movementDirection.Incoming ||
     activity.direction === movementDirection.Outgoing
 
-  let color = theme.gray
+  let color = theme.contentSecondary
   // If sign shouldn't be displayed it means it's a Locked movement
   if (displaySign) color = isIncoming ? theme.positive : theme.negative
 
@@ -250,7 +250,14 @@ const LatestActivity = ({ activity, distribution }) => {
 const ANJLockedHelp = ({ distribution }) => {
   const theme = useTheme()
 
-  const { showDistribution, text } = useHintAttributes(distribution)
+  const { showDistribution, text } = useHelpAttributes(distribution)
+
+  let hintText = "What's my ANJ distribution"
+  if (!showDistribution) {
+    hintText = distribution.inProcess.gt(0)
+      ? 'Why is my ANJ being deactivated'
+      : 'Why is my balance locked'
+  }
 
   return (
     <div
@@ -265,9 +272,9 @@ const ANJLockedHelp = ({ distribution }) => {
           margin-right: ${0.5 * GU}px;
         `}
       >
-        {showDistribution ? 'ANJ Distribution ' : 'why'}
+        {showDistribution ? 'ANJ Distribution ' : 'Why'}
       </span>
-      <Help hint="This is a hint">
+      <Help hint={hintText}>
         {showDistribution ? (
           <ANJLockedDistribution distribution={distribution} text={text} />
         ) : (
@@ -278,7 +285,7 @@ const ANJLockedHelp = ({ distribution }) => {
   )
 }
 
-function useHintAttributes(distribution) {
+function useHelpAttributes(distribution) {
   const { anjToken, minActiveBalance, penaltyPct } = useCourtConfig()
 
   return useMemo(() => {
