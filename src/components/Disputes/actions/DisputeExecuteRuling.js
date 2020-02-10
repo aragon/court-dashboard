@@ -1,8 +1,10 @@
 import React from 'react'
 import { Button, GU, Info, useTheme } from '@aragon/ui'
+import { useWallet } from '../../../providers/Wallet'
 
 function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
   const theme = useTheme()
+  const wallet = useWallet()
 
   const handleSubmit = async event => {
     event.preventDefault()
@@ -24,7 +26,7 @@ function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
           margin-bottom: ${1.5 * GU}px;
         `}
       >
-        <Button type="submit" mode="strong" wide>
+        <Button type="submit" mode="strong" wide disabled={!wallet.account}>
           Execute ruling
         </Button>
       </div>
