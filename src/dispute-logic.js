@@ -72,7 +72,7 @@ export function useDisputeLogic(disputeId) {
   }
 }
 
-function processDisputeData(dispute) {
+export function processDisputeData(dispute) {
   if (!dispute?.metadata) {
     return { ...dispute }
   }
