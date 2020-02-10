@@ -112,7 +112,8 @@ class ActivityProviderBase extends React.Component {
     })
   }
 
-  addTransactionActivity = (transaction, description = '') => {
+  addTransactionActivity = async (transaction, description = '') => {
+    const tx = await transaction
     this.setState({
       activities: this._storedList.add({
         createdAt: Date.now(),
@@ -125,6 +126,7 @@ class ActivityProviderBase extends React.Component {
         type: ACTIVITY_TYPE_TRANSACTION,
       }),
     })
+    return tx
   }
 
   remove = index => {
