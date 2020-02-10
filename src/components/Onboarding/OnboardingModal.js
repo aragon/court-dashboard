@@ -16,7 +16,10 @@ const OnboardingModal = React.memo(function OnboardingModal({
   visible,
 }) {
   const content =
-    getNetworkName(env('CHAIN_ID')) === 'mainnet' ? [] : highlights.rinkeby
+    getNetworkName(env('CHAIN_ID')) === 'mainnet'
+      ? highlights.mainnet
+      : highlights.rinkeby
+
   const steps = content.length
   const { step, next, prev, setStep, direction } = useSteps(steps)
 

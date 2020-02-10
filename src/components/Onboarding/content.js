@@ -1,10 +1,27 @@
 import React from 'react'
+import { Link } from '@aragon/ui'
 
 import large1 from './highlights/assets/rinkeby/large/1.png'
 import large2 from './highlights/assets/rinkeby/large/2.png'
 import large3 from './highlights/assets/rinkeby/large/3.png'
 import large4 from './highlights/assets/rinkeby/large/4.png'
 import large5 from './highlights/assets/rinkeby/large/5.png'
+
+import mainnetLarge1 from './highlights/assets/mainnet/large/1.png'
+import mainnetLarge2 from './highlights/assets/mainnet/large/2.png'
+import mainnetLarge3 from './highlights/assets/mainnet/large/3.png'
+import mainnetLarge4 from './highlights/assets/mainnet/large/4.png'
+import mainnetLarge5 from './highlights/assets/mainnet/large/5.png'
+import mainnetLarge6 from './highlights/assets/mainnet/large/6.png'
+import mainnetLarge7 from './highlights/assets/mainnet/large/7.png'
+
+import mainnetSmall1 from './highlights/assets/mainnet/small/1.png'
+import mainnetSmall2 from './highlights/assets/mainnet/small/2.png'
+import mainnetSmall3 from './highlights/assets/mainnet/small/3.png'
+import mainnetSmall4 from './highlights/assets/mainnet/small/4.png'
+import mainnetSmall5 from './highlights/assets/mainnet/small/5.png'
+import mainnetSmall6 from './highlights/assets/mainnet/small/6.png'
+import mainnetSmall7 from './highlights/assets/mainnet/small/7.png'
 
 const highlights = {
   heading: 'Aragon Court',
@@ -136,8 +153,8 @@ highlights.mainnet = [
       ),
     },
     visual: {
-      small: null,
-      large: large1,
+      small: mainnetSmall1,
+      large: mainnetLarge1,
     },
   },
   {
@@ -152,9 +169,13 @@ highlights.mainnet = [
           <span>
             View and manage your ANJ across three balances: Wallet, Inactive,
             and Active. You can read more about these different balances and
-            what they mean in the [Juror Dashboard
-            Guide](https://help.aragon.org/article/41-aragon-court).
+            what they mean in the{' '}
+            <Link href="https://help.aragon.org/article/41-aragon-court">
+              Juror Dashboard Guide
+            </Link>
+            .
           </span>
+          <br />
           <br />
           <span>
             Adjusting your active ANJ balance will affect the indicator that
@@ -164,8 +185,8 @@ highlights.mainnet = [
       ),
     },
     visual: {
-      small: null,
-      large: large2,
+      small: mainnetSmall2,
+      large: mainnetLarge2,
       color: '#F9FAFC',
       buttonColor: '#FF9780',
     },
@@ -178,16 +199,23 @@ highlights.mainnet = [
     description: {
       small: null,
       large: (
-        <span>
-          Once you start exploring, you will find some mock disputes with
-          realistic content that will allow you to become familiar with the
-          functionality of this dashboard.
-        </span>
+        <>
+          <span>
+            ANJ is the native token for Aragon Court and helps ensure
+            particpants are properly motivated to do their jobs well.
+          </span>
+          <br />
+          <br />
+          <span>
+            You can convert ANT, DAI, ETH, or USDC to ANJ using the module at
+            anj.aragon.org or clicking by ‘Buy ANJ.’
+          </span>
+        </>
       ),
     },
     visual: {
-      small: null,
-      large: large3,
+      small: mainnetSmall3,
+      large: mainnetLarge3,
     },
   },
   {
@@ -204,6 +232,7 @@ highlights.mainnet = [
             rewards and avoid penalties.
           </span>
           <br />
+          <br />
           <span>
             Check your pending actions in the Upcoming tasks section so you
             always know what to do.
@@ -212,8 +241,8 @@ highlights.mainnet = [
       ),
     },
     visual: {
-      small: null,
-      large: large4,
+      small: mainnetSmall4,
+      large: mainnetLarge4,
     },
   },
   {
@@ -231,8 +260,8 @@ highlights.mainnet = [
       ),
     },
     visual: {
-      small: null,
-      large: large5,
+      small: mainnetSmall5,
+      large: mainnetLarge5,
     },
   },
   {
@@ -251,8 +280,8 @@ highlights.mainnet = [
       ),
     },
     visual: {
-      small: null,
-      large: large5,
+      small: mainnetSmall6,
+      large: mainnetLarge6,
     },
   },
   {
@@ -270,13 +299,14 @@ highlights.mainnet = [
             drafted or not.
           </span>
           <br />
+          <br />
           <span>Use the Rewards modules to track your earnings over time.</span>
         </>
       ),
     },
     visual: {
-      small: null,
-      large: large5,
+      small: mainnetSmall7,
+      large: mainnetLarge7,
     },
     start: {
       small: null,
