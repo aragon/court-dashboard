@@ -23,6 +23,8 @@ import mainnetSmall5 from './highlights/assets/mainnet/small/5.png'
 import mainnetSmall6 from './highlights/assets/mainnet/small/6.png'
 import mainnetSmall7 from './highlights/assets/mainnet/small/7.png'
 
+const TYPEFORM_LINK = 'https://aragonone.typeform.com/to/g7zncn'
+
 const highlights = {
   heading: 'Aragon Court',
   defaultVisualColor: '#FF9780',
@@ -120,10 +122,17 @@ highlights.rinkeby = [
     description: {
       small: null,
       large: (
-        <span>
-          You will receive email notifications about important Aragon Court
-          announcements, your assigned disputes, and upcoming tasks as a juror.
-        </span>
+        <>
+          <p>
+            If you didn’t receive any Rinkeby ANJ, just complete
+            <Link href={TYPEFORM_LINK}>this form</Link> and we’ll send you some
+            funds swiftly!
+          </p>
+          <p>
+            You’ll also receive notifications about important announcements,
+            your assigned disputes, and upcoming tasks as a juror.
+          </p>
+        </>
       ),
     },
     visual: {
