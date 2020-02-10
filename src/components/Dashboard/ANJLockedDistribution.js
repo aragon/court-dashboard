@@ -63,7 +63,7 @@ function ANJLockedDistribution({ distribution, text }) {
   )
 }
 
-const Row = ({ label, isLabelLink, amount, symbol, weight }) => {
+function Row({ label, isLabelLink, amount, symbol, weight }) {
   const theme = useTheme()
 
   return (
