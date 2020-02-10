@@ -4,10 +4,12 @@ import Profile from './Profile'
 import Balance from './Balance'
 import AccountBanner from './AccountBanner'
 import { useCourtConfig } from '../../providers/CourtConfig'
+
 import { getAccountStatus } from '../../utils/account-utils'
 import { useWallet } from '../../providers/Wallet'
 import {
   getTotalUnlockedActiveBalance,
+  getTotalLockedANJDistribution,
   getTotalEffectiveInactiveBalance,
 } from '../../utils/balance-utils'
 
@@ -35,6 +37,8 @@ const BalanceModule = React.memo(
 
     const { walletBalance, activeBalance, inactiveBalance } = balances || {}
 
+    const lockedBalanceDistribution =
+      balances && getTotalLockedANJDistribution(balances)
     const unlockedActiveBalance =
       balances && getTotalUnlockedActiveBalance(balances)
     const effectiveInactiveBalance =
@@ -111,6 +115,7 @@ const BalanceModule = React.memo(
                     { label: 'Deactivate', onClick: onRequestDeactivate },
                   ]}
                   activity={activeBalance && activeBalance.latestMovement}
+                  distribution={lockedBalanceDistribution}
                   loading={loading}
                 />
               </Box>

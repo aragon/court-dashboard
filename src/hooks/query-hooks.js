@@ -1,6 +1,6 @@
 import { useQuery } from 'urql'
 
-import { JurorDrafts } from '../queries/disputes'
+import { JurorDrafts } from '../queries/jurorDrafts'
 import { FirstANJActivationMovement } from '../queries/balances'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
@@ -24,7 +24,7 @@ export function useJurorDraftQuery(jurorId) {
     : []
 }
 
-export function useFirstANJActivation(jurorId, { pause = false }) {
+export function useFirstANJActivationQuery(jurorId, { pause = false }) {
   const [result] = useQuery({
     query: FirstANJActivationMovement,
     variables: { id: jurorId },

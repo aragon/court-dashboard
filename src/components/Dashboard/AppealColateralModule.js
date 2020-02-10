@@ -48,7 +48,7 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
               <span>
                 <span
                   css={`
-                    color: ${theme.contentSecondary};
+                    color: ${theme.surfaceContentSecondary};
                     margin-right: ${0.5 * GU}px;
                   `}
                 >

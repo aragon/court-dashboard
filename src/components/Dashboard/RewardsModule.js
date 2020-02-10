@@ -222,7 +222,7 @@ const DisputesFees = ({
           <h3
             css={`
               ${textStyle('label1')}
-              color: ${theme.contentSecondary};
+              color: ${theme.surfaceContentSecondary};
               margin-bottom: ${1 * GU}px;
             `}
           >
@@ -253,7 +253,7 @@ const DisputesFeeDistribution = ({ totalDisputesFees, symbol, decimals }) => {
       <h3
         css={`
           ${textStyle('label2')}
-          color: ${theme.contentSecondary};
+          color: ${theme.surfaceContentSecondary};
           margin-bottom: ${2 * GU}px;
         `}
       >
