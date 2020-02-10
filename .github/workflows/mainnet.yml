@@ -1,0 +1,24 @@
+name: Mainnet deployment
+
+on:
+  push:
+    branches:
+      -  development
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10
+    - name: npm install
+      run: npm install
+    - name: npm lint
+      run: npm run lint
+    - name: now
+      run: now -A now-mainnet.json --prod --token=${{ secrets.ZEIT_TOKEN }}
+    env:
+      CI: true
