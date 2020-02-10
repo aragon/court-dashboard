@@ -22,7 +22,7 @@ import { bigNum } from '../lib/math-utils'
 import { retryMax } from '../utils/retry-max'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 1200000 // Should be relative to every tx ?
+const GAS_LIMIT = 325000 // Should be relative to every tx ?
 
 // ANJ contract
 function useANJTokenContract() {
