@@ -5,6 +5,9 @@ export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
 export const DEFAULT_LOCAL_CHAIN = 'rpc'
 
+const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
+const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
+
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
 }
@@ -99,7 +102,7 @@ export function shortenAddress(address, charsLength = 4) {
   )
 }
 
-export function getNetworkName(chainId) {
+export function getNetworkType(chainId = env('CHAIN_ID')) {
   chainId = String(chainId)
 
   if (chainId === '1') return 'mainnet'
@@ -110,7 +113,7 @@ export function getNetworkName(chainId) {
 }
 
 export function isLocalOrUnknownNetwork(chainId) {
-  return getNetworkName(chainId) === DEFAULT_LOCAL_CHAIN
+  return getNetworkType(chainId) === DEFAULT_LOCAL_CHAIN
 }
 
 export function hexToAscii(hexx) {
@@ -131,4 +134,18 @@ export function toDate(evmTimestamp) {
       .replace(/-/g, '/')
       .replace('T', ' ') + ' UTC'
   )
+}
+
+// Detect Ethereum addresses in a string and transform each part.
+//
+// `callback` is called on every part with two params:
+//   - The string of the current part.
+//   - A boolean indicating if it is an address.
+//
+export function transformAddresses(str, callback) {
+  return str
+    .split(ETH_ADDRESS_SPLIT_REGEX)
+    .map((part, index) =>
+      callback(part, ETH_ADDRESS_TEST_REGEX.test(part), index)
+    )
 }

@@ -1,6 +1,6 @@
 import environment from './environment'
 
-import { isLocalOrUnknownNetwork, getNetworkName } from './lib/web3-utils'
+import { isLocalOrUnknownNetwork, getNetworkType } from './lib/web3-utils'
 
 const CHAIN_ID = environment('CHAIN_ID')
 
@@ -21,7 +21,7 @@ function getAPIBase() {
 
 export default function endpoints() {
   const [API_BASE_HTTP, API_BASE_WS] = getAPIBase()
-  const networkName = getNetworkName(CHAIN_ID)
+  const networkName = getNetworkType(CHAIN_ID)
 
   const API_PATH = `${GRAPH_API_PATH}-${networkName}`
 

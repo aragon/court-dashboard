@@ -2,6 +2,7 @@ import React from 'react'
 import { GU, textStyle } from '@aragon/ui'
 import Account from './Account/Account'
 import Clock from './Clock'
+import ActivityButton from './Activity/ActivityButton'
 
 const Header = React.memo(function Header() {
   return (
@@ -15,27 +16,20 @@ const Header = React.memo(function Header() {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 ${2 * GU}px;
+        padding: 0;
       `}
     >
-      <div
+      <h1
         css={`
           display: flex;
           height: 100%;
+          padding-left: ${2 * GU}px;
           align-items: center;
+          ${textStyle('body1')};
         `}
       >
-        <h1
-          css={`
-            display: flex;
-            height: 100%;
-            align-items: center;
-            ${textStyle('body1')};
-          `}
-        >
-          Aragon Court
-        </h1>
-      </div>
+        Aragon Court
+      </h1>
 
       <div
         css={`
@@ -47,7 +41,24 @@ const Header = React.memo(function Header() {
         <Clock />
       </div>
 
-      <Account />
+      <div
+        css={`
+          flex-grow: 0;
+          display: flex;
+          height: 100%;
+        `}
+      >
+        <Account />
+        <div
+          css={`
+            display: flex;
+            height: 100%;
+            margin-left: ${2 * GU}px;
+          `}
+        >
+          <ActivityButton />
+        </div>
+      </div>
     </header>
   )
 })

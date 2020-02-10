@@ -1,16 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
-
 import aragonCourtAbi from '../abi/AragonCourt.json'
 import jurorRegistryAbi from '../abi/JurorRegistry.json'
 import tokenAbi from '../abi/ERC20.json'
 import disputeManagerAbi from '../abi/DisputeManager.json'
 import votingAbi from '../abi/CRVoting.json'
-
 import { getFunctionSignature } from '../lib/web3-utils'
+import { bigNum, formatUnits } from '../lib/math-utils'
 import {
   hashVote,
   getOutcomeFromCommitment,
@@ -18,8 +16,8 @@ import {
   hashPassword,
 } from '../utils/crvoting-utils'
 import { getModuleAddress } from '../utils/court-utils'
-import { bigNum } from '../lib/math-utils'
 import { retryMax } from '../utils/retry-max'
+import { useActivity } from '../providers/Activity'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 1200000 // Should be relative to every tx ?
@@ -61,6 +59,7 @@ function useCourtContract(moduleType, abi) {
  * @returns {Object} all available functions around ANJ balances
  */
 export function useANJActions() {
+  const { addTransactionActivity } = useActivity()
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
@@ -69,39 +68,62 @@ export function useANJActions() {
 
   // activate ANJ directly from available balance
   const activateANJ = useCallback(
-    amount => {
-      return jurorRegistryContract.activate(amount, { gasLimit: GAS_LIMIT })
+    async amount => {
+      try {
+        const tx = await jurorRegistryContract.activate(amount, {
+          gasLimit: GAS_LIMIT,
+        })
+        addTransactionActivity(tx, `Activate ${String(amount)} ANJ`)
+        return tx
+      } catch (err) {}
     },
-    [jurorRegistryContract]
+    [jurorRegistryContract, addTransactionActivity]
   )
 
   const deactivateANJ = useCallback(
-    amount => {
-      return jurorRegistryContract.deactivate(amount, { gasLimit: GAS_LIMIT })
+    async amount => {
+      try {
+        const tx = jurorRegistryContract.deactivate(amount, {
+          gasLimit: GAS_LIMIT,
+        })
+        addTransactionActivity(tx, `Deactivate ${String(amount)} ANJ`)
+        return tx
+      } catch (err) {}
     },
-    [jurorRegistryContract]
+    [jurorRegistryContract, addTransactionActivity]
   )
 
   // approve, stake and activate ANJ
   const stakeActivateANJ = useCallback(
-    amount => {
-      return anjTokenContract.approveAndCall(
-        jurorRegistryContract.address,
-        amount,
-        ACTIVATE_SELECTOR,
-        { gasLimit: GAS_LIMIT }
-      )
+    async amount => {
+      try {
+        const tx = await anjTokenContract.approveAndCall(
+          jurorRegistryContract.address,
+          amount,
+          ACTIVATE_SELECTOR,
+          { gasLimit: GAS_LIMIT }
+        )
+        addTransactionActivity(
+          tx,
+          `Stake and activate ${formatUnits(amount)} ANJ`
+        )
+        return tx
+      } catch (err) {}
     },
-    [anjTokenContract, jurorRegistryContract]
+    [anjTokenContract, jurorRegistryContract, addTransactionActivity]
   )
 
   const withdrawANJ = useCallback(
-    amount => {
-      return jurorRegistryContract.unstake(amount, '0x', {
-        gasLimit: GAS_LIMIT,
-      })
+    async amount => {
+      try {
+        const tx = jurorRegistryContract.unstake(amount, '0x', {
+          gasLimit: GAS_LIMIT,
+        })
+        addTransactionActivity(tx, `Withdraw ${String(amount)} ANJ`)
+        return tx
+      } catch (err) {}
     },
-    [jurorRegistryContract]
+    [jurorRegistryContract, addTransactionActivity]
   )
 
   return { activateANJ, deactivateANJ, stakeActivateANJ, withdrawANJ }
@@ -112,6 +134,7 @@ export function useANJActions() {
  * @returns {Object} all available functions around a dispute
  */
 export function useDisputeActions() {
+  const { addTransactionActivity } = useActivity()
   const disputeManagerContract = useCourtContract(
     CourtModuleType.DisputeManager,
     disputeManagerAbi
@@ -127,76 +150,140 @@ export function useDisputeActions() {
 
   // Draft jurors
   const draft = useCallback(
-    disputeId => {
-      return disputeManagerContract.draft(disputeId, { gasLimit: GAS_LIMIT })
+    async disputeId => {
+      try {
+        const tx = disputeManagerContract.draft(disputeId, {
+          gasLimit: GAS_LIMIT,
+        })
+        addTransactionActivity(tx, `Draft jurors on dispute #${disputeId}`)
+        return tx
+      } catch (err) {}
     },
-    [disputeManagerContract]
+    [disputeManagerContract, addTransactionActivity]
   )
 
   // Commit
   const commit = useCallback(
-    (disputeId, roundId, commitment, password) => {
+    async (disputeId, roundId, commitment, password) => {
       const voteId = getVoteId(disputeId, roundId)
       const hashedCommitment = hashVote(commitment, password)
 
-      return votingContract.commit(voteId, hashedCommitment)
+      try {
+        const tx = votingContract.commit(voteId, hashedCommitment)
+        addTransactionActivity(
+          tx,
+          `Commit on round ${roundId} of dispute #${disputeId}`
+        )
+        return tx
+      } catch (err) {}
     },
-    [votingContract]
+    [votingContract, addTransactionActivity]
   )
 
   // Reveal
   const reveal = useCallback(
-    (disputeId, roundId, voter, commitment, salt) => {
+    async (disputeId, roundId, voter, commitment, salt) => {
       const voteId = getVoteId(disputeId, roundId)
       const outcome = getOutcomeFromCommitment(commitment, salt)
 
-      return votingContract.reveal(voteId, voter, outcome, hashPassword(salt))
+      try {
+        const tx = votingContract.reveal(
+          voteId,
+          voter,
+          outcome,
+          hashPassword(salt)
+        )
+        addTransactionActivity(
+          tx,
+          `Reveal vote on round ${roundId} of ${voteId}`
+        )
+        return tx
+      } catch (err) {}
     },
-    [votingContract]
+    [votingContract, addTransactionActivity]
   )
 
   // Leak
   const leak = useCallback(
-    (voteId, voter, outcome, salt) => {
-      return votingContract.leak(voteId, voter, outcome, salt)
+    async (voteId, voter, outcome, salt) => {
+      try {
+        const tx = votingContract.leak(voteId, voter, outcome, salt)
+        addTransactionActivity(tx, `Leak vote of ${voter} for vote #${voteId}`)
+        return tx
+      } catch (err) {}
     },
-    [votingContract]
+    [votingContract, addTransactionActivity]
   )
 
   const approveFeeDeposit = useCallback(
-    value => {
-      return feeTokenContract.approve(disputeManagerContract.address, value)
+    async value => {
+      try {
+        const tx = feeTokenContract.approve(
+          disputeManagerContract.address,
+          value
+        )
+        addTransactionActivity(tx, `Approve fee deposit: ${formatUnits(value)}`)
+        return tx
+      } catch (err) {}
     },
-    [disputeManagerContract, feeTokenContract]
+    [disputeManagerContract, feeTokenContract, addTransactionActivity]
   )
 
   // Appeal round of dispute
   const appeal = useCallback(
-    (disputeId, roundId, ruling) => {
-      return disputeManagerContract.createAppeal(disputeId, roundId, ruling, {
-        gasLimit: GAS_LIMIT,
-      })
+    async (disputeId, roundId, ruling) => {
+      try {
+        const tx = disputeManagerContract.createAppeal(
+          disputeId,
+          roundId,
+          ruling,
+          {
+            gasLimit: GAS_LIMIT,
+          }
+        )
+        addTransactionActivity(
+          tx,
+          `Appeal round ${roundId} of dispute #${disputeId}`
+        )
+        return tx
+      } catch (err) {}
     },
     [disputeManagerContract]
   )
 
   // Confirm appeal round of dispute
   const confirmAppeal = useCallback(
-    (disputeId, round, ruling) => {
-      return disputeManagerContract.confirmAppeal(disputeId, round, ruling, {
-        gasLimit: GAS_LIMIT,
-      })
+    async (disputeId, round, ruling) => {
+      try {
+        const tx = disputeManagerContract.confirmAppeal(
+          disputeId,
+          round,
+          ruling,
+          {
+            gasLimit: GAS_LIMIT,
+          }
+        )
+        addTransactionActivity(
+          tx,
+          `Confirm appeal round ${round} of dispute #${disputeId}`
+        )
+        return tx
+      } catch (err) {}
     },
     [disputeManagerContract]
   )
 
   const executeRuling = useCallback(
-    disputeId => {
-      return aragonCourtContract.executeRuling(disputeId, {
-        gasLimit: GAS_LIMIT,
-      })
+    async disputeId => {
+      try {
+        const tx = aragonCourtContract.executeRuling(disputeId, {
+          gasLimit: GAS_LIMIT,
+        })
+        addTransactionActivity(tx, `Execute ruling for dispute #${disputeId}`)
+        return tx
+      } catch (err) {}
     },
-    [aragonCourtContract]
+    [aragonCourtContract, addTransactionActivity]
   )
   return {
     approveFeeDeposit,
