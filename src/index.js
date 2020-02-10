@@ -19,6 +19,7 @@ import { getNetworkName } from './lib/web3-utils'
 const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
 
 const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {
+  reconnect: true,
   reconnectionAttempts: 10,
 })
 
@@ -53,12 +54,11 @@ subscriptionClient.onError(err => {
   const maxReconnectionAttempts = subscriptionClient.reconnectionAttempts
 
   if (sentryEnabled && maxReconnectionAttempts === ++connectionAttempts) {
-    Sentry.captureException(
+    Sentry.captureMessage(
       `Connection error, could not connect to ${err.target.url}`
     )
   }
   console.log('Retrying connection...')
-  subscriptionClient.reconnect = true
 })
 
 ReactDOM.render(
