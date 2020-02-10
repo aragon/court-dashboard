@@ -58,7 +58,7 @@ const getBannerAttributes = (
     title: 'Activate ANJ to be an active juror',
     paragraph: `You must activate at least ${formatUnits(minActiveBalance, {
       digits: decimals,
-    })}  ANJ to be drafted as a juror`,
+    })}  ANJ to participate as a juror`,
   }
 }
 
