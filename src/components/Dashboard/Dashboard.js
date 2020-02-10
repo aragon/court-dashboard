@@ -1,15 +1,18 @@
 import React from 'react'
-import { Button, GU, Header, SidePanel, Split, useLayout } from '@aragon/ui'
-import BalanceModule from './BalanceModule'
-import Tasks from '../Tasks/Tasks'
+import { GU, SidePanel, Split, useLayout } from '@aragon/ui'
+
 import Welcome from './Welcome'
-import ActivateANJ from './panels/ActivateANJ'
-import DeactivateANJ from './panels/DeactivateANJ'
-import WithdrawANJ from './panels/WithdrawANJ'
-import AppealColateralModule from './AppealColateralModule'
+import Tasks from '../Tasks/Tasks'
+import TitleHeader from '../TitleHeader'
+import BalanceModule from './BalanceModule'
 import RewardsModule from './RewardsModule'
-import { DashboardStateProvider } from './DashboardStateProvider'
+import ActivateANJ from './panels/ActivateANJ'
+import WithdrawANJ from './panels/WithdrawANJ'
+import DeactivateANJ from './panels/DeactivateANJ'
+import AppealColateralModule from './AppealColateralModule'
+
 import { useWallet } from '../../providers/Wallet'
+import { DashboardStateProvider } from './DashboardStateProvider'
 import {
   getRequestModeString,
   useDashboardLogic,
@@ -19,8 +22,6 @@ import {
   getTotalUnlockedActiveBalance,
   getTotalEffectiveInactiveBalance,
 } from '../../utils/balance-utils'
-
-import ANJIcon from '../../assets/IconANJButton.svg'
 
 function Dashboard() {
   const wallet = useWallet()
@@ -41,27 +42,7 @@ function Dashboard() {
 
   return (
     <React.Fragment>
-      <Header
-        primary="Dashboard"
-        secondary={
-          <Button
-            icon={
-              <img
-                src={ANJIcon}
-                css={`
-                  width: 14px;
-                  height: 16px;
-                `}
-              />
-            }
-            label="Buy ANJ"
-            mode="strong"
-            display="all"
-            href="https://anj.aragon.org/"
-            target="_blank"
-          />
-        }
-      />
+      <TitleHeader title="Dashboard" onlyTitle={!wallet.account} />
       {wallet.account ? (
         <BalanceModule
           balances={balances}
