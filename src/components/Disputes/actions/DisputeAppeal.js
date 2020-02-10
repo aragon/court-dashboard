@@ -1,8 +1,10 @@
 import React, { useCallback } from 'react'
 import { Button, Info, GU, useTheme } from '@aragon/ui'
+import { useWallet } from '../../../providers/Wallet'
 
 function DisputeAppeal({ onRequestAppeal, confirm }) {
   const theme = useTheme()
+  const wallet = useWallet()
 
   const actionLabel = confirm ? 'Confirm appeal' : 'Appeal Ruling'
 
@@ -19,6 +21,7 @@ function DisputeAppeal({ onRequestAppeal, confirm }) {
         css={`
           margin-bottom: ${1.5 * GU}px;
         `}
+        disabled={!wallet.account}
       >
         {actionLabel}
       </Button>
