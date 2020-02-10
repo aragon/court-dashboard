@@ -166,7 +166,7 @@ highlights.mainnet = [
       small: null,
       large: (
         <>
-          <span>
+          <p>
             View and manage your ANJ across three balances: Wallet, Inactive,
             and Active. You can read more about these different balances and
             what they mean in the{' '}
@@ -174,13 +174,12 @@ highlights.mainnet = [
               Juror Dashboard Guide
             </Link>
             .
-          </span>
-          <br />
-          <br />
-          <span>
+          </p>
+
+          <p>
             Adjusting your active ANJ balance will affect the indicator that
             displays your chance of being drafted, and current draft status.
-          </span>
+          </p>
         </>
       ),
     },
@@ -200,16 +199,14 @@ highlights.mainnet = [
       small: null,
       large: (
         <>
-          <span>
+          <p>
             ANJ is the native token for Aragon Court and helps ensure
             particpants are properly motivated to do their jobs well.
-          </span>
-          <br />
-          <br />
-          <span>
+          </p>
+          <p>
             You can convert ANT, DAI, ETH, or USDC to ANJ using the module at
-            anj.aragon.org or clicking by ‘Buy ANJ.’
-          </span>
+            anj.aragon.org or clicking by "Buy ANJ".
+          </p>
         </>
       ),
     },
@@ -227,16 +224,14 @@ highlights.mainnet = [
       small: null,
       large: (
         <>
-          <span>
+          <p>
             When drafted, you must perform certain actions on time to earn
             rewards and avoid penalties.
-          </span>
-          <br />
-          <br />
-          <span>
+          </p>
+          <p>
             Check your pending actions in the Upcoming tasks section so you
             always know what to do.
-          </span>
+          </p>
         </>
       ),
     },
@@ -293,14 +288,12 @@ highlights.mainnet = [
       small: null,
       large: (
         <>
-          <span>
+          <p>
             Earn Dispute Fees for successfully adjudicating disputes and monthy
             Subscription Fees for simply being an Active juror, whether you are
             drafted or not.
-          </span>
-          <br />
-          <br />
-          <span>Use the Rewards modules to track your earnings over time.</span>
+          </p>
+          <p>Use the Rewards modules to track your earnings over time.</p>
         </>
       ),
     },
