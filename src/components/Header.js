@@ -28,6 +28,7 @@ const Header = React.memo(function Header() {
         `}
       >
         <img
+          alt=""
           src={headerLogoSvg}
           height={6 * GU}
           css={`
