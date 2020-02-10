@@ -22,7 +22,6 @@ import { bigNum } from '../lib/math-utils'
 import { retryMax } from '../utils/retry-max'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 1200000 // Should be relative to every tx ?
 
 // ANJ contract
 function useANJTokenContract() {
@@ -70,14 +69,14 @@ export function useANJActions() {
   // activate ANJ directly from available balance
   const activateANJ = useCallback(
     amount => {
-      return jurorRegistryContract.activate(amount, { gasLimit: GAS_LIMIT })
+      return jurorRegistryContract.activate(amount)
     },
     [jurorRegistryContract]
   )
 
   const deactivateANJ = useCallback(
     amount => {
-      return jurorRegistryContract.deactivate(amount, { gasLimit: GAS_LIMIT })
+      return jurorRegistryContract.deactivate(amount)
     },
     [jurorRegistryContract]
   )
@@ -88,8 +87,7 @@ export function useANJActions() {
       return anjTokenContract.approveAndCall(
         jurorRegistryContract.address,
         amount,
-        ACTIVATE_SELECTOR,
-        { gasLimit: GAS_LIMIT }
+        ACTIVATE_SELECTOR
       )
     },
     [anjTokenContract, jurorRegistryContract]
@@ -97,9 +95,7 @@ export function useANJActions() {
 
   const withdrawANJ = useCallback(
     amount => {
-      return jurorRegistryContract.unstake(amount, '0x', {
-        gasLimit: GAS_LIMIT,
-      })
+      return jurorRegistryContract.unstake(amount, '0x')
     },
     [jurorRegistryContract]
   )
@@ -128,7 +124,7 @@ export function useDisputeActions() {
   // Draft jurors
   const draft = useCallback(
     disputeId => {
-      return disputeManagerContract.draft(disputeId, { gasLimit: GAS_LIMIT })
+      return disputeManagerContract.draft(disputeId)
     },
     [disputeManagerContract]
   )
@@ -173,9 +169,7 @@ export function useDisputeActions() {
   // Appeal round of dispute
   const appeal = useCallback(
     (disputeId, roundId, ruling) => {
-      return disputeManagerContract.createAppeal(disputeId, roundId, ruling, {
-        gasLimit: GAS_LIMIT,
-      })
+      return disputeManagerContract.createAppeal(disputeId, roundId, ruling)
     },
     [disputeManagerContract]
   )
@@ -183,18 +177,14 @@ export function useDisputeActions() {
   // Confirm appeal round of dispute
   const confirmAppeal = useCallback(
     (disputeId, round, ruling) => {
-      return disputeManagerContract.confirmAppeal(disputeId, round, ruling, {
-        gasLimit: GAS_LIMIT,
-      })
+      return disputeManagerContract.confirmAppeal(disputeId, round, ruling)
     },
     [disputeManagerContract]
   )
 
   const executeRuling = useCallback(
     disputeId => {
-      return aragonCourtContract.executeRuling(disputeId, {
-        gasLimit: GAS_LIMIT,
-      })
+      return aragonCourtContract.executeRuling(disputeId)
     },
     [aragonCourtContract]
   )
@@ -218,18 +208,14 @@ export function useRewardActions() {
 
   const settleReward = useCallback(
     (disputeId, roundId, juror) => {
-      return disputeManagerContract.settleReward(disputeId, roundId, juror, {
-        gasLimit: GAS_LIMIT,
-      })
+      return disputeManagerContract.settleReward(disputeId, roundId, juror)
     },
     [disputeManagerContract]
   )
 
   const settleAppealDeposit = useCallback(
     (disputeId, roundId, juror) => {
-      return disputeManagerContract.settleAppealDeposit(disputeId, roundId, {
-        gasLimit: GAS_LIMIT,
-      })
+      return disputeManagerContract.settleAppealDeposit(disputeId, roundId)
     },
     [disputeManagerContract]
   )
