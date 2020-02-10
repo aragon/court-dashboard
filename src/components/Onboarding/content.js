@@ -205,7 +205,7 @@ highlights.mainnet = [
           </p>
           <p>
             You can convert ANT, DAI, ETH, or USDC to ANJ using the module at
-            anj.aragon.org or by clicking "Buy ANJ".
+            anj.aragon.org or by clicking “Buy ANJ”.
           </p>
         </>
       ),
