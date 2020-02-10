@@ -3,6 +3,8 @@ import { GU, textStyle } from '@aragon/ui'
 import Account from './Account/Account'
 import Clock from './Clock'
 
+import headerLogoSvg from '../assets/HeaderLogo.svg'
+
 const Header = React.memo(function Header() {
   return (
     <header
@@ -25,6 +27,13 @@ const Header = React.memo(function Header() {
           align-items: center;
         `}
       >
+        <img
+          src={headerLogoSvg}
+          height={6 * GU}
+          css={`
+            margin-right: ${1 * GU}px;
+          `}
+        />
         <h1
           css={`
             display: flex;
