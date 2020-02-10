@@ -71,7 +71,9 @@ export default function Welcome() {
           <Button
             label="User guide"
             href="https://help.aragon.org/article/41-aragon-court"
-            css="width: 150px;"
+            css={`
+              width: ${19 * GU}px;
+            `}
           />
         </div>
       </div>
