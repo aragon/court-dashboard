@@ -296,6 +296,11 @@ const StyledAccordion = styled.div`
     border-left: 0;
     border-right: 0;
   }
+
+  &::after {
+    height: 0px !important;
+    width: 0px !important;
+  }
 `
 
 export default DisputeTimeline
