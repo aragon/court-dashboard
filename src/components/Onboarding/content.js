@@ -24,6 +24,7 @@ import mainnetSmall6 from './highlights/assets/mainnet/small/6.png'
 import mainnetSmall7 from './highlights/assets/mainnet/small/7.png'
 
 const TYPEFORM_LINK = 'https://aragonone.typeform.com/to/g7zncn'
+const MAIN_COURT_URL = 'https://court.aragon.org'
 
 const highlights = {
   heading: 'Aragon Court',
@@ -41,9 +42,9 @@ highlights.rinkeby = [
       small: null,
       large: (
         <span>
-          This is a preview release of the official Court Dashboard that will
-          launch on Feb 10th. We'd love for you to explore it and tell us what
-          you think!
+          This is a testnet release of the official Court Dashboard at
+          <b /> <Link href={MAIN_COURT_URL}>court.aragon.org</Link>. We'd love
+          for you to explore it and tell us what you think!
         </span>
       ),
     },
