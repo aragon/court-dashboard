@@ -63,7 +63,7 @@ function ANJLockedDistribution({ distribution, text }) {
   )
 }
 
-const Row = ({ label, isLabelLink, amount, symbol, weight }) => {
+function Row({ label, isLabelLink, amount, symbol, weight }) {
   const theme = useTheme()
 
   return (
@@ -73,7 +73,7 @@ const Row = ({ label, isLabelLink, amount, symbol, weight }) => {
         align-items: center;
         justify-content: space-between;
 
-        ${textStyle('body2')}
+        ${textStyle('body2')};
 
         margin-bottom: ${1 * GU}px;
 
