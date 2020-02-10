@@ -184,7 +184,7 @@ const BannerWithProbability = ({ activeBalance }) => {
       `}
     >
       <span css="margin-right: 8px">
-        You'll be drafted, on average
+        You’ll be drafted, on average
         <span
           css={`
             color: ${theme.accent};
