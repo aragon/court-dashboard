@@ -20,7 +20,7 @@ function DisputeRoundPill({ roundId }) {
           ${theme.accentEnd.alpha(0.3)}88%
         );
         ${textStyle('label2')}
-        color: ${theme.red};
+        color: ${theme.accent};
         margin-top: 2px;
       `}
     >
