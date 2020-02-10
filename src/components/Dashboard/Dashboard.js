@@ -122,7 +122,7 @@ function Dashboard() {
 
 function PanelComponent({ mode, actions, balances, ...props }) {
   const { activateANJ, deactivateANJ, withdrawANJ } = actions
-  const { walletBalance, activeBalance, inactiveBalance } = balances
+  const { walletBalance, activeBalance } = balances
 
   const unlockedActiveBalance = getTotalUnlockedActiveBalance(balances)
   const effectiveInactiveBalance = getTotalEffectiveInactiveBalance(balances)
@@ -148,7 +148,7 @@ function PanelComponent({ mode, actions, balances, ...props }) {
       return (
         <ActivateANJ
           activeBalance={activeBalance.amount}
-          inactiveBalance={inactiveBalance.amount}
+          inactiveBalance={effectiveInactiveBalance}
           walletBalance={walletBalance.amount}
           onActivateANJ={activateANJ}
           fromWallet={mode === REQUEST_MODE.STAKE_ACTIVATE}
