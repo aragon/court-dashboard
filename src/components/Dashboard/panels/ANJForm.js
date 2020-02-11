@@ -25,9 +25,23 @@ const ANJForm = React.memo(function ANJForm({
     valueBN: bigNum(0),
     error: null,
   })
-  const { anjToken } = useCourtConfig()
   const theme = useTheme()
+  const { anjToken } = useCourtConfig()
   const inputRef = useSidePanelFocusOnReady()
+
+  const handleEditMode = useCallback(
+    editMode => {
+      setAmount(amount => ({
+        ...amount,
+        value: formatUnits(amount.valueBN, {
+          digits: anjToken.decimals,
+          commas: !editMode,
+          replaceZeroBy: editMode ? '' : '0',
+        }),
+      }))
+    },
+    [anjToken.decimals]
+  )
 
   // Change amount handler
   const handleAmountChange = useCallback(
@@ -56,7 +70,6 @@ const ANJForm = React.memo(function ANJForm({
       ...amount,
       value: formatUnits(maxAmount, {
         digits: anjToken.decimals,
-        commas: false,
         precision: anjToken.decimals,
       }),
       valueBN: maxAmount,
@@ -111,6 +124,8 @@ const ANJForm = React.memo(function ANJForm({
           name="amount"
           wide
           onChange={handleAmountChange}
+          onFocus={() => handleEditMode(true)}
+          onBlur={() => handleEditMode(false)}
           value={amount.value}
           ref={inputRef}
           required
