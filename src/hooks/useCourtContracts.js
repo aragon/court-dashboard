@@ -95,7 +95,7 @@ export function useANJActions() {
         jurorRegistryContract.address,
         amount,
         ACTIVATE_SELECTOR,
-        { gasLimit: ANJ_ACTIONS_GAS_LIMIT }
+        { gasLimit: ANJ_ACTIVATE_GAS_LIMIT }
       )
     },
     [anjTokenContract, jurorRegistryContract]
