@@ -78,14 +78,15 @@ export function useDashboardLogic() {
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
 
-  const { settleReward, settleAppealDeposit } = useRewardActions()
+  const { settleReward, settleAppealDeposit, withdraw } = useRewardActions()
   const actions = {
     activateANJ:
       mode === REQUEST_MODE.STAKE_ACTIVATE ? stakeActivateANJ : activateANJ,
     deactivateANJ,
     withdrawANJ,
-    settleAppealDeposit,
     settleReward,
+    settleAppealDeposit,
+    withdraw,
   }
 
   return {

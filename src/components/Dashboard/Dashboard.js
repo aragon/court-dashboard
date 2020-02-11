@@ -47,10 +47,10 @@ function Dashboard() {
         <BalanceModule
           balances={balances}
           loading={fetchingData}
+          onRequestWithdraw={requests.withdrawANJ}
           onRequestActivate={requests.activateANJ}
           onRequestDeactivate={requests.deactivateANJ}
           onRequestStakeActivate={requests.stakeActivateANJ}
-          onRequestWithdraw={requests.withdrawANJ}
         />
       ) : (
         <Welcome />
@@ -66,6 +66,7 @@ function Dashboard() {
               <RewardsModule
                 rewards={rewards}
                 loading={fetchingData}
+                onWithdraw={actions.withdraw}
                 onSettleReward={actions.settleReward}
                 onSettleAppealDeposit={actions.settleAppealDeposit}
               />
