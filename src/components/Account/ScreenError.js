@@ -14,7 +14,7 @@ function AccountModuleErrorScreen({ error, onBack }) {
     if (error instanceof UnsupportedChainError) {
       return [
         'Wrong network',
-        `Please select to the ${getNetworkName(
+        `Please select the ${getNetworkName(
           env('CHAIN_ID')
         )} network in your wallet and try again.`,
       ]
