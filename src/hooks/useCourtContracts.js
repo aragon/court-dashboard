@@ -23,6 +23,7 @@ import { retryMax } from '../utils/retry-max'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 1200000
+const ANJ_ACTIVATE_GAS_LIMIT = 500000
 const ANJ_ACTIONS_GAS_LIMIT = 325000
 
 // ANJ contract
@@ -72,7 +73,7 @@ export function useANJActions() {
   const activateANJ = useCallback(
     amount => {
       return jurorRegistryContract.activate(amount, {
-        gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+        gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
       })
     },
     [jurorRegistryContract]
