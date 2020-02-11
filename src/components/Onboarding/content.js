@@ -42,9 +42,9 @@ highlights.rinkeby = [
       small: null,
       large: (
         <span>
-          This is a testnet release of the official Court Dashboard at
-          <b /> <Link href={MAIN_COURT_URL}>court.aragon.org</Link>. We'd love
-          for you to explore it and tell us what you think!
+          This is a testnet release of the official Court Dashboard at{' '}
+          <Link href={MAIN_COURT_URL}>court.aragon.org</Link>. We'd love for you
+          to explore it and tell us what you think!
         </span>
       ),
     },
