@@ -28,7 +28,6 @@ function AccountModuleErrorScreen({ error, onBack }) {
   return (
     <section
       ref={elementRef}
-      tabIndex="0"
       css={`
         display: flex;
         flex-direction: column;
