@@ -1,16 +1,29 @@
-import React, { useRef } from 'react'
+import React, { useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { GU, Link, textStyle, useTheme } from '@aragon/ui'
-
+import { UnsupportedChainError } from 'use-wallet'
+import env from '../../environment'
+import { getNetworkName } from '../../lib/web3-utils'
 import connectionError from './assets/connection-error.png'
 
-function AccountModuleErrorScreen({
-  onBack,
-  secondary = 'You can try another Ethereum provider.',
-  title = 'Failed to enable your account',
-}) {
+function AccountModuleErrorScreen({ error, onBack }) {
   const theme = useTheme()
   const elementRef = useRef()
+
+  const [title, secondary] = useMemo(() => {
+    if (error instanceof UnsupportedChainError) {
+      return [
+        'Wrong network',
+        `Please select to the ${getNetworkName(
+          env('CHAIN_ID')
+        )} network in your wallet and try again.`,
+      ]
+    }
+    return [
+      'Failed to enable your account',
+      'You can try another Ethereum wallet.',
+    ]
+  }, [error])
 
   return (
     <section
@@ -73,9 +86,8 @@ function AccountModuleErrorScreen({
 }
 
 AccountModuleErrorScreen.propTypes = {
+  error: PropTypes.instanceOf(Error),
   onBack: PropTypes.func.isRequired,
-  secondary: PropTypes.string,
-  title: PropTypes.string,
 }
 
 export default AccountModuleErrorScreen
