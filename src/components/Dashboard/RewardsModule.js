@@ -51,42 +51,45 @@ const RewardsModule = React.memo(function RewardsModule({
   const handleFormSubmit = async event => {
     event.preventDefault()
 
+    const claimRewards = async () => {
+      if (!rewards) return
+
+      const transactionBag = []
+      try {
+        // Claim all arbitrable fee rewards
+        for (const arbitrableFee of rewards.arbitrableFees) {
+          const { disputeId, rounds } = arbitrableFee
+          for (const roundId of rounds) {
+            transactionBag.push(
+              await onSettleReward(disputeId, roundId, wallet.account)
+            )
+          }
+        }
+
+        // Claim all appeal fee rewards
+        for (const appealFee of rewards.appealFees) {
+          const { disputeId, rounds } = appealFee
+          for (const roundId of rounds) {
+            transactionBag.push(await onSettleAppealDeposit(disputeId, roundId))
+          }
+        }
+
+        await Promise.all(transactionBag.map(tx => tx.wait()))
+
+        const withdrawFromTreasuryTx = await onWithdraw(
+          feeToken.id,
+          wallet.account,
+          totalDisputesFees
+        )
+        await withdrawFromTreasuryTx.wait()
+      } catch (err) {
+        console.log(`Error claiming rewards: ${err}`)
+      }
+    }
+
     if (!rewards) return
 
-    try {
-      // Claim all arbitrable fee rewards
-      const arbitrableTxs = []
-      for (const arbitrableFee of rewards.arbitrableFees) {
-        const { disputeId, rounds } = arbitrableFee
-        for (const roundId of rounds) {
-          arbitrableTxs.push(
-            await onSettleReward(disputeId, roundId, wallet.account)
-          )
-        }
-      }
-
-      await Promise.all(arbitrableTxs.map(tx => tx.wait()))
-
-      // Claim all appeal fee rewards
-      const appealTxs = []
-      for (const appealFee of rewards.appealFees) {
-        const { disputeId, rounds } = appealFee
-        for (const roundId of rounds) {
-          appealTxs.push(await onSettleAppealDeposit(disputeId, roundId))
-        }
-      }
-
-      await Promise.all(appealTxs.map(tx => tx.wait()))
-
-      const withdrawFromTreasuryTx = await onWithdraw(
-        feeToken.id,
-        wallet.account,
-        totalDisputesFees
-      )
-      await withdrawFromTreasuryTx.wait()
-    } catch (err) {
-      console.log(`Error claiming rewards: ${err}`)
-    }
+    claimRewards()
   }
 
   const hasRewardsToClaim = rewards?.rulingFees.gt(0) || totalDisputesFees.gt(0)
