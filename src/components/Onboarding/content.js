@@ -106,7 +106,7 @@ highlights.rinkeby = [
         <span>
           When you vote in favor of the majority ruling, you will be rewarded
           with arbitration fees. Just note that these rewards will be awarded in
-          Rinkeby tokens for the purpose of this test preview.
+          Rinkeby tokens for the purpose of this test version.
         </span>
       ),
     },
@@ -180,7 +180,7 @@ highlights.mainnet = [
             View and manage your ANJ across three balances: Wallet, Inactive,
             and Active. You can read more about these different balances and
             what they mean in the{' '}
-            <Link href="https://help.aragon.org/article/41-aragon-court">
+            <Link href="https://help.aragon.org/article/42-aragon-court-dashboard">
               Juror Dashboard Guide
             </Link>
             .
@@ -188,7 +188,7 @@ highlights.mainnet = [
 
           <p>
             Adjusting your active ANJ balance will affect the indicator that
-            displays your chance of being drafted, and current draft status.
+            displays your chance of being drafted and your current draft status.
           </p>
         </>
       ),
@@ -214,8 +214,9 @@ highlights.mainnet = [
             particpants are properly motivated to do their jobs well.
           </p>
           <p>
-            You can convert ANT, DAI, ETH, or USDC to ANJ using the module at
-            anj.aragon.org or by clicking “Buy ANJ”.
+            You can convert ANT, DAI, ETH, or USDC to ANJ using the module at{' '}
+            <Link href="https://anj.aragon.org/">anj.aragon.org</Link> or by
+            clicking “Buy ANJ”.
           </p>
         </>
       ),
@@ -239,7 +240,7 @@ highlights.mainnet = [
             rewards and avoid penalties.
           </p>
           <p>
-            Check your pending actions in the Upcoming tasks section so you
+            Check your pending actions in the “Upcoming tasks” section so you
             always know what to do.
           </p>
         </>
@@ -259,8 +260,9 @@ highlights.mainnet = [
       small: null,
       large: (
         <span>
-          View all live disputes or only ones your adjudicating. From here you
-          can explore the details, evidence, and timeline for any dispute.
+          View all live disputes or only the ones you are adjudicating. From
+          here you can explore the details, evidence, and timeline for any
+          dispute.
         </span>
       ),
     },
