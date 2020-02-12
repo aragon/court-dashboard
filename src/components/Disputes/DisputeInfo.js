@@ -4,6 +4,7 @@ import {
   Box,
   GU,
   IdentityBadge,
+  Link,
   textStyle,
   TransactionBadge,
   useTheme,
@@ -25,7 +26,6 @@ import iconCourt from '../../assets/courtIcon.svg'
 import { addressesEqual } from '../../lib/web3-utils'
 import DisputeRoundPill from './DisputeRoundPill'
 import DisputeOutcomeText from './DisputeOutcomeText'
-import { Link } from 'react-router-dom'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -63,7 +63,7 @@ const DisputeInfo = React.memo(function({
           <Loading border={false} />
         ) : (
           <>
-            <Row emptyCell={false}>
+            <Row>
               {(() => {
                 if (isFinalRulingEnsured) {
                   return (
@@ -107,7 +107,11 @@ const DisputeInfo = React.memo(function({
                 return agreementText ? (
                   <Field
                     label="Link to agreement"
-                    value={<Link href={agreementText}>{agreementText}</Link>}
+                    value={
+                      <Link external href={agreementText}>
+                        {agreementText}
+                      </Link>
+                    }
                   />
                 ) : (
                   <div />
