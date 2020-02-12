@@ -61,37 +61,57 @@ const DisputeInfo = React.memo(function({
           <Loading border={false} />
         ) : (
           <>
-            {isFinalRulingEnsured && (
-              <Row>
-                <Field
-                  label="Final jury outcome"
-                  value={
-                    <DisputeOutcomeText
-                      outcome={
-                        dispute.rounds[dispute.lastRoundId].vote?.winningOutcome
-                      }
-                      phase={dispute.phase}
-                      disputeEnded={isFinalRulingEnsured}
-                    />
-                  }
-                />
-                <Field
-                  label="Round number"
-                  value={<DisputeRoundPill roundId={dispute.lastRoundId} />}
-                />
-              </Row>
-            )}
-            <Row>
-              <Field label="Description" value={description} />
+            <Row emptyCell={false}>
+              {(() => {
+                if (isFinalRulingEnsured) {
+                  return (
+                    <>
+                      <Field
+                        label="Final jury outcome"
+                        value={
+                          <DisputeOutcomeText
+                            outcome={
+                              dispute.rounds[dispute.lastRoundId].vote
+                                ?.winningOutcome
+                            }
+                            phase={dispute.phase}
+                            disputeEnded={isFinalRulingEnsured}
+                          />
+                        }
+                      />
+                      <Field
+                        label="Round number"
+                        value={
+                          <DisputeRoundPill roundId={dispute.lastRoundId} />
+                        }
+                      />
+                    </>
+                  )
+                }
+                return (
+                  <>
+                    <Field label="Description" value={description} />
+                    <div />
+                  </>
+                )
+              })()}
               {creator && <Field label="Plaintiff" value={creator} />}
             </Row>
             <Row>
-              {agreementText && (
-                <Field
-                  label="Link to agreement"
-                  value={<Link href={agreementText}>{agreementText}</Link>}
-                />
-              )}
+              {(() => {
+                if (isFinalRulingEnsured) {
+                  return <Field label="Description" value={description} />
+                }
+                return agreementText ? (
+                  <Field
+                    label="Link to agreement"
+                    value={<Link href={agreementText}>{agreementText}</Link>}
+                  />
+                ) : (
+                  <div />
+                )
+              })()}
+              <div />
               {defendant && <Field label="Defendant" value={defendant} />}
             </Row>
           </>
@@ -116,6 +136,14 @@ const DisputeInfo = React.memo(function({
   )
 })
 
+// {agreementText ? (
+//   <Field
+//     label="Link to agreement"
+//     value={<Link href={agreementText}>{agreementText}</Link>}
+//   />
+// ) : (
+//   <div />
+// )}
 function DisputeHeader({ id, dispute }) {
   const theme = useTheme()
   const transaction = dispute && dispute.txHash
@@ -219,7 +247,7 @@ function Field({ label, value }) {
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 1fr minmax(250px, auto);
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: ${5 * GU}px;
   margin-bottom: ${2 * GU}px;
 `
