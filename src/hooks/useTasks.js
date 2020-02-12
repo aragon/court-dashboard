@@ -116,7 +116,7 @@ function getDraftStatus(draft, currentPhase) {
     return true
   }
   if (currentPhase === DisputesTypes.Phase.RevealVote) {
-    if (draft.outcome) {
+    if (draft.outcome || !draft.commitment) {
       return false
     }
     return true
