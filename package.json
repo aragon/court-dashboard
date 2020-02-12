@@ -24,6 +24,7 @@
     "react-spring": "^8.0.27",
     "remark": "^10.0.1",
     "remark-react": "^5.0.1",
+    "resolve-pathname": "^3.0.0",
     "styled-components": "^4.4.1",
     "subscriptions-transport-ws": "^0.9.16",
     "urql": "^1.6.3",

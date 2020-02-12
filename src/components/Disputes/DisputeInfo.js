@@ -26,6 +26,7 @@ import iconCourt from '../../assets/courtIcon.svg'
 import { addressesEqual } from '../../lib/web3-utils'
 import DisputeRoundPill from './DisputeRoundPill'
 import DisputeOutcomeText from './DisputeOutcomeText'
+import ErrorLoading from '../ErrorLoading'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -38,8 +39,16 @@ const DisputeInfo = React.memo(function({
   onRequestAppeal,
   onExecuteRuling,
 }) {
-  const { phase, status, description, plaintiff, defendant, agreementText } =
-    dispute || {}
+  const {
+    phase,
+    status,
+    description,
+    plaintiff,
+    defendant,
+    agreementText,
+    agreementUrl,
+    error,
+  } = dispute || {}
 
   const creator = plaintiff || dispute?.subject?.id
 
@@ -59,69 +68,81 @@ const DisputeInfo = React.memo(function({
         `}
       >
         <DisputeHeader id={id} dispute={dispute} />
-        {loading ? (
-          <Loading border={false} />
-        ) : (
-          <>
-            <Row>
-              {(() => {
-                if (isFinalRulingEnsured) {
+        {(() => {
+          if (loading) {
+            return <Loading border={false} />
+          }
+          if (error) {
+            return (
+              <ErrorLoading
+                subject="dispute"
+                error="Error loading content from ipfs"
+                border={false}
+              />
+            )
+          }
+          return (
+            <>
+              <Row>
+                {(() => {
+                  if (isFinalRulingEnsured) {
+                    return (
+                      <>
+                        <Field
+                          label="Final jury outcome"
+                          value={
+                            <DisputeOutcomeText
+                              outcome={
+                                lastRound.appeal?.appealedRuling ||
+                                lastRound.vote?.winningOutcome
+                              }
+                              phase={dispute.phase}
+                              disputeEnded={isFinalRulingEnsured}
+                            />
+                          }
+                        />
+                        <Field
+                          label="Round number"
+                          value={
+                            <DisputeRoundPill roundId={dispute.lastRoundId} />
+                          }
+                        />
+                      </>
+                    )
+                  }
                   return (
                     <>
-                      <Field
-                        label="Final jury outcome"
-                        value={
-                          <DisputeOutcomeText
-                            outcome={
-                              lastRound.appeal?.appealedRuling ||
-                              lastRound.vote?.winningOutcome
-                            }
-                            phase={dispute.phase}
-                            disputeEnded={isFinalRulingEnsured}
-                          />
-                        }
-                      />
-                      <Field
-                        label="Round number"
-                        value={
-                          <DisputeRoundPill roundId={dispute.lastRoundId} />
-                        }
-                      />
+                      <Field label="Description" value={description} />
+                      <div />
                     </>
                   )
-                }
-                return (
-                  <>
-                    <Field label="Description" value={description} />
+                })()}
+                {creator && <Field label="Plaintiff" value={creator} />}
+              </Row>
+              <Row>
+                {(() => {
+                  if (isFinalRulingEnsured) {
+                    return <Field label="Description" value={description} />
+                  }
+                  return agreementText ? (
+                    <Field
+                      label="Link to agreement"
+                      value={
+                        <Link external href={agreementUrl}>
+                          {agreementText}
+                        </Link>
+                      }
+                    />
+                  ) : (
                     <div />
-                  </>
-                )
-              })()}
-              {creator && <Field label="Plaintiff" value={creator} />}
-            </Row>
-            <Row>
-              {(() => {
-                if (isFinalRulingEnsured) {
-                  return <Field label="Description" value={description} />
-                }
-                return agreementText ? (
-                  <Field
-                    label="Link to agreement"
-                    value={
-                      <Link external href={agreementText}>
-                        {agreementText}
-                      </Link>
-                    }
-                  />
-                ) : (
-                  <div />
-                )
-              })()}
-              <div />
-              {defendant && <Field label="Defendant" value={defendant} />}
-            </Row>
-          </>
-        )}
+                  )
+                })()}
+                <div />
+                {defendant && <Field label="Defendant" value={defendant} />}
+              </Row>
+            </>
+          )
+        })()}
 
         {(phase === DisputePhase.AppealRuling ||
           phase === DisputePhase.ConfirmAppeal ||

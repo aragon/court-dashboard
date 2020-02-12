@@ -4,7 +4,7 @@ import { GU, Info, useTheme } from '@aragon/ui'
 import errorLoadingSvg from '../assets/errorLoading.svg'
 import MessageCard from './MessageCard'
 
-function ErrorLoading({ subject, error }) {
+function ErrorLoading({ subject, error, border }) {
   const theme = useTheme()
 
   const title = `We couldn't load ${subject} infromation`
@@ -34,7 +34,12 @@ function ErrorLoading({ subject, error }) {
   )
 
   return (
-    <MessageCard title={title} paragraph={paragraph} icon={errorLoadingSvg} />
+    <MessageCard
+      title={title}
+      paragraph={paragraph}
+      icon={errorLoadingSvg}
+      border={border}
+    />
   )
 }
 

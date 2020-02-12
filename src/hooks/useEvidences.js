@@ -31,49 +31,29 @@ export default function useEvidences(evidences) {
     evidences.forEach(async evidence => {
       const { data: evidenceData, submitter, createdAt } = evidence
 
-      const newHash =
-        'bytes(ipfs:QmYvKapNiTm4dcYxzB9e5ACvmxM4Dx5psYUQvnY28JniJx)'
-      const [type, content] = newHash
-        .replace(/(\w+)\((.+)\)/, '$1,$2')
-        .split(',')
-
-      const ipfs = content.replace(/^holas:/, '')
-      console.log('ipfs ', ipfs)
-      console.log('type', type)
-      console.log('content ', content)
+      const ipfsHash = evidenceData.replace(/^ipfs:/, '')
 
       // check if the metadata inside the evidence is a cid
-      if (isIPFS.multihash(evidenceData) || isIPFS.cid(evidenceData)) {
-        const { data, error } = await ipfsGet(evidenceData)
+      // if the ipfs tag is not present return the metadata as plain string
+      if (isIPFS.multihash(ipfsHash) || isIPFS.cid(ipfsHash)) {
+        const { data, error } = await ipfsGet(ipfsHash)
         if (error) {
           return appendEvidence({ error: ERROR_TYPES.ERROR_FETCHING_IPFS })
         }
         if (data) {
-          try {
-            const parsedData = JSON.parse(data)
-            // If the ipfs content is an object find the keys that we need
-            if (parsedData.metadata) {
-              return appendEvidence({
-                metadata: parsedData.metadata || '',
-                submitter,
-                createdAt,
-                error: false,
-              })
-            }
-            // If the fetched data type is not one of the otherers return error
-            return appendEvidence({
-              error: ERROR_TYPES.ERROR_UNKNOWN_METADATA_TYPE,
-            })
-          } catch (err) {
-            return appendEvidence({
-              metadata: data,
-              submitter,
-              createdAt,
-              error: false,
-            })
-          }
+          return appendEvidence({
+            metadata: data || '',
+            submitter,
+            createdAt,
+            error: false,
+          })
         }
+        // If the fetched data type is not one of the otherers return error
+        return appendEvidence({
+          error: ERROR_TYPES.ERROR_UNKNOWN_METADATA_TYPE,
+        })
       }
+
       // If evidence metadata is not an ipfs cid return it as it is
       return appendEvidence({
         metadata: evidenceData,
