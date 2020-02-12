@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { useJurorBalancesSubscription } from '../../hooks/subscription-hooks'
 import { useANJMovements } from '../../hooks/useANJMovements'
@@ -7,11 +7,11 @@ import { useANJMovements } from '../../hooks/useANJMovements'
 const BalancesContext = React.createContext()
 
 function BalancesProvider({ children }) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
   const { anjToken } = useCourtConfig()
 
   const { balances, movements } = useJurorBalancesSubscription(
-    connectedAccount ? connectedAccount.toLowerCase() : ''
+    wallet.account ? wallet.account.toLowerCase() : ''
   )
 
   // Get latest movement for each balance (wallet, inactive, active)

@@ -15,7 +15,7 @@ import { getProbabilityText } from '../../utils/account-utils'
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
 import gavelIcon from '../../assets/IconGavel.svg'
-import { useJurorDrafted } from '../../hooks/useJurorDraft'
+import { useJurorDrafted } from '../../hooks/useJurorDrafted'
 import Loading from './Loading'
 
 const getBannerAttributes = (
@@ -58,7 +58,7 @@ const getBannerAttributes = (
     title: 'Activate ANJ to be an active juror',
     paragraph: `You must activate at least ${formatUnits(minActiveBalance, {
       digits: decimals,
-    })}  ANJ to be drafted as a juror`,
+    })}  ANJ to participate as a juror`,
   }
 }
 
@@ -173,7 +173,7 @@ const BannerWithProbability = ({ activeBalance }) => {
     totalActiveBalanceCurrentTerm
   )
 
-  // Calculate probability (since the total active balance is asynconous
+  // Calculate probability (since the total active balance is asynchronous
   // it can happen that it has not been updated yet when the juror active balance has)
   const draftingProbability = Math.min(1, totalPercentage / 100)
   const probabilityText = getProbabilityText(draftingProbability)
@@ -196,8 +196,8 @@ const BannerWithProbability = ({ activeBalance }) => {
         to be drafted
       </span>
       <Help hint="How is the probability calculated?">
-        Probability of being drafted depends on the total ANJ you have activated
-        and the total ANJ activated for a given term
+        The probability of being drafted is calculated dividing your active ANJ
+        balance by the total active ANJ in the Court during the current term.
       </Help>
     </div>
   )

@@ -1,9 +1,11 @@
 import { useCallback, useState } from 'react'
 
-import { useCourtActions } from './hooks/useCourtContracts'
+import { useANJActions, useRewardActions } from './hooks/useCourtContracts'
 import { useSidePanel } from './hooks/useSidePanel'
 import { useANJBalances } from './hooks/useANJ'
 import { useDashboardState } from './components/Dashboard/DashboardStateProvider'
+import useJurorRewards from './hooks/useJurorRewards'
+import useJurorAppealCollaterals from './hooks/useJurorAppealCollaterals'
 
 export const REQUEST_MODE = {
   ACTIVATE: Symbol('ACTIVATE'),
@@ -65,26 +67,33 @@ export function useDashboardLogic() {
     deactivateANJ,
     stakeActivateANJ,
     withdrawANJ,
-  } = useCourtActions()
-
-  const balances = useANJBalances()
-  const { fetching, errors: errorsFetching } = useDashboardState()
+  } = useANJActions()
 
   const panelState = useSidePanel()
+  const balances = useANJBalances()
+  const rewards = useJurorRewards()
+  const appealCollaterals = useJurorAppealCollaterals()
+  const { fetching: fetchingData, errors: errorsFetching } = useDashboardState()
+
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
 
+  const { settleReward, settleAppealDeposit } = useRewardActions()
   const actions = {
     activateANJ:
       mode === REQUEST_MODE.STAKE_ACTIVATE ? stakeActivateANJ : activateANJ,
     deactivateANJ,
     withdrawANJ,
+    settleAppealDeposit,
+    settleReward,
   }
 
   return {
     actions,
+    appealCollaterals,
     balances,
-    fetching,
+    rewards,
+    fetchingData,
     errorsFetching,
     mode,
     panelState,

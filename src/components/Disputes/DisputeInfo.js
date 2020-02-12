@@ -4,18 +4,28 @@ import {
   Box,
   GU,
   IdentityBadge,
+  Link,
   textStyle,
   TransactionBadge,
   useTheme,
+  isAddress,
 } from '@aragon/ui'
+import styled from 'styled-components'
 
 import DisputeStatus from './DisputeStatus'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
 import Loading from './Loading'
+import { useWallet } from '../../providers/Wallet'
 
-import { Phase as DisputePhase } from '../../types/dispute-status-types'
+import {
+  Phase as DisputePhase,
+  Status as DipsuteStatus,
+} from '../../types/dispute-status-types'
 import iconCourt from '../../assets/courtIcon.svg'
+import { addressesEqual } from '../../lib/web3-utils'
+import DisputeRoundPill from './DisputeRoundPill'
+import DisputeOutcomeText from './DisputeOutcomeText'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -28,12 +38,15 @@ const DisputeInfo = React.memo(function({
   onRequestAppeal,
   onExecuteRuling,
 }) {
-  const theme = useTheme()
-  const { phase } = dispute || {}
+  const { phase, status, description, plaintiff, defendant, agreementText } =
+    dispute || {}
 
-  const description = dispute && dispute.metadata
-  const creatorAddress = dispute && dispute.subject && dispute.subject.id
-  const transaction = dispute && dispute.txHash
+  const creator = plaintiff || dispute?.subject?.id
+
+  const isFinalRulingEnsured =
+    phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
+
+  const lastRound = dispute?.rounds?.[dispute.lastRoundId]
 
   return (
     <Box>
@@ -45,128 +58,81 @@ const DisputeInfo = React.memo(function({
           align-items: center;
         `}
       >
-        <div
-          css={`
-            display: flex;
-            margin-bottom: ${3 * GU}px;
-          `}
-        >
-          <div
-            css={`
-              display: flex;
-              align-items: center;
-            `}
-          >
-            <div
-              css={`
-                background: linear-gradient(
-                  233deg,
-                  ${theme.accentEnd} -50%,
-                  ${theme.accentStart} 91%
-                );
-                border-radius: 50%;
-                padding: 12px;
-                display: inline-block;
-              `}
-            >
-              <img src={iconCourt} alt="" width="39" height="32" />
-            </div>
-            <div
-              css={`
-                margin-left: ${3 * GU}px;
-              `}
-            >
-              <h1
-                css={`
-                  display: flex;
-                  align-items: center;
-                  margin-bottom: ${1 * GU}px;
-                  ${textStyle('title3')};
-                `}
-              >
-                <span>Dispute #{id}</span>
-                {dispute && (
-                  <DisputeStatus
-                    dispute={dispute}
-                    css={`
-                      margin: 0 0 0 ${1 * GU}px;
-                    `}
-                  />
-                )}
-              </h1>
-              {transaction && <TransactionBadge transaction={transaction} />}
-            </div>
-          </div>
-        </div>
+        <DisputeHeader id={id} dispute={dispute} />
         {loading ? (
           <Loading border={false} />
         ) : (
-          <div
-            css={`
-              display: grid;
-              grid-template-columns: 1fr minmax(250px, auto);
-              grid-gap: ${5 * GU}px;
-              margin-bottom: ${2 * GU}px;
-            `}
-          >
-            <div>
-              <h2
-                css={`
-                  ${textStyle('label2')};
-                  color: ${theme.surfaceContentSecondary};
-                  margin-bottom: ${2 * GU}px;
-                `}
-              >
-                Description
-              </h2>
-              <span
-                css={`
-                  ${textStyle('body2')};
-                `}
-              >
-                {description}
-              </span>
-            </div>
-            {creatorAddress && (
-              <div>
-                <h2
-                  css={`
-                    ${textStyle('label2')};
-                    color: ${theme.surfaceContentSecondary};
-                    margin-bottom: ${2 * GU}px;
-                  `}
-                >
-                  Created by
-                </h2>
-                <div
-                  css={`
-                    display: flex;
-                    align-items: flex-start;
-                  `}
-                >
-                  <IdentityBadge
-                    // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- add connected account
-                    entity={creatorAddress}
+          <>
+            <Row>
+              {(() => {
+                if (isFinalRulingEnsured) {
+                  return (
+                    <>
+                      <Field
+                        label="Final jury outcome"
+                        value={
+                          <DisputeOutcomeText
+                            outcome={
+                              lastRound.appeal?.appealedRuling ||
+                              lastRound.vote?.winningOutcome
+                            }
+                            phase={dispute.phase}
+                            disputeEnded={isFinalRulingEnsured}
+                          />
+                        }
+                      />
+                      <Field
+                        label="Round number"
+                        value={
+                          <DisputeRoundPill roundId={dispute.lastRoundId} />
+                        }
+                      />
+                    </>
+                  )
+                }
+                return (
+                  <>
+                    <Field label="Description" value={description} />
+                    <div />
+                  </>
+                )
+              })()}
+              {creator && <Field label="Plaintiff" value={creator} />}
+            </Row>
+            <Row>
+              {(() => {
+                if (isFinalRulingEnsured) {
+                  return <Field label="Description" value={description} />
+                }
+                return agreementText ? (
+                  <Field
+                    label="Link to agreement"
+                    value={
+                      <Link external href={agreementText}>
+                        {agreementText}
+                      </Link>
+                    }
                   />
-                </div>
-              </div>
-            )}
-          </div>
+                ) : (
+                  <div />
+                )
+              })()}
+              <div />
+              {defendant && <Field label="Defendant" value={defendant} />}
+            </Row>
+          </>
         )}
 
         {(phase === DisputePhase.AppealRuling ||
           phase === DisputePhase.ConfirmAppeal ||
-          phase === DisputePhase.ExecuteRuling ||
-          phase === DisputePhase.ClaimRewards) && (
-          <DisputeCurrentRuling dispute={dispute} />
-        )}
+          isFinalRulingEnsured) && <DisputeCurrentRuling dispute={dispute} />}
         {!loading && (
           <DisputeActions
             dispute={dispute}
             onDraft={onDraft}
             onRequestCommit={onRequestCommit}
             onRequestReveal={onRequestReveal}
-            onLeavk={onLeak}
+            onLeak={onLeak}
             onRequestAppeal={onRequestAppeal}
             onExecuteRuling={onExecuteRuling}
           />
@@ -175,6 +141,114 @@ const DisputeInfo = React.memo(function({
     </Box>
   )
 })
+
+function DisputeHeader({ id, dispute }) {
+  const theme = useTheme()
+  const transaction = dispute && dispute.txHash
+
+  return (
+    <div
+      css={`
+        display: flex;
+        margin-bottom: ${3 * GU}px;
+      `}
+    >
+      <div
+        css={`
+          display: flex;
+          align-items: center;
+        `}
+      >
+        <div
+          css={`
+            background: linear-gradient(
+              233deg,
+              ${theme.accentStart} -50%,
+              ${theme.accentEnd} 91%
+            );
+            border-radius: 50%;
+            padding: ${1.5 * GU}px;
+            display: inline-block;
+          `}
+        >
+          <img src={iconCourt} alt="" width="39" height="32" />
+        </div>
+        <div
+          css={`
+            margin-left: ${3 * GU}px;
+          `}
+        >
+          <h1
+            css={`
+              display: flex;
+              align-items: center;
+              margin-bottom: ${1 * GU}px;
+              ${textStyle('title3')};
+            `}
+          >
+            <span>Dispute #{id}</span>
+            {dispute && (
+              <DisputeStatus
+                dispute={dispute}
+                css={`
+                  margin: 0 0 0 ${1 * GU}px;
+                `}
+              />
+            )}
+          </h1>
+          {transaction && <TransactionBadge transaction={transaction} />}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Field({ label, value }) {
+  const theme = useTheme()
+  const wallet = useWallet()
+
+  return (
+    <div>
+      <h2
+        css={`
+          ${textStyle('label2')};
+          color: ${theme.surfaceContentSecondary};
+          margin-bottom: ${1 * GU}px;
+        `}
+      >
+        {label}
+      </h2>
+      {isAddress(value) ? (
+        <div
+          css={`
+            display: flex;
+            align-items: flex-start;
+          `}
+        >
+          <IdentityBadge
+            connectedAccount={addressesEqual(value, wallet.account)}
+            entity={value}
+          />
+        </div>
+      ) : (
+        <div
+          css={`
+            ${textStyle('body2')};
+          `}
+        >
+          {value}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const Row = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: ${5 * GU}px;
+  margin-bottom: ${2 * GU}px;
+`
 
 DisputeInfo.propTypes = {
   dispute: PropTypes.object, // TODO: define DisputeType

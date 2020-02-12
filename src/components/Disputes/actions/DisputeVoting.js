@@ -1,9 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Button, GU, Info } from '@aragon/ui'
-
-import { useConnectedAccount } from '../../../providers/Web3'
-
+import { useWallet } from '../../../providers/Wallet'
 import {
   VOTE_OPTION_REFUSE,
   VOTE_OPTION_IN_FAVOR,
@@ -11,7 +9,7 @@ import {
 } from '../../../utils/crvoting-utils'
 
 function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   return (
     <div>
@@ -49,7 +47,7 @@ function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
       </div>
       <Info mode={isJurorDrafted ? 'description' : 'warning'}>
         {(() => {
-          if (!connectedAccount)
+          if (!wallet.account)
             return 'You cannot vote on this dispute because your Ethereum account is not connected.'
 
           return isJurorDrafted

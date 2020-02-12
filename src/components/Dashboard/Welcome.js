@@ -4,7 +4,7 @@ import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import ANJIcon from '../../assets/IconANJButton.svg'
 import Logo from '../../assets/Welcome.svg'
 
-export default function Welcome() {
+function Welcome() {
   const theme = useTheme()
 
   return (
@@ -18,7 +18,7 @@ export default function Welcome() {
         flex-wrap: wrap;
       `}
     >
-      <img src={Logo} />
+      <img src={Logo} alt="" height={35 * GU} width={60 * GU} />
       <div
         css={`
           padding: ${4 * GU}px;
@@ -32,7 +32,7 @@ export default function Welcome() {
             margin-bottom: ${1 * GU}px;
           `}
         >
-          Welcome to the Aragon Court
+          Welcome to Aragon Court
         </h1>
         <p
           css={`
@@ -63,14 +63,23 @@ export default function Welcome() {
             label="Buy ANJ"
             display="all"
             mode="strong"
+            href="https://anj.aragon.org/"
             css={`
               margin-right: ${1.5 * GU}px;
               width: 150px;
             `}
           />
-          <Button label="User guide" css="width: 150px;" />
+          <Button
+            label="User guide"
+            href="https://help.aragon.org/article/41-aragon-court"
+            css={`
+              width: ${19 * GU}px;
+            `}
+          />
         </div>
       </div>
     </div>
   )
 }
+
+export default Welcome

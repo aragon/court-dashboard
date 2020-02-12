@@ -1,21 +1,22 @@
 import React, { useContext } from 'react'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 import {
   useJurorBalancesSubscription,
   useAppealsByUserSubscription,
+  useJurorDraftsNotRewardedSubscription,
 } from '../../hooks/subscription-hooks'
 
 const DashboardContext = React.createContext()
 
 function DashboardStateProvider({ children }) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   const Provider = DashboardContext.Provider
 
   // Workaround to not subscribe when no connected account
-  if (connectedAccount)
+  if (wallet.account)
     return (
-      <WithSubscription Provider={Provider} connectedAccount={connectedAccount}>
+      <WithSubscription Provider={Provider} connectedAccount={wallet.account}>
         {children}
       </WithSubscription>
     )
@@ -27,22 +28,44 @@ function DashboardStateProvider({ children }) {
   )
 }
 
-const WithSubscription = ({ Provider, connectedAccount, children }) => {
+function WithSubscription({ Provider, connectedAccount, children }) {
   const account = connectedAccount.toLowerCase()
+
+  // Juror balances
   const {
     balances,
     movements,
-    fetching,
+    fetching: balancesFetching,
     errors: balanceErrors,
   } = useJurorBalancesSubscription(account)
-  const nonSettledAppeals = useAppealsByUserSubscription(account, false) // Non settled appeals
 
-  // TODO: add appeal colateral errors (on next PR)
-  const errors = [...balanceErrors]
+  // Appeals
+  const {
+    appeals,
+    fetching: appealsFetching,
+    errors: appealErrors,
+  } = useAppealsByUserSubscription(account, false) // Non settled appeals
+
+  // juror drafts not rewarded
+  const {
+    jurorDrafts,
+    fetching: jurorDraftsFetching,
+    error: jurorDraftsError,
+  } = useJurorDraftsNotRewardedSubscription(account)
+
+  const fetching = balancesFetching || appealsFetching || jurorDraftsFetching
+  const errors = [...balanceErrors, ...appealErrors, jurorDraftsError]
 
   return (
     <Provider
-      value={{ balances, movements, nonSettledAppeals, fetching, errors }}
+      value={{
+        appeals,
+        balances,
+        movements,
+        jurorDrafts,
+        fetching,
+        errors,
+      }}
     >
       {children}
     </Provider>

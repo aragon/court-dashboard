@@ -1,8 +1,21 @@
 export function getTotalUnlockedActiveBalance({
-  activeBalance,
   lockedBalance,
+  activeBalance,
 }) {
   return activeBalance.amount.sub(lockedBalance.amount)
+}
+
+export function getTotalLockedANJDistribution({
+  lockedBalance,
+  inactiveBalance,
+}) {
+  if (!lockedBalance.distribution && inactiveBalance.amountNotEffective.eq(0))
+    return null
+
+  return {
+    lockedPerDispute: lockedBalance.distribution,
+    inProcess: inactiveBalance.amountNotEffective,
+  }
 }
 
 export function getTotalEffectiveInactiveBalance({

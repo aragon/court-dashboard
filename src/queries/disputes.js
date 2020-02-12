@@ -62,6 +62,9 @@ export const SingleDispute = gql`
       state
       metadata
       createdAt
+      subject {
+        id
+      }
       evidences {
         id
         submitter
@@ -105,86 +108,6 @@ export const SingleDispute = gql`
           settled
           createdAt
         }
-      }
-    }
-  }
-`
-
-export const JurorDrafts = gql`
-  query JurorDrafts($id: ID!) {
-    juror(id: $id) {
-      id
-      drafts {
-        id
-        weight
-        rewarded
-        commitment
-        outcome
-        leaker
-        createdAt
-        round {
-          id
-          number
-          dispute {
-            id
-            txHash
-            createTermId
-            possibleRulings
-            finalRuling
-            lastRoundId
-            state
-            metadata
-            createdAt
-            subject {
-              id
-              evidence {
-                id
-                submitter
-                data
-                createdAt
-              }
-            }
-            rounds {
-              state
-              number
-              draftTermId
-              jurorsNumber
-              settledPenalties
-              jurorFees
-              delayedTerms
-              selectedJurors
-              coherentJurors
-              collectedTokens
-              createdAt
-              jurors {
-                juror {
-                  id
-                }
-              }
-              appeal {
-                id
-                maker
-                appealedRuling
-                taker
-                opposedRuling
-                settled
-                createdAt
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
-export const CurrentTermJurorDrafts = gql`
-  subscription JurorDrafts($id: ID!, $from: BigInt!) {
-    juror(id: $id) {
-      id
-      drafts(where: { createdAt_gt: $from }) {
-        id
-        createdAt
       }
     }
   }

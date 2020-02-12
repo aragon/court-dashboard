@@ -6,16 +6,19 @@ import { useCourtConfig } from '../providers/CourtConfig'
 
 import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
-import { AppealsByUser } from '../queries/appeals'
+import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
 import {
+  JurorDraftsNotRewarded,
   CurrentTermJurorDrafts,
-  SingleDispute,
-  AllDisputes,
-} from '../queries/disputes'
+} from '../queries/jurorDrafts'
+import { SingleDispute, AllDisputes } from '../queries/disputes'
 import { OpenTasks } from '../queries/tasks'
 
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
+import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
+import { transformAppealDataAttributes } from '../utils/appeal-utils'
+import { groupMovements } from '../utils/anj-movement-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -45,6 +48,12 @@ function useJuror(jurorId) {
   return { data, error }
 }
 
+/**
+ * Subscribes to all juror balances as well as to the latest 24h movements
+ * @param {String} jurorId Address of the juror
+ * @returns {Object} Object containing al juror balances (Wallet, Inactive, Active, Locked, Deactivation Process)
+ * and latest 24h movements
+ */
 export function useJurorBalancesSubscription(jurorId) {
   // My wallet balance
   const { data: anjBalanceData, error: anjBalanceError } = useANJBalance(
@@ -84,11 +93,7 @@ export function useJurorBalancesSubscription(jurorId) {
         inactiveBalance: bigNum(availableBalance),
         deactivationBalance: bigNum(deactivationBalance),
       },
-      movements: movements.map(movement => ({
-        ...movement,
-        effectiveTermId: parseInt(movement.effectiveTermId, 10),
-        amount: bigNum(movement.amount),
-      })),
+      movements: groupMovements(movements),
     }
   }, [anjBalanceData, jurorData])
 
@@ -100,6 +105,11 @@ export function useJurorBalancesSubscription(jurorId) {
   }
 }
 
+/**
+ * Subscribes to the court configuration data
+ * @param {String} courtAddress Adrress of the court contract
+ * @returns {Object} Court configuration data
+ */
 export function useCourtConfigSubscription(courtAddress) {
   const [result] = useSubscription({
     query: CourtConfig,
@@ -112,7 +122,11 @@ export function useCourtConfigSubscription(courtAddress) {
   return courtConfig
 }
 
-// Single dispute
+/**
+ * Subscribes to the dispute with id == `id`
+ * @param {String} id Id of the dispute
+ * @returns {Object} Dispute by `id`
+ */
 export function useSingleDisputeSubscription(id) {
   const [{ data, error }] = useSubscription({
     query: SingleDispute,
@@ -130,7 +144,10 @@ export function useSingleDisputeSubscription(id) {
   return { dispute, fetching: !data && !error, error }
 }
 
-// All disputes
+/**
+ * Subscribes to all existing disputes on the court
+ * @returns {Object} All disputes
+ */
 export function useDisputesSubscription() {
   const courtConfig = useCourtConfig()
 
@@ -151,10 +168,21 @@ export function useDisputesSubscription() {
   return { disputes, fetching: !data && !error, error }
 }
 
-export function useJurorDraftsSubscription(jurorId, from, pause) {
+/**
+ * Subscribe to all `jurorId` drafts for the current term
+ * @param {String} jurorId Address of the juror
+ * @param {Number} termStartTime Start time of the term inseconds
+ * @param {Boolean} pause Tells whether to pause the subscription or not
+ * @returns {Object} All `jurorId` drafts for the current term
+ */
+export function useCurrentTermJurorDraftsSubscription(
+  jurorId,
+  termStartTime,
+  pause
+) {
   const [result] = useSubscription({
     query: CurrentTermJurorDrafts,
-    variables: { id: jurorId, from },
+    variables: { id: jurorId, from: termStartTime },
     pause,
   })
 
@@ -162,15 +190,82 @@ export function useJurorDraftsSubscription(jurorId, from, pause) {
   return juror && juror.drafts ? juror.drafts : []
 }
 
-export function useAppealsByUserSubscription(jurorId, settled) {
-  const [result] = useSubscription({
-    query: AppealsByUser,
-    variables: { id: jurorId, settled },
+/**
+ * Subscribes to all `jurorId` drafts that are not yet rewarded
+ * @dev This subscription is useful to get all rewards pending for claiming as well
+ * as for the amount of locked ANJ a juror has per dispute
+ * Ideally we would check that the round is not settled but we cannot do nested filters for now
+ *
+ * @param {String} jurorId Address of the juror
+ * @returns {Object} All `jurorId` drafts not yet rewarded
+ */
+export function useJurorDraftsNotRewardedSubscription(jurorId) {
+  const [{ data, error }] = useSubscription({
+    query: JurorDraftsNotRewarded,
+    variables: { id: jurorId },
   })
 
-  const { appeals } = result.data || []
+  const jurorDrafts = useMemo(() => {
+    if (!data) {
+      return null
+    }
 
-  return appeals
+    return data.juror ? data.juror.drafts.map(transformJurorDataAttributes) : []
+  }, [data])
+
+  return { jurorDrafts, fetching: !jurorDrafts && !error, error }
+}
+
+function useAppealsByMaker(jurorId, settled) {
+  const [{ data, error }] = useSubscription({
+    query: AppealsByMaker,
+    variables: { maker: jurorId, settled },
+  })
+
+  return { data, error }
+}
+
+function useAppealsByTaker(jurorId, settled) {
+  const [{ data, error }] = useSubscription({
+    query: AppealsByTaker,
+    variables: { taker: jurorId, settled },
+  })
+
+  return { data, error }
+}
+
+/**
+ * Subscribes to all `jurorId` appeal collaterals that are `!settled ? 'not': ''` settled
+ * @dev Since we cannot do or operators on graphql queries, we need to get appeals by taker and maker separately
+ *
+ * @param {String} jurorId Address of the juror
+ * @param {Boolean} settled Tells if appeals should be settled or not
+ * @returns {Object} All current `jurorId` appeal collaterals
+ */
+export function useAppealsByUserSubscription(jurorId, settled) {
+  const {
+    data: makerAppealsData,
+    error: makerAppealsError,
+  } = useAppealsByMaker(jurorId, settled)
+  const {
+    data: takerAppealsData,
+    error: takerAppealsError,
+  } = useAppealsByTaker(jurorId, settled)
+
+  const appeals = useMemo(() => {
+    if (!makerAppealsData || !takerAppealsData) {
+      return null
+    }
+
+    const makerAppeals = makerAppealsData.appeals
+    const takerAppeals = takerAppealsData.appeals
+
+    return [...makerAppeals, ...takerAppeals].map(transformAppealDataAttributes)
+  }, [makerAppealsData, takerAppealsData])
+
+  const errors = [makerAppealsError, takerAppealsError].filter(err => err)
+
+  return { appeals, fetching: !appeals && errors.length === 0, errors }
 }
 
 export function useTasksSubscription() {

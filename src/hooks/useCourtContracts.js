@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
@@ -22,7 +22,9 @@ import { bigNum } from '../lib/math-utils'
 import { retryMax } from '../utils/retry-max'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 900000 // Should be relative to every tx ?
+const GAS_LIMIT = 1200000
+const ANJ_ACTIVATE_GAS_LIMIT = 500000
+const ANJ_ACTIONS_GAS_LIMIT = 325000
 
 // ANJ contract
 function useANJTokenContract() {
@@ -60,7 +62,7 @@ function useCourtContract(moduleType, abi) {
  * All ANJ interactions
  * @returns {Object} all available functions around ANJ balances
  */
-function useANJActions() {
+export function useANJActions() {
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
@@ -70,14 +72,18 @@ function useANJActions() {
   // activate ANJ directly from available balance
   const activateANJ = useCallback(
     amount => {
-      return jurorRegistryContract.activate(amount, { gasLimit: GAS_LIMIT })
+      return jurorRegistryContract.activate(amount, {
+        gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
+      })
     },
     [jurorRegistryContract]
   )
 
   const deactivateANJ = useCallback(
     amount => {
-      return jurorRegistryContract.deactivate(amount, { gasLimit: GAS_LIMIT })
+      return jurorRegistryContract.deactivate(amount, {
+        gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+      })
     },
     [jurorRegistryContract]
   )
@@ -89,7 +95,7 @@ function useANJActions() {
         jurorRegistryContract.address,
         amount,
         ACTIVATE_SELECTOR,
-        { gasLimit: GAS_LIMIT }
+        { gasLimit: ANJ_ACTIVATE_GAS_LIMIT }
       )
     },
     [anjTokenContract, jurorRegistryContract]
@@ -98,21 +104,13 @@ function useANJActions() {
   const withdrawANJ = useCallback(
     amount => {
       return jurorRegistryContract.unstake(amount, '0x', {
-        gasLimit: GAS_LIMIT,
+        gasLimit: ANJ_ACTIONS_GAS_LIMIT,
       })
     },
     [jurorRegistryContract]
   )
 
   return { activateANJ, deactivateANJ, stakeActivateANJ, withdrawANJ }
-}
-
-export function useCourtActions() {
-  const anjActions = useANJActions()
-
-  return {
-    ...anjActions,
-  }
 }
 
 /**
@@ -216,6 +214,33 @@ export function useDisputeActions() {
     confirmAppeal,
     executeRuling,
   }
+}
+
+export function useRewardActions() {
+  const disputeManagerContract = useCourtContract(
+    CourtModuleType.DisputeManager,
+    disputeManagerAbi
+  )
+
+  const settleReward = useCallback(
+    (disputeId, roundId, juror) => {
+      return disputeManagerContract.settleReward(disputeId, roundId, juror, {
+        gasLimit: GAS_LIMIT,
+      })
+    },
+    [disputeManagerContract]
+  )
+
+  const settleAppealDeposit = useCallback(
+    (disputeId, roundId, juror) => {
+      return disputeManagerContract.settleAppealDeposit(disputeId, roundId, {
+        gasLimit: GAS_LIMIT,
+      })
+    },
+    [disputeManagerContract]
+  )
+
+  return { settleReward, settleAppealDeposit }
 }
 
 /**
