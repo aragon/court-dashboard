@@ -17,6 +17,8 @@ import useOneTimeCode from '../../../hooks/useOneTimeCode'
 
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
 
+const SHOW_AUTO_REVEAL = false // TODO: Remove when auto reveal service is running
+
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
   onCommit,
@@ -25,7 +27,7 @@ const CommitPanel = React.memo(function CommitPanel({
 }) {
   const [codeSaved, setCodeSaved] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
-  const [revealService, setRevealService] = useState(true)
+  const [revealService, setRevealService] = useState(false)
   const { oneTimeCode, download } = useOneTimeCode()
   const toast = useToast()
 
@@ -78,10 +80,12 @@ const CommitPanel = React.memo(function CommitPanel({
         onDownload={handleDownloadCode}
         onCopy={handleCopyCode}
       />
-      <RevealService
-        onRevealServiceChange={handleRevealService}
-        revealService={revealService}
-      />
+      {SHOW_AUTO_REVEAL && (
+        <RevealService
+          onRevealServiceChange={handleRevealService}
+          revealService={revealService}
+        />
+      )}
       <InfoSection
         commitEndTime={dispute.nextTransition}
         copiedOrSaved={codeCopied || codeSaved}
