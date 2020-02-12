@@ -3,6 +3,7 @@ import environment from './environment'
 import { isLocalOrUnknownNetwork, getNetworkName } from './lib/web3-utils'
 
 const CHAIN_ID = environment('CHAIN_ID')
+const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
 // The graph endpoints
 const GRAPH_API_BASE_HTTP_LOCAL = 'http://127.0.0.1:8000'
@@ -26,7 +27,7 @@ export default function endpoints() {
   const API_PATH =
     networkName === 'mainnet'
       ? GRAPH_API_PATH
-      : `${GRAPH_API_PATH}-${networkName}`
+      : `${GRAPH_API_PATH}-${SUBGRAPH_NAME || networkName}`
 
   return [`${API_BASE_HTTP}${API_PATH}`, `${API_BASE_WS}${API_PATH}`]
 }
