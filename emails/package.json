@@ -1,0 +1,12 @@
+{
+  "name": "emails",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "mjml": "^4.5.1"
+  },
+  "scripts": {
+    "build": "rm -rf ./dist && ./generate-templates && cp -r assets ./dist/assets"
+  }
+}
