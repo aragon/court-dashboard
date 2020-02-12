@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Button, springs, useImageExists } from '@aragon/ui'
+import { Button, GU, springs, useImageExists } from '@aragon/ui'
 import { Transition, animated } from 'react-spring/renderprops'
 import { ReactSpringStateType } from '../../prop-types'
 
@@ -111,8 +111,11 @@ const HighlightScreen = ({
             ),
           }}
         >
-          <p
+          <div
             css={`
+              p + p {
+                margin-top: ${2 * GU}px;
+              }
               line-height: 1.8;
               font-size: ${compactMode ? 16 : 18}px;
               color: ${compactMode ? '#8E97B5' : '#000000'};
@@ -121,7 +124,7 @@ const HighlightScreen = ({
             {compactMode && description.small
               ? description.small
               : description.large}
-          </p>
+          </div>
           {start && (
             <div css="margin-top: 30px">
               <Button

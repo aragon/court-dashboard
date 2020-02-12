@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, DropDown, Field, GU, Info, Link } from '@aragon/ui'
-
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import {
   getAppealRulingOptions,
@@ -8,14 +7,13 @@ import {
 } from '../../../utils/crvoting-utils'
 import { formatUnits } from '../../../lib/math-utils'
 import { Phase as DisputePhase } from '../../../types/dispute-status-types'
-
 import {
   useAppealDeposits,
   useAppealFeeAllowance,
   useFeeBalanceOf,
 } from '../../../hooks/useCourtContracts'
 import { useCourtConfig } from '../../../providers/CourtConfig'
-import { useConnectedAccount } from '../../../providers/Web3'
+import { useWallet } from '../../../providers/Wallet'
 
 const AppealPanel = React.memo(function AppealPanel({
   dispute,
@@ -29,7 +27,7 @@ const AppealPanel = React.memo(function AppealPanel({
     value: -1,
     error: null,
   })
-  const connectedAccount = useConnectedAccount()
+  const { account: connectedAccount } = useWallet()
 
   const handleOutcomeSelected = useCallback(newOutcome => {
     setSelectedOutcome({ value: newOutcome })
@@ -197,9 +195,7 @@ const AppealPanel = React.memo(function AppealPanel({
       <Info>
         Please note that if the final ruling outcome is different from your
         selected appeal, the entire amount of your collateral will be slashed.{' '}
-        <Link href="#" external={false}>
-          Learn more
-        </Link>
+        <Link href="#">Learn more</Link> {/* TODO: add ref */}
       </Info>
     </form>
   )

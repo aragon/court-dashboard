@@ -1,15 +1,12 @@
 import React, { useMemo } from 'react'
 import { GU, Help, textStyle, useTheme } from '@aragon/ui'
-
 import { Phase as DisputePhase } from '../../types/dispute-status-types'
-
 import DisputeVoting from './actions/DisputeVoting'
 import DisputeDraft from './actions/DisputeDraft'
 import DisputeReveal from './actions/DisputeReveal'
 import DisputeAppeal from './actions/DisputeAppeal'
 import DisputeExecuteRuling from './actions/DisputeExecuteRuling'
-
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 import {
   getJurorDraft,
   hasJurorVoted,
@@ -37,7 +34,7 @@ function DisputeActions({
   const { phase } = dispute
   const lastRound = getDisputeLastRound(dispute)
 
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   if (phase === DisputePhase.Evidence) {
     return null
@@ -47,7 +44,7 @@ function DisputeActions({
     return <DisputeDraft disputeId={dispute.id} onDraft={onDraft} />
   }
 
-  const jurorDraft = getJurorDraft(lastRound, connectedAccount) // TODO: Should we also show results for past rounds ?
+  const jurorDraft = getJurorDraft(lastRound, wallet.account) // TODO: Should we also show results for past rounds ?
   const isJurorDrafted = !!jurorDraft
 
   const jurorHasVoted = isJurorDrafted && hasJurorVoted(jurorDraft)
@@ -292,7 +289,7 @@ const ANJLockedMessage = ({ finalRulingConfirmed }) => {
       result={`will remain locked until ${
         finalRulingConfirmed
           ? 'penalties are settled'
-          : 'final ruling is confirmed'
+          : 'the dispute has been resolved'
       }. `}
     />
   )

@@ -15,7 +15,7 @@ import DisputeStatus from './DisputeStatus'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
 import Loading from './Loading'
-import { useConnectedAccount } from '../../providers/Web3'
+import { useWallet } from '../../providers/Wallet'
 
 import {
   Phase as DisputePhase,
@@ -46,6 +46,8 @@ const DisputeInfo = React.memo(function({
   const isFinalRulingEnsured =
     phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
 
+  const lastRound = dispute?.rounds?.[dispute.lastRoundId]
+
   return (
     <Box>
       <section
@@ -71,8 +73,8 @@ const DisputeInfo = React.memo(function({
                         value={
                           <DisputeOutcomeText
                             outcome={
-                              dispute.rounds[dispute.lastRoundId].vote
-                                ?.winningOutcome
+                              lastRound.appeal?.appealedRuling ||
+                              lastRound.vote?.winningOutcome
                             }
                             phase={dispute.phase}
                             disputeEnded={isFinalRulingEnsured}
@@ -136,14 +138,6 @@ const DisputeInfo = React.memo(function({
   )
 })
 
-// {agreementText ? (
-//   <Field
-//     label="Link to agreement"
-//     value={<Link href={agreementText}>{agreementText}</Link>}
-//   />
-// ) : (
-//   <div />
-// )}
 function DisputeHeader({ id, dispute }) {
   const theme = useTheme()
   const transaction = dispute && dispute.txHash
@@ -207,7 +201,7 @@ function DisputeHeader({ id, dispute }) {
 
 function Field({ label, value }) {
   const theme = useTheme()
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   return (
     <div>
@@ -228,7 +222,7 @@ function Field({ label, value }) {
           `}
         >
           <IdentityBadge
-            connectedAccount={addressesEqual(value, connectedAccount)}
+            connectedAccount={addressesEqual(value, wallet.account)}
             entity={value}
           />
         </div>

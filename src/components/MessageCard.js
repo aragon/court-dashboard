@@ -31,7 +31,7 @@ export default function MessageCard({
           css={`
             display: block;
             width: 100%;
-            max-width: ${30 * GU}px;
+            max-width: ${(isCompactMode ? 12 : 30) * GU}px;
             height: auto;
             margin: ${4 * GU}px 0;
           `}
@@ -69,7 +69,7 @@ export default function MessageCard({
             <div
               css={`
                 ${textStyle('body2')}
-                color: ${theme.contentSecondary};
+                color: ${theme.surfaceContentSecondary};
                 margin-top: ${1.5 * GU}px;
                 width: ${(isCompactMode ? 25 : 55) * GU}px;
                 display: flex;

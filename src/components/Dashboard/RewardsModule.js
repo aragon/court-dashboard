@@ -9,13 +9,10 @@ import {
   useTheme,
   Link,
 } from '@aragon/ui'
-
 import Loading from './Loading'
 import NoRewards from './NoRewards'
-
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useConnectedAccount } from '../../providers/Web3'
-
+import { useWallet } from '../../providers/Wallet'
 import { formatTokenAmount, bigNum } from '../../lib/math-utils'
 
 const useTotalDisputesFees = (arbitrableFees, appealFees) => {
@@ -38,7 +35,7 @@ const RewardsModule = React.memo(function RewardsModule({
   onSettleReward,
   onSettleAppealDeposit,
 }) {
-  const connectedAccount = useConnectedAccount()
+  const wallet = useWallet()
 
   // Form submission
   const handleFormSubmit = async event => {
@@ -53,7 +50,7 @@ const RewardsModule = React.memo(function RewardsModule({
         const { disputeId, rounds } = arbitrableFee
         for (const roundId of rounds) {
           arbitrableTxs.push(
-            await onSettleReward(disputeId, roundId, connectedAccount)
+            await onSettleReward(disputeId, roundId, wallet.account)
           )
         }
       }
@@ -225,7 +222,7 @@ const DisputesFees = ({
           <h3
             css={`
               ${textStyle('label1')}
-              color: ${theme.contentSecondary};
+              color: ${theme.surfaceContentSecondary};
               margin-bottom: ${1 * GU}px;
             `}
           >
@@ -256,7 +253,7 @@ const DisputesFeeDistribution = ({ totalDisputesFees, symbol, decimals }) => {
       <h3
         css={`
           ${textStyle('label2')}
-          color: ${theme.contentSecondary};
+          color: ${theme.surfaceContentSecondary};
           margin-bottom: ${2 * GU}px;
         `}
       >
