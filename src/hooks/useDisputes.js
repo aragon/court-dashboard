@@ -8,6 +8,7 @@ import {
 } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { convertToString } from '../types/dispute-status-types'
+import { processDisputeData } from '../dispute-logic'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
@@ -39,6 +40,7 @@ export default function useDisputes() {
     return {
       disputes: disputes.map((dispute, i) => ({
         ...dispute,
+        ...processDisputeData(dispute),
         ...disputesPhases[i],
       })),
     }
@@ -63,6 +65,7 @@ export function useDispute(disputeId) {
     return {
       dispute: {
         ...dispute,
+        ...processDisputeData(dispute),
         ...disputePhase,
       },
       fetching,

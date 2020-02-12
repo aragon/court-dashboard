@@ -8,7 +8,7 @@ import DisputePhase from './DisputePhase'
 
 function DisputeCard({ dispute, onSelectDispute }) {
   const theme = useTheme()
-  const { id, metadata, phase, nextTransition } = dispute
+  const { id, description, phase, nextTransition } = dispute
 
   const handleClick = useCallback(() => {
     onSelectDispute(id)
@@ -41,7 +41,7 @@ function DisputeCard({ dispute, onSelectDispute }) {
           <strong> Dispute #{id}</strong>
         </h3>
         <DisputeText
-          text={metadata}
+          text={description}
           css={`
             overflow: hidden;
             ${textStyle('body2')};
