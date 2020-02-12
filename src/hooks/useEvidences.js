@@ -31,6 +31,17 @@ export default function useEvidences(evidences) {
     evidences.forEach(async evidence => {
       const { data: evidenceData, submitter, createdAt } = evidence
 
+      const newHash =
+        'bytes(ipfs:QmYvKapNiTm4dcYxzB9e5ACvmxM4Dx5psYUQvnY28JniJx)'
+      const [type, content] = newHash
+        .replace(/(\w+)\((.+)\)/, '$1,$2')
+        .split(',')
+
+      const ipfs = content.replace(/^holas:/, '')
+      console.log('ipfs ', ipfs)
+      console.log('type', type)
+      console.log('content ', content)
+
       // check if the metadata inside the evidence is a cid
       if (isIPFS.multihash(evidenceData) || isIPFS.cid(evidenceData)) {
         const { data, error } = await ipfsGet(evidenceData)
