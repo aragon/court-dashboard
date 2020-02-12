@@ -234,10 +234,9 @@ function PhaseIcon({ phase, active }) {
 
   return (
     <img
-      css={`
-        height: ${GU * 6}px;
-      `}
       src={active ? icon.active : icon.inactive}
+      width={6 * GU}
+      height={6 * GU}
       alt=""
     />
   )
