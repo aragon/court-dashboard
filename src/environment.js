@@ -6,6 +6,9 @@ const ENV_VARS = {
     const chainId = parseInt(process.env.REACT_APP_CHAIN_ID)
     return isNaN(chainId) ? CHAIN_ID_DEFAULT : chainId
   },
+  SUBGRAPH_NAME() {
+    return process.env.REACT_APP_SUBGRAPH_NAME
+  },
   FORTMATIC_API_KEY() {
     return process.env.REACT_APP_FORTMATIC_API_KEY || ''
   },

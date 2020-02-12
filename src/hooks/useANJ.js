@@ -18,6 +18,7 @@ import {
 import { getTermStartTime } from '../utils/court-utils'
 import { getDraftLockAmount } from '../utils/dispute-utils'
 import { ANJBalance, ANJMovement } from '../types/anj-types'
+import dayjs from 'dayjs'
 
 export function useANJBalances() {
   const { balances, movements } = useDashboardState()
@@ -194,7 +195,12 @@ function useFilteredMovements(movements, acceptedMovements) {
       return null
     }
     return movements.filter(movement => {
-      return isMovementOf(acceptedMovements, ANJMovement[movement.type])
+      return (
+        isMovementOf(acceptedMovements, ANJMovement[movement.type]) &&
+        dayjs(new Date(movement.createdAt * 1000)).isAfter(
+          dayjs('2020-02-10T16:00:00.000Z')
+        )
+      )
     })
   }, [acceptedMovements, movements])
 }
