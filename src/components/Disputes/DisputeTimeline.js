@@ -24,7 +24,6 @@ import {
   Phase as DisputePhase,
   getPhaseStringForStatus,
 } from '../../types/dispute-status-types'
-import dayjs from '../../lib/dayjs'
 import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 
@@ -252,7 +251,7 @@ function DisplayTime({ item }) {
     ) {
       return 'ANY TIME'
     }
-    return <Timer end={dayjs(endTime)} />
+    return <Timer end={new Date(endTime)} />
   }
   return <>{dateFormat(endTime, 'DD/MM/YY')}</>
 }
