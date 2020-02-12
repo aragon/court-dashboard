@@ -67,7 +67,10 @@ export default function useJurorRewards() {
         const nextRoundId = round.number + 1
         const nextRound = round.dispute.rounds[nextRoundId]
 
-        const totalFees = getRoundFees(nextRound, courtConfig)
+        // It could happen that the appeal is never confirmed. In this case the appealer should get the entire appeal deposit
+        const totalFees = nextRound
+          ? getRoundFees(nextRound, courtConfig)
+          : bigNum(0)
 
         const appealerFees = getAppealerFees(appeal, totalFees, wallet.account)
 
