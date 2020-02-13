@@ -8,8 +8,7 @@ import DisputePhase from './DisputePhase'
 
 function DisputeCard({ dispute, onSelectDispute }) {
   const theme = useTheme()
-  const { id, description, phase, nextTransition } = dispute
-
+  const { id, description, finalRuling, nextTransition, phase } = dispute
   const handleClick = useCallback(() => {
     onSelectDispute(id)
   }, [id, onSelectDispute])
@@ -54,7 +53,11 @@ function DisputeCard({ dispute, onSelectDispute }) {
           `}
         />
       </div>
-      <DisputePhase phase={phase} nextTransition={nextTransition} />
+      <DisputePhase
+        finalRuling={finalRuling}
+        nextTransition={nextTransition}
+        phase={phase}
+      />
     </CardItem>
   )
 }

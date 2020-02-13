@@ -31,6 +31,8 @@ export const transformResponseDisputeAttributes = dispute => {
         number: parseInt(round.number),
         jurors: round.jurors.map(juror => ({
           ...juror,
+          commitmentDate: parseInt(juror.commitmentDate || 0, 10) * 1000,
+          revealDate: parseInt(juror.revealDate || 0, 10) * 1000,
           weight: parseInt(juror.weight, 10),
         })),
         vote: vote
