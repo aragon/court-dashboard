@@ -71,6 +71,9 @@ export const SingleDispute = gql`
         data
         createdAt
       }
+      subject {
+        id
+      }
       rounds {
         id
         state

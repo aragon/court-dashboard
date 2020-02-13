@@ -1,114 +1,188 @@
 import React from 'react'
-import { Accordion, GU, IdentityBadge, textStyle, useTheme } from '@aragon/ui'
-
+import {
+  Accordion,
+  GU,
+  IdentityBadge,
+  SyncIndicator,
+  textStyle,
+  useTheme,
+} from '@aragon/ui'
+import useEvidences from '../../hooks/useEvidences'
 import dayjs from '../../lib/dayjs'
+import { addressesEqual } from '../../lib/web3-utils'
+import ErrorLoadingEvidence from './ErrorLoadingEvidence'
+import Markdown from '../Markdown'
 
 import folderIcon from '../../assets/folderIcon.svg'
 
-const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
-  const theme = useTheme()
+const DisputeEvidences = React.memo(function DisputeEvidences({
+  evidences,
+  plaintiff,
+  defendant,
+}) {
+  const evidenceProcessed = useEvidences(evidences)
+  const evidencesFetching = evidenceProcessed.length < evidences.length
+
   return (
     <React.Fragment>
-      {evidences.map((evidence, index) => {
-        const { createdAt, submitter, data } = evidence
-        return (
-          <Accordion
-            key={index}
-            items={[
-              [
-                <div
-                  css={`
-                    display: flex;
-                    align-items: center;
-                  `}
-                >
-                  <img src={folderIcon} width="17" height="20" alt="" />
-                  <span
+      <SyncIndicator visible={evidencesFetching} label="Loading evidences..." />
+      {evidenceProcessed &&
+        evidenceProcessed.map((evidence, index) => {
+          const { createdAt, submitter, metadata, error } = evidence
+          return (
+            <Accordion
+              key={index}
+              items={[
+                [
+                  <div
                     css={`
-                      margin-left: ${GU * 1.5}px;
+                      display: flex;
+                      align-items: center;
                     `}
                   >
-                    Evidence #{index + 1}
-                  </span>
-                </div>,
-                <div
-                  css={`
-                    display: grid;
-                    grid-template-columns: minmax(250px, auto) minmax(
-                        250px,
-                        auto
-                      );
-                    grid-gap: ${5 * GU}px;
-                    margin-bottom: ${2 * GU}px;
-                    padding: ${3 * GU}px ${8 * GU}px;
-                  `}
-                >
-                  <div>
-                    <h2
-                      css={`
-                        ${textStyle('label2')};
-                        color: ${theme.surfaceContentSecondary};
-                        margin-bottom: ${2 * GU}px;
-                      `}
-                    >
-                      Submitted by
-                    </h2>
-                    <div
-                      css={`
-                        display: flex;
-                        align-items: flex-start;
-                      `}
-                    >
-                      <IdentityBadge
-                        // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- ADD connnected account
-                        entity={submitter}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <h2
-                      css={`
-                        ${textStyle('label2')};
-                        color: ${theme.surfaceContentSecondary};
-                        margin-bottom: ${2 * GU}px;
-                      `}
-                    >
-                      Date
-                    </h2>
+                    <img src={folderIcon} width="17" height="20" alt="" />
                     <span
                       css={`
-                        ${textStyle('body2')};
+                        margin-left: ${1.5 * GU}px;
                       `}
                     >
-                      {dayjs(createdAt).format('DD/MM/YY')}
+                      Evidence #{index + 1}
                     </span>
-                  </div>
-                  <div>
-                    <h2
-                      css={`
-                        ${textStyle('label2')};
-                        color: ${theme.surfaceContentSecondary};
-                        margin-bottom: ${2 * GU}px;
-                      `}
-                    >
-                      Data
-                    </h2>
-                    <div
-                      css={`
-                        display: flex;
-                        align-items: flex-start;
-                      `}
-                    >
-                      {data}
-                    </div>
-                  </div>
-                </div>,
-              ],
-            ]}
-          />
-        )
-      })}
+                  </div>,
+                  <EvidenceContent
+                    plaintiff={plaintiff}
+                    defendant={defendant}
+                    metadata={metadata}
+                    submitter={submitter}
+                    createdAt={createdAt}
+                    error={error}
+                  />,
+                ],
+              ]}
+            />
+          )
+        })}
     </React.Fragment>
+  )
+})
+
+const EvidenceContent = React.memo(function EvidenceContent({
+  plaintiff,
+  defendant,
+  metadata,
+  submitter,
+  createdAt,
+  error,
+}) {
+  const theme = useTheme()
+
+  if (error) {
+    return <ErrorLoadingEvidence />
+  }
+  return (
+    <div
+      css={`
+        margin-bottom: ${2 * GU}px;
+        padding: ${3 * GU}px ${8 * GU}px;
+      `}
+    >
+      <div
+        css={`
+          display: grid;
+          grid-template-columns:
+            minmax(180px, auto) minmax(180px, auto)
+            minmax(180px, auto);
+          grid-gap: ${5 * GU}px;
+          margin-bottom: ${5 * GU}px;
+        `}
+      >
+        <div>
+          <h2
+            css={`
+              ${textStyle('label2')};
+              color: ${theme.surfaceContentSecondary};
+              margin-bottom: ${2 * GU}px;
+            `}
+          >
+            Submitted by
+          </h2>
+          <div
+            css={`
+              display: flex;
+              align-items: flex-start;
+            `}
+          >
+            <IdentityBadge
+              // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- ADD connnected account
+              entity={submitter}
+            />
+          </div>
+        </div>
+        <div>
+          <h2
+            css={`
+              ${textStyle('label2')};
+              color: ${theme.surfaceContentSecondary};
+              margin-bottom: ${2 * GU}px;
+            `}
+          >
+            Date
+          </h2>
+          <span
+            css={`
+              ${textStyle('body2')};
+            `}
+          >
+            {dayjs(createdAt).format('DD/MM/YY')}
+          </span>
+        </div>
+        <div>
+          <h2
+            css={`
+              ${textStyle('label2')};
+              color: ${theme.surfaceContentSecondary};
+              margin-bottom: ${2 * GU}px;
+            `}
+          >
+            Argument
+          </h2>
+          <span
+            css={`
+              ${textStyle('body2')};
+            `}
+          >
+            {(() => {
+              if (addressesEqual(plaintiff, submitter)) {
+                return 'In favor'
+              }
+              if (addressesEqual(defendant, submitter)) {
+                return 'Against'
+              }
+              return 'Neutral'
+            })()}
+          </span>
+        </div>
+      </div>
+      <div>
+        <h2
+          css={`
+            ${textStyle('label2')};
+            color: ${theme.surfaceContentSecondary};
+            margin-bottom: ${2 * GU}px;
+          `}
+        >
+          Data
+        </h2>
+        <div
+          css={`
+            display: flex;
+            align-items: flex-start;
+          `}
+        >
+          <Markdown text={metadata} />
+        </div>
+      </div>
+    </div>
   )
 })
 
