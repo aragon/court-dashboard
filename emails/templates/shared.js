@@ -11,6 +11,26 @@ function base({ title, subtitle, content }) {
           <mj-text padding="0" />
           <mj-all font-family="Overpass, sans-serif" color="#9096B6" font-weight="300" />
         </mj-attributes>
+        <mj-style>
+          @media only screen and (max-width: 480px) {
+            .infobox-table {
+              width: 100% !important;
+            }
+            .infobox-col {
+              display: block !important;
+              width: 100% !important;
+            }
+            .infobox-icon {
+              text-align: center !important;
+              font-size: 16px !important;
+            }
+            .infobox-content {
+              text-align: center !important;
+              padding: 0 24px 24px !important;
+              font-size: 16px !important;
+            }
+          }
+        </mj-style>
       </mj-head>
       <mj-body background-color="#ffffff" width="824px">
         <mj-section padding="60px 40px 24px">
@@ -50,6 +70,7 @@ function base({ title, subtitle, content }) {
               ${link('notifications settings', '')} if you not longer wish to
               receive these.
             </mj-text>
+            <mj-spacer height="40px" />
           </mj-column>
         </mj-section>
       </mj-body>
@@ -65,7 +86,7 @@ function link(label, href) {
 
 function action(label, href, { padding = '0' } = {}) {
   return `
-    <mj-raw>
+    <mj-text>
       <table
         role="presentation"
         cellpadding="0"
@@ -81,10 +102,7 @@ function action(label, href, { padding = '0' } = {}) {
                 href="${href}"
                 style="
                   display: block;
-                  display: flex;
-                  align-items: center;
                   text-align: center;
-                  justify-content: center;
                   width: 100%;
                   height: 40px;
                   font-family: Overpass, sans-serif;
@@ -105,7 +123,7 @@ function action(label, href, { padding = '0' } = {}) {
           </tr>
         </tbody>
       </table>
-    </mj-raw>
+    </mj-text>
   `
 }
 
@@ -115,57 +133,92 @@ function infobox({ mode, primary, secondary }) {
   const primaryColor = mode === 'negative' ? '#30404F' : '#26C395'
   const secondaryColor = mode === 'negative' ? '#637381' : '#9096B6'
   return `
-    <mj-raw>
+    <mj-text>
       <table
         role="presentation"
+        border="0"
         cellpadding="0"
         cellspacing="0"
-        border="0"
-        align="center"
-        style="background-color:${background};width:100%;border-radius:4px;font-family:Overpass, sans-serif;"
+        width="100%"
+        class="infobox-table"
+        style="
+          width:100%;
+          border-radius:4px;
+          font-family:Overpass, sans-serif;
+          background-color:${background};
+        "
       >
-        <tbody>
-          <tr>
-            <td style="width:50px;padding:24px;direction:ltr;">
-              <img
-                alt=""
-                width="50"
-                height="50"
-                src="${ASSETS_URL}/${icon}"
-                style="border:0;display:block;outline:none;text-decoration:none;height:50px;width:50px;font-size:16px;"
-              />
-            </td>
-            <td align="left" style="direction:ltr;padding: 24px 0;text-align:left;font-size:16px;color:#9096B6;">
-              <table
-                role="presentation"
-                cellpadding="0"
-                cellspacing="0"
-                border="0"
-                align="center"
-                style="width:100%;margin:0;font-family:Overpass, sans-serif;font-weight:300;"
-              >
-                <tbody>
-                  <tr>
-                    <td style="direction:ltr;font-size:20px;color:${primaryColor};">
-                      ${primary}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td height="5"></td>
-                  </tr>
-                  <tr>
-                    <td style="direction:ltr;color:${secondaryColor};">
-                      ${secondary}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-            <td style="width:24px;"></td>
-          </tr>
-        </tbody>
+        <tr>
+          <td align="center" valign="center" width="83" class="infobox-col">
+            <table border="0" cellpadding="10" cellspacing="0" width="100%">
+              <tr>
+                <td
+                  class="infobox-icon"
+                  style="
+                    width: 75px;
+                    padding: 8px 0 8px 8px;
+                    direction: ltr;
+                  "
+                >
+                  <img
+                    alt=""
+                    width="75"
+                    height="80"
+                    src="${ASSETS_URL}/${icon}"
+                    style="
+                      border: 0;
+                      outline: none;
+                      text-decoration: none;
+                      width: 75px;
+                      height: 80px;
+                      font-size: 16px;
+                    "
+                  />
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td align="center" valign="top" class="infobox-col">
+            <table border="0" cellpadding="10" cellspacing="0" width="100%">
+              <tr>
+                <td
+                  align="left"
+                  class="infobox-content"
+                  style="
+                    direction: ltr;
+                    padding: 24px 8px;
+                    text-align: left;
+                    font-size: 16px;
+                    color: #9096B6;
+                ">
+                  <table
+                    role="presentation"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                    align="center"
+                    style="width:100%;margin:0;font-family:Overpass, sans-serif;font-weight:300;"
+                  >
+                    <tbody>
+                      <tr>
+                        <td style="padding-bottom:5px;direction:ltr;font-size:20px;line-height:28px;color:${primaryColor};">
+                          ${primary}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="direction:ltr;color:${secondaryColor};line-height:24px;">
+                          ${secondary}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
       </table>
-    </mj-raw>
+    </mj-text>
   `
 }
 
@@ -205,6 +258,10 @@ function dataTable({ headers = [], rows = [] }) {
                   `
                     <td
                       style="
+                        padding: 24px 0;
+                        padding-${
+                          cellIndex === row.length - 1 ? 'left' : 'right'
+                        }: 16px;
                         font-size: 16px;
                         line-height: 32px;
                         white-space: nowrap;
@@ -212,10 +269,6 @@ function dataTable({ headers = [], rows = [] }) {
                         text-align: ${
                           cellIndex === row.length - 1 ? 'right' : 'left'
                         };
-                        padding: 24px 0;
-                        padding-${
-                          cellIndex === row.length - 1 ? 'left' : 'right'
-                        }: 16px;
                         border-top: ${
                           rowIndex === 0 ? '0' : '1px solid #DDE4E9'
                         };

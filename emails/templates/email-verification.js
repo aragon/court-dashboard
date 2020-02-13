@@ -20,7 +20,9 @@ module.exports = function notifications() {
 
         ${action('Verify your email', '')}
 
-        <mj-text font-size="16px" line-height="24px" color="#212B36" padding="0 40px 40px">
+        <mj-spacer height="40px" />
+
+        <mj-text font-size="16px" line-height="24px" color="#212B36">
           Or copy and paste this URL into your browser:
           ${link(
             'https://app.aragon.org/confirm?email=paty%40aragon.one&token=BxN5wBjmCz47mrx0KsfA9KvE&mode=signup',
