@@ -1,4 +1,4 @@
-const { action, base, footer, link } = require('./shared')
+const { action, base, link } = require('./shared')
 
 module.exports = function() {
   return base({

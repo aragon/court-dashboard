@@ -1,4 +1,4 @@
-const { action, dataTable, base, footer, link } = require('./shared')
+const { dataTable, base, link } = require('./shared')
 const { ASSETS_URL } = require('../env')
 
 module.exports = function() {
