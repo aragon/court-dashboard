@@ -47,6 +47,8 @@ const DisputeInfo = React.memo(function({
     phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
 
   const lastRound = dispute?.rounds?.[dispute.lastRoundId]
+  const appealedRuling = lastRound?.appeal?.appealedRuling
+  const voteWinningOutcome = lastRound?.vote?.winningOutcome
 
   return (
     <Box>
@@ -72,12 +74,12 @@ const DisputeInfo = React.memo(function({
                         label="Final jury outcome"
                         value={
                           <DisputeOutcomeText
-                            outcome={
-                              lastRound.appeal?.appealedRuling ||
-                              lastRound.vote?.winningOutcome
+                            outcome={appealedRuling || voteWinningOutcome}
+                            phase={
+                              appealedRuling
+                                ? DisputePhase.AppealRuling
+                                : DisputePhase.RevealVote
                             }
-                            phase={dispute.phase}
-                            disputeEnded={isFinalRulingEnsured}
                           />
                         }
                       />

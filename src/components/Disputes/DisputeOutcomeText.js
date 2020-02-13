@@ -1,23 +1,32 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { textStyle, useTheme, IconClose, IconCheck } from '@aragon/ui'
 
 import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import {
-  juryOutcomeToString,
   appealRulingToString,
+  finalRulingToString,
+  juryOutcomeToString,
   OUTCOMES,
 } from '../../utils/crvoting-utils'
 
-function DisputeOutcomeText({ outcome, phase, disputeEnded }) {
+function DisputeOutcomeText({ isFinalRuling, outcome, phase }) {
   const { Icon, color } = useOutcomeStyle(outcome)
 
-  let outcomeText
-  if (disputeEnded || phase === DisputePhase.RevealVote) {
-    outcomeText = juryOutcomeToString(outcome)
-  } else {
-    const confirm = phase === DisputePhase.ConfirmAppeal
-    outcomeText = appealRulingToString(outcome, confirm)
-  }
+  const outcomeText = useMemo(() => {
+    if (isFinalRuling) {
+      return finalRulingToString(outcome)
+    }
+
+    if (
+      phase === DisputePhase.AppealRuling ||
+      phase === DisputePhase.ConfirmAppeal
+    ) {
+      const confirm = phase === DisputePhase.ConfirmAppeal
+      return appealRulingToString(outcome, confirm)
+    }
+
+    return juryOutcomeToString(outcome)
+  }, [isFinalRuling, outcome, phase])
 
   return (
     <div>

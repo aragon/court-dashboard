@@ -14,7 +14,7 @@ import {
 } from '../../utils/juror-draft-utils'
 import {
   isvoteLeaked,
-  voteToString,
+  voteOptionToString,
   OUTCOMES,
 } from '../../utils/crvoting-utils'
 
@@ -350,7 +350,7 @@ const VoteInfo = ({ outcome }) => {
       return { text: 'Refused to vote' }
     }
 
-    return { prefix: 'voted ', text: voteToString(outcome) }
+    return { prefix: 'voted ', text: voteOptionToString(outcome) }
   }, [outcome])
 
   return (
