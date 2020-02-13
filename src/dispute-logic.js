@@ -64,7 +64,7 @@ export function useDisputeLogic(disputeId) {
 
   return {
     actions,
-    dispute: processDisputeData(dispute),
+    dispute,
     disputeFetching: fetching,
     requestMode,
     panelState,

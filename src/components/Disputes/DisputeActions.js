@@ -36,6 +36,8 @@ function DisputeActions({
 
   const wallet = useWallet()
 
+  console.log(dispute)
+
   if (phase === DisputePhase.Evidence) {
     return null
   }
