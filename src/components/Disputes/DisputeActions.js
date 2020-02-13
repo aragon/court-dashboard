@@ -17,7 +17,7 @@ import {
   voteToString,
   OUTCOMES,
 } from '../../utils/crvoting-utils'
-import dayjs, { DATE_FORMAT } from '../../lib/dayjs'
+import { dateFormat } from '../../utils/date-utils'
 
 import IconGavelOrange from '../../assets/IconGavelOrange.svg'
 import IconGavelRed from '../../assets/IconGavelRed.svg'
@@ -352,7 +352,10 @@ const ANJRewardsMessage = () => {
 const VoteInfo = ({ commitmentDate, outcome, revealDate }) => {
   const theme = useTheme()
 
-  const formattedDate = dayjs(revealDate || commitmentDate).format(DATE_FORMAT)
+  const formattedDate = dateFormat(
+    new Date(revealDate || commitmentDate),
+    'standard'
+  )
 
   const outcomeDescription = useMemo(() => {
     if (outcome === OUTCOMES.Refused) {
