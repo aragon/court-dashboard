@@ -11,9 +11,8 @@ const dueTasks = require('./templates/due-tasks')
 const DIST_DIR = path.join(__dirname, 'dist')
 
 function renderTemplate(template, filename) {
-  const output = mjml2html(template(), {
-    beautify: true,
-  })
+  const output = mjml2html(template(), { beautify: true })
+
   if (output.errors.length) {
     console.error(output.errors)
     process.exit(1)

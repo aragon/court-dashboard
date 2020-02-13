@@ -1,4 +1,4 @@
-const { action, dataTable, base, footer, link } = require('./shared')
+const { addressBadge, dataTable, base, link } = require('./shared')
 const { ASSETS_URL } = require('../env')
 
 module.exports = function() {
@@ -19,7 +19,11 @@ module.exports = function() {
 
   return base({
     title: 'Task Reminder',
-    subtitle: 'Here are your upcoming tasks for Thursday, 17 Dec, 2019',
+    subtitle: `
+      Here are the upcoming tasks for the address
+      ${addressBadge('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd')}
+      on Thursday, 17 Dec, 2019
+    `,
     content: `
         <mj-text font-size="16px" line-height="24px" color="#212B36" padding="0 0 40px">
           You have 2 tasks due today:

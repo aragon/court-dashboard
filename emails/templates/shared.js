@@ -51,7 +51,7 @@ function base({ title, subtitle, content }) {
                 <span style="font-weight: 400; color: #FF9184">Aragon Court</span> ${title}
               </mj-text>
               <mj-spacer height="8px" />
-              <mj-text line-height="16px">
+              <mj-text font-size="16px" line-height="24px">
                 ${subtitle}
               </mj-text>
               <mj-spacer height="50px" />
@@ -75,6 +75,24 @@ function base({ title, subtitle, content }) {
         </mj-section>
       </mj-body>
     </mjml>
+  `
+}
+
+function addressBadge(address) {
+  return `
+    <a
+      href="https://etherscan.io/address/${address}"
+      tilte="${address}"
+      style="
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 16px;
+        line-height: 25px;
+        color: #212B36;
+        background: #EBFAFD;
+        text-decoration: none;
+      "
+    >${address.slice(0, 6)}&#x2026;${address.slice(-4)}</a>
   `
 }
 
@@ -235,9 +253,10 @@ function dataTable({ headers = [], rows = [] }) {
   return `
     <mj-table padding="0">
       <tr style="text-align:left;padding:16px 0;">
-        ${headers.map(
-          (header, index) =>
-            `
+        ${headers
+          .map(
+            (header, index) =>
+              `
               <th
                 style="
                   color: #637381;
@@ -256,11 +275,13 @@ function dataTable({ headers = [], rows = [] }) {
                 ${header}
               </th>
             `
-        )}
+          )
+          .join('\n')}
       </tr>
-      ${rows.map(
-        (row, rowIndex) =>
-          `
+      ${rows
+        .map(
+          (row, rowIndex) =>
+            `
             <tr>
               ${row.map(
                 (cell, cellIndex) =>
@@ -290,13 +311,15 @@ function dataTable({ headers = [], rows = [] }) {
               )}
             </tr>
           `
-      )}
+        )
+        .join('\n')}
     </mj-table>
   `
 }
 
 module.exports = {
   action,
+  addressBadge,
   base,
   dataTable,
   infobox,
