@@ -22,10 +22,7 @@ module.exports = function() {
 
         <mj-text font-size="16px" line-height="24px" color="#212B36">
           Or copy and paste this URL into your browser:
-          ${link(
-            'https://app.aragon.org/confirm?email=paty%40aragon.one&token=BxN5wBjmCz47mrx0KsfA9KvE&mode=signup',
-            ''
-          )}
+          ${link('https://app.aragon.org/confirm', '')}
         </mj-text>
       `,
   })
