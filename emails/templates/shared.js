@@ -1,6 +1,6 @@
 const { ASSETS_URL } = require('../env')
 
-function base({ title, subtitle, content }) {
+function base({ title, content, subtitleType = 'notifications' }) {
   return `
     <mjml lang="en">
       <mj-head>
@@ -52,7 +52,11 @@ function base({ title, subtitle, content }) {
               </mj-text>
               <mj-spacer height="8px" />
               <mj-text font-size="16px" line-height="24px">
-                ${subtitle}
+                ${
+                  subtitleType === 'notifications'
+                    ? `Here are the notifications for the address ${addressBadge()} on {{date}}`
+                    : ``
+                }
               </mj-text>
               <mj-spacer height="50px" />
               ${content}
@@ -63,10 +67,10 @@ function base({ title, subtitle, content }) {
           <mj-column>
             <mj-spacer height="40px" />
             <mj-text line-height="22px" font-size="14px">
-              This service is provided by
-              ${link('Aragon One AG', '')}. You are receiving this email because
-              you are subscribed to <strong style="font-weight:300;color:#637381">Aragon Court
-              Email Notifications</strong>. You can change your email
+              This service is provided by ${link('Aragon One AG', '')}. You are
+              receiving this email because you are subscribed to <strong
+              style="font-weight:300;color:#637381">Aragon Court Email
+              Notifications</strong>. You can change your email
               ${link('notifications settings', '')} if you not longer wish to
               receive these.
             </mj-text>
@@ -78,11 +82,11 @@ function base({ title, subtitle, content }) {
   `
 }
 
-function addressBadge(address) {
+function addressBadge() {
   return `
     <a
-      href="https://etherscan.io/address/${address}"
-      tilte="${address}"
+      href="https://etherscan.io/address/{{account}}"
+      tilte="{{account}}"
       style="
         padding: 5px 10px;
         border-radius: 4px;
@@ -92,7 +96,7 @@ function addressBadge(address) {
         background: #EBFAFD;
         text-decoration: none;
       "
-    >${address.slice(0, 6)}&#x2026;${address.slice(-4)}</a>
+    >{{accountStart}}&#x2026;{{accountEnd}}</a>
   `
 }
 

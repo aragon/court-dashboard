@@ -10,8 +10,9 @@ const dueTasks = require('./templates/due-tasks')
 
 const DIST_DIR = path.join(__dirname, 'dist')
 
-function renderTemplate(template, filename) {
-  const output = mjml2html(template(), { beautify: true })
+function renderTemplate(createTemplate, filename) {
+  const { template, mockData } = createTemplate()
+  const output = mjml2html(template, { beautify: true })
 
   if (output.errors.length) {
     console.error(output.errors)
@@ -23,6 +24,6 @@ function renderTemplate(template, filename) {
 }
 
 renderTemplate(drafted, 'drafted.html')
-renderTemplate(missedVote, 'missed-vote.html')
-renderTemplate(emailVerification, 'email-verification.html')
-renderTemplate(dueTasks, 'due-tasks.html')
+// renderTemplate(missedVote, 'missed-vote.html')
+// renderTemplate(emailVerification, 'email-verification.html')
+// renderTemplate(dueTasks, 'due-tasks.html')
