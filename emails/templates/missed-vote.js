@@ -1,12 +1,10 @@
-const mjml2html = require('mjml')
 const { action, infobox, base, footer, link } = require('./shared')
 
-module.exports = function notifications() {
-  return mjml2html(
-    base({
-      title: 'Notifications',
-      subtitle: 'Here are your notifications for Thursday, 17 Dec, 2019',
-      content: `
+module.exports = function() {
+  return base({
+    title: 'Notifications',
+    subtitle: 'Here are your notifications for Thursday, 17 Dec, 2019',
+    content: `
         ${infobox({
           mode: 'negative',
           primary: `
@@ -18,6 +16,5 @@ module.exports = function notifications() {
         })}
         ${action('Learn more', '', { padding: '16px 0 0' })}
       `,
-    })
-  )
+  })
 }

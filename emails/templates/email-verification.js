@@ -1,15 +1,13 @@
-const mjml2html = require('mjml')
 const { action, base, footer, link } = require('./shared')
 
-module.exports = function notifications() {
-  return mjml2html(
-    base({
-      title: 'Email Verification',
-      subtitle: `
+module.exports = function() {
+  return base({
+    title: 'Email Verification',
+    subtitle: `
         Verify your email to receive email notifications about importand news
         and upcoming tasks.
       `,
-      content: `
+    content: `
         <mj-text font-size="16px" line-height="24px" color="#212B36">
           To complete the verification process, please click on the button
           below. Please note that by completing this process you are agreeing
@@ -30,6 +28,5 @@ module.exports = function notifications() {
           )}
         </mj-text>
       `,
-    })
-  )
+  })
 }

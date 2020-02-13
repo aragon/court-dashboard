@@ -1,8 +1,7 @@
-const mjml2html = require('mjml')
 const { action, dataTable, base, footer, link } = require('./shared')
 const { ASSETS_URL } = require('../env')
 
-module.exports = function notifications() {
+module.exports = function() {
   const clock = `
     <img src="${ASSETS_URL}/clock.png" alt="" width="14" height="14" style="vertical-align: middle;margin-right: 4px;" />
   `
@@ -17,11 +16,11 @@ module.exports = function notifications() {
       vertical-align:middle;
     "></span>
   `
-  return mjml2html(
-    base({
-      title: 'Task Reminder',
-      subtitle: 'Here are your upcoming tasks for Thursday, 17 Dic, 2019',
-      content: `
+
+  return base({
+    title: 'Task Reminder',
+    subtitle: 'Here are your upcoming tasks for Thursday, 17 Dec, 2019',
+    content: `
         <mj-text font-size="16px" line-height="24px" color="#212B36" padding="0 0 40px">
           You have 2 tasks due today:
         </mj-text>
@@ -44,6 +43,5 @@ module.exports = function notifications() {
           ],
         })}
       `,
-    })
-  )
+  })
 }

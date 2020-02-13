@@ -2,7 +2,8 @@
 
 const fs = require('fs')
 const path = require('path')
-const notifications = require('./templates/notifications')
+const mjml2html = require('mjml')
+const drafted = require('./templates/drafted')
 const missedVote = require('./templates/missed-vote')
 const emailVerification = require('./templates/email-verification')
 const dueTasks = require('./templates/due-tasks')
@@ -10,7 +11,9 @@ const dueTasks = require('./templates/due-tasks')
 const DIST_DIR = path.join(__dirname, 'dist')
 
 function renderTemplate(template, filename) {
-  const output = template()
+  const output = mjml2html(template(), {
+    beautify: true,
+  })
   if (output.errors.length) {
     console.error(output.errors)
     process.exit(1)
@@ -20,7 +23,7 @@ function renderTemplate(template, filename) {
   fs.writeFileSync(path.join(DIST_DIR, filename), output.html, 'utf8')
 }
 
-renderTemplate(notifications, 'notifications-drafted.html')
+renderTemplate(drafted, 'drafted.html')
 renderTemplate(missedVote, 'missed-vote.html')
 renderTemplate(emailVerification, 'email-verification.html')
 renderTemplate(dueTasks, 'due-tasks.html')

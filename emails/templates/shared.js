@@ -78,9 +78,18 @@ function base({ title, subtitle, content }) {
   `
 }
 
-function link(label, href) {
+function link(label, href, { nowrap = false } = {}) {
   return `
-      <a href="${href}" style="text-decoration:none;color:#516DFF">${label}</a>
+    <a
+      href="${href}"
+      style="
+        text-decoration:none;
+        color:#516DFF;
+        ${nowrap ? 'white-space:nowrap;' : ''}
+      "
+    >
+      ${label}
+    </a>
     `.trim()
 }
 
