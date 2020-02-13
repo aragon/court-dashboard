@@ -1,5 +1,5 @@
 export const ERROR_TYPES = {
-  ERROR_FETCHING_IPFS: 'Error fetching ipfs content',
+  ERROR_FETCHING_IPFS: Symbol('Error fetching ipfs content'),
 }
 
 export const Status = {

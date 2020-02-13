@@ -27,13 +27,11 @@ In the frontend we try to parse the `metadata` as a json object.
 We are going to try to find the following keys:
 
 1. `description`
-2. `agreementText`
-3. `defendant`
-4. `plaintiff`
+2. `metadata`
 
 #### metadata - String
 
-In case that the metadata is just a plain string we are going to use it as the dispute description and the dispute creator `subject.id` will be considered as the plaintiff
+In case `metadata` is a plain string, we assume it to be the dispute's description and set the dispute creator (`subject.id`) as the plaintiff. No agreement link will be available.
 
 
 ## Evidence

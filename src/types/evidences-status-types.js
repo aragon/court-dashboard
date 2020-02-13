@@ -1,4 +1,4 @@
 export const ERROR_TYPES = {
-  ERROR_FETCHING_IPFS: 'Error fetching ipfs content',
-  ERROR_UNKNOWN_METADATA_TYPE: 'Unknown evidence metadata type',
+  ERROR_FETCHING_IPFS: Symbol('Error fetching ipfs content'),
+  ERROR_UNKNOWN_METADATA_TYPE: Symbol('Unknown evidence metadata type'),
 }
