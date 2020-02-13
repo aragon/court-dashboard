@@ -251,7 +251,7 @@ function DisplayTime({ item }) {
     ) {
       return 'ANY TIME'
     }
-    return <Timer end={new Date(endTime)} />
+    return <Timer end={new Date(endTime)} maxUnits={3} />
   }
   return <>{dateFormat(endTime, 'DD/MM/YY')}</>
 }
