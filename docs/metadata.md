@@ -8,7 +8,7 @@ type Dispute @entity {
   id: ID!
   ...
   subject: Arbitrable!
-  metadata: String!
+  metadata: Bytes!
   ...
 }
 ```
@@ -69,5 +69,4 @@ Show the content as the evidence text
 ### data - Plain String
 
 Show the data as the evidence text
-
 
