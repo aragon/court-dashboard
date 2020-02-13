@@ -1,6 +1,6 @@
 const { ASSETS_URL } = require('../env')
 
-function base({ title, content, subtitleType = 'notifications' }) {
+function base({ title, subtitle, content }) {
   return `
     <mjml lang="en">
       <mj-head>
@@ -52,11 +52,7 @@ function base({ title, content, subtitleType = 'notifications' }) {
               </mj-text>
               <mj-spacer height="8px" />
               <mj-text font-size="16px" line-height="24px">
-                ${
-                  subtitleType === 'notifications'
-                    ? `Here are the notifications for the address ${addressBadge()} on {{date}}`
-                    : ``
-                }
+                ${subtitle}
               </mj-text>
               <mj-spacer height="50px" />
               ${content}
@@ -253,13 +249,13 @@ function infobox({ mode, primary, secondary }) {
   `
 }
 
-function dataTable({ headers = [], rows = [] }) {
+function dataTable({ headers = [], listName }) {
   return `
     <mj-table padding="0">
       <tr style="text-align:left;padding:16px 0;">
         ${headers
           .map(
-            (header, index) =>
+            ([varName, label], index) =>
               `
               <th
                 style="
@@ -276,47 +272,41 @@ function dataTable({ headers = [], rows = [] }) {
                   };
                 "
               >
-                ${header}
+                ${label}
               </th>
             `
           )
           .join('\n')}
       </tr>
-      ${rows
-        .map(
-          (row, rowIndex) =>
-            `
-            <tr>
-              ${row.map(
-                (cell, cellIndex) =>
-                  `
-                    <td
-                      style="
-                        padding: 24px 0;
-                        padding-${
-                          cellIndex === row.length - 1 ? 'left' : 'right'
-                        }: 16px;
-                        font-size: 16px;
-                        line-height: 32px;
-                        white-space: nowrap;
-                        font-weight: 300;
-                        text-align: ${
-                          cellIndex === row.length - 1 ? 'right' : 'left'
-                        };
-                        border-top: ${
-                          rowIndex === 0 ? '0' : '1px solid #DDE4E9'
-                        };
-                        color: #26324E;
-                      "
-                    >
-                      ${cell}
-                    </td>
-                  `
-              )}
-            </tr>
-          `
-        )
-        .join('\n')}
+      {{#each ${listName}}}
+        <tr>
+          ${headers
+            .map(
+              ([varName], index) => `
+                <td
+                  style="
+                    padding: 24px 0;
+                    padding-${
+                      index === headers.length - 1 ? 'left' : 'right'
+                    }: 16px;
+                    font-size: 16px;
+                    line-height: 32px;
+                    white-space: nowrap;
+                    font-weight: 300;
+                    text-align: ${
+                      index === headers.length - 1 ? 'right' : 'left'
+                    };
+                    border-top: ${index === 0 ? '0' : '1px solid #DDE4E9'};
+                    color: #26324E;
+                  "
+                >
+                  {{${varName}}}
+                </td>
+              `
+            )
+            .join('\n')}
+        </tr>
+      {{/each}}
     </mj-table>
   `
 }

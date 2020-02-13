@@ -1,5 +1,5 @@
 const { addressBadge, dataTable, base, link } = require('./shared')
-const { ASSETS_URL } = require('../env')
+const { accountData } = require('../mock-utils')
 
 module.exports = function() {
   const statusOpenDue = `
@@ -14,35 +14,45 @@ module.exports = function() {
     "></span>
   `
 
-  return base({
-    title: 'Task Reminder',
-    subtitle: `
-      Here are the upcoming tasks for the address
-      ${addressBadge('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd')}
-      on Thursday, 17 Dec, 2019
-    `,
-    content: `
+  return {
+    template: base({
+      title: 'Task Reminder',
+      subtitle: `Here are the tasks for the address ${addressBadge()} on {{date}}`,
+      content: `
         <mj-text font-size="16px" line-height="24px" color="#212B36" padding="0 0 40px">
-          You have 2 tasks due today:
+          You have {{tasksCount}} tasks due today:
         </mj-text>
 
         ${dataTable({
-          headers: ['TASK', 'DISPUTE', 'STATUS', 'DUE DATE'],
-          rows: [
-            [
-              'Commit vote',
-              link('Dispute #12', ''),
-              `${statusOpenDue} Open: Due today`,
-              `18 Dec 2019 at 12:46pm`,
-            ],
-            [
-              'Reveal vote',
-              link('Dispute #14', ''),
-              `${statusOpenDue} Open: Due today`,
-              `18 Dec 2019 at 2:50pm`,
-            ],
+          listName: 'tasks',
+          headers: [
+            ['name', 'TASK'],
+            ['dispute', 'DISPUTE'],
+            ['status', 'STATUS'],
+            ['dueDate', 'DUE DATE'],
           ],
         })}
       `,
-  })
+    }),
+    mockdata: {
+      ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
+      date: 'Thursday, 17 Dec, 2019',
+      disputeId: '14',
+      disputeUrl: '',
+      // rows: [
+      //   [
+      //     'Commit vote',
+      //     link('Dispute #12', ''),
+      //     `${statusOpenDue} Open: Due today`,
+      //     `18 Dec 2019 at 12:46pm`,
+      //   ],
+      //   [
+      //     'Reveal vote',
+      //     link('Dispute #14', ''),
+      //     `${statusOpenDue} Open: Due today`,
+      //     `18 Dec 2019 at 2:50pm`,
+      //   ],
+      // ],
+    },
+  }
 }

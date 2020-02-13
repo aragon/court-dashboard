@@ -24,6 +24,6 @@ function renderTemplate(createTemplate, filename) {
 }
 
 renderTemplate(drafted, 'drafted.html')
-// renderTemplate(missedVote, 'missed-vote.html')
-// renderTemplate(emailVerification, 'email-verification.html')
-// renderTemplate(dueTasks, 'due-tasks.html')
+renderTemplate(missedVote, 'missed-vote.html')
+renderTemplate(emailVerification, 'email-verification.html')
+renderTemplate(dueTasks, 'due-tasks.html')

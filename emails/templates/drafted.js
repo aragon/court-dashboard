@@ -5,6 +5,7 @@ module.exports = function() {
   return {
     template: base({
       title: 'Notifications',
+      subtitle: `Here are the notifications for the address ${addressBadge()} on {{date}}`,
       content: `
         ${infobox({
           mode: 'positive',
@@ -24,8 +25,6 @@ module.exports = function() {
     }),
     mockdata: {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
-      title: 'Notifications',
-      subtitleType: 'notifications',
       date: 'Thursday, 17 Dec, 2019',
       disputeId: '14',
       disputeUrl: '',

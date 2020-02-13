@@ -1,13 +1,14 @@
 const { action, base, link } = require('./shared')
 
 module.exports = function() {
-  return base({
-    title: 'Email Verification',
-    subtitle: `
-      Verify your email to receive email notifications about important news
-      and upcoming tasks.
-    `,
-    content: `
+  return {
+    template: base({
+      title: 'Email Verification',
+      subtitle: `
+        Verify your email to receive email notifications about important news
+        and upcoming tasks.
+      `,
+      content: `
         <mj-text font-size="16px" line-height="24px" color="#212B36">
           To complete the verification process, please click on the button
           below. Please note that by completing this process you are agreeing
@@ -16,17 +17,19 @@ module.exports = function() {
 
         <mj-spacer height="40px" />
 
-        ${action('Verify your email', '')}
+        ${action('Verify your email', '{{verifyEmailUrl}}')}
 
         <mj-spacer height="40px" />
 
         <mj-text font-size="16px" line-height="24px" color="#212B36">
           Or copy and paste this URL into your browser:
-          ${link(
-            'https://app.aragon.org/confirm?email=paty%40aragon.one&token=BxN5wBjmCz47mrx0KsfA9KvE&mode=signup',
-            ''
-          )}
+          ${link('{{verifyEmailUrl}}', '{{verifyEmailUrl}}')}
         </mj-text>
       `,
-  })
+    }),
+    mockData: {
+      date: 'Thursday, 17 Dec, 2019',
+      verifyEmailUrl: '',
+    },
+  }
 }
