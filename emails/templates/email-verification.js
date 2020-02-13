@@ -4,7 +4,7 @@ module.exports = function() {
   return base({
     title: 'Email Verification',
     subtitle: `
-        Verify your email to receive email notifications about importand news
+        Verify your email to receive email notifications about important news
         and upcoming tasks.
       `,
     content: `
