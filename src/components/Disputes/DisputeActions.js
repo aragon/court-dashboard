@@ -17,6 +17,7 @@ import {
   voteOptionToString,
   OUTCOMES,
 } from '../../utils/crvoting-utils'
+import { dateFormat } from '../../utils/date-utils'
 
 import IconGavelOrange from '../../assets/IconGavelOrange.svg'
 import IconGavelRed from '../../assets/IconGavelRed.svg'
@@ -202,7 +203,7 @@ const useInfoAttributes = (
       return {
         title: voteLeaked
           ? 'Unfortunately, your vote has been leaked'
-          : "Your vote wasn't casted on time.",
+          : "Your vote wasn’t cast on time.",
         paragraph: <ANJDiscountedMessage />,
         background: negativeBackground,
         icon: IconGavelRed,
@@ -266,8 +267,14 @@ const useInfoAttributes = (
 
     // Juror has voted and reveal period hasn't ended
     return {
-      title: 'Your vote was casted successfuly.',
-      paragraph: <VoteInfo outcome={jurorDraft.outcome} />,
+      title: 'Your vote was cast successfuly.',
+      paragraph: (
+        <VoteInfo
+          commitmentDate={jurorDraft.commitmentDate}
+          outcome={jurorDraft.outcome}
+          revealDate={jurorDraft.revealDate}
+        />
+      ),
       background: theme.accent.alpha(0.05),
       icon: IconGavelOrange,
     }
@@ -342,8 +349,13 @@ const ANJRewardsMessage = () => {
   )
 }
 
-const VoteInfo = ({ outcome }) => {
+const VoteInfo = ({ commitmentDate, outcome, revealDate }) => {
   const theme = useTheme()
+
+  const formattedDate = dateFormat(
+    new Date(revealDate || commitmentDate),
+    'standard'
+  )
 
   const outcomeDescription = useMemo(() => {
     if (outcome === OUTCOMES.Refused) {
@@ -370,7 +382,7 @@ const VoteInfo = ({ outcome }) => {
           color: ${theme.content};
         `}
       >
-        (DATE PLACEHOLDER)
+        {formattedDate}
       </span>
     </span>
   )

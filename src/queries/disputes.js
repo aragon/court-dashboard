@@ -90,7 +90,9 @@ export const SingleDispute = gql`
           }
           weight
           commitment
+          commitmentDate
           outcome
+          revealDate
         }
         vote {
           id
