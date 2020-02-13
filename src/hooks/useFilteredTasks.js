@@ -56,7 +56,8 @@ function useFilteredTasks(jurorTasksSelected, connectedAccount) {
   const filteredTasks = useMemo(
     () =>
       tasksToFilter.filter(
-        ({ phaseType, dueDate }) =>
+        ({ phaseType, dueDate, open }) =>
+          open &&
           (selectedPhase === UNSELECTED_PHASE ||
             selectedPhase === ALL_FILTER ||
             phaseType === TASKS_ACTIONS_TYPES[selectedPhase]) &&

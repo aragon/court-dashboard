@@ -20,6 +20,10 @@ export const OpenTasks = gql`
           id
         }
       }
+      appeal {
+        id
+        opposedRuling
+      }
       dispute {
         id
         state
