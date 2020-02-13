@@ -12,10 +12,10 @@ module.exports = function() {
         ${infobox({
           mode: 'negative',
           primary: `
-            Your vote wasn’t casted on time
+            Your vote wasn’t cast on time
           `,
           secondary: `
-            Your ${link('ANJ locked balance', '')} has been discounted.
+            Some of your ${link('locked ANJ balance', '')} has been forfeit.
           `,
         })}
         ${action('Learn more', '', { padding: '16px 0 0' })}
