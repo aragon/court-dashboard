@@ -1,5 +1,5 @@
 import React from 'react'
-import { CircleGraph, GU, Help, useTheme } from '@aragon/ui'
+import { CircleGraph, GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 
 import AccountBannerInfo from './AccountBannerInfo'
 
@@ -221,7 +221,7 @@ const BannerWithProbability = ({ activeBalance }) => {
 
   // TODO - change this for the loading indicator once ready
   return fetchingTotalBalance ? (
-    <div>LOADING...</div>
+    <LoadingRing />
   ) : (
     <Wrapper
       mainIcon={
