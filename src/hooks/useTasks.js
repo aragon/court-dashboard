@@ -48,7 +48,7 @@ function useOpenTasks(tasks, now, courtSettings) {
             phase: getTaskName(currentRoundPhases[i].phase),
             dueDate: currentRoundPhases[i].nextTransition,
             phaseType: currentRoundPhases[i].phase,
-            open: getRoundStatus(tasks[i], currentRoundPhases[i].phase),
+            open: isAppealTaskOpen(tasks[i], currentRoundPhases[i].phase),
           })
         } else {
           for (let j = 0; j < tasks[i].jurors.length; j++) {
@@ -64,7 +64,7 @@ function useOpenTasks(tasks, now, courtSettings) {
                 phase: getTaskName(currentRoundPhases[i].phase),
                 phaseType: currentRoundPhases[i].phase,
                 dueDate: currentRoundPhases[i].nextTransition,
-                open: getDraftStatus(
+                open: isVotingTaskOpen(
                   tasks[i].jurors[j],
                   currentRoundPhases[i].phase
                 ),
@@ -93,7 +93,7 @@ function getTaskName(phase) {
   }
 }
 
-function getRoundStatus(round, currentPhase) {
+function isAppealTaskOpen(round, currentPhase) {
   if (currentPhase === DisputesTypes.Phase.AppealRuling) {
     if (round.appeal) {
       return false
@@ -108,7 +108,7 @@ function getRoundStatus(round, currentPhase) {
   }
 }
 
-function getDraftStatus(draft, currentPhase) {
+function isVotingTaskOpen(draft, currentPhase) {
   if (currentPhase === DisputesTypes.Phase.VotingPeriod) {
     if (draft.commitment) {
       return false

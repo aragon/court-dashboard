@@ -57,7 +57,7 @@ function useFilteredTasks(jurorTasksSelected, connectedAccount) {
     () =>
       tasksToFilter.filter(
         ({ phaseType, dueDate, open }) =>
-          open === true &&
+          open &&
           (selectedPhase === UNSELECTED_PHASE ||
             selectedPhase === ALL_FILTER ||
             phaseType === TASKS_ACTIONS_TYPES[selectedPhase]) &&
