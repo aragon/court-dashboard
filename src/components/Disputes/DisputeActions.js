@@ -203,7 +203,7 @@ const useInfoAttributes = (
       return {
         title: voteLeaked
           ? 'Unfortunately, your vote has been leaked'
-          : "Your vote wasn't cast on time.",
+          : "Your vote wasn’t cast on time.",
         paragraph: <ANJDiscountedMessage />,
         background: negativeBackground,
         icon: IconGavelRed,
