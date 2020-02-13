@@ -1,7 +1,7 @@
 import React from 'react'
 import MessageCard from '../MessageCard'
 
-import noDraftSVG from '../../assets/noDraft.svg'
+import iconNoRewardsSvg from '../../assets/IconNoRewards.svg'
 
 function NoRewards() {
   const title = 'No rewards yet!'
@@ -12,7 +12,7 @@ function NoRewards() {
     <MessageCard
       title={title}
       paragraph={paragraph}
-      icon={noDraftSVG}
+      icon={iconNoRewardsSvg}
       border={false}
       mode="compact"
     />

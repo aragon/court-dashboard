@@ -1,7 +1,10 @@
 import React from 'react'
 import { Button, GU, Info } from '@aragon/ui'
+import { useWallet } from '../../../providers/Wallet'
 
 function DisputeDraft({ disputeId, onDraft }) {
+  const wallet = useWallet()
+
   const handleSubmit = async event => {
     event.preventDefault()
 
@@ -22,7 +25,7 @@ function DisputeDraft({ disputeId, onDraft }) {
           margin-bottom: ${1.5 * GU}px;
         `}
       >
-        <Button type="submit" mode="strong" wide>
+        <Button type="submit" mode="strong" wide disabled={!wallet.account}>
           Draft jury
         </Button>
       </div>

@@ -1,7 +1,8 @@
 import dayjs from 'dayjs'
+
 import { useWallet } from '../providers/Wallet'
 import { useCourtClock } from '../providers/CourtClock'
-import { useJurorDraftsSubscription } from './subscription-hooks'
+import { useCurrentTermJurorDraftsSubscription } from './subscription-hooks'
 
 export function useJurorDrafted({ pause }) {
   const wallet = useWallet()
@@ -10,7 +11,7 @@ export function useJurorDrafted({ pause }) {
   const account = wallet.account.toLowerCase()
   const currnetTermStartTime = dayjs(currentTermStartDate).unix()
 
-  const jurorDrafts = useJurorDraftsSubscription(
+  const jurorDrafts = useCurrentTermJurorDraftsSubscription(
     account,
     currnetTermStartTime,
     pause

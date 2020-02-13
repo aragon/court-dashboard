@@ -455,3 +455,10 @@ export function getRoundFees(round, courtConfig) {
     .add(jurorFee)
     .mul(round.jurorsNumber)
 }
+
+export function getDraftLockAmount(minActiveBalance, penaltyPct, weight) {
+  return minActiveBalance
+    .mul(penaltyPct)
+    .div(PCT_BASE)
+    .mul(weight)
+}

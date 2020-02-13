@@ -4,6 +4,7 @@ import {
   Box,
   GU,
   IdentityBadge,
+  Link,
   textStyle,
   TransactionBadge,
   useTheme,
@@ -37,13 +38,15 @@ const DisputeInfo = React.memo(function({
   onRequestAppeal,
   onExecuteRuling,
 }) {
-  const { phase, status } = dispute || {}
+  const { phase, status, description, plaintiff, defendant, agreementText } =
+    dispute || {}
 
-  const description = dispute && dispute.metadata
-  const creatorAddress = dispute && dispute.subject && dispute.subject.id
+  const creator = plaintiff || dispute?.subject?.id
 
   const isFinalRulingEnsured =
     phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
+
+  const lastRound = dispute?.rounds?.[dispute.lastRoundId]
 
   return (
     <Box>
@@ -60,31 +63,62 @@ const DisputeInfo = React.memo(function({
           <Loading border={false} />
         ) : (
           <>
-            {isFinalRulingEnsured && (
-              <Row>
-                <Field
-                  label="Final jury outcome"
-                  value={
-                    <DisputeOutcomeText
-                      outcome={
-                        dispute.rounds[dispute.lastRoundId].vote.winningOutcome
-                      }
-                      phase={dispute.phase}
-                      disputeEnded={isFinalRulingEnsured}
-                    />
-                  }
-                />
-                <Field
-                  label="Round number"
-                  value={<DisputeRoundPill roundId={dispute.lastRoundId} />}
-                />
-              </Row>
-            )}
             <Row>
-              <Field label="Description" value={description} />
-              {creatorAddress && (
-                <Field label="Plaintiff" value={creatorAddress} />
-              )}
+              {(() => {
+                if (isFinalRulingEnsured) {
+                  return (
+                    <>
+                      <Field
+                        label="Final jury outcome"
+                        value={
+                          <DisputeOutcomeText
+                            outcome={
+                              lastRound.appeal?.appealedRuling ||
+                              lastRound.vote?.winningOutcome
+                            }
+                            phase={dispute.phase}
+                            disputeEnded={isFinalRulingEnsured}
+                          />
+                        }
+                      />
+                      <Field
+                        label="Round number"
+                        value={
+                          <DisputeRoundPill roundId={dispute.lastRoundId} />
+                        }
+                      />
+                    </>
+                  )
+                }
+                return (
+                  <>
+                    <Field label="Description" value={description} />
+                    <div />
+                  </>
+                )
+              })()}
+              {creator && <Field label="Plaintiff" value={creator} />}
+            </Row>
+            <Row>
+              {(() => {
+                if (isFinalRulingEnsured) {
+                  return <Field label="Description" value={description} />
+                }
+                return agreementText ? (
+                  <Field
+                    label="Link to agreement"
+                    value={
+                      <Link external href={agreementText}>
+                        {agreementText}
+                      </Link>
+                    }
+                  />
+                ) : (
+                  <div />
+                )
+              })()}
+              <div />
+              {defendant && <Field label="Defendant" value={defendant} />}
             </Row>
           </>
         )}
@@ -129,8 +163,8 @@ function DisputeHeader({ id, dispute }) {
           css={`
             background: linear-gradient(
               233deg,
-              ${theme.accentEnd} -50%,
-              ${theme.accentStart} 91%
+              ${theme.accentStart} -50%,
+              ${theme.accentEnd} 91%
             );
             border-radius: 50%;
             padding: ${1.5 * GU}px;
@@ -211,7 +245,7 @@ function Field({ label, value }) {
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 1fr minmax(250px, auto);
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: ${5 * GU}px;
   margin-bottom: ${2 * GU}px;
 `

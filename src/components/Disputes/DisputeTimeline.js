@@ -24,7 +24,6 @@ import {
   Phase as DisputePhase,
   getPhaseStringForStatus,
 } from '../../types/dispute-status-types'
-import dayjs from '../../lib/dayjs'
 import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 
@@ -149,7 +148,7 @@ function ItemStep({ item, index, roundStepContainer }) {
             <div>
               <span
                 css={`
-                  color: ${theme.contentSecondary};
+                  color: ${theme.surfaceContentSecondary};
                   opacity: 0.6;
                 `}
               >
@@ -191,7 +190,7 @@ function Outcome({ outcome, phase }) {
         <span
           css={`
             ${textStyle('body3')}
-            color:${theme.contentSecondary};
+            color:${theme.surfaceContentSecondary};
             text-transform: uppercase;
           `}
         >
@@ -234,10 +233,9 @@ function PhaseIcon({ phase, active }) {
 
   return (
     <img
-      css={`
-        height: ${GU * 6}px;
-      `}
       src={active ? icon.active : icon.inactive}
+      width={6 * GU}
+      height={6 * GU}
       alt=""
     />
   )
@@ -253,7 +251,7 @@ function DisplayTime({ item }) {
     ) {
       return 'ANY TIME'
     }
-    return <Timer end={dayjs(endTime)} />
+    return <Timer end={new Date(endTime)} />
   }
   return <>{dateFormat(endTime, 'DD/MM/YY')}</>
 }
@@ -295,6 +293,11 @@ const StyledAccordion = styled.div`
     border-radius: 0px;
     border-left: 0;
     border-right: 0;
+  }
+
+  &::after {
+    height: 0px !important;
+    width: 0px !important;
   }
 `
 

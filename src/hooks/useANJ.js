@@ -1,29 +1,33 @@
 import { useMemo } from 'react'
-import { useCourtClock } from '../providers/CourtClock'
-import {
-  ANJMovement as anjMovementTypes,
-  ANJBalance as anjBalanceTypes,
-} from '../types/anj-types'
-import {
-  acceptedMovementsPerBalance,
-  isMovementOf,
-  getMovementDirection,
-  isMovementEffective,
-  getTotalNotEffectiveByType,
-} from '../utils/anj-movement-utils'
-import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
-import { bigNum } from '../lib/math-utils'
-import { useFirstANJActivation } from './query-hooks'
+
 import { useWallet } from '../providers/Wallet'
+import { useCourtClock } from '../providers/CourtClock'
+import { useCourtConfig } from '../providers/CourtConfig'
+import { useFirstANJActivationQuery } from './query-hooks'
+import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
+
+import {
+  isMovementOf,
+  convertMovement,
+  isMovementEffective,
+  getUpdatedLockedMovement,
+  getLatestMovementByBalance,
+  acceptedMovementsPerBalance,
+  getAmountNotEffectiveByBalance,
+} from '../utils/anj-movement-utils'
+import { getTermStartTime } from '../utils/court-utils'
+import { getDraftLockAmount } from '../utils/dispute-utils'
+import { ANJBalance, ANJMovement } from '../types/anj-types'
+import dayjs from 'dayjs'
 
 export function useANJBalances() {
   const { balances, movements } = useDashboardState()
 
   const {
     walletBalance,
-    inactiveBalance,
     activeBalance,
     lockedBalance,
+    inactiveBalance,
     deactivationBalance,
   } = balances || {}
 
@@ -32,24 +36,26 @@ export function useANJBalances() {
   const convertedWalletBalance = useBalanceWithMovements(
     walletBalance,
     convertedMovements,
-    anjBalanceTypes.Wallet
+    ANJBalance.Wallet
   )
 
   const convertedInactiveBalance = useBalanceWithMovements(
     inactiveBalance,
     convertedMovements,
-    anjBalanceTypes.Inactive
+    ANJBalance.Inactive
   )
 
   const convertedActiveBalance = useBalanceWithMovements(
     activeBalance,
     convertedMovements,
-    anjBalanceTypes.Active
+    ANJBalance.Active
   )
 
+  // Use ANJ Locked distribution
+  const lockedDistribution = useJurorLockedANJDistribution()
   const convertedLockedBalance = useMemo(() => {
-    return { amount: lockedBalance }
-  }, [lockedBalance])
+    return { amount: lockedBalance, distribution: lockedDistribution }
+  }, [lockedBalance, lockedDistribution])
 
   const convertedDeactivationBalance = useMemo(() => {
     return { amount: deactivationBalance }
@@ -81,6 +87,7 @@ export function useANJBalances() {
 // Asummes movements in descending order of creation
 function useConvertedMovements(movements) {
   const { currentTermId } = useCourtClock()
+  const courtConfig = useCourtConfig()
 
   const effectiveStates = movements
     ? movements.map(mov => isMovementEffective(mov, currentTermId))
@@ -93,18 +100,54 @@ function useConvertedMovements(movements) {
         return null
       }
 
-      return movements.map((mov, i) => ({
-        ...mov,
-        isEffective: effectiveStates[i],
-      }))
+      // Since Activation, Deactivations and Slashing movements are effective on next term of creation
+      // but only Deactivations don't update the balance immediately, we'll use another attr (isImmediate) to differentiate these cases
+      return movements
+        .map((mov, i) => {
+          const isImmediate = ANJMovement[mov.type] !== ANJMovement.Deactivation
+
+          let updatesBalanceAt = mov.createdAt
+          if (!isImmediate && mov.effectiveTermId && effectiveStates[i]) {
+            const termStartTimeMs = getTermStartTime(
+              mov.effectiveTermId,
+              courtConfig
+            )
+            updatesBalanceAt = termStartTimeMs / 1000
+          }
+
+          return {
+            ...mov,
+            isEffective: effectiveStates[i],
+            updatesBalanceAt,
+            isImmediate,
+          }
+        })
+        .sort((mov1, mov2) => {
+          // We are resorting movements by time they update the balance at
+          if (mov1.updatesBalanceAt === mov2.updatesBalanceAt) {
+            return mov2.createdAt - mov1.createdAt
+          }
+
+          return mov2.updatesBalanceAt - mov1.updatesBalanceAt
+        })
     },
     [effectiveStatesKey, movements] //eslint-disable-line
   )
 }
 
-// Calculates the latest movement for each balance
-// In case the balance is active or inactive, we must also calculate all non effective movements to get the effective balance at current term
+/**
+ * Calculates total amount, total not effective amount and the latest movement for `balanceType`
+ * @dev In case the balance is active or inactive, we must also calculate all non effective movements to get the effective balance at current term
+ *
+ * @param {BigNum} balance Total balance amount
+ * @param {Array} movements Latest 24h movements
+ * @param {Symbol} balanceType Type of balance (Wallet, Inactive, Active)
+ * @returns {Object} Converted balance
+ */
 function useBalanceWithMovements(balance, movements, balanceType) {
+  const { balances } = useDashboardState()
+  const { lockedBalance } = balances || {}
+
   const acceptedMovements = acceptedMovementsPerBalance.get(balanceType)
   const filteredMovements = useFilteredMovements(movements, acceptedMovements)
 
@@ -113,47 +156,22 @@ function useBalanceWithMovements(balance, movements, balanceType) {
       return null
     }
 
-    // We need to calulate the total not effective amount for the active and inactive balance
-    // Note that we don't do this for the wallet balance since all its corresponding movements are done effective inmediately
-    // Note that this assumes the termDuration is less than 24hrs
-    let movementType
-    if (balanceType === anjBalanceTypes.Active) {
-      movementType = anjMovementTypes.Activation
-    } else if (balanceType === anjBalanceTypes.Inactive) {
-      movementType = anjMovementTypes.Deactivation
-    }
+    // Calculate total not effective (If balanceType === wallet returns 0)
+    const amountNotEffective = getAmountNotEffectiveByBalance(
+      movements,
+      balanceType
+    )
 
-    let amountNotEffective = bigNum(0)
+    // Get latest movement
+    let latestMovement = getLatestMovementByBalance(
+      filteredMovements,
+      balanceType
+    )
 
-    if (movementType)
-      amountNotEffective = getTotalNotEffectiveByType(movements, movementType)
-
-    // Get the latest movement
-    // NOTE: This could be changed in the future for the aggregate of all 24hrs movements
-    let latestMovement = filteredMovements.shift()
-
-    if (latestMovement) {
-      const latestMovementType = anjMovementTypes[latestMovement.type]
-
-      // If the latest movement for the inactive balance is a deactivation, we must check that the deactivation is effective
-      if (latestMovementType === anjMovementTypes.Deactivation) {
-        if (!latestMovement.isEffective) {
-          // In case the deactivation is not effective, we'll get the most recent effective movement for the inactive balance
-          // Note that the array is orderer by most recent desc
-          if (balanceType === anjBalanceTypes.Inactive) {
-            latestMovement = filteredMovements.find(
-              movement => movement.isEffective
-            )
-          } else {
-            // In case the deactivation is not effective, we'll show a deactivation process movement for the active Balance
-            // Deactivation is between active and inactive balance so we can make sure that the current balanceType is the active
-            latestMovement = {
-              ...latestMovement,
-              type: anjMovementTypes.DeactivationProcess,
-            }
-          }
-        }
-      }
+    // Update latest movement if necessary
+    if (balanceType === ANJBalance.Active) {
+      if (lockedBalance?.gt(0))
+        latestMovement = getUpdatedLockedMovement(lockedBalance, latestMovement)
     }
 
     return {
@@ -161,7 +179,14 @@ function useBalanceWithMovements(balance, movements, balanceType) {
       amountNotEffective,
       latestMovement: convertMovement(acceptedMovements, latestMovement),
     }
-  }, [acceptedMovements, balance, balanceType, filteredMovements, movements])
+  }, [
+    acceptedMovements,
+    balance,
+    balanceType,
+    filteredMovements,
+    lockedBalance,
+    movements,
+  ])
 }
 
 function useFilteredMovements(movements, acceptedMovements) {
@@ -170,37 +195,25 @@ function useFilteredMovements(movements, acceptedMovements) {
       return null
     }
     return movements.filter(movement => {
-      return isMovementOf(acceptedMovements, anjMovementTypes[movement.type])
+      return (
+        isMovementOf(acceptedMovements, ANJMovement[movement.type]) &&
+        dayjs(new Date(movement.createdAt * 1000)).isAfter(
+          dayjs('2020-02-10T16:00:00.000Z')
+        )
+      )
     })
   }, [acceptedMovements, movements])
 }
 
-function convertMovement(acceptedMovements, movement) {
-  if (!movement) return null
-
-  const movementType =
-    typeof movement.type === 'symbol'
-      ? movement.type
-      : anjMovementTypes[movement.type]
-
-  const direction = getMovementDirection(acceptedMovements, movementType)
-
-  return {
-    type: movementType,
-    amount: movement.amount,
-    direction,
-  }
-}
-
 /**
- *
- * @param {*} options query options
+ * @param {Object} options query options
+ * @param {Boolean} options.pause Tells whether to pause query or not
  * @return {Boolean} true if account's first ANJ activation happened on current term
  */
 export function useJurorFirstTimeANJActivation(options) {
   const wallet = useWallet()
   const { currentTermId } = useCourtClock()
-  const firstANJActivation = useFirstANJActivation(
+  const firstANJActivation = useFirstANJActivationQuery(
     wallet.account.toLowerCase(),
     options
   )
@@ -214,4 +227,51 @@ export function useJurorFirstTimeANJActivation(options) {
 
   // Activation is effective on next term from when the activation was performed
   return firstANJActivationTerm === currentTermId + 1
+}
+
+export function useJurorLockedANJDistribution() {
+  const { minActiveBalance, penaltyPct } = useCourtConfig()
+  const { jurorDrafts, balances } = useDashboardState()
+  const { lockedBalance } = balances || {}
+
+  return useMemo(() => {
+    if (!lockedBalance || lockedBalance.eq(0) || !jurorDrafts) return null
+
+    return jurorDrafts
+      .filter(jurorDraft => !jurorDraft.round.settledPenalties)
+      .reduce((lockDistribution, { weight, round }) => {
+        const { dispute } = round
+
+        // Since the subgraph cannot provide a way to tell how much was locked per draft we calculate it ourselves
+        // See https://github.com/aragon/court-subgraph/blob/7f0fec5c8953e9dbd67e5607fb6da03f69a60f40/src/DisputeManager.ts#L57
+        const lockedAmount = getDraftLockAmount(
+          minActiveBalance,
+          penaltyPct,
+          weight
+        )
+
+        const index = lockDistribution.findIndex(
+          locks => locks.disputeId === dispute.id
+        )
+
+        if (index >= 0) {
+          const elem = lockDistribution[index]
+
+          // Replace with updated amount and weight
+          lockDistribution.splice(index, 1, {
+            ...elem,
+            amount: elem.amount.add(lockedAmount),
+            weight: elem.weight.add(weight),
+          })
+        } else {
+          lockDistribution.push({
+            disputeId: dispute.id,
+            amount: lockedAmount,
+            weight,
+          })
+        }
+
+        return lockDistribution
+      }, [])
+  }, [jurorDrafts, lockedBalance, minActiveBalance, penaltyPct])
 }
