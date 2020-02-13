@@ -7,8 +7,8 @@ import {
   Info,
   Link,
   Switch,
+  Tag,
   TextInput,
-  Timer,
   textStyle,
   useToast,
   useTheme,
@@ -16,6 +16,8 @@ import {
 import useOneTimeCode from '../../../hooks/useOneTimeCode'
 
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
+
+const AUTO_REVEAL_ENABLED = false // TODO: Remove when auto reveal service is running
 
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
@@ -25,7 +27,7 @@ const CommitPanel = React.memo(function CommitPanel({
 }) {
   const [codeSaved, setCodeSaved] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
-  const [revealService, setRevealService] = useState(true)
+  const [revealService, setRevealService] = useState(false)
   const { oneTimeCode, download } = useOneTimeCode()
   const toast = useToast()
 
@@ -224,15 +226,29 @@ const RevealService = React.memo(function RevealService({
           align-items: center;
         `}
       >
-        <Switch checked={revealService} onChange={onRevealServiceChange} />
+        <Switch
+          checked={revealService}
+          onChange={onRevealServiceChange}
+          disabled={!AUTO_REVEAL_ENABLED}
+        />
         <span
           css={`
             margin-left: ${2 * GU}px;
             ${textStyle('body1')};
           `}
         >
-          Enable Court auto-reveal service.
+          Auto-reveal service.
         </span>
+        {!AUTO_REVEAL_ENABLED && (
+          <Tag
+            css={`
+              margin-left: ${1 * GU}px;
+            `}
+            mode="new"
+          >
+            Coming soon
+          </Tag>
+        )}
       </div>
       <div
         css={`
@@ -256,7 +272,7 @@ const InfoSection = React.memo(function InfoSection({
 }) {
   const content = revealService
     ? 'This temporary code will be valid to commit and reveal your vote for this dispute only. You won’t be required to enter this code unless a problem occur with our services.'
-    : 'You must copy or download this code before you can commit your vote. You’ll be asked to enter it in order to reveal your vote in:'
+    : 'You must copy or download this code before you can commit your vote. You will be asked to confirm it in order to reveal your vote. Failure to do so will result in a monetary penalty to your account.'
 
   return (
     <Info
@@ -267,15 +283,6 @@ const InfoSection = React.memo(function InfoSection({
       mode={revealService ? 'info' : 'warning'}
     >
       {content}
-      {!revealService && (
-        <div
-          css={`
-            margin-top: ${1 * GU}px;
-          `}
-        >
-          <Timer end={commitEndTime} />
-        </div>
-      )}
     </Info>
   )
 })
