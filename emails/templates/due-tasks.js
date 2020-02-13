@@ -2,9 +2,6 @@ const { addressBadge, dataTable, base, link } = require('./shared')
 const { ASSETS_URL } = require('../env')
 
 module.exports = function() {
-  const clock = `
-    <img src="${ASSETS_URL}/clock.png" alt="" width="14" height="14" style="vertical-align: middle;margin-right: 4px;" />
-  `
   const statusOpenDue = `
     <span style="
       display:inline-block;
@@ -36,13 +33,13 @@ module.exports = function() {
               'Commit vote',
               link('Dispute #12', ''),
               `${statusOpenDue} Open: Due today`,
-              `${clock} 02H : 23M : 52S`,
+              `18 Dec 2019 at 12:46pm`,
             ],
             [
               'Reveal vote',
               link('Dispute #14', ''),
               `${statusOpenDue} Open: Due today`,
-              `${clock} 06H : 52M : 12S`,
+              `18 Dec 2019 at 2:50pm`,
             ],
           ],
         })}
