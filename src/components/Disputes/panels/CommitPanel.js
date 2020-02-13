@@ -271,7 +271,7 @@ const InfoSection = React.memo(function InfoSection({
 }) {
   const content = revealService
     ? 'This temporary code will be valid to commit and reveal your vote for this dispute only. You won’t be required to enter this code unless a problem occur with our services.'
-    : 'You must copy or download this code before you can commit your vote. You will be asked to confirm it in order to reveal your vote. Failure to do so might result in a monetary penalty to your account.'
+    : 'You must copy or download this code before you can commit your vote. You will be asked to confirm it in order to reveal your vote. Failure to do so will result in a monetary penalty to your account.'
 
   return (
     <Info
