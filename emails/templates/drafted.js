@@ -12,7 +12,7 @@ module.exports = function() {
     template: base(
       {
         title: 'Notifications',
-        subtitle: `Here are the notifications for the address ${addressBadge()} on {{date}}`,
+        subtitle: `Your account ${addressBadge()} received a notification on {{date}}`,
       },
       `
         ${infobox({
@@ -34,7 +34,7 @@ module.exports = function() {
     templateText: `
       Aragon Court Notifications
 
-      Here are the notifications for the address {{account}} on {{date}}:
+      Your account {{account}} received a notification on {{date}}:
 
       You have been selected to arbitrate Dispute #{{disputeId}}. You can start
       reviewing the evidence and then commit your vote.

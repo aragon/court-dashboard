@@ -12,7 +12,7 @@ module.exports = function() {
     template: base(
       {
         title: 'Notifications',
-        subtitle: `Here are the notifications for the address ${addressBadge()} on {{date}}`,
+        subtitle: `Your account ${addressBadge()} received a notification on {{date}}`,
       },
       `
         ${infobox({
