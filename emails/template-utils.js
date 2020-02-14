@@ -404,7 +404,7 @@ function addressBadge(varName = 'account') {
   return `
     <a
       href="https://etherscan.io/address/{{${varName}}}"
-      tilte="{{${varName}}}"
+      title="{{${varName}}}"
       style="${style(`
         padding: 5px 10px;
         border-radius: 4px;
