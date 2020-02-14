@@ -133,7 +133,9 @@ function DisputeList({
           return <NoFilterResults onClearFilters={handleOnClearAllFilters} />
 
         if (errorLoading) {
-          return <ErrorLoading subject="dispute" error={errorLoading.message} />
+          return (
+            <ErrorLoading subject="dispute" errors={[errorLoading.message]} />
+          )
         }
 
         if (loading) {
