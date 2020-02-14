@@ -39,36 +39,42 @@ function useOpenTasks(tasks, now, courtSettings) {
           currentRoundPhases[i].phase === DisputesTypes.Phase.AppealRuling ||
           currentRoundPhases[i].phase === DisputesTypes.Phase.ConfirmAppeal
         ) {
-          openTasks.push({
-            number: tasks[i].number,
-            state: tasks[i].state,
-            createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
-            juror: 'Anyone',
-            disputeId: tasks[i].dispute.id,
-            phase: getTaskName(currentRoundPhases[i].phase),
-            dueDate: currentRoundPhases[i].nextTransition,
-            phaseType: currentRoundPhases[i].phase,
-            open: isAppealTaskOpen(tasks[i], currentRoundPhases[i].phase),
-          })
+          if (isAppealTaskOpen(tasks[i], currentRoundPhases[i].phase)) {
+            openTasks.push({
+              number: tasks[i].number,
+              state: tasks[i].state,
+              createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
+              juror: 'Anyone',
+              disputeId: tasks[i].dispute.id,
+              phase: getTaskName(currentRoundPhases[i].phase),
+              dueDate: currentRoundPhases[i].nextTransition,
+              phaseType: currentRoundPhases[i].phase,
+              open: true,
+            })
+          }
         } else {
           for (let j = 0; j < tasks[i].jurors.length; j++) {
             if (currentRoundPhases[i].phase !== DisputesTypes.Phase.Ended) {
-              openTasks.push({
-                number: tasks[i].number,
-                state: tasks[i].state,
-                createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
-                juror: tasks[i].jurors[j].juror.id,
-                disputeId: tasks[i].dispute.id,
-                commitment: tasks[i].jurors[j].commitment,
-                outcome: tasks[i].jurors[j].outcome,
-                phase: getTaskName(currentRoundPhases[i].phase),
-                phaseType: currentRoundPhases[i].phase,
-                dueDate: currentRoundPhases[i].nextTransition,
-                open: isVotingTaskOpen(
+              if (
+                isVotingTaskOpen(
                   tasks[i].jurors[j],
                   currentRoundPhases[i].phase
-                ),
-              })
+                )
+              ) {
+                openTasks.push({
+                  number: tasks[i].number,
+                  state: tasks[i].state,
+                  createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
+                  juror: tasks[i].jurors[j].juror.id,
+                  disputeId: tasks[i].dispute.id,
+                  commitment: tasks[i].jurors[j].commitment,
+                  outcome: tasks[i].jurors[j].outcome,
+                  phase: getTaskName(currentRoundPhases[i].phase),
+                  phaseType: currentRoundPhases[i].phase,
+                  dueDate: currentRoundPhases[i].nextTransition,
+                  open: true,
+                })
+              }
             }
           }
         }
