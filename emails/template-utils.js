@@ -115,36 +115,30 @@ function base({ title, subtitle }, content) {
               font-size: 16px !important;
             }
           }
-          .data-table td {
+          .data-table tbody tr:first-child td {
             border-top: 0 !important;
-          }
-          .data-table tr + tr + tr td {
-            border-top: 1px solid #DDE4E9 !important;
           }
         </style>
       </head>
       <body style="background-color:#ffffff;">
-        <div style="background-color:#ffffff;">
-          <div style="${style(`
-            margin: 0px auto;
-            max-width: 824px;
-          `)}">
-            ${table(
-              { align: 'center', style: 'width:100%' },
-              `<tr>
-                <td style="${style(`
-                  direction: ltr;
-                  font-size: 0;
-                  padding: 60px 40px 24px;
-                  text-align: center;
-                `)}">
-                  <div style="${style(`
-                    font-size: 0;
-                    text-align: left;
+        ${table(
+          {
+            align: 'center',
+            width: '824',
+            style: 'margin: 0 auto;',
+            bgcolor: '#ffffff',
+          },
+          `<tr>
+            <td style="width: 824px">
+              ${table(
+                { align: 'center', width: '824' },
+                `<tr>
+                  <td style="width: 40px">&nbsp;</td>
+                  <td style="${style(`
                     direction: ltr;
-                    display: inline-block;
-                    vertical-align: top;
-                    width: 100%;
+                    text-align: left;
+                    padding: 60px 0 24px;
+                    width: 744px;
                   `)}">
                     <img
                       title="Aragon Court ${title}"
@@ -152,8 +146,8 @@ function base({ title, subtitle }, content) {
                       width="110"
                       height="110"
                       style="${style(`
-                        border: 0;
                         display: block;
+                        border: 0;
                         outline: none;
                         text-decoration: none;
                         width: 110px;
@@ -161,256 +155,246 @@ function base({ title, subtitle }, content) {
                         font-size: 13px;
                       `)}"
                     />
-                  </div>
-                </td>
-              </tr>`
-            )}
-          </div>
-          <div style="${style(`
-            max-width: 824px;
-            margin: 0 auto;
-          `)}">
-            ${table(
-              { align: 'center', style: 'width: 100%' },
-              `<tr>
-                <td style="${style(`
-                  direction: ltr;
-                  font-size: 0;
-                  padding: 0 24px;
-                  text-align: center;
-                `)}">
-                  <div style="${style(`
-                    background: #dde4e9;
-                    background-color: #dde4e9;
-                    margin: 0 auto;
-                    border-radius: 4px;
-                    max-width: 776px;
-                  `)}">
-                    ${table(
-                      {
-                        align: 'center',
-                        style: style(`
-                          background: #dde4e9;
-                          background-color: #dde4e9;
-                          width: 100%;
-                          border-radius: 4px;
-                        `),
-                      },
-                      `<tr>
-                        <td style="${style(`
-                          direction: ltr;
-                          font-size: 0;
-                          padding: 1px;
-                          text-align: center;
-                        `)}">
-                          <div style="${style(`
-                            font-size: 0;
-                            text-align: left;
-                            direction: ltr;
-                            display: inline-block;
-                            vertical-align: top;
-                            width: 100%;
-                          `)}">
-                            ${table(
-                              { width: '100%' },
-                              `<tr>
-                                <td style="${style(`
-                                  background-color: #ffffff;
-                                  border-radius: 4px;
-                                  vertical-align: top;
-                                  padding: 40px;
-                                `)}">
-                                  ${table(
-                                    { width: '100%' },
-                                    `<tr>
-                                      <td align="left" style="${style(`
-                                        font-size: 0;
-                                        padding: 0;
-                                        word-break: break-word;
-                                      `)}">
-                                        <div style="${style(`
-                                          font-family: Overpass, sans-serif;
-                                          font-size: 24px;
-                                          font-weight: 300;
-                                          line-height: 32px;
-                                          text-align: left;
-                                          color: #2A2A2A;
-                                        `)}">
-                                          <span style="${style(`
-                                            font-weight: 400;
-                                            color: #FF9184;
-                                          `)}">Aragon Court</span> ${title}
-                                        </div>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td style="${style(`
-                                        font-size: 0;
-                                        word-break: break-word;
-                                      `)}">
-                                        <div style="height:8px;">&nbsp;</div>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td align="left" style="${style(`
-                                        padding: 0;
-                                        font-size: 0;
-                                        word-break: break-word;
-                                     `)}">
-                                        <div style="${style(`
-                                          font-family: Overpass, sans-serif;
-                                          font-size: 16px;
-                                          font-weight: 300;
-                                          line-height: 24px;
-                                          text-align: left;
-                                          color: #9096B6;
-                                        `)}">
-                                          ${subtitle}
-                                        </div>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td style="${style(`
-                                        font-size: 0;
-                                        word-break: break-word;
-                                      `)}">
-                                        ${vspace(50)}
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td align="left" style="${style(`
-                                        font-size: 0;
-                                        padding: 0;
-                                        word-break: break-word;
-                                      `)}">
-                                        <div style="${style(`
-                                          font-family: Overpass, sans-serif;
-                                          font-size: 13px;
-                                          font-weight: 300;
-                                          line-height: 1;
-                                          text-align: left;
-                                          color: #9096B6;
-                                        `)}">
-                                          ${content}
-                                        </div>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td align="left" style="${style(`
-                                        font-size: 0;
-                                        padding: 0;
-                                        word-break: break-word;
-                                      `)}">
-                                        <div style="${style(`
-                                          font-family: Overpass, sans-serif;
-                                          font-size: 13px;
-                                          font-weight: 300;
-                                          line-height: 1;
-                                          text-align: left;
-                                          color: #9096B6;
-                                        `)}">
-                                        </div>
-                                      </td>
-                                    </tr>`
-                                  )}
-                                </td>
-                              </tr>`
-                            )}
-                          </div>
-                        </td>
-                      </tr>`
-                    )}
-                  </div>
-                </td>
-              </tr>`
-            )}
-          </div>
-          <div style="${style(`
-            margin: 0px auto;
-            max-width: 824px;
-          `)}">
-            ${table(
-              {
-                align: 'center',
-                style: 'width:100%',
-              },
-              `<tr>
-                <td style="${style(`
-                  direction: ltr;
-                  font-size: 0;
-                  padding: 0 40px;
-                  text-align: center;
-                `)}">
-                  <div style="${style(`
-                    font-size: 0;
-                    text-align: left;
+                  </td>
+                </tr>`
+              )}
+              ${table(
+                { align: 'center', style: 'width: 100%' },
+                `<tr>
+                  <td style="${style(`
                     direction: ltr;
-                    display: inline-block;
-                    vertical-align: top;
-                    width: 100%;
+                    font-size: 0;
+                    padding: 0 24px;
+                    text-align: center;
                   `)}">
-                    ${table(
-                      {
-                        width: '100%',
-                        style: 'vertical-align:top',
-                      },
-                      `
-                        <tr>
+                    <div style="${style(`
+                      background: #dde4e9;
+                      background-color: #dde4e9;
+                      margin: 0 auto;
+                      border-radius: 4px;
+                      max-width: 776px;
+                    `)}">
+                      ${table(
+                        {
+                          align: 'center',
+                          style: style(`
+                            background: #dde4e9;
+                            background-color: #dde4e9;
+                            width: 100%;
+                            border-radius: 4px;
+                          `),
+                        },
+                        `<tr>
                           <td style="${style(`
+                            direction: ltr;
                             font-size: 0;
-                            word-break: break-word;
-                         `)}">
-                            <div style="height:40px;">&nbsp;</div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td align="left" style="${style(`
-                            font-size: 0;
-                            padding: 0;
-                            word-break: break-word;
+                            padding: 1px;
+                            text-align: center;
                           `)}">
                             <div style="${style(`
-                              font-family: Overpass, sans-serif;
-                              font-size: 14px;
-                              font-weight: 300;
-                              line-height: 22px;
+                              font-size: 0;
                               text-align: left;
-                              color: #9096B6;
+                              direction: ltr;
+                              display: inline-block;
+                              vertical-align: top;
+                              width: 100%;
                             `)}">
-                              This service is provided by ${link(
-                                'Aragon One AG',
-                                'https://aragon.one/'
-                              )}. You are receiving this email because you are
-                              subscribed to
-                              <strong style="${style(`
-                                font-weight: 300;
-                                color: #637381
-                              `)}">Aragon Court Email Notifications</strong>.
-                              You can contact us at
-                              <a href="mailto:support@aragon.org" style="${style(`
-                                color: #637381;
-                                text-decoration: none;
-                              `)}">support@aragon.org</a>
-                              if you no longer wish to receive these.
+                              ${table(
+                                { width: '100%' },
+                                `<tr>
+                                  <td style="${style(`
+                                    background-color: #ffffff;
+                                    border-radius: 4px;
+                                    vertical-align: top;
+                                    padding: 40px;
+                                  `)}">
+                                    ${table(
+                                      { width: '100%' },
+                                      `<tr>
+                                        <td align="left" style="${style(`
+                                          font-size: 0;
+                                          padding: 0;
+                                          word-break: break-word;
+                                        `)}">
+                                          <div style="${style(`
+                                            font-family: Overpass, sans-serif;
+                                            font-size: 24px;
+                                            font-weight: 300;
+                                            line-height: 32px;
+                                            text-align: left;
+                                            color: #2A2A2A;
+                                          `)}">
+                                            <span style="${style(`
+                                              font-weight: 400;
+                                              color: #FF9184;
+                                            `)}">Aragon Court</span> ${title}
+                                          </div>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="${style(`
+                                          font-size: 0;
+                                          word-break: break-word;
+                                        `)}">
+                                          <div style="height:8px;">&nbsp;</div>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align="left" style="${style(`
+                                          padding: 0;
+                                          font-size: 0;
+                                          word-break: break-word;
+                                       `)}">
+                                          <div style="${style(`
+                                            font-family: Overpass, sans-serif;
+                                            font-size: 16px;
+                                            font-weight: 300;
+                                            line-height: 24px;
+                                            text-align: left;
+                                            color: #9096B6;
+                                          `)}">
+                                            ${subtitle}
+                                          </div>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="${style(`
+                                          font-size: 0;
+                                          word-break: break-word;
+                                        `)}">
+                                          ${vspace(50)}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align="left" style="${style(`
+                                          font-size: 0;
+                                          padding: 0;
+                                          word-break: break-word;
+                                        `)}">
+                                          <div style="${style(`
+                                            font-family: Overpass, sans-serif;
+                                            font-size: 13px;
+                                            font-weight: 300;
+                                            line-height: 1;
+                                            text-align: left;
+                                            color: #9096B6;
+                                          `)}">
+                                            ${content}
+                                          </div>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align="left" style="${style(`
+                                          font-size: 0;
+                                          padding: 0;
+                                          word-break: break-word;
+                                        `)}">
+                                          <div style="${style(`
+                                            font-family: Overpass, sans-serif;
+                                            font-size: 13px;
+                                            font-weight: 300;
+                                            line-height: 1;
+                                            text-align: left;
+                                            color: #9096B6;
+                                          `)}">
+                                          </div>
+                                        </td>
+                                      </tr>`
+                                    )}
+                                  </td>
+                                </tr>`
+                              )}
                             </div>
                           </td>
-                        </tr>
-                        <tr>
-                          <td style="${style(`
-                            font-size: 0;
-                            word-break: break-word;
-                          `)}">
-                            <div style="height:40px;">&nbsp;</div>
-                          </td>
-                        </tr>
-                      `
-                    )}
-                  </div>
-                </td>
-              </tr>`
-            )}
-          </div>
-        </div>
+                        </tr>`
+                      )}
+                    </div>
+                  </td>
+                </tr>`
+              )}
+              ${table(
+                {
+                  align: 'center',
+                  style: 'width:100%',
+                },
+                `<tr>
+                  <td style="${style(`
+                    direction: ltr;
+                    font-size: 0;
+                    padding: 0 40px;
+                    text-align: center;
+                  `)}">
+                    <div style="${style(`
+                      font-size: 0;
+                      text-align: left;
+                      direction: ltr;
+                      display: inline-block;
+                      vertical-align: top;
+                      width: 100%;
+                    `)}">
+                      ${table(
+                        {
+                          width: '100%',
+                          style: 'vertical-align:top',
+                        },
+                        `
+                          <tr>
+                            <td style="${style(`
+                              font-size: 0;
+                              word-break: break-word;
+                           `)}">
+                              <div style="height:40px;">&nbsp;</div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="left" style="${style(`
+                              font-size: 0;
+                              padding: 0;
+                              word-break: break-word;
+                            `)}">
+                              <div style="${style(`
+                                font-family: Overpass, sans-serif;
+                                font-size: 14px;
+                                font-weight: 300;
+                                line-height: 22px;
+                                text-align: left;
+                                color: #9096B6;
+                              `)}">
+                                This service is provided by ${link(
+                                  'Aragon One AG',
+                                  'https://aragon.one/'
+                                )}. You are receiving this email because you are
+                                subscribed to
+                                <strong style="${style(`
+                                  font-weight: 300;
+                                  color: #637381
+                                `)}">Aragon Court Email Notifications</strong>.
+                                You can contact us at
+                                <a href="mailto:support@aragon.org" style="${style(`
+                                  color: #637381;
+                                  text-decoration: none;
+                                `)}">support@aragon.org</a>
+                                if you no longer wish to receive these.
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="${style(`
+                              font-size: 0;
+                              word-break: break-word;
+                            `)}">
+                              <div style="height:40px;">&nbsp;</div>
+                            </td>
+                          </tr>
+                        `
+                      )}
+                    </div>
+                  </td>
+                </tr>`
+              )}
+            </td>
+          </tr>`
+        )}
       </body>
     </html>
   `
@@ -593,69 +577,79 @@ function infobox({ mode, primary, secondary }) {
 }
 
 function dataTable(listName, headers) {
-  return table(
-    { class: 'data-table' },
-    `
-      <tr style="${style(`
-        text-align: left;
-        padding: 16px 0;
-      `)}">
-        ${headers
-          .map(
-            ([varName, label], index) =>
-              `<th
-                style="${style(`
-                  color: #637381;
-                  font-size: 12px;
-                  line-height: 32px;
-                  white-space: nowrap;
-                  font-weight: 400;
-                  font-family: Overpass, sans-serif;
-                  padding: ${
-                    index === headers.length - 1 ? '0 0 0 16px' : '0 16px 0 0'
-                  };
-                  text-align: ${
-                    index === headers.length - 1 ? 'right' : 'left'
-                  };
-                `)}"
-              >
-                ${label}
-              </th>`
-          )
-          .join('\n')}
-      </tr>
-      {{#each ${listName}}}
-        <tr>
+  return `
+    <table ${attrs({
+      class: 'data-table',
+      border: '0',
+      cellpadding: '0',
+      cellspacing: '0',
+      role: 'presentation',
+      width: '100%',
+    })}>
+      <thead>
+        <tr style="${style(`
+          text-align: left;
+          padding: 16px 0;
+        `)}">
           ${headers
             .map(
-              ([cellTemplate], index) => `
-                <td
+              ([varName, label], index) =>
+                `<th
                   style="${style(`
-                    padding: 24px 0;
-                    padding-${
-                      index === headers.length - 1 ? 'left' : 'right'
-                    }: 16px;
-                    font-size: 16px;
+                    color: #637381;
+                    font-size: 12px;
                     line-height: 32px;
                     white-space: nowrap;
-                    font-weight: 300;
+                    font-weight: 400;
                     font-family: Overpass, sans-serif;
+                    padding: ${
+                      index === headers.length - 1 ? '0 0 0 16px' : '0 16px 0 0'
+                    };
                     text-align: ${
                       index === headers.length - 1 ? 'right' : 'left'
                     };
-                    color: #26324E;
-                    border-top: 1px solid #DDE4E9;
                   `)}"
                 >
-                  ${cellTemplate}
-                </td>
-              `
+                  ${label}
+                </th>`
             )
             .join('\n')}
         </tr>
-      {{/each}}
-    `
-  )
+      </thead>
+      <tbody>
+        {{#each ${listName}}}
+          <tr>
+            ${headers
+              .map(
+                ([cellTemplate], index) => `
+                  <td
+                    style="${style(`
+                      padding: 24px 0;
+                      padding-${
+                        index === headers.length - 1 ? 'left' : 'right'
+                      }: 16px;
+                      font-size: 16px;
+                      line-height: 32px;
+                      white-space: nowrap;
+                      font-weight: 300;
+                      font-family: Overpass, sans-serif;
+                      text-align: ${
+                        index === headers.length - 1 ? 'right' : 'left'
+                      };
+                      color: #26324E;
+                      border-top: 1px solid #DDE4E9;
+                    `)}"
+                  >
+                    ${cellTemplate}
+                  </td>
+                `
+              )
+              .join('\n')}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  `
 }
 
 module.exports = {
@@ -663,7 +657,8 @@ module.exports = {
   addressBadge,
   base,
   dataTable,
-  vspace,
   infobox,
   link,
+  style,
+  vspace,
 }

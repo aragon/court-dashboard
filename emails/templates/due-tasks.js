@@ -4,12 +4,13 @@ const {
   dataTable,
   vspace,
   link,
+  style,
 } = require('../template-utils')
 const { accountData } = require('../mock-utils')
 
 module.exports = function() {
   const statusOpenDue = `
-    <span style="
+    <span style="${style(`
       display:inline-block;
       width:13px;
       height:13px;
@@ -17,7 +18,7 @@ module.exports = function() {
       border:1.5px solid #F5A623;
       border-radius:2px;
       vertical-align:middle;
-    "></span>
+    `)}"></span>
   `
 
   return {
