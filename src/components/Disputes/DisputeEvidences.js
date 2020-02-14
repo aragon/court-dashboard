@@ -152,14 +152,11 @@ const EvidenceContent = React.memo(function EvidenceContent({
             `}
           >
             {(() => {
-              console.log('plaintiff', plaintiff)
-              console.log('submitter', submitter)
-              console.log('defendant', submitter)
               if (addressesEqual(plaintiff, submitter)) {
-                return 'In favor'
+                return 'Against'
               }
               if (addressesEqual(defendant, submitter)) {
-                return 'Against'
+                return 'In favor'
               }
               return 'Neutral'
             })()}

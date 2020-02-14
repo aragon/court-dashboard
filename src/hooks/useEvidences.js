@@ -12,16 +12,19 @@ export default function useEvidences(evidences) {
         return
       }
 
-      setEvidenceProcessed(prev =>
-        [...prev, evidence].sort(
+      setEvidenceProcessed(prev => {
+        if (prev.some(element => element.id === evidence.id)) {
+          return
+        }
+        return [...prev, evidence].sort(
           ({ createdAt: dateLeft }, { createdAt: dateRight }) =>
             dateLeft - dateRight
         )
-      )
+      })
     }
 
     evidences.forEach(async evidence => {
-      const { data: evidenceData, submitter, createdAt } = evidence
+      const { data: evidenceData, submitter, createdAt, id } = evidence
 
       const ipfsCid = getIpfsCidFromString(evidenceData)
 
@@ -33,6 +36,7 @@ export default function useEvidences(evidences) {
         }
         if (data) {
           return appendEvidence({
+            id,
             metadata: data || '',
             submitter,
             createdAt,
@@ -47,6 +51,7 @@ export default function useEvidences(evidences) {
 
       // If evidence metadata is not an ipfs cid return it as it is
       return appendEvidence({
+        id,
         metadata: evidenceData,
         defendant: '',
         agreementText: '',
