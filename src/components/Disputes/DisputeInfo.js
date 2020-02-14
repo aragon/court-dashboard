@@ -78,7 +78,7 @@ const DisputeInfo = React.memo(function({
             return (
               <ErrorLoading
                 subject="dispute"
-                error="Error loading content from ipfs"
+                errors={['Error loading content from ipfs']}
                 border={false}
               />
             )
