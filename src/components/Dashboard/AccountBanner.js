@@ -83,6 +83,7 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
     theme
   )
 
+  if (loading) return <BannerLoadingRing />
   if (attributes.showProbability)
     return <BannerWithProbability activeBalance={activeBalance} />
 
@@ -221,7 +222,7 @@ const BannerWithProbability = ({ activeBalance }) => {
 
   // TODO - change this for the loading indicator once ready
   return fetchingTotalBalance ? (
-    <LoadingRing />
+    <BannerLoadingRing />
   ) : (
     <Wrapper
       mainIcon={
@@ -241,6 +242,20 @@ const BannerWithProbability = ({ activeBalance }) => {
       }
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
     />
+  )
+}
+
+function BannerLoadingRing() {
+  return (
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+        height: ${6 * GU}px;
+      `}
+    >
+      <LoadingRing />
+    </div>
   )
 }
 
