@@ -15,7 +15,10 @@ function attrs(attributes) {
 }
 
 function vspace(height) {
-  return table({ height }, `<tr><td></td></tr>`)
+  return table(
+    { height, style: `height: ${height}px` },
+    `<tr><td style="height:${height}px">&nbsp;</td></tr>`
+  )
 }
 
 function table(attributes, content) {
@@ -111,6 +114,12 @@ function base({ title, subtitle }, content) {
               padding: 0 24px 24px !important;
               font-size: 16px !important;
             }
+          }
+          .data-table td {
+            border-top: 0 !important;
+          }
+          .data-table tr + tr + tr td {
+            border-top: 1px solid #DDE4E9 !important;
           }
         </style>
       </head>
@@ -265,7 +274,7 @@ function base({ title, subtitle }, content) {
                                         font-size: 0;
                                         word-break: break-word;
                                       `)}">
-                                        <div style="height:50px;">&nbsp;</div>
+                                        ${vspace(50)}
                                       </td>
                                     </tr>
                                     <tr>
@@ -445,9 +454,9 @@ function action(label, href, { padding = '0' } = {}) {
     {
       align: 'center',
       style: style(`
-          width: 100%;
-          font-family: Overpass, sans-serif;
-        `),
+        width: 100%;
+        font-family: Overpass, sans-serif;
+      `),
     },
     `<tr>
       <td style="${style(`
@@ -585,7 +594,7 @@ function infobox({ mode, primary, secondary }) {
 
 function dataTable(listName, headers) {
   return table(
-    {},
+    { class: 'data-table' },
     `
       <tr style="${style(`
         text-align: left;
@@ -601,6 +610,7 @@ function dataTable(listName, headers) {
                   line-height: 32px;
                   white-space: nowrap;
                   font-weight: 400;
+                  font-family: Overpass, sans-serif;
                   padding: ${
                     index === headers.length - 1 ? '0 0 0 16px' : '0 16px 0 0'
                   };
@@ -629,6 +639,7 @@ function dataTable(listName, headers) {
                     line-height: 32px;
                     white-space: nowrap;
                     font-weight: 300;
+                    font-family: Overpass, sans-serif;
                     text-align: ${
                       index === headers.length - 1 ? 'right' : 'left'
                     };
