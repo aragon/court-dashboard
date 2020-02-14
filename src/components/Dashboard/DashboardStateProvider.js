@@ -35,6 +35,7 @@ function WithSubscription({ Provider, connectedAccount, children }) {
   const {
     balances,
     movements,
+    treasury,
     fetching: balancesFetching,
     errors: balanceErrors,
   } = useJurorBalancesSubscription(account)
@@ -61,10 +62,11 @@ function WithSubscription({ Provider, connectedAccount, children }) {
       value={{
         appeals,
         balances,
-        movements,
-        jurorDrafts,
-        fetching,
         errors,
+        fetching,
+        jurorDrafts,
+        movements,
+        treasury,
       }}
     >
       {children}

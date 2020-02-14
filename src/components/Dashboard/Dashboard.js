@@ -29,13 +29,16 @@ function Dashboard() {
     actions,
     appealCollaterals,
     balances,
-    rewards,
-    fetchingData,
     // errorsFetching, //TODO: handle errors
+    fetchingData,
     mode,
     panelState,
     requests,
+    rewards,
+    treasury,
   } = useDashboardLogic()
+
+  console.log('treasury', treasury)
 
   const { name: layout } = useLayout()
   const oneColumn = layout === 'small' || layout === 'medium'

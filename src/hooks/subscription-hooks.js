@@ -65,7 +65,7 @@ export function useJurorBalancesSubscription(jurorId) {
 
   const errors = [anjBalanceError, jurorError].filter(err => err)
 
-  const { balances, movements } = useMemo(() => {
+  const { balances, movements, treasury } = useMemo(() => {
     // Means it's still fetching
     if (!jurorData || !anjBalanceData) {
       return {}
@@ -79,10 +79,11 @@ export function useJurorBalancesSubscription(jurorId) {
     // We set 0 as default values
     const {
       activeBalance = NO_AMOUNT,
-      lockedBalance = NO_AMOUNT,
       availableBalance = NO_AMOUNT,
       deactivationBalance = NO_AMOUNT,
+      lockedBalance = NO_AMOUNT,
       movements = [],
+      treasuryTokens = [],
     } = jurorData.juror || {}
 
     return {
@@ -94,12 +95,17 @@ export function useJurorBalancesSubscription(jurorId) {
         deactivationBalance: bigNum(deactivationBalance),
       },
       movements: groupMovements(movements),
+      treasury: treasuryTokens.map(treasuryToken => ({
+        ...treasuryToken,
+        balance: bigNum(treasuryToken.balance),
+      })),
     }
   }, [anjBalanceData, jurorData])
 
   return {
     balances,
     movements,
+    treasury,
     fetching: !balances && errors.length === 0,
     errors,
   }

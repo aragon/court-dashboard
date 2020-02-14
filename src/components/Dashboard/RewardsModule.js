@@ -38,7 +38,7 @@ const RewardsModule = React.memo(function RewardsModule({
   onSettleAppealDeposit,
 }) {
   const wallet = useWallet()
-  const { feeToken } = useCourtConfig()
+  // const { feeToken } = useCourtConfig()
 
   const { totalArbitrableFees, totalAppealFees } = useTotalDisputesFees(
     rewards?.arbitrableFees,
@@ -76,12 +76,12 @@ const RewardsModule = React.memo(function RewardsModule({
 
         await Promise.all(transactionBag.map(tx => tx.wait()))
 
-        const withdrawFromTreasuryTx = await onWithdraw(
-          feeToken.id,
-          wallet.account,
-          totalDisputesFees
-        )
-        await withdrawFromTreasuryTx.wait()
+        // const withdrawFromTreasuryTx = await onWithdraw(
+        //   feeToken.id,
+        //   wallet.account,
+        //   totalDisputesFees
+        // )
+        // await withdrawFromTreasuryTx.wait()
       } catch (err) {
         console.log(`Error claiming rewards: ${err}`)
       }

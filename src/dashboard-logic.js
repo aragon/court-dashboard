@@ -69,11 +69,15 @@ export function useDashboardLogic() {
     withdrawANJ,
   } = useANJActions()
 
-  const panelState = useSidePanel()
-  const balances = useANJBalances()
   const rewards = useJurorRewards()
+  const balances = useANJBalances()
+  const panelState = useSidePanel()
   const appealCollaterals = useJurorAppealCollaterals()
-  const { fetching: fetchingData, errors: errorsFetching } = useDashboardState()
+  const {
+    treasury,
+    fetching: fetchingData,
+    errors: errorsFetching,
+  } = useDashboardState()
 
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
@@ -93,11 +97,12 @@ export function useDashboardLogic() {
     actions,
     appealCollaterals,
     balances,
-    rewards,
-    fetchingData,
     errorsFetching,
+    fetchingData,
     mode,
     panelState,
     requests,
+    rewards,
+    treasury,
   }
 }
