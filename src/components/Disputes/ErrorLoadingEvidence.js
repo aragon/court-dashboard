@@ -1,5 +1,5 @@
 import React from 'react'
-import { GU, textStyle, Link, useTheme } from '@aragon/ui'
+import { GU, textStyle, useTheme } from '@aragon/ui'
 
 import errorLoadingSvg from '../../assets/errorLoading.svg'
 
@@ -39,7 +39,7 @@ export default function ErrorLoadingEvidence() {
             ${textStyle('title2')}
           `}
         >
-          We couldn't load evidence infromation
+          Oops, we couldn't load this piece of evidence
         </span>
         <div
           css={`
@@ -51,18 +51,7 @@ export default function ErrorLoadingEvidence() {
                 text-align: center; 
               `}
         >
-          <span>
-            Something went wrong! You can restart the app, or you can{' '}
-            <span
-              css={`
-                color: ${theme.help};
-              `}
-            >
-              {' '}
-              <Link onClick={() => {}}> tell us what went wrong </Link>
-            </span>{' '}
-            if the problem persists.
-          </span>
+          <span>Something went wrong! Please try refreshing this page.</span>
         </div>
       </div>
     </div>

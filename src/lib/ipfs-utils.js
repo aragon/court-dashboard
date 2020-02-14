@@ -1,3 +1,4 @@
+import isIPFS from 'is-ipfs'
 import { IPFS_ENDPOINT } from '../endpoints'
 
 const REQUEST_TIMEOUT = 60000
@@ -13,4 +14,17 @@ export const ipfsGet = async cid => {
     console.error(`Error requesting data from IPFS for ${endpoint}`, err)
     return { error: true }
   }
+}
+
+export const getIpfsCidFromString = string => {
+  const ipfsCid = string.replace(/^ipfs:/, '')
+
+  if (
+    isIPFS.multihash(ipfsCid) ||
+    isIPFS.cid(ipfsCid) ||
+    isIPFS.cidPath(ipfsCid)
+  ) {
+    return ipfsCid
+  }
+  return ''
 }

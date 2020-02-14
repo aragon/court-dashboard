@@ -1,7 +1,5 @@
-import isIPFS from 'is-ipfs'
 import { useEffect, useState } from 'react'
-import { ipfsGet } from '../lib/ipfs-utils'
-import dayjs from '../lib/dayjs'
+import { ipfsGet, getIpfsCidFromString } from '../lib/ipfs-utils'
 import { ERROR_TYPES } from '../types/evidences-status-types'
 
 export default function useEvidences(evidences) {
@@ -15,15 +13,9 @@ export default function useEvidences(evidences) {
       }
 
       setEvidenceProcessed(prev =>
-        [
-          ...prev,
-          evidence,
-        ].sort(({ createdAt: dateLeft }, { createdAt: dateRight }) =>
-          dayjs(dateLeft).isAfter(dayjs(dateRight))
-            ? 1
-            : dayjs(dateLeft).isSame(dayjs(dateRight))
-            ? 0
-            : -1
+        [...prev, evidence].sort(
+          ({ createdAt: dateLeft }, { createdAt: dateRight }) =>
+            dateLeft - dateRight
         )
       )
     }
@@ -31,12 +23,11 @@ export default function useEvidences(evidences) {
     evidences.forEach(async evidence => {
       const { data: evidenceData, submitter, createdAt } = evidence
 
-      const ipfsHash = evidenceData.replace(/^ipfs:/, '')
+      const ipfsCid = getIpfsCidFromString(evidenceData)
 
-      // check if the metadata inside the evidence is a cid
-      // if the ipfs tag is not present return the metadata as plain string
-      if (isIPFS.multihash(ipfsHash) || isIPFS.cid(ipfsHash)) {
-        const { data, error } = await ipfsGet(ipfsHash)
+      // If is a valid CID try to fetch the content
+      if (ipfsCid) {
+        const { data, error } = await ipfsGet(ipfsCid)
         if (error) {
           return appendEvidence({ error: ERROR_TYPES.ERROR_FETCHING_IPFS })
         }
