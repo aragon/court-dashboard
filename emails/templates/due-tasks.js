@@ -36,13 +36,22 @@ module.exports = function() {
         ${dataTable('tasks', [
           ['{{name}}', 'TASK'],
           [link('Dispute #{{disputeId}}', '{{disputeUrl}}'), 'DISPUTE'],
-          ['{{{status}}}', 'STATUS'],
+          ['{{{statusTag}}} {{status}}', 'STATUS'],
           ['{{dueDate}}', 'DUE DATE'],
         ])}
       `
     ),
     templateText: `
       Aragon Court Notifications
+
+      You have {{tasksCount}} tasks due today:
+      {{#each tasks}}
+
+      Task: {{name}} (dispute #{{disputeId}})
+      Status: {{status}}
+      Due date: {{dueDate}}
+      Address: {{disputeUrl}}
+      {{/each}}
 
       This service is provided by Aragon One AG [1]. You are receiving this email
       because you are subscribed to Aragon Court Email Notifications. You can
@@ -59,14 +68,16 @@ module.exports = function() {
           name: 'Commit vote',
           disputeId: '12',
           disputeUrl: 'http://example.org/#12',
-          status: `${statusOpenDue} Open: Due today`,
+          status: `Open: Due today`,
+          statusTag: statusOpenDue,
           dueDate: `18 Dec. 2019 at 12:46pm`,
         },
         {
           name: 'Reveal vote',
           disputeId: '14',
           disputeUrl: 'http://example.org/#14',
-          status: `${statusOpenDue} Open: Due today`,
+          status: `Open: Due today`,
+          statusTag: statusOpenDue,
           dueDate: `18 Dec. 2019 at 2:50pm`,
         },
       ],
