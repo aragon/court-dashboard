@@ -1,4 +1,10 @@
-const { addressBadge, dataTable, base, link } = require('./shared')
+const {
+  addressBadge,
+  base,
+  dataTable,
+  vspace,
+  link,
+} = require('../template-utils')
 const { accountData } = require('../mock-utils')
 
 module.exports = function() {
@@ -15,44 +21,55 @@ module.exports = function() {
   `
 
   return {
-    template: base({
-      title: 'Task Reminder',
-      subtitle: `Here are the tasks for the address ${addressBadge()} on {{date}}`,
-      content: `
-        <mj-text font-size="16px" line-height="24px" color="#212B36" padding="0 0 40px">
+    template: base(
+      {
+        title: 'Task Reminder',
+        subtitle: `Here are the tasks for the address ${addressBadge()} on {{date}}`,
+      },
+      `
+        <div style="font-size:16px;line-height:24px;color:#212B36;">
           You have {{tasksCount}} tasks due today:
-        </mj-text>
+        </div>
+        ${vspace(40)}
 
-        ${dataTable({
-          listName: 'tasks',
-          headers: [
-            ['name', 'TASK'],
-            ['dispute', 'DISPUTE'],
-            ['status', 'STATUS'],
-            ['dueDate', 'DUE DATE'],
-          ],
-        })}
-      `,
-    }),
-    mockdata: {
+        ${dataTable('tasks', [
+          ['{{name}}', 'TASK'],
+          [link('Dispute #{{disputeId}}', '{{disputeUrl}}'), 'DISPUTE'],
+          ['{{{status}}}', 'STATUS'],
+          ['{{dueDate}}', 'DUE DATE'],
+        ])}
+      `
+    ),
+    templateText: `
+      Aragon Court Notifications
+
+      This service is provided by Aragon One AG [1]. You are receiving this email
+      because you are subscribed to Aragon Court Email Notifications. You can
+      contact us at support@aragon.org if you not longer wish to receive these.
+
+      [1] https://aragon.one/
+    `,
+    mockData: {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
-      date: 'Thursday, 17 Dec, 2019',
-      disputeId: '14',
-      disputeUrl: '',
-      // rows: [
-      //   [
-      //     'Commit vote',
-      //     link('Dispute #12', ''),
-      //     `${statusOpenDue} Open: Due today`,
-      //     `18 Dec 2019 at 12:46pm`,
-      //   ],
-      //   [
-      //     'Reveal vote',
-      //     link('Dispute #14', ''),
-      //     `${statusOpenDue} Open: Due today`,
-      //     `18 Dec 2019 at 2:50pm`,
-      //   ],
-      // ],
+      date: 'Thursday, 17 Dec. 2019',
+      tasksCount: '2',
+      tasks: [
+        {
+          name: 'Commit vote',
+          disputeId: '12',
+          disputeUrl: 'http://example.org/#12',
+          status: `${statusOpenDue} Open: Due today`,
+          dueDate: `18 Dec. 2019 at 12:46pm`,
+        },
+        {
+          name: 'Reveal vote',
+          disputeId: '14',
+          disputeUrl: 'http://example.org/#14',
+          status: `${statusOpenDue} Open: Due today`,
+          dueDate: `18 Dec. 2019 at 2:50pm`,
+        },
+      ],
+      notificationsSettingsUrl: '',
     },
   }
 }

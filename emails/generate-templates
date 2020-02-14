@@ -2,28 +2,48 @@
 
 const fs = require('fs')
 const path = require('path')
-const mjml2html = require('mjml')
+const prettier = require('prettier')
+const handlebars = require('handlebars')
 const drafted = require('./templates/drafted')
 const missedVote = require('./templates/missed-vote')
 const emailVerification = require('./templates/email-verification')
 const dueTasks = require('./templates/due-tasks')
+const { MOCK_DATA } = require('./env')
 
 const DIST_DIR = path.join(__dirname, 'dist')
 
-function renderTemplate(createTemplate, filename) {
-  const { template, mockData } = createTemplate()
-  const output = mjml2html(template, { beautify: true })
+function renderTemplate(createTemplate, name) {
+  let { template, templateText, mockData } = createTemplate()
 
-  if (output.errors.length) {
-    console.error(output.errors)
-    process.exit(1)
+  // Prettify templates
+  template = prettier.format(template, { parser: 'html', printWidth: 999 })
+  templateText = prettier.format(templateText, {
+    parser: 'markdown',
+    proseWrap: 'always',
+    printWidth: 80,
+  })
+
+  // Remove extra whitespaces in the text template
+  templateText = templateText.replace(/^ +/gm, '')
+
+  if (MOCK_DATA) {
+    template = handlebars.compile(template)(mockData)
+    templateText = handlebars.compile(templateText)(mockData)
   }
 
   fs.mkdirSync(DIST_DIR, { recursive: true })
-  fs.writeFileSync(path.join(DIST_DIR, filename), output.html, 'utf8')
+  fs.writeFileSync(path.join(DIST_DIR, name + '.html'), template, 'utf8')
+  fs.writeFileSync(path.join(DIST_DIR, name + '.txt'), templateText, 'utf8')
 }
 
-renderTemplate(drafted, 'drafted.html')
-renderTemplate(missedVote, 'missed-vote.html')
-renderTemplate(emailVerification, 'email-verification.html')
-renderTemplate(dueTasks, 'due-tasks.html')
+function main() {
+  const files = fs
+    .readdirSync(path.join(__dirname, 'templates'))
+    .filter(filename => filename.endsWith('.js'))
+
+  files.forEach(filename => {
+    const template = require(path.join(__dirname, 'templates', filename))
+    renderTemplate(template, path.basename(filename, '.js'))
+  })
+}
+main()
