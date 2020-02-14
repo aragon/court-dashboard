@@ -15,6 +15,7 @@ import {
 } from '@aragon/ui'
 import useOneTimeCode from '../../../hooks/useOneTimeCode'
 import { useWallet } from '../../../providers/Wallet'
+import { saveCodeInLocalStorage } from '../../../utils/one-time-code-utils'
 
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
 
@@ -45,31 +46,32 @@ const CommitPanel = React.memo(function CommitPanel({
           oneTimeCode
         )
         await tx.wait()
+        saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode)
         onDone()
       } catch (err) {
         console.log('Error submitting transaction: ', err)
       }
     },
-    [commitment, dispute, onCommit, onDone, oneTimeCode]
+    [
+      commitment,
+      connectedAccount,
+      dispute.id,
+      dispute.lastRoundId,
+      onCommit,
+      onDone,
+      oneTimeCode,
+    ]
   )
 
   const handleDownloadCode = useCallback(() => {
     download()
     setCodeSaved(true)
-    localStorage.setItem(
-      `oneTimeCode-${connectedAccount}-${dispute.id}`,
-      oneTimeCode
-    )
-  }, [connectedAccount, dispute.id, download, oneTimeCode])
+  }, [download])
 
   const handleCopyCode = useCallback(() => {
     setCodeCopied(true)
     toast('One-time-use code copied')
-    localStorage.setItem(
-      `oneTimeCode-${connectedAccount}-${dispute.id}`,
-      oneTimeCode
-    )
-  }, [connectedAccount, dispute.id, oneTimeCode, toast])
+  }, [toast])
 
   const handleRevealService = useCallback(
     checked => {

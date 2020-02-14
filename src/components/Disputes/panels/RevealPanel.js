@@ -3,6 +3,10 @@ import { Button, Field, GU, TextInput } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import { getJurorDraft } from '../../../utils/juror-draft-utils'
+import {
+  getCodeFromLocalStorage,
+  removeCodeFromLocalStorage,
+} from '../../../utils/one-time-code-utils'
 
 const RevealPanel = React.memo(function RevealPanel({
   dispute,
@@ -16,9 +20,7 @@ const RevealPanel = React.memo(function RevealPanel({
   const jurorDraft = getJurorDraft(lastRound, wallet.account)
 
   useEffect(() => {
-    const oneTimeCode = localStorage.getItem(
-      `oneTimeCode-${wallet.account}-${dispute.id}`
-    )
+    const oneTimeCode = getCodeFromLocalStorage(wallet.account, dispute.id)
     if (oneTimeCode) {
       setPassword(oneTimeCode)
     }
@@ -38,7 +40,7 @@ const RevealPanel = React.memo(function RevealPanel({
         password
       )
       await tx.wait()
-      localStorage.removeItem(`oneTimeCode-${wallet.account}-${dispute.id}`)
+      removeCodeFromLocalStorage(wallet.account, dispute.id)
       onDone()
     } catch (err) {
       console.log('Error submitting tx: ', err)
