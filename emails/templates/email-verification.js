@@ -43,7 +43,7 @@ module.exports = function() {
       {{verifyEmailUrl}}
     `,
     mockData: {
-      date: 'Thursday, 17 Dec, 2019',
+      date: 'Thursday, 17 Dec. 2019',
       verifyEmailUrl: 'https://app.aragon.org/confirm?email=paty%40aragon.one&token=BxN5wBjmCz47mrx0KsfA9KvE&mode=signup',
       notificationsSettingsUrl: '',
     },

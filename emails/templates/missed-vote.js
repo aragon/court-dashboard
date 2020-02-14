@@ -37,7 +37,7 @@ module.exports = function() {
     `,
     mockData: {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
-      date: 'Thursday, 17 Dec, 2019',
+      date: 'Thursday, 17 Dec. 2019',
       lockedAnjBalanceUrl: '',
       learnMoreUrl: '',
       notificationsSettingsUrl: '',
