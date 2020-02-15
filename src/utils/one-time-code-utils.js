@@ -4,15 +4,15 @@ export function saveCodeInLocalStorage(
   oneTimeCode
 ) {
   localStorage.setItem(
-    `oneTimeCode-${connectedAccount}-${disputeId}`,
+    `oneTimeCode:${connectedAccount}:${disputeId}`,
     oneTimeCode
   )
 }
 
 export function getCodeFromLocalStorage(connectedAccount, disputeId) {
-  return localStorage.getItem(`oneTimeCode-${connectedAccount}-${disputeId}`)
+  return localStorage.getItem(`oneTimeCode:${connectedAccount}:${disputeId}`)
 }
 
 export function removeCodeFromLocalStorage(connectedAccount, disputeId) {
-  localStorage.removeItem(`oneTimeCode-${connectedAccount}-${disputeId}`)
+  localStorage.removeItem(`oneTimeCode:${connectedAccount}:${disputeId}`)
 }
