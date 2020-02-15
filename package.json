@@ -2,6 +2,7 @@
   "name": "be",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@aragon/ui": "^1.2.0",
     "@sentry/browser": "^5.12.1",
