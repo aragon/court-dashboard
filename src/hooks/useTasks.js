@@ -31,52 +31,57 @@ function useOpenTasks(tasks, now, courtSettings) {
     : null
 
   return useMemo(() => {
+    if (!tasks) {
+      return []
+    }
+
+    const incompleteTasks = tasks.filter(
+      (_, i) => currentRoundPhases[i].phase !== DisputesTypes.Phase.Ended
+    )
+    const incompleteRoundPhases = currentRoundPhases.filter(roundPhase => {
+      return roundPhase.phase !== DisputesTypes.Phase.Ended
+    })
+
     const openTasks = []
-    if (tasks) {
-      for (let i = 0; i < tasks.length; i++) {
-        // If we are in appeal or confirm we just need to generate 1 task
-        if (
-          currentRoundPhases[i].phase === DisputesTypes.Phase.AppealRuling ||
-          currentRoundPhases[i].phase === DisputesTypes.Phase.ConfirmAppeal
-        ) {
-          if (isAppealTaskOpen(tasks[i], currentRoundPhases[i].phase)) {
+
+    for (let i = 0; i < incompleteTasks.length; i++) {
+      const currentPhase = incompleteRoundPhases[i].phase
+      const nextTransition = incompleteRoundPhases[i].nextTransition
+
+      if (
+        currentPhase !== DisputesTypes.Phase.AppealRuling &&
+        currentPhase !== DisputesTypes.Phase.ConfirmAppeal
+      ) {
+        for (let j = 0; j < incompleteTasks[i].jurors.length; j++) {
+          if (isVotingTaskOpen(incompleteTasks[i].jurors[j], currentPhase)) {
             openTasks.push({
-              number: tasks[i].number,
-              state: tasks[i].state,
-              createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
-              juror: 'Anyone',
-              disputeId: tasks[i].dispute.id,
-              phase: getTaskName(currentRoundPhases[i].phase),
-              dueDate: currentRoundPhases[i].nextTransition,
-              phaseType: currentRoundPhases[i].phase,
-              open: true,
+              number: incompleteTasks[i].number,
+              state: incompleteTasks[i].state,
+              createdAt: parseInt(incompleteTasks[i].createdAt, 10) * 1000,
+              juror: incompleteTasks[i].jurors[j].juror.id,
+              disputeId: incompleteTasks[i].dispute.id,
+              commitment: incompleteTasks[i].jurors[j].commitment,
+              outcome: incompleteTasks[i].jurors[j].outcome,
+              phase: getTaskName(currentPhase),
+              phaseType: currentPhase,
+              dueDate: nextTransition,
             })
           }
-        } else {
-          for (let j = 0; j < tasks[i].jurors.length; j++) {
-            if (currentRoundPhases[i].phase !== DisputesTypes.Phase.Ended) {
-              if (
-                isVotingTaskOpen(
-                  tasks[i].jurors[j],
-                  currentRoundPhases[i].phase
-                )
-              ) {
-                openTasks.push({
-                  number: tasks[i].number,
-                  state: tasks[i].state,
-                  createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
-                  juror: tasks[i].jurors[j].juror.id,
-                  disputeId: tasks[i].dispute.id,
-                  commitment: tasks[i].jurors[j].commitment,
-                  outcome: tasks[i].jurors[j].outcome,
-                  phase: getTaskName(currentRoundPhases[i].phase),
-                  phaseType: currentRoundPhases[i].phase,
-                  dueDate: currentRoundPhases[i].nextTransition,
-                  open: true,
-                })
-              }
-            }
-          }
+        }
+      } else {
+        if (isAppealTaskOpen(incompleteTasks[i], currentPhase)) {
+          // We are in appeal or confirm and only need to generate a single task
+          // (rather than one per juror) if the task is still open
+          openTasks.push({
+            number: incompleteTasks[i].number,
+            state: incompleteTasks[i].state,
+            createdAt: parseInt(incompleteTasks[i].createdAt, 10) * 1000,
+            juror: 'Anyone',
+            disputeId: incompleteTasks[i].dispute.id,
+            phase: getTaskName(currentPhase),
+            dueDate: nextTransition,
+            phaseType: currentPhase,
+          })
         }
       }
     }
@@ -107,7 +112,7 @@ function isAppealTaskOpen(round, currentPhase) {
     return true
   }
   if (currentPhase === DisputesTypes.Phase.ConfirmAppeal) {
-    if (round?.appeal?.opposedRuling !== 0) {
+    if (Number(round?.appeal?.opposedRuling) !== 0) {
       return false
     }
     return true
