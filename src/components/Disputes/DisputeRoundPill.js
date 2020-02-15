@@ -28,6 +28,7 @@ function DisputeRoundPill({ roundId }) {
         css={`
           ${textStyle('label2')};
           color: ${theme.accent};
+          transform: translateY(1px);
         `}
       >
         {label}
