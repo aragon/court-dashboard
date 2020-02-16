@@ -83,10 +83,12 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
     theme
   )
 
-  if (loading) return <BannerLoadingRing />
-  if (attributes.showProbability)
+  if (loading) {
+    return <BannerLoadingRing />
+  }
+  if (attributes.showProbability) {
     return <BannerWithProbability activeBalance={activeBalance} />
-
+  }
   const {
     icon,
     title,
