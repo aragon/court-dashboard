@@ -23,6 +23,9 @@ import mainnetSmall5 from './highlights/assets/mainnet/small/5.png'
 import mainnetSmall6 from './highlights/assets/mainnet/small/6.png'
 import mainnetSmall7 from './highlights/assets/mainnet/small/7.png'
 
+const TYPEFORM_LINK = 'https://aragonone.typeform.com/to/g7zncn'
+const MAIN_COURT_URL = 'https://court.aragon.org'
+
 const highlights = {
   heading: 'Aragon Court',
   defaultVisualColor: '#FF9780',
@@ -39,9 +42,9 @@ highlights.rinkeby = [
       small: null,
       large: (
         <span>
-          This is a preview release of the official Court Dashboard that will
-          launch on Feb 10th. We'd love for you to explore it and tell us what
-          you think!
+          This is a testnet release of the official Court Dashboard at{' '}
+          <Link href={MAIN_COURT_URL}>court.aragon.org</Link>. We'd love for you
+          to explore it and tell us what you think!
         </span>
       ),
     },
@@ -103,7 +106,7 @@ highlights.rinkeby = [
         <span>
           When you vote in favor of the majority ruling, you will be rewarded
           with arbitration fees. Just note that these rewards will be awarded in
-          Rinkeby tokens for the purpose of this test preview.
+          Rinkeby tokens for the purpose of this test version.
         </span>
       ),
     },
@@ -120,10 +123,17 @@ highlights.rinkeby = [
     description: {
       small: null,
       large: (
-        <span>
-          You will receive email notifications about important Aragon Court
-          announcements, your assigned disputes, and upcoming tasks as a juror.
-        </span>
+        <>
+          <p>
+            If you didn’t receive any Rinkeby ANJ, just complete
+            <Link href={TYPEFORM_LINK}>this form</Link> and we’ll send you some
+            funds swiftly!
+          </p>
+          <p>
+            You’ll also receive notifications about important announcements,
+            your assigned disputes, and upcoming tasks as a juror.
+          </p>
+        </>
       ),
     },
     visual: {
@@ -170,7 +180,7 @@ highlights.mainnet = [
             View and manage your ANJ across three balances: Wallet, Inactive,
             and Active. You can read more about these different balances and
             what they mean in the{' '}
-            <Link href="https://help.aragon.org/article/41-aragon-court">
+            <Link href="https://help.aragon.org/article/42-aragon-court-dashboard">
               Juror Dashboard Guide
             </Link>
             .
@@ -178,7 +188,7 @@ highlights.mainnet = [
 
           <p>
             Adjusting your active ANJ balance will affect the indicator that
-            displays your chance of being drafted, and current draft status.
+            displays your chance of being drafted and your current draft status.
           </p>
         </>
       ),
@@ -204,8 +214,9 @@ highlights.mainnet = [
             particpants are properly motivated to do their jobs well.
           </p>
           <p>
-            You can convert ANT, DAI, ETH, or USDC to ANJ using the module at
-            anj.aragon.org or by clicking “Buy ANJ”.
+            You can convert ANT, DAI, ETH, or USDC to ANJ using the module at{' '}
+            <Link href="https://anj.aragon.org/">anj.aragon.org</Link> or by
+            clicking “Buy ANJ”.
           </p>
         </>
       ),
@@ -229,7 +240,7 @@ highlights.mainnet = [
             rewards and avoid penalties.
           </p>
           <p>
-            Check your pending actions in the Upcoming tasks section so you
+            Check your pending actions in the “Upcoming tasks” section so you
             always know what to do.
           </p>
         </>
@@ -249,8 +260,9 @@ highlights.mainnet = [
       small: null,
       large: (
         <span>
-          View all live disputes or only ones your adjudicating. From here you
-          can explore the details, evidence, and timeline for any dispute.
+          View all live disputes or only the ones you are adjudicating. From
+          here you can explore the details, evidence, and timeline for any
+          dispute.
         </span>
       ),
     },

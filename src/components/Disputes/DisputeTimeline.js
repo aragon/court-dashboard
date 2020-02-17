@@ -24,7 +24,6 @@ import {
   Phase as DisputePhase,
   getPhaseStringForStatus,
 } from '../../types/dispute-status-types'
-import dayjs from '../../lib/dayjs'
 import { dateFormat } from '../../utils/date-utils'
 import { getDisputeTimeLine } from '../../utils/dispute-utils'
 
@@ -234,10 +233,9 @@ function PhaseIcon({ phase, active }) {
 
   return (
     <img
-      css={`
-        height: ${GU * 6}px;
-      `}
       src={active ? icon.active : icon.inactive}
+      width={6 * GU}
+      height={6 * GU}
       alt=""
     />
   )
@@ -253,7 +251,7 @@ function DisplayTime({ item }) {
     ) {
       return 'ANY TIME'
     }
-    return <Timer end={dayjs(endTime)} />
+    return <Timer end={new Date(endTime)} maxUnits={3} />
   }
   return <>{dateFormat(endTime, 'DD/MM/YY')}</>
 }

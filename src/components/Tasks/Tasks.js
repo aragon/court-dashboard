@@ -64,34 +64,30 @@ const Tasks = React.memo(({ onlyTable }) => {
         incompleteTasks={incompleteTasks}
       /> */}
       {!onlyTable && (
-        <div
+        <Tabs
           css={`
-            margin-top: ${2 * GU}px;
+            margin-bottom: 0px;
           `}
-        >
-          <Tabs
-            css={`
-              margin-bottom: 0px;
-            `}
-            items={[
-              <div>
-                <span>My Tasks </span>
-                <Tag limitDigits={4} label={jurorOpenTaskNumber} size="small" />
-              </div>,
-              <div>
-                <span>All Tasks </span>
-                <Tag limitDigits={4} label={openTasksNumber} size="small" />
-              </div>,
-            ]}
-            selected={screenIndex}
-            onChange={handleTabChange}
-          />
-        </div>
+          items={[
+            <div>
+              <span>My Tasks </span>
+              <Tag limitDigits={4} label={jurorOpenTaskNumber} size="small" />
+            </div>,
+            <div>
+              <span>All Tasks </span>
+              <Tag limitDigits={4} label={openTasksNumber} size="small" />
+            </div>,
+          ]}
+          selected={screenIndex}
+          onChange={handleTabChange}
+        />
       )}
 
       {(() => {
         if (errorLoading) {
-          return <ErrorLoading subject="tasks" error={errorLoading.message} />
+          return (
+            <ErrorLoading subject="tasks" errors={[errorLoading.message]} />
+          )
         }
         if (tasksFetching) {
           return <TasksLoading />

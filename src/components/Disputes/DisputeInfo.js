@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {
   Box,
   GU,
-  IdentityBadge,
+  Link,
   textStyle,
   TransactionBadge,
   useTheme,
@@ -15,7 +15,9 @@ import DisputeStatus from './DisputeStatus'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
 import Loading from './Loading'
+import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { useWallet } from '../../providers/Wallet'
+import useNetwork from '../../hooks/useNetwork'
 
 import {
   Phase as DisputePhase,
@@ -25,6 +27,7 @@ import iconCourt from '../../assets/courtIcon.svg'
 import { addressesEqual } from '../../lib/web3-utils'
 import DisputeRoundPill from './DisputeRoundPill'
 import DisputeOutcomeText from './DisputeOutcomeText'
+import ErrorLoading from '../ErrorLoading'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -37,15 +40,25 @@ const DisputeInfo = React.memo(function({
   onRequestAppeal,
   onExecuteRuling,
 }) {
-  const { phase, status } = dispute || {}
+  const {
+    phase,
+    status,
+    description,
+    plaintiff,
+    defendant,
+    agreementText,
+    agreementUrl,
+    error,
+  } = dispute || {}
 
-  const description = dispute && dispute.metadata
-  const creatorAddress = dispute && dispute.subject && dispute.subject.id
+  const creator = plaintiff || dispute?.subject?.id
 
   const isFinalRulingEnsured =
     phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
 
-  const lastRound = dispute?.rounds[dispute.lastRoundId]
+  const lastRound = dispute?.rounds?.[dispute.lastRoundId]
+  const appealedRuling = lastRound?.appeal?.appealedRuling
+  const voteWinningOutcome = lastRound?.vote?.winningOutcome
 
   return (
     <Box>
@@ -58,39 +71,81 @@ const DisputeInfo = React.memo(function({
         `}
       >
         <DisputeHeader id={id} dispute={dispute} />
-        {loading ? (
-          <Loading border={false} />
-        ) : (
-          <>
-            {isFinalRulingEnsured && (
+        {(() => {
+          if (loading) {
+            return <Loading border={false} />
+          }
+          if (error) {
+            return (
+              <ErrorLoading
+                subject="dispute"
+                errors={['Error loading content from ipfs']}
+                border={false}
+              />
+            )
+          }
+          return (
+            <>
               <Row>
-                <Field
-                  label="Final jury outcome"
-                  value={
-                    <DisputeOutcomeText
-                      outcome={
-                        lastRound.appeal?.appealedRuling ||
-                        lastRound.vote?.winningOutcome
-                      }
-                      phase={dispute.phase}
-                      disputeEnded={isFinalRulingEnsured}
-                    />
+                {(() => {
+                  if (isFinalRulingEnsured) {
+                    return (
+                      <>
+                        <Field
+                          label="Final jury outcome"
+                          value={
+                            <DisputeOutcomeText
+                              outcome={appealedRuling || voteWinningOutcome}
+                              phase={
+                                appealedRuling
+                                  ? DisputePhase.AppealRuling
+                                  : DisputePhase.RevealVote
+                              }
+                            />
+                          }
+                        />
+                        <Field
+                          label="Round number"
+                          value={
+                            <DisputeRoundPill roundId={dispute.lastRoundId} />
+                          }
+                        />
+                      </>
+                    )
                   }
-                />
-                <Field
-                  label="Round number"
-                  value={<DisputeRoundPill roundId={dispute.lastRoundId} />}
-                />
+                  return (
+                    <>
+                      <Field label="Description" value={description} />
+                      <div />
+                    </>
+                  )
+                })()}
+                {creator && <Field label="Plaintiff" value={creator} />}
               </Row>
-            )}
-            <Row>
-              <Field label="Description" value={description} />
-              {creatorAddress && (
-                <Field label="Plaintiff" value={creatorAddress} />
-              )}
-            </Row>
-          </>
-        )}
+              <Row>
+                {(() => {
+                  if (isFinalRulingEnsured) {
+                    return <Field label="Description" value={description} />
+                  }
+                  return agreementText ? (
+                    <Field
+                      label="Link to agreement"
+                      value={
+                        <Link external href={agreementUrl}>
+                          {agreementText}
+                        </Link>
+                      }
+                    />
+                  ) : (
+                    <div />
+                  )
+                })()}
+                <div />
+                {defendant && <Field label="Defendant" value={defendant} />}
+              </Row>
+            </>
+          )
+        })()}
 
         {(phase === DisputePhase.AppealRuling ||
           phase === DisputePhase.ConfirmAppeal ||
@@ -114,6 +169,7 @@ const DisputeInfo = React.memo(function({
 function DisputeHeader({ id, dispute }) {
   const theme = useTheme()
   const transaction = dispute && dispute.txHash
+  const network = useNetwork()
 
   return (
     <div
@@ -132,8 +188,8 @@ function DisputeHeader({ id, dispute }) {
           css={`
             background: linear-gradient(
               233deg,
-              ${theme.accentEnd} -50%,
-              ${theme.accentStart} 91%
+              ${theme.accentStart} -50%,
+              ${theme.accentEnd} 91%
             );
             border-radius: 50%;
             padding: ${1.5 * GU}px;
@@ -165,7 +221,12 @@ function DisputeHeader({ id, dispute }) {
               />
             )}
           </h1>
-          {transaction && <TransactionBadge transaction={transaction} />}
+          {transaction && (
+            <TransactionBadge
+              transaction={transaction}
+              networkType={network.type}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -194,7 +255,7 @@ function Field({ label, value }) {
             align-items: flex-start;
           `}
         >
-          <IdentityBadge
+          <LocalIdentityBadge
             connectedAccount={addressesEqual(value, wallet.account)}
             entity={value}
           />
@@ -214,7 +275,7 @@ function Field({ label, value }) {
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 1fr minmax(250px, auto);
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: ${5 * GU}px;
   margin-bottom: ${2 * GU}px;
 `

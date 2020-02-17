@@ -1,5 +1,7 @@
-import { useMemo } from 'react'
-
+import { useEffect, useMemo, useState } from 'react'
+import resolvePathname from 'resolve-pathname'
+import isIPFS from 'is-ipfs'
+import { IPFS_ENDPOINT } from '../endpoints'
 import useNow from './useNow'
 import { useCourtConfig } from '../providers/CourtConfig'
 import {
@@ -8,6 +10,7 @@ import {
 } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { convertToString } from '../types/dispute-status-types'
+import { ipfsGet } from '../lib/ipfs-utils'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
@@ -37,18 +40,72 @@ export default function useDisputes() {
     }
 
     return {
-      disputes: disputes.map((dispute, i) => ({
-        ...dispute,
-        ...disputesPhases[i],
-      })),
+      disputes: disputes.map((dispute, i) => {
+        const [disputeDescription] = getDisputeInfoFromMetadata(
+          dispute.metadata
+        )
+        return {
+          ...dispute,
+          description: disputeDescription,
+          ...disputesPhases[i],
+        }
+      }),
     }
   }, [disputesPhases, disputes, disputesPhasesKey, error]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 export function useDispute(disputeId) {
+  const [disputeProcessed, setDisputeProcessed] = useState()
   const courtConfig = useCourtConfig()
   const now = useNow() // TODO: use court clock
   const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
+  useEffect(() => {
+    const fetchDataFromIpfs = async () => {
+      if (dispute) {
+        const [
+          disputeDescription,
+          disputeMetadata,
+        ] = getDisputeInfoFromMetadata(dispute.metadata)
+
+        if (!disputeMetadata) {
+          return setDisputeProcessed({ ...dispute, error: true })
+        }
+        const ipfsPath = disputeMetadata.replace(/^ipfs:/, '')
+
+        if (isIPFS.cidPath(ipfsPath)) {
+          const { data, error } = await ipfsGet(ipfsPath)
+          if (error) {
+            return setDisputeProcessed({ ...dispute, error: true })
+          }
+          try {
+            const parsedDisputeData = JSON.parse(data)
+            const agreementText = parsedDisputeData.agreementText.replace(
+              /^.\//,
+              ''
+            )
+            const agreementUrl = resolvePathname(
+              agreementText,
+              `${IPFS_ENDPOINT}/${ipfsPath}`
+            )
+            return setDisputeProcessed({
+              ...dispute,
+              description: parsedDisputeData.description || disputeDescription,
+              agreementText: agreementText || '',
+              agreementUrl,
+              defendant: parsedDisputeData.defendant || '',
+              plaintiff: parsedDisputeData.plaintiff || '',
+              error: false,
+            })
+          } catch (err) {
+            return setDisputeProcessed({ ...dispute, description: data })
+          }
+        }
+        return setDisputeProcessed({ ...dispute, error: true })
+      }
+    }
+
+    fetchDataFromIpfs()
+  }, [dispute])
 
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
   const disputePhaseKey = disputePhase
@@ -56,16 +113,26 @@ export function useDispute(disputeId) {
     : ''
 
   return useMemo(() => {
-    if (fetching) {
-      return { fetching }
+    if (fetching || !disputeProcessed) {
+      return { fetching: true }
     }
 
     return {
       dispute: {
-        ...dispute,
+        ...disputeProcessed,
         ...disputePhase,
       },
       fetching,
     }
-  }, [dispute, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [disputeProcessed, dispute, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+function getDisputeInfoFromMetadata(disputeMetadata) {
+  try {
+    const parsedDisputeData = JSON.parse(disputeMetadata)
+    return [parsedDisputeData.description, parsedDisputeData.metadata]
+  } catch (error) {
+    // if is not a json return the metadata as the description
+    return [disputeMetadata, null]
+  }
 }

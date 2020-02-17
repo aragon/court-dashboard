@@ -23,6 +23,7 @@ import { getModuleAddress } from '../utils/court-utils'
 import { getFunctionSignature } from '../lib/web3-utils'
 
 const GAS_LIMIT = 1200000
+const ANJ_ACTIVATE_GAS_LIMIT = 500000
 const ANJ_ACTIONS_GAS_LIMIT = 325000
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 
@@ -73,7 +74,7 @@ export function useANJActions() {
   const activateANJ = useCallback(
     amount => {
       return jurorRegistryContract.activate(amount, {
-        gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+        gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
       })
     },
     [jurorRegistryContract]
@@ -95,7 +96,7 @@ export function useANJActions() {
         jurorRegistryContract.address,
         amount,
         ACTIVATE_SELECTOR,
-        { gasLimit: ANJ_ACTIONS_GAS_LIMIT }
+        { gasLimit: ANJ_ACTIVATE_GAS_LIMIT }
       )
     },
     [anjTokenContract, jurorRegistryContract]

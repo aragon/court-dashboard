@@ -71,6 +71,9 @@ export const SingleDispute = gql`
         data
         createdAt
       }
+      subject {
+        id
+      }
       rounds {
         id
         state
@@ -90,7 +93,9 @@ export const SingleDispute = gql`
           }
           weight
           commitment
+          commitmentDate
           outcome
+          revealDate
         }
         vote {
           id

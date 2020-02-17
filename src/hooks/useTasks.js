@@ -48,7 +48,7 @@ function useOpenTasks(tasks, now, courtSettings) {
             phase: getTaskName(currentRoundPhases[i].phase),
             dueDate: currentRoundPhases[i].nextTransition,
             phaseType: currentRoundPhases[i].phase,
-            open: true,
+            open: isAppealTaskOpen(tasks[i], currentRoundPhases[i].phase),
           })
         } else {
           for (let j = 0; j < tasks[i].jurors.length; j++) {
@@ -64,7 +64,10 @@ function useOpenTasks(tasks, now, courtSettings) {
                 phase: getTaskName(currentRoundPhases[i].phase),
                 phaseType: currentRoundPhases[i].phase,
                 dueDate: currentRoundPhases[i].nextTransition,
-                open: true,
+                open: isVotingTaskOpen(
+                  tasks[i].jurors[j],
+                  currentRoundPhases[i].phase
+                ),
               })
             }
           }
@@ -87,5 +90,35 @@ function getTaskName(phase) {
   }
   if (phase === DisputesTypes.Phase.ConfirmAppeal) {
     return 'Confirm appeal'
+  }
+}
+
+function isAppealTaskOpen(round, currentPhase) {
+  if (currentPhase === DisputesTypes.Phase.AppealRuling) {
+    if (round.appeal) {
+      return false
+    }
+    return true
+  }
+  if (currentPhase === DisputesTypes.Phase.ConfirmAppeal) {
+    if (round?.appeal?.opposedRuling !== 0) {
+      return false
+    }
+    return true
+  }
+}
+
+function isVotingTaskOpen(draft, currentPhase) {
+  if (currentPhase === DisputesTypes.Phase.VotingPeriod) {
+    if (draft.commitment) {
+      return false
+    }
+    return true
+  }
+  if (currentPhase === DisputesTypes.Phase.RevealVote) {
+    if (draft.outcome || !draft.commitment) {
+      return false
+    }
+    return true
   }
 }

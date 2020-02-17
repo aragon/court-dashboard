@@ -9,7 +9,7 @@ import { useCourtConfig } from '../../providers/CourtConfig'
 import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
 
 import { PCT_BASE } from '../../utils/dispute-utils'
-import { formatTokenAmount, formatUnits } from '../../lib/math-utils'
+import { bigNum, formatTokenAmount, formatUnits } from '../../lib/math-utils'
 import { movementDirection, convertToString } from '../../types/anj-types'
 
 import ANJIcon from '../../assets/IconANJ.svg'
@@ -306,12 +306,12 @@ function useHelpAttributes(distribution) {
 
     let text
     const { decimals, symbol } = anjToken
-    const penaltyPercentage = PCT_BASE.div(penaltyPct)
+    const penaltyPercentage = bigNum(penaltyPct).div(PCT_BASE.div(100))
     const minActiveBalanceFormatted = formatUnits(minActiveBalance, {
       digits: decimals,
     })
     const minLockedAmountFormatted = formatUnits(
-      minActiveBalance.div(penaltyPercentage),
+      minActiveBalance.mul(penaltyPct).div(PCT_BASE),
       { digits: decimals }
     )
 

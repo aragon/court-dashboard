@@ -37,6 +37,7 @@ const ANJForm = React.memo(function ANJForm({
           digits: anjToken.decimals,
           commas: !editMode,
           replaceZeroBy: editMode ? '' : '0',
+          precision: anjToken.decimals,
         }),
       }))
     },

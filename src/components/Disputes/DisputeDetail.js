@@ -1,14 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import {
-  BackButton,
-  Bar,
-  Box,
-  GU,
-  Header,
-  SidePanel,
-  Split,
-  SyncIndicator,
-} from '@aragon/ui'
+import { BackButton, Bar, Box, GU, Header, SidePanel, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
 
 import DisputeInfo from './DisputeInfo'
@@ -19,8 +10,9 @@ import CommitPanel from './panels/CommitPanel'
 import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
 
-import { hexToAscii, toDate } from '../../lib/web3-utils'
+import { toDate } from '../../lib/web3-utils'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
+import { utils as EthersUtils } from 'ethers'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
@@ -35,14 +27,16 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     requests,
   } = useDisputeLogic(disputeId)
 
-  const evidenceList = dispute && dispute.evidences
+  const creatorAddress = dispute?.subject?.id
+
+  const evidenceList = dispute?.evidences
 
   const evidences = useMemo(
     () =>
       (evidenceList || []).map(evidence => ({
         ...evidence,
-        data: hexToAscii(evidence.data),
         createdAt: toDate(evidence.createdAt),
+        data: EthersUtils.toUtf8String(evidence.data),
       })),
     [evidenceList]
   )
@@ -66,7 +60,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   return (
     <React.Fragment>
-      <SyncIndicator visible={disputeFetching} label="Loading dispute…" />
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
@@ -92,7 +85,14 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
               if (evidences.length === 0) {
                 return <NoEvidence />
               }
-              return <DisputeEvidences evidences={evidences} />
+              return (
+                // TODO- in next PR will get plaintiff and deffendant from the dispute
+                <DisputeEvidences
+                  evidences={evidences}
+                  plaintiff={creatorAddress}
+                  defendant=""
+                />
+              )
             })()}
           </React.Fragment>
         }

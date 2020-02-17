@@ -101,14 +101,14 @@ export function getPercentage(value, totalValue) {
 }
 
 export function getPercentageBN(value, totalValue) {
-  const PERCENT_BN = bigNum(100)
+  const valueAsNumber = Number(EthersUtils.formatUnits(value, 18))
+  const totalValueAsNumber = Number(EthersUtils.formatUnits(totalValue, 18))
+
+  const PERCENT_BN = 100
 
   if (totalValue.lte(0)) return 0
 
-  return value
-    .mul(PERCENT_BN)
-    .div(totalValue)
-    .toNumber()
+  return (valueAsNumber * PERCENT_BN) / totalValueAsNumber
 }
 
 export function generateRandomNumber() {

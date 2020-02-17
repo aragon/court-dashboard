@@ -5,11 +5,11 @@ import {
   GU,
   IconCheck,
   IconCopy,
-  IdentityBadge,
   RADIUS,
   textStyle,
   useTheme,
 } from '@aragon/ui'
+import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard'
 
@@ -76,7 +76,7 @@ function AccountScreenConnected({ wallet }) {
               }
             `}
           >
-            <IdentityBadge
+            <LocalIdentityBadge
               entity={wallet.account}
               compact
               badgeOnly
