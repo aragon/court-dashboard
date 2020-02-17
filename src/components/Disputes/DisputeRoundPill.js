@@ -22,6 +22,8 @@ function DisputeRoundPill({ roundId }) {
         );
         border-radius: 100px;
         height: ${2.5 * GU}px;
+        max-width: ${14 * GU}px;
+        margin-top: ${0.5 * GU}px;
       `}
     >
       <span
