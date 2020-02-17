@@ -1,7 +1,9 @@
 {
-  "name": "be",
+  "name": "court-dashboard",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-or-later",
+  "author": "Aragon Association <legal@aragon.org>",
   "dependencies": {
     "@aragon/ui": "^1.2.0",
     "@sentry/browser": "^5.12.1",

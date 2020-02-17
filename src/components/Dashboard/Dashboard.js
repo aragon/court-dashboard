@@ -4,6 +4,7 @@ import { GU, SidePanel, Split, useLayout } from '@aragon/ui'
 import Welcome from './Welcome'
 import Tasks from '../Tasks/Tasks'
 import TitleHeader from '../TitleHeader'
+import ErrorLoading from '../ErrorLoading'
 import BalanceModule from './BalanceModule'
 import RewardsModule from './RewardsModule'
 import ActivateANJ from './panels/ActivateANJ'
@@ -31,7 +32,7 @@ function Dashboard() {
     balances,
     rewards,
     fetchingData,
-    // errorsFetching, //TODO: handle errors
+    errorsFetching,
     mode,
     panelState,
     requests,
@@ -43,40 +44,49 @@ function Dashboard() {
   return (
     <React.Fragment>
       <TitleHeader title="Dashboard" onlyTitle={!wallet.account} />
-      {wallet.account ? (
-        <BalanceModule
-          balances={balances}
-          loading={fetchingData}
-          onRequestActivate={requests.activateANJ}
-          onRequestDeactivate={requests.deactivateANJ}
-          onRequestStakeActivate={requests.stakeActivateANJ}
-          onRequestWithdraw={requests.withdrawANJ}
+      {errorsFetching?.length > 0 ? (
+        <ErrorLoading
+          subject="dashboard"
+          errors={errorsFetching.map(error => error.message)}
         />
       ) : (
-        <Welcome />
-      )}
+        <>
+          {wallet.account ? (
+            <BalanceModule
+              balances={balances}
+              loading={fetchingData}
+              onRequestActivate={requests.activateANJ}
+              onRequestDeactivate={requests.deactivateANJ}
+              onRequestStakeActivate={requests.stakeActivateANJ}
+              onRequestWithdraw={requests.withdrawANJ}
+            />
+          ) : (
+            <Welcome />
+          )}
 
-      {!wallet.account ? (
-        <Tasks onlyTable />
-      ) : (
-        <Split
-          primary={<Tasks onlyTable />}
-          secondary={
-            <>
-              <RewardsModule
-                rewards={rewards}
-                loading={fetchingData}
-                onSettleReward={actions.settleReward}
-                onSettleAppealDeposit={actions.settleAppealDeposit}
-              />
-              <AppealColateralModule
-                appeals={appealCollaterals}
-                loading={fetchingData}
-              />
-            </>
-          }
-          invert={oneColumn ? 'vertical' : 'horizontal'}
-        />
+          {!wallet.account ? (
+            <Tasks onlyTable />
+          ) : (
+            <Split
+              primary={<Tasks onlyTable />}
+              secondary={
+                <>
+                  <RewardsModule
+                    rewards={rewards}
+                    loading={fetchingData}
+                    onSettleReward={actions.settleReward}
+                    onSettleAppealDeposit={actions.settleAppealDeposit}
+                  />
+                  <AppealColateralModule
+                    appeals={appealCollaterals}
+                    loading={fetchingData}
+                  />
+                </>
+              }
+              invert={oneColumn ? 'vertical' : 'horizontal'}
+            />
+          )}
+        </>
       )}
 
       <SidePanel

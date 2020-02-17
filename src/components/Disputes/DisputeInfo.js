@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import {
   Box,
   GU,
-  IdentityBadge,
   Link,
   textStyle,
   TransactionBadge,
@@ -16,7 +15,9 @@ import DisputeStatus from './DisputeStatus'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
 import Loading from './Loading'
+import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { useWallet } from '../../providers/Wallet'
+import useNetwork from '../../hooks/useNetwork'
 
 import {
   Phase as DisputePhase,
@@ -78,7 +79,7 @@ const DisputeInfo = React.memo(function({
             return (
               <ErrorLoading
                 subject="dispute"
-                error="Error loading content from ipfs"
+                errors={['Error loading content from ipfs']}
                 border={false}
               />
             )
@@ -168,6 +169,7 @@ const DisputeInfo = React.memo(function({
 function DisputeHeader({ id, dispute }) {
   const theme = useTheme()
   const transaction = dispute && dispute.txHash
+  const network = useNetwork()
 
   return (
     <div
@@ -219,7 +221,12 @@ function DisputeHeader({ id, dispute }) {
               />
             )}
           </h1>
-          {transaction && <TransactionBadge transaction={transaction} />}
+          {transaction && (
+            <TransactionBadge
+              transaction={transaction}
+              networkType={network.type}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -248,7 +255,7 @@ function Field({ label, value }) {
             align-items: flex-start;
           `}
         >
-          <IdentityBadge
+          <LocalIdentityBadge
             connectedAccount={addressesEqual(value, wallet.account)}
             entity={value}
           />

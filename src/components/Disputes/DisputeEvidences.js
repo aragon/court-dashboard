@@ -1,17 +1,13 @@
 import React from 'react'
-import {
-  Accordion,
-  GU,
-  IdentityBadge,
-  SyncIndicator,
-  textStyle,
-  useTheme,
-} from '@aragon/ui'
-import useEvidences from '../../hooks/useEvidences'
-import dayjs from '../../lib/dayjs'
-import { addressesEqual } from '../../lib/web3-utils'
+import { Accordion, GU, SyncIndicator, textStyle, useTheme } from '@aragon/ui'
+import { useWallet } from 'use-wallet'
+
 import ErrorLoadingEvidence from './ErrorLoadingEvidence'
+import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import Markdown from '../Markdown'
+import useEvidences from '../../hooks/useEvidences'
+import { addressesEqual } from '../../lib/web3-utils'
+import dayjs from '../../lib/dayjs'
 
 import folderIcon from '../../assets/folderIcon.svg'
 
@@ -75,6 +71,7 @@ const EvidenceContent = React.memo(function EvidenceContent({
   error,
 }) {
   const theme = useTheme()
+  const wallet = useWallet()
 
   if (error) {
     return <ErrorLoadingEvidence />
@@ -112,8 +109,8 @@ const EvidenceContent = React.memo(function EvidenceContent({
               align-items: flex-start;
             `}
           >
-            <IdentityBadge
-              // connectedAccount={addressesEqual(creator, connectedAccount)} TODO- ADD connnected account
+            <LocalIdentityBadge
+              connectedAccount={addressesEqual(submitter, wallet.account)}
               entity={submitter}
             />
           </div>
