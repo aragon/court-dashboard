@@ -3,7 +3,7 @@ import environment from './environment'
 const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
 const RINKEBY_COURT = '0xb5ffbe75fa785725eea5f931b64fc04e516c9c5d'
-const RINKEBY_USABILITY_COURT = '0x014E190D7AE3ED129bACa6b72568C4B8555758c8'
+const RINKEBY_USABILITY_COURT = '0x44f788370206696b20B94BC77c4f73Ca264aa05E'
 
 export const networks = {
   rpc: { court: '0xC89Ce4735882C9F0f0FE26686c53074E09B0D550' },
