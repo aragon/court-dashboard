@@ -195,7 +195,9 @@ const AppealPanel = React.memo(function AppealPanel({
       <Info>
         Please note that if the final ruling outcome is different from your
         selected appeal, the entire amount of your collateral could be slashed.{' '}
-        <Link href="#">Learn more</Link> {/* TODO: add ref */}
+        <Link href="https://help.aragon.org/article/43-dispute-lifecycle#appeal">
+          Learn more
+        </Link>
       </Info>
     </form>
   )

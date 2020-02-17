@@ -30,8 +30,8 @@ function DisputeDraft({ disputeId, onDraft }) {
         </Button>
       </div>
       <Info>
-        The evidence submission period is closed. Anyone can now trigger the
-        drafting of jury and earn some rewards.
+        The evidence submission period is closed. <strong>Anyone</strong> can
+        now trigger the drafting of jury and earn some rewards.
       </Info>
     </form>
   )

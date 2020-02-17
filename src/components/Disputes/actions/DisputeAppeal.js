@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { Button, Info, GU } from '@aragon/ui'
+import { Button, GU, Info, Link } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 
 function DisputeAppeal({ onRequestAppeal, confirm }) {
@@ -24,8 +24,22 @@ function DisputeAppeal({ onRequestAppeal, confirm }) {
       >
         {actionLabel}
       </Button>
-      <Info mode="description">
-        Anyone holding the required appeal deposit can trigger this action.
+      <Info>
+        <strong>Anyone</strong> can{' '}
+        <strong>
+          lock DAI as collateral to{' '}
+          {confirm ? 'confirm an appeal' : 'propose an appeal'}{' '}
+        </strong>
+        , if they don’t agree with the current outcome. When the final ruling is
+        confirmed, the user who {confirm ? 'confirmed the appeal' : 'appealed'}{' '}
+        gets rewarded if the ruling has switched in their favor. If not, their
+        entire collateral could be re-distributed to the winning party.{' '}
+        {confirm
+          ? 'If an appeal is confirmed, a new adjudication round is initiated and a new jury is drafted.'
+          : ''}
+        <Link href="https://help.aragon.org/article/43-dispute-lifecycle#appeal">
+          Learn more
+        </Link>
       </Info>
     </div>
   )
