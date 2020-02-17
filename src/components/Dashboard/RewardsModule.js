@@ -112,13 +112,14 @@ const RewardsModule = React.memo(function RewardsModule({
           <RulingFees amount={rewards.rulingFees} />
         )}
         {rewards && totalDisputesFees.gt(0) && (
-          <DisputesFees
-            totalAppealFees={totalAppealFees}
-            totalArbitrableFees={totalArbitrableFees}
-            totalFees={totalDisputesFees}
-            distribution={rewards.disputesFeesDistribution}
-            onFormSubmit={handleFormSubmit}
-          />
+          <form onSubmit={handleFormSubmit}>
+            <DisputesFees
+              totalAppealFees={totalAppealFees}
+              totalArbitrableFees={totalArbitrableFees}
+              distribution={rewards.disputesFeesDistribution}
+            />
+            <TotalFees totalFees={totalDisputesFees} />
+          </form>
         )}
       </div>
     </Box>
@@ -152,11 +153,9 @@ const RulingFees = ({ amount }) => {
 }
 
 const DisputesFees = ({
+  distribution,
   totalAppealFees,
   totalArbitrableFees,
-  totalFees,
-  distribution,
-  onFormSubmit,
 }) => {
   const theme = useTheme()
   const { feeToken } = useCourtConfig()
@@ -175,99 +174,107 @@ const DisputesFees = ({
     decimals,
     true
   )
+
+  return (
+    <FeeSection>
+      {totalArbitrableFees.gt(0) && (
+        <RowFee
+          label="Dispute fees"
+          amount={totalArbitrableFormatted}
+          symbol={symbol}
+          showPositive
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+        />
+      )}
+      {totalAppealFees.gt(0) && (
+        <RowFee
+          label="Appeal fees"
+          amount={totalAppealFormatted}
+          symbol={symbol}
+          showPositive
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+        />
+      )}
+      <div
+        css={`
+          display: flex;
+          align-items: center;
+        `}
+      >
+        <span
+          css={`
+            color: ${theme.help};
+            margin-right: ${1 * GU}px;
+          `}
+        >
+          Distribution
+        </span>
+        <Help
+          hint="Rewards per dispute"
+          css={`
+            padding: 0;
+          `}
+        >
+          <DisputesFeeDistribution
+            symbol={symbol}
+            decimals={decimals}
+            distribution={distribution}
+          />
+        </Help>
+      </div>
+    </FeeSection>
+  )
+}
+
+function TotalFees({ totalFees }) {
+  const theme = useTheme()
+  const { feeToken } = useCourtConfig()
+  const { symbol, decimals } = feeToken
+
   const totalFeesFormatted = formatTokenAmount(totalFees, true, decimals, true)
 
   return (
-    <form onSubmit={onFormSubmit}>
-      <FeeSection>
-        {totalArbitrableFees.gt(0) && (
-          <RowFee
-            label="Dispute fees"
-            amount={totalArbitrableFormatted}
-            symbol={symbol}
-            showPositive
-            css={`
-              margin-bottom: ${2 * GU}px;
-            `}
-          />
-        )}
-        {totalAppealFees.gt(0) && (
-          <RowFee
-            label="Appeal fees"
-            amount={totalAppealFormatted}
-            symbol={symbol}
-            showPositive
-            css={`
-              margin-bottom: ${2 * GU}px;
-            `}
-          />
-        )}
-        <div
+    <FeeSection>
+      <div>
+        <h3
           css={`
-            display: flex;
-            align-items: center;
+            ${textStyle('label1')};
+            color: ${theme.surfaceContentSecondary};
+            margin-bottom: ${1 * GU}px;
           `}
         >
-          <span
-            css={`
-              color: ${theme.help};
-              margin-right: ${1 * GU}px;
-            `}
-          >
-            Distribution
-          </span>
-          <Help
-            hint="Rewards per dispute"
-            css={`
-              padding: 0;
-            `}
-          >
-            <DisputesFeeDistribution
-              symbol={symbol}
-              decimals={decimals}
-              distribution={distribution}
-            />
-          </Help>
-        </div>
-      </FeeSection>
-      <FeeSection>
-        <div>
-          <h3
-            css={`
-              ${textStyle('label1')};
-              color: ${theme.surfaceContentSecondary};
-              margin-bottom: ${1 * GU}px;
-            `}
-          >
-            Total
-          </h3>
-          <RowFee
-            label="Total rewards"
-            amount={totalFeesFormatted}
-            symbol={symbol}
-            showPositive
-            css={`
-              margin-bottom: ${2 * GU}px;
-            `}
-          />
-          <Button
-            mode="positive"
-            type="submit"
-            wide
-            css={`
-              margin-bottom: ${2 * GU}px;
-            `}
-          >
-            Claim rewards
-          </Button>
-          <Info>
-            This action requires multiple transactions to be signed in Metamask.
-            Potentially, one transaction per round of rewards. Please confirm
-            them one after another.
-          </Info>
-        </div>
-      </FeeSection>
-    </form>
+          Total
+        </h3>
+        <RowFee
+          label="Total rewards"
+          amount={totalFeesFormatted}
+          symbol={symbol}
+          showPositive
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+        />
+        <Button
+          mode="positive"
+          type="submit"
+          wide
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+        >
+          Claim rewards
+        </Button>
+        <Info>
+          This action requires multiple transactions to be signed in Metamask.
+          Potentially, one transaction per round of rewards. Please confirm them
+          one after another.
+        </Info>
+      </div>
+    </FeeSection>
   )
 }
 

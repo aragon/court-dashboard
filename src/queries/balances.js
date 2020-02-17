@@ -17,7 +17,12 @@ export const Juror = gql`
       deactivationBalance
       withdrawalsLockTermId
       treasuryTokens {
-        token
+        token {
+          id
+          name
+          symbol
+          decimals
+        }
         balance
       }
       movements(
