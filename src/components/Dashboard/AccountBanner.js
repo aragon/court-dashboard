@@ -1,7 +1,8 @@
 import React from 'react'
-import { CircleGraph, GU, Help, LoadingRing, useTheme } from '@aragon/ui'
+import { GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 
 import AccountBannerInfo from './AccountBannerInfo'
+import CircleGraph from '../CircleGraph'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
