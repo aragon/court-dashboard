@@ -38,8 +38,6 @@ function Dashboard() {
     treasury,
   } = useDashboardLogic()
 
-  console.log('treasury', treasury)
-
   const { name: layout } = useLayout()
   const oneColumn = layout === 'small' || layout === 'medium'
 
@@ -68,6 +66,7 @@ function Dashboard() {
             <>
               <RewardsModule
                 rewards={rewards}
+                treasury={treasury}
                 loading={fetchingData}
                 onWithdraw={actions.withdraw}
                 onSettleReward={actions.settleReward}

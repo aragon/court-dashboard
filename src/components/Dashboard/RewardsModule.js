@@ -15,6 +15,7 @@ import NoRewards from './NoRewards'
 import { useWallet } from '../../providers/Wallet'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { bigNum, formatTokenAmount } from '../../lib/math-utils'
+import { addressesEqual } from '../../lib/web3-utils'
 
 const useTotalDisputesFees = (arbitrableFees, appealFees) => {
   const totalArbitrableFees = arbitrableFees
@@ -32,20 +33,27 @@ const useTotalDisputesFees = (arbitrableFees, appealFees) => {
 // Dispute fees + Appeal Fees => DAI fees
 const RewardsModule = React.memo(function RewardsModule({
   rewards,
+  treasury,
   loading,
   onWithdraw,
   onSettleReward,
   onSettleAppealDeposit,
 }) {
   const wallet = useWallet()
-  // const { feeToken } = useCourtConfig()
+  const { feeToken } = useCourtConfig()
 
   const { totalArbitrableFees, totalAppealFees } = useTotalDisputesFees(
     rewards?.arbitrableFees,
     rewards?.appealFees
   )
 
+  // TODO: Handle possible multiple tokens (fee token can change)
+  const treasuryToken = treasury?.find(({ token }) =>
+    addressesEqual(token.id, feeToken.id)
+  )
+  const treasuryBalance = treasuryToken ? treasuryToken.balance : bigNum(0)
   const totalDisputesFees = totalArbitrableFees.add(totalAppealFees)
+  const totalFees = totalDisputesFees.add(treasuryBalance)
 
   // Form submission
   const handleFormSubmit = async event => {
@@ -74,14 +82,12 @@ const RewardsModule = React.memo(function RewardsModule({
           }
         }
 
-        await Promise.all(transactionBag.map(tx => tx.wait()))
+        // Withdraw funds from treasury
+        transactionBag.push(
+          await onWithdraw(feeToken.id, wallet.account, totalFees)
+        )
 
-        // const withdrawFromTreasuryTx = await onWithdraw(
-        //   feeToken.id,
-        //   wallet.account,
-        //   totalDisputesFees
-        // )
-        // await withdrawFromTreasuryTx.wait()
+        await Promise.all(transactionBag.map(tx => tx.wait()))
       } catch (err) {
         console.log(`Error claiming rewards: ${err}`)
       }
@@ -92,7 +98,7 @@ const RewardsModule = React.memo(function RewardsModule({
     claimRewards()
   }
 
-  const hasRewardsToClaim = rewards?.rulingFees.gt(0) || totalDisputesFees.gt(0)
+  const hasRewardsToClaim = rewards?.rulingFees.gt(0) || totalFees.gt(0)
 
   const showHeading = !loading && hasRewardsToClaim
 
@@ -111,14 +117,19 @@ const RewardsModule = React.memo(function RewardsModule({
         {rewards && rewards.rulingFees.gt(0) && (
           <RulingFees amount={rewards.rulingFees} />
         )}
-        {rewards && totalDisputesFees.gt(0) && (
+        {totalFees.gt(0) && (
           <form onSubmit={handleFormSubmit}>
-            <DisputesFees
-              totalAppealFees={totalAppealFees}
-              totalArbitrableFees={totalArbitrableFees}
-              distribution={rewards.disputesFeesDistribution}
+            {totalDisputesFees.gt(0) && (
+              <DisputesFees
+                totalAppealFees={totalAppealFees}
+                totalArbitrableFees={totalArbitrableFees}
+                distribution={rewards.disputesFeesDistribution}
+              />
+            )}
+            <TotalFees
+              totalFees={totalFees}
+              treasuryBalance={treasuryBalance}
             />
-            <TotalFees totalFees={totalDisputesFees} />
           </form>
         )}
       </div>
@@ -230,12 +241,15 @@ const DisputesFees = ({
   )
 }
 
-function TotalFees({ totalFees }) {
+function TotalFees({ totalFees, treasuryBalance }) {
   const theme = useTheme()
   const { feeToken } = useCourtConfig()
   const { symbol, decimals } = feeToken
 
   const totalFeesFormatted = formatTokenAmount(totalFees, true, decimals, true)
+
+  // We'll show the info section in the case that the account has settlements to do
+  const showInfoSection = !totalFees.eq(treasuryBalance)
 
   return (
     <FeeSection>
@@ -263,16 +277,18 @@ function TotalFees({ totalFees }) {
           type="submit"
           wide
           css={`
-            margin-bottom: ${2 * GU}px;
+            margin-bottom: ${showInfoSection ? 2 * GU : 0}px;
           `}
         >
           Claim rewards
         </Button>
-        <Info>
-          This action requires multiple transactions to be signed in Metamask.
-          Potentially, one transaction per round of rewards. Please confirm them
-          one after another.
-        </Info>
+        {showInfoSection && (
+          <Info>
+            This action requires multiple transactions to be signed in Metamask.
+            Potentially, one transaction per round of rewards. Please confirm
+            them one after another.
+          </Info>
+        )}
       </div>
     </FeeSection>
   )

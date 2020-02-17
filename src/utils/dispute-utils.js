@@ -447,7 +447,8 @@ export function getRoundFees(round, courtConfig) {
   if (round.number === maxRegularAppealRounds)
     return round.jurorsNumber
       .mul(jurorFee)
-      .div(FINAL_ROUND_WEIGHT_PRECISION.mul(finalRoundReduction).div(PCT_BASE))
+      .div(FINAL_ROUND_WEIGHT_PRECISION)
+      .mul(finalRoundReduction.div(PCT_BASE))
 
   // Regular round
   return draftFee

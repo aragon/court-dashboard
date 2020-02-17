@@ -32,8 +32,6 @@ const BalanceModule = React.memo(
     const { name: layout } = useLayout()
     const { minActiveBalance } = useCourtConfig()
 
-    console.log(balances, loading)
-
     const oneColumn = layout === 'small' || layout === 'medium'
     const status = balances && getAccountStatus(balances, minActiveBalance)
 
