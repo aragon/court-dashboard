@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react'
-import { Button, Info, GU, useTheme } from '@aragon/ui'
+import { Button, Info, GU } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 
 function DisputeAppeal({ onRequestAppeal, confirm }) {
-  const theme = useTheme()
   const wallet = useWallet()
 
   const actionLabel = confirm ? 'Confirm appeal' : 'Appeal Ruling'
@@ -26,14 +25,7 @@ function DisputeAppeal({ onRequestAppeal, confirm }) {
         {actionLabel}
       </Button>
       <Info mode="description">
-        Anyone can trigger this action, and whoever does will get some{' '}
-        <span
-          css={`
-            color: ${theme.help};
-          `}
-        >
-          rewards.
-        </span>
+        Anyone holding the required appeal deposit can trigger this action.
       </Info>
     </div>
   )
