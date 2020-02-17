@@ -112,14 +112,12 @@ export function useJurorBalancesSubscription(jurorId) {
  * @returns {BigNum} Juror's active balance
  */
 export function useJurorActiveBalanceSubscription(jurorId, pause) {
-  console.log('jurorId', jurorId)
   const [{ data }] = useSubscription({
     query: JurorActiveBalance,
     variables: { id: jurorId },
     pause,
   })
 
-  console.log('data', data)
   if (!data) {
     return NO_AMOUNT
   }

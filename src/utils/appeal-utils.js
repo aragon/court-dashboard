@@ -18,6 +18,11 @@ export function transformAppealDataAttributes(appeal) {
       dispute: {
         ...round.dispute,
         lastRoundId: parseInt(round.dispute.lastRoundId, 10),
+        rounds: round.dispute.rounds.map(round => ({
+          ...round,
+          number: parseInt(round.number, 10),
+          jurorsNumber: bigNum(round.jurorsNumber),
+        })),
       },
     },
     appealedRuling: parseInt(appealedRuling, 10),
