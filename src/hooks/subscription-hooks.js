@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 
 import { useCourtConfig } from '../providers/CourtConfig'
 
-import { ANJBalance, Juror } from '../queries/balances'
+import { ANJBalance, Juror, JurorActiveBalance } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
 import {
@@ -103,6 +103,30 @@ export function useJurorBalancesSubscription(jurorId) {
     fetching: !balances && errors.length === 0,
     errors,
   }
+}
+
+/**
+ * Subscribes to the juror's active balance
+ * @param {String} jurorId Address of the juror
+ * @param {Boolean} pause Tells whether to pause the subscription or not
+ * @returns {BigNum} Juror's active balance
+ */
+export function useJurorActiveBalanceSubscription(jurorId, pause) {
+  console.log('jurorId', jurorId)
+  const [{ data }] = useSubscription({
+    query: JurorActiveBalance,
+    variables: { id: jurorId },
+    pause,
+  })
+
+  console.log('data', data)
+  if (!data) {
+    return NO_AMOUNT
+  }
+
+  const { activeBalance = NO_AMOUNT } = data.juror || {}
+
+  return bigNum(activeBalance)
 }
 
 /**

@@ -36,8 +36,6 @@ function DisputeActions({
 
   const wallet = useWallet()
 
-  console.log(dispute)
-
   if (phase === DisputePhase.Evidence) {
     return null
   }
@@ -45,6 +43,8 @@ function DisputeActions({
   if (phase === DisputePhase.JuryDrafting) {
     return <DisputeDraft disputeId={dispute.id} onDraft={onDraft} />
   }
+
+  console.log('dispute', dispute)
 
   const jurorDraft = getJurorDraft(lastRound, wallet.account) // TODO: Should we also show results for past rounds ?
   const isJurorDrafted = !!jurorDraft
@@ -55,6 +55,7 @@ function DisputeActions({
     return (
       <DisputeVoting
         isJurorDrafted={isJurorDrafted}
+        maxAppealReached={dispute.maxAppealReached}
         onRequestCommit={onRequestCommit}
       />
     )
