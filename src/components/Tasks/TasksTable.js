@@ -2,16 +2,16 @@ import React from 'react'
 import {
   DataView,
   GU,
-  IdentityBadge,
   Link,
   textStyle,
   useTheme,
   useViewport,
 } from '@aragon/ui'
+import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
+import NoFilterResults from '../NoFilterResults'
 import TasksFilters from './TasksFilters'
 import TaskStatus from './TaskStatus'
 import TaskDueDate from './TaskDueDate'
-import NoFilterResults from '../NoFilterResults'
 
 const ENTRIES_PER_PAGE = 6
 
@@ -83,7 +83,7 @@ const TaskTable = React.memo(function TaskTable({
           <Link href={`/disputes/${disputeId}`} external={false}>
             Dispute #{disputeId}
           </Link>,
-          <IdentityBadge entity={juror} />,
+          <LocalIdentityBadge entity={juror} />,
 
           <TaskStatus status={open} />,
           <TaskDueDate dueDate={dueDate} />,
