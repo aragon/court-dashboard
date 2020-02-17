@@ -19,11 +19,7 @@ export const ipfsGet = async cid => {
 export const getIpfsCidFromString = string => {
   const ipfsCid = string.replace(/^ipfs:/, '')
 
-  if (
-    isIPFS.multihash(ipfsCid) ||
-    isIPFS.cid(ipfsCid) ||
-    isIPFS.cidPath(ipfsCid)
-  ) {
+  if (isIPFS.cid(ipfsCid) || isIPFS.cidPath(ipfsCid)) {
     return ipfsCid
   }
   return ''

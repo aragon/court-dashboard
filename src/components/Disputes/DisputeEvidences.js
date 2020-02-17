@@ -9,7 +9,7 @@ import {
 } from '@aragon/ui'
 import useEvidences from '../../hooks/useEvidences'
 import dayjs from '../../lib/dayjs'
-import { addressesEqual, toDate } from '../../lib/web3-utils'
+import { addressesEqual } from '../../lib/web3-utils'
 import ErrorLoadingEvidence from './ErrorLoadingEvidence'
 import Markdown from '../Markdown'
 
@@ -133,7 +133,7 @@ const EvidenceContent = React.memo(function EvidenceContent({
               ${textStyle('body2')};
             `}
           >
-            {dayjs(toDate(createdAt)).format('DD/MM/YY')}
+            {dayjs.unix(createdAt).format('DD/MM/YY')}
           </span>
         </div>
         <div>

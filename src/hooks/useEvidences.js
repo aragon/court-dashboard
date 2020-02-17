@@ -4,6 +4,7 @@ import { ERROR_TYPES } from '../types/evidences-status-types'
 
 export default function useEvidences(evidences) {
   const [evidenceProcessed, setEvidenceProcessed] = useState([])
+  const [evidenceCache, setEvidenceCache] = useState(new Map())
 
   useEffect(() => {
     let cancelled = false
@@ -11,11 +12,7 @@ export default function useEvidences(evidences) {
       if (cancelled) {
         return
       }
-
       setEvidenceProcessed(prev => {
-        if (prev.some(element => element.id === evidence.id)) {
-          return
-        }
         return [...prev, evidence].sort(
           ({ createdAt: dateLeft }, { createdAt: dateRight }) =>
             dateLeft - dateRight
@@ -30,11 +27,19 @@ export default function useEvidences(evidences) {
 
       // If is a valid CID try to fetch the content
       if (ipfsCid) {
+        // If the cid was already processed exit
+        if (evidenceCache.get(ipfsCid)) {
+          return
+        }
+
         const { data, error } = await ipfsGet(ipfsCid)
+
         if (error) {
           return appendEvidence({ error: ERROR_TYPES.ERROR_FETCHING_IPFS })
         }
         if (data) {
+          setEvidenceCache(evidenceCache.set(evidenceCache, true))
+
           return appendEvidence({
             id,
             metadata: data || '',
@@ -64,7 +69,7 @@ export default function useEvidences(evidences) {
     return () => {
       cancelled = true
     }
-  }, [evidences])
+  }, [evidenceCache, evidences])
 
   return evidenceProcessed
 }
