@@ -1,5 +1,13 @@
 const { ASSETS_URL } = require('./env')
 
+function reqParams(fnName, values) {
+  Object.entries(values).forEach(([name, value]) => {
+    if (value === undefined) {
+      throw new Error(`${fnName}: ${name} is not defined`)
+    }
+  })
+}
+
 function style(styles) {
   return styles
     .replace(/\n/g, '')
@@ -9,7 +17,8 @@ function style(styles) {
 
 function attrs(attributes) {
   return Object.entries(attributes).reduce(
-    (htmlAttrs, [name, value]) => `${htmlAttrs} ${name}="${value}"`,
+    (htmlAttrs, [name, value]) =>
+      value === null ? htmlAttrs : `${htmlAttrs} ${name}="${value}"`,
     ''
   )
 }
@@ -19,6 +28,10 @@ function vspace(height) {
     { height, style: `height: ${height}px` },
     `<tr><td style="height:${height}px">&nbsp;</td></tr>`
   )
+}
+
+function asset(path) {
+  return `${ASSETS_URL}/${path}`
 }
 
 function table(attributes, content) {
@@ -59,6 +72,8 @@ function base({ title, subtitle }, content) {
             padding: 0;
           }
           body {
+            width: 100% !important;
+            height: 100%;
             margin: 0;
             padding: 0;
             -webkit-text-size-adjust: 100%;
@@ -400,6 +415,367 @@ function base({ title, subtitle }, content) {
   `
 }
 
+function banner({ url, height, color, tag }) {
+  reqParams('banner()', { url, height, color })
+
+  let content = ''
+  if (tag) {
+    content = table(
+      { style: 'margin:24px;border-radius:4px', width: null },
+      `<tr>
+        <td class="tag" height="32" style="${style(`
+          color: ${tag.fg};
+          background: ${tag.bg};
+          white-space: nowrap;
+        `)}">
+          <div style="padding-top:2px">${tag.label}</div>
+        </td>
+      </tr>`
+    )
+  }
+
+  return table(
+    { bgcolor: color },
+    `<tr>
+      <td
+        width="100%"
+        height="${height}"
+        bgcolor="${color}"
+        background="${url}"
+        style="${style(`
+          background-image: url('${url}');
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: top center;
+        `)}"
+      >
+
+        <!--[if gte mso 9]>
+          <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="mso-width-percent:1000;mso-height:${height}px;" >
+            <v:fill type="tile" src="${url}" color="${color}" />
+            <v:textbox style="mso-fit-shape-to-text:true" inset="0,0,0,0">
+        <![endif]-->
+
+        ${table(
+          { height },
+          `<tr>
+            <td valign="top" height="${height}" style="height: ${height}px">
+              ${content}
+            </td>
+          </tr>`
+        )}
+
+        <!--[if gte mso 9]>
+            </v:textbox>
+          </v:rect>
+        <![endif]-->
+      </td>
+    </tr>`
+  )
+}
+
+// A better base(), heavily inspired from postmark templates.
+// Supports dark mode and makes use of CSS.
+function base2(
+  {
+    banner = '',
+    maxWidth = 800,
+    preheader = '',
+    title = '',
+    warningContent = '',
+    warningTitle = '',
+  },
+  content
+) {
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="x-apple-disable-message-reformatting" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>${title}</title>
+        <style type="text/css" rel="stylesheet" media="all">
+          @import url('https://fonts.googleapis.com/css?family=Overpass:300,400&display=swap');
+
+          body {
+            width: 100% !important;
+            height: 100%;
+            margin: 0;
+            -webkit-text-size-adjust: none;
+          }
+          a {
+            color: #3869D4;
+          }
+          a img {
+            border: none;
+          }
+          td {
+            word-break: break-word;
+          }
+          body, td, th {
+            font-family: Overpass, Helvetica, Arial, sans-serif;
+            font-weight: 300;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1.5;
+          }
+          hr {
+            margin: 48px 0 24px;
+            border: 0;
+            border-top: 1px solid #DDE4E9;
+          }
+          h1 {
+            margin-top: 0;
+            color: #242424;
+            font-size: 42px;
+            font-weight: 300;
+            text-align: left;
+          }
+          p, ul, ol, blockquote {
+            margin: 0.4em 0 1.18em;
+          }
+          body {
+            background-color: #F2F4F6;
+            color: #51545E;
+          }
+          .email-wrapper {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            background-color: #FFFFFF;
+          }
+          .email-content {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+          }
+          .email-body_inner {
+            overflow: hidden;
+            border-radius: 4px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.15);
+          }
+          .email-footer {
+            font-size: 14px;
+          }
+          .email-warning {
+            margin-bottom: 24px;
+            background: #FFF1DA;
+            border-radius: 4px;
+            border-left: 4px solid #F5A623;
+          }
+          .email-warning-content {
+            padding: 18px 26px;
+            color: #C7871E;
+            font-size: 14px;
+          }
+          @media (prefers-color-scheme: light) {
+            body,
+            .email-body,
+            .email-body_inner,
+            .email-content,
+            .email-wrapper {
+              background-color: #141926 !important;
+              color: #FFF !important;
+            }
+            .email-body_inner {
+              background-color: #232C42 !important;
+            }
+            p, ul, ol, blockquote, h1, h2, h3 {
+              color: #FFF !important;
+            }
+            hr {
+              border-top-color: #AAA !important;
+            }
+          }
+          .button {
+            display: inline-block;
+            color: #FFF;
+            background: #FF977E;
+            border-top: 10px solid #FF977E;
+            border-right: 18px solid #FF977E;
+            border-bottom: 10px solid #FF977E;
+            border-left: 18px solid #FF977E;
+            text-decoration: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+            -webkit-text-size-adjust: none;
+            box-sizing: border-box;
+            font-size: 16px;
+          }
+          .tag {
+            height: 32px;
+            font-size: 14px;
+            padding: 0 16px;
+            border-radius: 16px;
+          }
+          @media only screen and (max-width: ${maxWidth + 30}px) {
+            .email-body_inner,
+            .email-body_inner,
+            .email-body_inner2 {
+              width: 100% !important;
+              box-shadow: none;
+              border-radius: 0;
+            }
+            body, td, th {
+              font-size: 18px !important;
+            }
+            h1 {
+              font-size: 28px !important;
+            }
+            .email-footer {
+              font-size: 14px !important;
+            }
+            .button {
+              width: 100% !important;
+              text-align: center !important;
+              font-size: 16px !important;
+            }
+            .tag {
+              height: 22px !important;
+              padding: 0 10px !important;
+              font-size: 10px !important;
+            }
+            .email-warning-content {
+              font-size: 14px !important;
+            }
+          }
+          ${preheader &&
+            `.preheader {
+              display: none !important;
+              visibility: hidden;
+              mso-hide: all;
+              font-size: 1px;
+              line-height: 1px;
+              max-height: 0;
+              max-width: 0;
+              opacity: 0;
+              overflow: hidden;
+          }`}
+        </style>
+        <!--[if mso]>
+        <style type="text/css">
+          /* font fallback */
+          .ff  {
+            font-family: Arial, sans-serif;
+          }
+        </style>
+      <![endif]-->
+      </head>
+      <body>
+        ${preheader && `<span class="preheader">{preheader}</span>`}
+        ${table(
+          { class: 'email-wrapper' },
+          `<tr>
+            <td align="center" style="padding:60px 0">
+
+              ${warningContent &&
+                table(
+                  { class: 'email-content' },
+                  `<tr>
+                  <td
+                    width="${maxWidth}"
+                    cellpadding="0"
+                    cellspacing="0"
+                  >
+                    ${table(
+                      {
+                        align: 'center',
+                        width: maxWidth,
+                        class: 'email-body_inner email-warning',
+                      },
+                      `<tr>
+                        <td class="email-warning-content">
+                          ${warningTitle && `<strong>${warningTitle}</strong>`}
+                          <br>
+                          ${warningContent}
+                        </td>
+                      </tr>`
+                    )}
+                  </td>
+                </tr>`
+                )}
+
+              ${table(
+                { class: 'email-content' },
+                `<tr>
+                  <td
+                    class="email-body"
+                    width="${maxWidth}"
+                    cellpadding="0"
+                    cellspacing="0"
+                  >
+                    ${table(
+                      {
+                        class: 'email-body_inner',
+                        align: 'center',
+                        width: maxWidth,
+                      },
+                      `<tr>
+                        <td>
+                          ${banner}
+                          ${table(
+                            {
+                              align: 'center',
+                              class: 'email-body_inner2',
+                              width: maxWidth * 0.75 + 120,
+                            },
+                            `<tr>
+                              <td style="padding: 60px">
+                                <div class="ff">
+
+                                  ${content}
+
+                                  <hr>
+                                  <p class="ff align-center email-footer">
+                                    This service is provided by ${link(
+                                      'Aragon One AG',
+                                      'https://aragon.one/'
+                                    )}.
+
+                                    You are receiving this email because you are
+                                    subscribed to
+                                    <strong
+                                      style="${style(`
+                                        font-weight: 300;
+                                        color: #637381
+                                      `)}"
+                                    >Aragon Court Email Notifications</strong>.
+
+                                    You can contact us at
+                                    <a
+                                      href="mailto:support@aragon.org"
+                                      style="${style(`
+                                        color: #637381;
+                                        text-decoration: none;
+                                      `)}"
+                                    >support@aragon.org</a>
+                                    if you no longer wish to receive these.
+                                  </p>
+                                </div>
+                              </td>
+                            </tr>`
+                          )}
+                        </td>
+                      </tr>`
+                    )}
+                  </td>
+                </tr>`
+              )}
+            </td>
+          </tr>`
+        )}
+      </body>
+    </html>
+  `
+}
+
 function addressBadge(varName = 'account') {
   return `
     <a
@@ -431,6 +807,17 @@ function link(label, href, { nowrap = false } = {}) {
       ${label}
     </a>
     `.trim()
+}
+
+function button(label, href) {
+  return table(
+    { width: '100%' },
+    `<tr>
+      <td align="center">
+        <a href="${href}" class="ff button" target="_blank">${label}</a>
+      </td>
+    </tr>`
+  )
 }
 
 function action(label, href, { padding = '0' } = {}) {
@@ -655,7 +1042,11 @@ function dataTable(listName, headers) {
 module.exports = {
   action,
   addressBadge,
+  asset,
+  banner,
   base,
+  base2,
+  button,
   dataTable,
   infobox,
   link,
