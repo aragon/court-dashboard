@@ -177,9 +177,11 @@ const BannerWithProbability = ({ activeBalance }) => {
   // Calculate probability (since the total active balance is asynchronous
   // it can happen that it has not been updated yet when the juror active balance has)
   const draftingProbability = Math.min(1, totalPercentage / 100)
-
   const probablilityTooLow = totalPercentage < 1
-  const chances = totalPercentage > 0 && Math.floor(100 / totalPercentage)
+
+  const chances = probablilityTooLow
+    ? 100
+    : totalPercentage > 0 && Math.floor(100 / totalPercentage)
 
   const title = (
     <div
@@ -188,35 +190,24 @@ const BannerWithProbability = ({ activeBalance }) => {
         align-items: center;
       `}
     >
-      {(() => {
-        if (probablilityTooLow) {
-          return (
-            <span css="margin-right: 8px">
-              Activate more ANJ to increase your chances of being selected as a
-              juror
-            </span>
-          )
-        }
-        return (
-          <>
-            <span css="margin-right: 8px">
-              On average, you will be drafted
-              <span
-                css={`
-                  color: ${theme.accent};
-                `}
-              >
-                {` 1 on every ${chances} times `}
-              </span>
-            </span>
-            <Help hint="How is the probability calculated?">
-              Probability of being drafted is calculated dividing your active
-              ANJ balance by the total Court active ANJ, during the current
-              term.
-            </Help>
-          </>
-        )
-      })()}
+      <span css="margin-right: 8px">
+        {`On average, you will be drafted ${
+          probablilityTooLow ? 'less than' : ''
+        }`}
+        <span
+          css={`
+            color: ${theme.accent};
+          `}
+        >
+          {` 1 in a ${chances} times `}
+        </span>
+      </span>
+      <Help hint="How is the probability calculated?">
+        {`This is a numerical estimate of your likelihood of being selected for arbitration.
+        It’s calculated dividing your active ANJ balance by the total Court active ANJ balance, during the current term. You currently have <1% of all activated ANJ, 
+        hence are unlikely to be drafted unless a dispute goes to the final round or many disputes are created.
+        Activate more ANJ to increase your chances of being selected as a juror.`}
+      </Help>
     </div>
   )
 
@@ -229,19 +220,11 @@ const BannerWithProbability = ({ activeBalance }) => {
   ) : (
     <Wrapper
       mainIcon={
-        probablilityTooLow ? (
-          <img
-            css={`
-              display: block;
-              margin: 0 auto;
-            `}
-            height={6 * GU}
-            src={anjSpringIcon}
-            alt=""
-          />
-        ) : (
-          <CircleGraph value={draftingProbability} size={6 * GU} />
-        )
+        <CircleGraph
+          value={probablilityTooLow ? 0.01 : draftingProbability}
+          comparisonOperator={probablilityTooLow && '<'}
+          size={7 * GU}
+        />
       }
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
     />
@@ -254,7 +237,7 @@ function BannerLoadingRing() {
       css={`
         display: flex;
         align-items: center;
-        height: ${6 * GU}px;
+        height: ${7 * GU}px;
       `}
     >
       <LoadingRing />

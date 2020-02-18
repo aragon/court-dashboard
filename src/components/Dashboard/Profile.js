@@ -72,7 +72,7 @@ function Profile({ account, status }) {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: ${6 * GU}px;
+            height: ${7 * GU}px;
           `}
         >
           <span

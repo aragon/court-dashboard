@@ -12,7 +12,7 @@ const LABEL_DEFAULT = value => `${Math.round(value * 100)}`
 
 const { span: AnimatedSpan, circle: AnimatedCircle } = animated
 
-function CircleGraph({ value, label, size, strokeWidth }) {
+function CircleGraph({ value, comparisonOperator, label, size, strokeWidth }) {
   const theme = useTheme()
   const length = Math.PI * 2 * (size - strokeWidth)
   const radius = (size - strokeWidth) / 2
@@ -60,27 +60,28 @@ function CircleGraph({ value, label, size, strokeWidth }) {
           <div
             css={`
               display: flex;
-              align-items: flex-start;
+              align-items: baseline;
+              margin-left: ${comparisonOperator ? `0px ` : `${0.5 * GU}px`};
             `}
           >
+            {comparisonOperator && <div>{comparisonOperator}</div>}
             <AnimatedSpan
               css={`
-                font-size: ${2 * GU}px;
+                font-size: 20px;
               `}
             >
               {progressValue.interpolate(t =>
                 label(Math.min(1, Math.max(0, t)))
               )}
             </AnimatedSpan>
-            <div>
-              <span
-                css={`
-                  font-size: ${1.5 * GU}px;
-                  color: ${theme.surfaceContentSecondary};
-                `}
-              >
-                %
-              </span>
+            <div
+              css={`
+                display: flex;
+                font-size: 12px;
+                color: ${theme.surfaceContentSecondary};
+              `}
+            >
+              %
             </div>
           </div>
         </Main>
