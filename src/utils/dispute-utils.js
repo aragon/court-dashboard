@@ -46,6 +46,7 @@ export const transformResponseDisputeAttributes = dispute => {
               ...appeal,
               appealedRuling: parseInt(appeal.appealedRuling, 10),
               opposedRuling: parseInt(appeal.opposedRuling, 10),
+              createdAt: parseInt(appeal.createdAt) * 1000,
             }
           : null,
         state: DisputesTypes.convertFromString(round.state),
@@ -360,7 +361,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
-      endTime: appealEndTime,
+      endTime: appeal ? appeal.createdAt : appealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
