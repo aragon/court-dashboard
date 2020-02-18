@@ -15,17 +15,20 @@ export default function useTasks() {
 }
 
 function useOpenTasks(tasks, now, courtSettings) {
-  const currentRoundPhases = useMemo(() => {
+  const incompleteTasks = useMemo(() => {
     if (!tasks) {
       return null
     }
-    return tasks.map(t =>
-      getAdjudicationPhase(t.dispute, t, now, courtSettings)
-    )
+    return tasks
+      .map(task => ({
+        ...task,
+        ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
+      }))
+      .filter(task => task.phase !== DisputesTypes.Phase.Ended)
   }, [courtSettings, now, tasks])
 
-  const currentRoundPhasesKey = currentRoundPhases
-    ? currentRoundPhases
+  const incompleteTasksPhasesKey = incompleteTasks
+    ? incompleteTasks
         .map(phase => DisputesTypes.convertToString(phase.phase))
         .join('')
     : null
@@ -35,18 +38,11 @@ function useOpenTasks(tasks, now, courtSettings) {
       return []
     }
 
-    const incompleteTasks = tasks.filter(
-      (_, i) => currentRoundPhases[i].phase !== DisputesTypes.Phase.Ended
-    )
-    const incompleteRoundPhases = currentRoundPhases.filter(roundPhase => {
-      return roundPhase.phase !== DisputesTypes.Phase.Ended
-    })
-
     const openTasks = []
 
     for (let i = 0; i < incompleteTasks.length; i++) {
-      const currentPhase = incompleteRoundPhases[i].phase
-      const nextTransition = incompleteRoundPhases[i].nextTransition
+      const currentPhase = incompleteTasks[i].phase
+      const nextTransition = incompleteTasks[i].nextTransition
 
       if (
         currentPhase !== DisputesTypes.Phase.AppealRuling &&
@@ -86,7 +82,7 @@ function useOpenTasks(tasks, now, courtSettings) {
       }
     }
     return openTasks
-  }, [currentRoundPhasesKey, tasks]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [incompleteTasksPhasesKey, tasks]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function getTaskName(phase) {
