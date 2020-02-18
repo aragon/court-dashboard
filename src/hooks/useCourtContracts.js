@@ -347,7 +347,7 @@ export function useActiveBalanceOfAt(juror, termId) {
     const getActiveBalanceOfAt = async () => {
       if (!jurorRegistryContract) return
 
-      retryMax(() => jurorRegistryContract.activeBalanceOfAt(termId))
+      retryMax(() => jurorRegistryContract.activeBalanceOfAt(juror, termId))
         .then(balance => {
           setActiveBalance(balance)
         })
@@ -357,7 +357,7 @@ export function useActiveBalanceOfAt(juror, termId) {
     }
 
     getActiveBalanceOfAt()
-  }, [jurorRegistryContract, termId])
+  }, [juror, jurorRegistryContract, termId])
 
   return activeBalance
 }

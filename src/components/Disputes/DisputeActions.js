@@ -44,8 +44,6 @@ function DisputeActions({
     return <DisputeDraft disputeId={dispute.id} onDraft={onDraft} />
   }
 
-  console.log('dispute', dispute)
-
   const jurorDraft = getJurorDraft(lastRound, wallet.account) // TODO: Should we also show results for past rounds ?
   const isJurorDrafted = !!jurorDraft
 

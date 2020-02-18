@@ -15,8 +15,6 @@ function DisputeVoting({
   isJurorDrafted,
   onRequestCommit,
 }) {
-  console.log('is final round', isFinalRound)
-  console.log('is juror drafted', isJurorDrafted)
   return isFinalRound ? (
     <VotingFinalRound
       draftTermId={draftTermId}
