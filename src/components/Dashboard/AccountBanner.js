@@ -191,15 +191,13 @@ const BannerWithProbability = ({ activeBalance }) => {
       `}
     >
       <span css="margin-right: 8px">
-        {`On average, you will be drafted ${
-          probablilityTooLow ? 'less than' : ''
-        }`}
+        On average, you will be drafted into a jury
         <span
           css={`
             color: ${theme.accent};
           `}
         >
-          {` 1 in a ${chances} times `}
+          {` 1 in ${chances} times `}
         </span>
       </span>
       <Help hint="How is the probability calculated?">
