@@ -30,9 +30,9 @@ module.exports = function() {
         <div style="color: #8A96A0">
           {{{content}}}
         </div>
-        ${button('{{actionLabel}}', '{{actionUrl}}', {
-          padding: '16px 0 0',
-        })}
+        <div style="padding: 20px 0 10px">
+          ${button('{{actionLabel}}', '{{actionUrl}}')}
+        </div>
       `
     ),
     templateText: `

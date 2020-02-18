@@ -517,7 +517,7 @@ function base2(
             font-family: Overpass, Helvetica, Arial, sans-serif;
             font-weight: 300;
             font-style: normal;
-            font-size: 24px;
+            font-size: 18px;
             line-height: 1.5;
           }
           hr {
@@ -528,7 +528,7 @@ function base2(
           h1 {
             margin-top: 0;
             color: #242424;
-            font-size: 42px;
+            font-size: 32px;
             font-weight: 300;
             text-align: left;
           }
@@ -564,6 +564,10 @@ function base2(
           .email-footer {
             font-size: 14px;
           }
+          .email-footer-strong {
+            font-weight: 300;
+            color: #637381;
+          }
           .email-warning {
             margin-bottom: 24px;
             background: #FFF1DA;
@@ -575,7 +579,7 @@ function base2(
             color: #C7871E;
             font-size: 14px;
           }
-          @media (prefers-color-scheme: light) {
+          @media (prefers-color-scheme: dark) {
             body,
             .email-body,
             .email-body_inner,
@@ -587,15 +591,27 @@ function base2(
             .email-body_inner {
               background-color: #232C42 !important;
             }
+            .email-warning {
+              background-color: #362E25 !important;
+              border-left-color: #C7871E !important;
+            }
+            .email-warning-content {
+              color: #F5A623 !important;
+            }
             p, ul, ol, blockquote, h1, h2, h3 {
               color: #FFF !important;
             }
             hr {
               border-top-color: #AAA !important;
             }
+            .email-footer-strong {
+              color: #FFF !important;
+              font-weight: 400 !important;
+            }
           }
           .button {
             display: inline-block;
+            width: 100%;
             color: #FFF;
             background: #FF977E;
             border-top: 10px solid #FF977E;
@@ -741,20 +757,13 @@ function base2(
 
                                     You are receiving this email because you are
                                     subscribed to
-                                    <strong
-                                      style="${style(`
-                                        font-weight: 300;
-                                        color: #637381
-                                      `)}"
-                                    >Aragon Court Email Notifications</strong>.
+                                    <strong class="email-footer-strong">Aragon
+                                    Court Email Notifications</strong>.
 
                                     You can contact us at
                                     <a
                                       href="mailto:support@aragon.org"
-                                      style="${style(`
-                                        color: #637381;
-                                        text-decoration: none;
-                                      `)}"
+                                      style="text-decoration: none"
                                     >support@aragon.org</a>
                                     if you no longer wish to receive these.
                                   </p>
