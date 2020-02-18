@@ -9,6 +9,8 @@ export const OUTCOMES = {
   InFavor: 4,
 }
 
+const VALID_OUTCOMES = [OUTCOMES.Refused, OUTCOMES.Against, OUTCOMES.InFavor]
+
 export const VOTE_OPTION_REFUSE = OUTCOMES.Refused
 export const VOTE_OPTION_AGAINST = OUTCOMES.Against
 export const VOTE_OPTION_IN_FAVOR = OUTCOMES.InFavor
@@ -21,7 +23,7 @@ const voteOptionStringMapping = {
   [VOTE_OPTION_IN_FAVOR]: 'IN FAVOR',
 }
 
-export function voteToString(outcome) {
+export function voteOptionToString(outcome) {
   return voteOptionStringMapping[outcome]
 }
 
@@ -42,18 +44,18 @@ const outcomeStringMapping = {
   [OUTCOMES.InFavor]: 'Voted in favor',
 }
 
-const appealRulingStringMapping = {
-  [OUTCOMES.Leaked]: 'Invalid ruling',
-  [OUTCOMES.Refused]: 'Refused',
-  [OUTCOMES.Against]: 'Ruled against',
-  [OUTCOMES.InFavor]: 'Ruled in favor',
-}
-
 export function juryOutcomeToString(outcome) {
   if (!outcome) {
     return outcomeStringMapping[OUTCOMES.Refused]
   }
   return outcomeStringMapping[outcome]
+}
+
+const appealRulingStringMapping = {
+  [OUTCOMES.Leaked]: 'Invalid ruling',
+  [OUTCOMES.Refused]: 'Refused',
+  [OUTCOMES.Against]: 'Ruled against',
+  [OUTCOMES.InFavor]: 'Ruled in favor',
 }
 
 export function appealRulingToString(outcome, confirm) {
@@ -63,7 +65,19 @@ export function appealRulingToString(outcome, confirm) {
   return appealRulingStringMapping[outcome]
 }
 
-const VALID_OUTCOMES = [OUTCOMES.Refused, OUTCOMES.Against, OUTCOMES.InFavor]
+const finalRulingStringMapping = {
+  [OUTCOMES.Leaked]: 'Invalid ruling',
+  [OUTCOMES.Refused]: 'Refused',
+  [OUTCOMES.Against]: 'Ruling against',
+  [OUTCOMES.InFavor]: 'Ruling in favor',
+}
+
+export function finalRulingToString(outcome) {
+  if (!outcome) {
+    return finalRulingStringMapping[OUTCOMES.refused]
+  }
+  return finalRulingStringMapping[outcome]
+}
 
 /**
  *

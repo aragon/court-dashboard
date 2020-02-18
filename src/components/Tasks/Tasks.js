@@ -85,7 +85,9 @@ const Tasks = React.memo(({ onlyTable }) => {
 
       {(() => {
         if (errorLoading) {
-          return <ErrorLoading subject="tasks" error={errorLoading.message} />
+          return (
+            <ErrorLoading subject="tasks" errors={[errorLoading.message]} />
+          )
         }
         if (tasksFetching) {
           return <TasksLoading />

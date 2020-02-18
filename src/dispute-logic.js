@@ -59,7 +59,6 @@ export function useDisputeLogic(disputeId) {
   const requests = usePanelRequestActions(setRequestMode)
 
   const { dispute, fetching } = useDispute(disputeId)
-
   const actions = useDisputeActions()
 
   return {
@@ -69,24 +68,5 @@ export function useDisputeLogic(disputeId) {
     requestMode,
     panelState,
     requests,
-  }
-}
-
-export function processDisputeData(dispute) {
-  if (!dispute?.metadata) {
-    return { ...dispute }
-  }
-  try {
-    const parsedDisputeData = JSON.parse(dispute.metadata)
-    // If the description tag is not present in metadata we assume that the metadata itself is the description
-    return {
-      ...dispute,
-      description: parsedDisputeData.description || dispute.metadata,
-      agreementText: parsedDisputeData.agreementText || '',
-      defendant: parsedDisputeData.defendant || '',
-      plaintiff: parsedDisputeData.plaintiff || '',
-    }
-  } catch (err) {
-    return { ...dispute, description: dispute.metadata }
   }
 }
