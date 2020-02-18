@@ -336,6 +336,32 @@ export function useAppealFeeAllowance(owner) {
   return allowance
 }
 
+export function useActiveBalanceOfAt(juror, termId) {
+  const jurorRegistryContract = useCourtContract(
+    CourtModuleType.JurorsRegistry,
+    jurorRegistryAbi
+  )
+  const [activeBalance, setActiveBalance] = useState(bigNum(-1))
+
+  useEffect(() => {
+    const getActiveBalanceOfAt = async () => {
+      if (!jurorRegistryContract) return
+
+      retryMax(() => jurorRegistryContract.activeBalanceOfAt(termId))
+        .then(balance => {
+          setActiveBalance(balance)
+        })
+        .catch(err => {
+          console.error(`Error fetching active balance for juror : ${err}`)
+        })
+    }
+
+    getActiveBalanceOfAt()
+  }, [jurorRegistryContract, termId])
+
+  return activeBalance
+}
+
 export function useTotalActiveBalancePolling(termId) {
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,

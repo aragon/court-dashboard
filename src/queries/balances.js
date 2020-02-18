@@ -30,15 +30,6 @@ export const Juror = gql`
   }
 `
 
-export const JurorActiveBalance = gql`
-  subscription Juror($id: ID!) {
-    juror(id: $id) {
-      activeBalance
-      lockedBalance
-    }
-  }
-`
-
 export const FirstANJActivationMovement = gql`
   query Juror($id: ID!) {
     juror(id: $id) {

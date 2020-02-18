@@ -9,16 +9,46 @@ import {
   VOTE_OPTION_AGAINST,
 } from '../../../utils/crvoting-utils'
 
-function DisputeVoting({ isJurorDrafted, maxAppealReached, onRequestCommit }) {
+function DisputeVoting({
+  draftTermId,
+  isFinalRound,
+  isJurorDrafted,
+  onRequestCommit,
+}) {
+  console.log('is final round', isFinalRound)
+  console.log('is juror drafted', isJurorDrafted)
+  return isFinalRound ? (
+    <VotingFinalRound
+      draftTermId={draftTermId}
+      onRequestCommit={onRequestCommit}
+    />
+  ) : (
+    <VotingActions
+      canJurorVote={isJurorDrafted}
+      onRequestCommit={onRequestCommit}
+    />
+  )
+}
+
+function VotingFinalRound({ draftTermId, onRequestCommit }) {
   const wallet = useWallet()
-
-  // If max appeal reached (final round) then we will check if the connected account has the minimum active balance to be able to vote
+  // If is final round then we will check if the connected account had the minimum active balance at `draftTermId` to be able to vote
   // Note that in a final round, every juror can vote (there's no drafting phase).
-  const canJurorVoteFinalRound = useCanJurorVoteFinalRound(wallet.account, {
-    pause: !wallet.account || !maxAppealReached,
-  })
+  const canJurorVoteFinalRound = useCanJurorVoteFinalRound(
+    wallet.account,
+    draftTermId
+  )
 
-  const canJurorVote = isJurorDrafted || canJurorVoteFinalRound
+  return (
+    <VotingActions
+      canJurorVote={canJurorVoteFinalRound}
+      onRequestCommit={onRequestCommit}
+    />
+  )
+}
+
+function VotingActions({ canJurorVote, onRequestCommit }) {
+  const wallet = useWallet()
 
   return (
     <div>

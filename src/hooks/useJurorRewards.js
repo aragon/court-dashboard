@@ -37,6 +37,7 @@ export default function useJurorRewards() {
           const rulingFeesAmount = collectedTokens
             .mul(weight)
             .div(coherentJurors)
+
           const disputeFeesAmount = jurorFees.mul(weight).div(coherentJurors)
 
           return {

@@ -1,12 +1,16 @@
-import { useJurorActiveBalanceSubscription } from './subscription-hooks'
 import { useCourtConfig } from '../providers/CourtConfig'
+import { useActiveBalanceOfAt } from './useCourtContracts'
 
-export default function useCanJurorVoteFinalRound(account, { pause }) {
+export default function useCanJurorVoteFinalRound(
+  draftTermId,
+  account,
+  maxAppealReached
+) {
   const { minActiveBalance } = useCourtConfig()
 
-  const activeBalance = useJurorActiveBalanceSubscription(
+  const activeBalance = useActiveBalanceOfAt(
     account?.toLowerCase(),
-    pause
+    draftTermId
   )
 
   return activeBalance.gte(minActiveBalance)
