@@ -30,7 +30,7 @@ function DisputeVoting({
 
 function VotingFinalRound({ draftTermId, onRequestCommit }) {
   const wallet = useWallet()
-  // If is final round then we will check if the connected account had the minimum active balance at `draftTermId` to be able to vote
+  // If it's the final round then we will check if the connected account had the minimum active balance at `draftTermId` to be able to vote
   // Note that in a final round, every juror can vote (there's no drafting phase).
   const canJurorVoteFinalRound = useCanJurorVoteFinalRound(
     wallet.account,

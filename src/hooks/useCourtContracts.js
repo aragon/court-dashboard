@@ -22,7 +22,7 @@ import { bigNum } from '../lib/math-utils'
 import { retryMax } from '../utils/retry-max'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 4000000
+const GAS_LIMIT = 1200000
 const ANJ_ACTIVATE_GAS_LIMIT = 500000
 const ANJ_ACTIONS_GAS_LIMIT = 325000
 

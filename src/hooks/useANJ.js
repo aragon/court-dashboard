@@ -231,9 +231,9 @@ export function useJurorFirstTimeANJActivation(options) {
 
 export function useJurorLockedANJDistribution() {
   const {
+    maxRegularAppealRounds,
     minActiveBalance,
     penaltyPct,
-    maxRegularAppealRounds,
   } = useCourtConfig()
   const { jurorDrafts, balances } = useDashboardState()
   const { lockedBalance } = balances || {}

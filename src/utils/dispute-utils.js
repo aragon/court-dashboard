@@ -54,6 +54,12 @@ export const transformResponseDisputeAttributes = dispute => {
   }
 }
 
+/**
+ * Construct dispute timeline for the given dispute
+ * @param {Object} dispute The dispute to get the timeline from
+ * @param {Object} courtConfig The court configuration
+ * @returns {Array} The timeline of the given dispute
+ */
 export function getDisputeTimeLine(dispute, courtConfig) {
   const { createdAt } = dispute
 
@@ -119,6 +125,12 @@ export function getDisputeTimeLine(dispute, courtConfig) {
   return timeLine
 }
 
+/**
+ * @param {Object} dispute The dispute querying current phase and transition of
+ * @param {Object} courtConfig The court configuration
+ * @param {Date} nowDate Current date
+ * @returns {Object} Current phase and next phase transition for the given dispute
+ */
 export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   if (!dispute) return null
 
@@ -193,6 +205,14 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   }
 }
 
+/**
+ * Tells the adjudication state of a round at a certain time.
+ * @param {Object} dispute Dispute querying the adjudication round of
+ * @param {Object} round The round that is being queried
+ * @param {Number} now Current time in ms
+ * @param {Object} courtConfig The court configuration
+ * @returns {Object} The adjudication phase of the requested round at the given time
+ */
 export function getAdjudicationPhase(dispute, round, now, courtConfig) {
   const {
     termDuration,
@@ -295,6 +315,15 @@ export function getAdjudicationPhase(dispute, round, now, courtConfig) {
   }
 }
 
+/**
+ * @dev Terminology here will be:
+ *            Last round => dispute's last round
+ *            Final round => max possible round for a dispute (when the max appeals for a given dispute is reached)
+ * @param {Object} courtConfig The court configuration
+ * @param {Object} round The round to get the phases from
+ * @param {Object} currentPhase The dispute current phase
+ * @returns {Array} Array of all `round` phases.
+ */
 function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   const {
     termDuration,
@@ -388,15 +417,19 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
   ]
 
+  // If it's not the last round means that it was appealed and confirm appealed
+  // so we show all possible phases
   if (roundId < currentPhase.roundId) {
     return roundPhasesAndTime
   }
 
+  // If it's the last round and has already ended (show past phases)
   if (
     currentPhase.phase === DisputesTypes.Phase.ExecuteRuling ||
     currentPhase.phase === DisputesTypes.Phase.ClaimRewards
   ) {
-    // In the last possible round, there's no drafting phase and appealing is not possible either
+    // In the final round (maxAppealedReached), there's no drafting phase and appealing is not possible
+    // so we only must show Voting and Revealing
     if (currentPhase.maxAppealReached) {
       return roundPhasesAndTime.slice(1, 3)
     }
@@ -409,6 +442,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     return roundPhasesAndTime
   }
 
+  // Find the last round current phase
   const currentPhaseIndex = roundPhasesAndTime.findIndex(
     phase => phase.phase === currentPhase.phase
   )
@@ -420,29 +454,20 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   )
 }
 
-export function getCommitEndTime(round, courtConfig) {
-  const { termDuration, commitTerms } = courtConfig
-
-  const { draftTermId, delayedTerms } = round
-
-  const disputeDraftTermTime = getTermStartTime(
-    draftTermId + delayedTerms,
-    courtConfig
-  )
-  return disputeDraftTermTime + termDuration * commitTerms
-}
-
-export function getRevealEndTime(round, courtConfig) {
-  const { termDuration, revealTerms } = courtConfig
-  const commitEndTime = getCommitEndTime(round, courtConfig)
-
-  return commitEndTime + revealTerms * termDuration
-}
-
+/**
+ * @param {Object} dispute The dispute to get the last round from
+ * @returns {Object} dispute's last round
+ */
 export function getDisputeLastRound(dispute) {
   return dispute.rounds[dispute.lastRoundId]
 }
 
+/**
+ *
+ * @param {Object} round Round to calculate fees from
+ * @param {Object} courtConfig The court configuration
+ * @returns {BigNum} The total `round` fees
+ */
 export function getRoundFees(round, courtConfig) {
   const {
     draftFee,
@@ -465,6 +490,13 @@ export function getRoundFees(round, courtConfig) {
     .mul(round.jurorsNumber)
 }
 
+/**
+ *
+ * @param {BigNum} minActiveBalance The minimum active balance required to become an active juror
+ * @param {BigNum} penaltyPct Permyriad of min active tokens balance to be locked to each drafted juror
+ * @param {BigNum} weight Weight computed for a juror on a round
+ * @returns {BigNum} The amount locked to a drafted juror
+ */
 export function getDraftLockAmount(minActiveBalance, penaltyPct, weight) {
   return minActiveBalance
     .mul(penaltyPct)
