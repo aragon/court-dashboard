@@ -71,7 +71,7 @@ const TaskTable = React.memo(function TaskTable({
           : ['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']
       }
       entries={tasks}
-      renderEntry={({ phase, disputeId, juror, open, dueDate }) => {
+      renderEntry={({ phase, disputeId, juror, dueDate }) => {
         return [
           <span
             css={`
@@ -85,7 +85,7 @@ const TaskTable = React.memo(function TaskTable({
           </Link>,
           <LocalIdentityBadge entity={juror} />,
 
-          <TaskStatus status={open} />,
+          <TaskStatus />,
           <TaskDueDate dueDate={dueDate} />,
         ]
       }}
