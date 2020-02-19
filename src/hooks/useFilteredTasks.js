@@ -19,6 +19,7 @@ function useFilteredTasks(jurorTasksSelected, connectedAccount) {
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_PHASE)
   const [filtersSelected, setFiltersSelected] = useState(false)
+
   // If My Tasks is selected we need to only show ALL-COMMIT-REVEAL actions
   const TASKS_ACTIONS_TYPES_STRING = jurorTasksSelected
     ? TASKS_ACTIONS_TYPES.slice(0, 3).map(DisputesTypes.getTaskActionString)
@@ -57,7 +58,6 @@ function useFilteredTasks(jurorTasksSelected, connectedAccount) {
     () =>
       tasksToFilter.filter(
         ({ phaseType, dueDate, open }) =>
-          open &&
           (selectedPhase === UNSELECTED_PHASE ||
             selectedPhase === ALL_FILTER ||
             phaseType === TASKS_ACTIONS_TYPES[selectedPhase]) &&
