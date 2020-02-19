@@ -10,4 +10,4 @@ Install the dependencies in this directory via `yarn`, and then generate templat
 
 To test each template, mock data has been included and fully rendered emails can be generated with `yarn build:mock`.
 
-Two outputs are generated per template: one `.html` and one `.txt`. If the email service supports it, you sould include both versions.
+Two outputs are generated per template: one `.html` and one `.txt`. If the email service supports it, you should include both versions.
