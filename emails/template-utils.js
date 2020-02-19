@@ -871,7 +871,11 @@ function action(label, href, { padding = '0' } = {}) {
 
 function infobox({ mode, primary, secondary }) {
   const background = mode === 'negative' ? '#FFE8E8' : '#F9FAFC'
-  const icon = mode === 'negative' ? 'icon-negative.png' : 'icon-positive.png'
+  const icon = (() => {
+    if (mode === 'negative') return 'icon-negative.png'
+    if (mode === 'appeals-opened') return 'icon-appeals-opened.png'
+    return 'icon-positive.png'
+  })()
   const primaryColor = mode === 'negative' ? '#30404F' : '#26C395'
   const secondaryColor = mode === 'negative' ? '#637381' : '#9096B6'
   return table(

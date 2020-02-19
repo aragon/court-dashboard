@@ -16,7 +16,7 @@ module.exports = function() {
       },
       `
         ${infobox({
-          mode: 'positive',
+          mode: 'appeals-opened',
           primary: `
             Appeals are now open for a Preliminary Ruling of ${link(
               'Dispute #{{disputeId}}',
