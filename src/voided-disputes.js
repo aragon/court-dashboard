@@ -6,11 +6,11 @@ const DEFAULT_VOID_TEXT = 'This is a text'
 const DEFAULT_VOID_LINK = ''
 
 export const VOIDED_DISPUTES = {
-  rpc: new Map([[networks.rpc.court, []]]),
-  ropsten: new Map([[networks.ropsten.court, []]]),
+  rpc: new Map([[networks.rpc.court, new Map([])]]),
+  ropsten: new Map([[networks.ropsten.court, new Map([])]]),
   rinkeby: new Map([
-    [RINKEBY_COURT, []],
-    [RINKEBY_USABILITY_COURT, []],
+    [RINKEBY_COURT, new Map([])],
+    [RINKEBY_USABILITY_COURT, new Map([])],
   ]),
   mainnet: new Map([
     [
