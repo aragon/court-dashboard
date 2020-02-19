@@ -81,7 +81,6 @@ module.exports = function() {
           dueDate: `18 Dec. 2019 at 2:50pm`,
         },
       ],
-      notificationsSettingsUrl: '',
     },
   }
 }

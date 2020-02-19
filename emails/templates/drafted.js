@@ -52,7 +52,6 @@ module.exports = function() {
       date: 'Thursday, 17 Dec. 2019',
       disputeId: '14',
       disputeUrl: '',
-      notificationsSettingsUrl: '',
     },
   }
 }

@@ -49,7 +49,6 @@ module.exports = function() {
       date: 'Thursday, 17 Dec. 2019',
       lockedAnjBalanceUrl: '',
       learnMoreUrl: '',
-      notificationsSettingsUrl: '',
     },
   }
 }

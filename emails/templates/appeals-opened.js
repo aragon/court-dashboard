@@ -54,7 +54,6 @@ module.exports = function() {
       disputeUrl: 'https://example.org/',
       actionLabel: 'Appeal Ruling',
       actionUrl: 'https://example.org/',
-      notificationsSettingsUrl: '',
       secondary: `
         Now that Voting has ended, Preliminary Rulings can be appealed by
         anyone, including you. If you disagree with the ruling made by your
