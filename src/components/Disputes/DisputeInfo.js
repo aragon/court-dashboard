@@ -80,7 +80,7 @@ const DisputeInfo = React.memo(function({
             return (
               <DisputeVoided
                 id={id}
-                text={dispute.voidedText}
+                description={dispute.voidedDescription}
                 link={dispute.voidedLink}
               />
             )
@@ -238,12 +238,12 @@ function DisputeHeader({ id, dispute }) {
               />
             )}
           </h1>
-          {dispute?.status !== Status.Voided && transaction ? (
+          {Boolean(dispute?.status !== Status.Voided && transaction) && (
             <TransactionBadge
               transaction={transaction}
               networkType={network.type}
             />
-          ) : null}
+          )}
         </div>
       </div>
     </div>

@@ -10,25 +10,26 @@ import { Status } from '../../types/dispute-status-types'
 
 function DisputeCard({ dispute, onSelectDispute }) {
   const theme = useTheme()
-  const { id, description, finalRuling, nextTransition, phase } = dispute
+  const {
+    id,
+    description,
+    finalRuling,
+    nextTransition,
+    phase,
+    voidedText,
+  } = dispute
   const handleClick = useCallback(() => {
     onSelectDispute(id)
   }, [id, onSelectDispute])
 
   return (
     <CardItem onClick={handleClick}>
-      <div
-        css={`
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        `}
-      >
+      <div>
         <DisputeStatus dispute={dispute} />
       </div>
-
       <div
         css={`
+          align-self: flex-start;
           & > * {
             margin-bottom: ${1 * GU}px;
           }
@@ -42,7 +43,7 @@ function DisputeCard({ dispute, onSelectDispute }) {
           <strong> Dispute #{id}</strong>
         </h3>
         <DisputeText
-          text={description}
+          text={voidedText || description}
           css={`
             overflow: hidden;
             ${textStyle('body2')};
@@ -54,20 +55,14 @@ function DisputeCard({ dispute, onSelectDispute }) {
             -webkit-line-clamp: 3;
           `}
         />
+        {dispute.status !== Status.Voided && (
+          <DisputePhase
+            finalRuling={finalRuling}
+            nextTransition={nextTransition}
+            phase={phase}
+          />
+        )}
       </div>
-      {dispute.status !== Status.Voided ? (
-        <DisputePhase
-          finalRuling={finalRuling}
-          nextTransition={nextTransition}
-          phase={phase}
-        />
-      ) : (
-        <div
-          css={`
-            height: ${9 * GU}px;
-          `}
-        />
-      )}
     </CardItem>
   )
 }
@@ -75,6 +70,7 @@ function DisputeCard({ dispute, onSelectDispute }) {
 const CardItem = styled(Card)`
   display: grid;
   grid-template-columns: 100%;
+  grid-template-rows: ${3 * GU}px auto;
   grid-gap: ${1 * GU}px;
   padding: ${3 * GU}px;
   box-shadow: rgba(51, 77, 117, 0.2) 0px 1px 3px;

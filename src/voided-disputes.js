@@ -2,10 +2,14 @@ import { networks, RINKEBY_COURT, RINKEBY_USABILITY_COURT } from './networks'
 import { getNetworkName } from './lib/web3-utils'
 import env from './environment'
 
-const DEFAULT_VOID_TEXT = 'This is a text'
-const DEFAULT_VOID_LINK = ''
+// TODO: Add text and link when available
+const DEFAULT_VOID_LINK =
+  'https://blog.aragon.one/update-on-aragon-courts-first-mock-dispute/'
+const DEFAULT_VOID_TEXT = 'This dispute has been voided and discontinued'
+const DEFAULT_VOID_DESCRIPTION =
+  'Dispute #0 is void and all related content has been removed from the Dashboard. Aragon One has made the decision to void the dispute and consider it non-existent when considering precedence for future Aragon Court cases.'
 
-export const VOIDED_DISPUTES = {
+const VOIDED_DISPUTES = {
   rpc: new Map([[networks.rpc.court, new Map([])]]),
   ropsten: new Map([[networks.ropsten.court, new Map([])]]),
   rinkeby: new Map([
@@ -19,9 +23,9 @@ export const VOIDED_DISPUTES = {
         [
           {
             id: '0',
-            text: DEFAULT_VOID_TEXT,
             link: DEFAULT_VOID_LINK,
-            // TODO: Add texts and links when available
+            description: DEFAULT_VOID_DESCRIPTION,
+            text: DEFAULT_VOID_TEXT,
           },
         ].map(dispute => [dispute.id, dispute])
       ),
@@ -30,6 +34,10 @@ export const VOIDED_DISPUTES = {
 }
 
 export function getVoidedDisputesByCourt() {
+  if (env('SKIP_VOIDING')) {
+    return new Map([])
+  }
+
   const networkName = getNetworkName(env('CHAIN_ID'))
   const courtAddress = networks[networkName].court
 
