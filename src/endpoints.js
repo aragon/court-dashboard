@@ -12,6 +12,10 @@ const GRAPH_API_BASE_WS_LOCAL = 'ws://127.0.0.1:8001'
 const GRAPH_API_BASE_HTTP = 'https://api.thegraph.com'
 const GRAPH_API_BASE_WS = 'wss://api.thegraph.com'
 
+export const IPFS_ENDPOINT = isLocalOrUnknownNetwork(CHAIN_ID)
+  ? 'http://127.0.0.1:8080/ipfs'
+  : 'https://ipfs.eth.aragon.network/ipfs'
+
 const GRAPH_API_PATH = '/subgraphs/name/aragon/aragon-court'
 
 function getAPIBase() {

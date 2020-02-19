@@ -1,9 +1,10 @@
 import React from 'react'
 import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
 
+import DisputeOutcomeText from './DisputeOutcomeText'
 import { Phase, convertToString } from '../../types/dispute-status-types'
 
-function DisputePhase({ phase, nextTransition }) {
+function DisputePhase({ finalRuling, nextTransition, phase }) {
   const stringPhase = convertToString(phase)
 
   return (
@@ -55,7 +56,11 @@ function DisputePhase({ phase, nextTransition }) {
         </span>
       </div>
 
-      <DisplayTime phase={phase} nextTransition={nextTransition} />
+      {finalRuling ? (
+        <DisputeOutcomeText outcome={finalRuling} isFinalRuling />
+      ) : (
+        <DisplayTime phase={phase} nextTransition={nextTransition} />
+      )}
     </div>
   )
 }
