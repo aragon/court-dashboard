@@ -225,7 +225,7 @@ const BannerWithProbability = ({ activeBalance }) => {
   )
 
   const paragraph =
-    'The more ANJ you activate, the more likely you will be selected to arbitrate a dispute'
+    'The more ANJ you activate, the more likely you will be drafted to arbitrate a dispute'
 
   // TODO - change this for the loading indicator once ready
   return fetchingTotalBalance ? (
