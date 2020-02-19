@@ -415,24 +415,23 @@ function base({ title, subtitle }, content) {
   `
 }
 
-function banner({ url, height, color, tag }) {
-  reqParams('banner()', { url, height, color })
+function tag({ extraStyle = '', bg, fg, label }) {
+  return table(
+    { style: `border-radius:4px;${extraStyle}`, width: null },
+    `<tr>
+      <td class="tag" height="32" style="${style(`
+        color: ${fg};
+        background: ${bg};
+        white-space: nowrap;
+      `)}">
+        <div style="padding-top:2px">${label}</div>
+      </td>
+    </tr>`
+  )
+}
 
-  let content = ''
-  if (tag) {
-    content = table(
-      { style: 'margin:24px;border-radius:4px', width: null },
-      `<tr>
-        <td class="tag" height="32" style="${style(`
-          color: ${tag.fg};
-          background: ${tag.bg};
-          white-space: nowrap;
-        `)}">
-          <div style="padding-top:2px">${tag.label}</div>
-        </td>
-      </tr>`
-    )
-  }
+function banner({ url, height, color, tag: tagSettings }) {
+  reqParams('banner()', { url, height, color })
 
   return table(
     { bgcolor: color },
@@ -460,7 +459,16 @@ function banner({ url, height, color, tag }) {
           { height },
           `<tr>
             <td valign="top" height="${height}" style="height: ${height}px">
-              ${content}
+              ${
+                tagSettings
+                  ? tag({
+                      bg: tagSettings.bg,
+                      fg: tagSettings.fg,
+                      label: tagSettings.label,
+                      extraStyle: 'margin:24px;',
+                    })
+                  : ''
+              }
             </td>
           </tr>`
         )}
