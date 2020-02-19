@@ -180,7 +180,7 @@ const BannerWithProbability = ({ activeBalance }) => {
   const probablilityTooLow = totalPercentage < 1
 
   const chances = probablilityTooLow
-    ? 100
+    ? '100+'
     : totalPercentage > 0 && Math.floor(100 / totalPercentage)
 
   const title = (
