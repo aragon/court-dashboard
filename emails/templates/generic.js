@@ -101,13 +101,13 @@ module.exports = function() {
         Have fun, and break things!
       `,
       notice: `
-        This is an email from <strong>Aragon Court's Rinkeby test environment</strong>. This
+        This is an email from <strong>Aragon Court’s Rinkeby test environment</strong>. This
         environment has been configured so jurors can have a playground to try
         out the new dashboard and ensure that the system is working
         correctly.
       `,
       noticeText: `
-        This is an email from Aragon Court's Rinkeby test environment. This
+        This is an email from Aragon Court’s Rinkeby test environment. This
         environment has been configured so jurors can have a playground to try
         out the new dashboard and ensure that the system is working
         correctly.
