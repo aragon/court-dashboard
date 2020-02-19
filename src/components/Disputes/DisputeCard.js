@@ -10,7 +10,14 @@ import { Status } from '../../types/dispute-status-types'
 
 function DisputeCard({ dispute, onSelectDispute }) {
   const theme = useTheme()
-  const { id, description, finalRuling, nextTransition, phase } = dispute
+  const {
+    id,
+    description,
+    finalRuling,
+    nextTransition,
+    phase,
+    voidedDescription,
+  } = dispute
   const handleClick = useCallback(() => {
     onSelectDispute(id)
   }, [id, onSelectDispute])
@@ -35,28 +42,25 @@ function DisputeCard({ dispute, onSelectDispute }) {
         >
           <strong> Dispute #{id}</strong>
         </h3>
+        <DisputeText
+          text={voidedDescription || description}
+          css={`
+            overflow: hidden;
+            ${textStyle('body2')};
+            color: ${theme.content};
+            line-height: ${27}px; // 27px = line-height of textstyle('body1')
+            height: ${27 * 3}px; // 27px * 3 = line-height * 3 lines
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+          `}
+        />
         {dispute.status !== Status.Voided && (
-          <>
-            <DisputeText
-              text={description}
-              css={`
-                overflow: hidden;
-                ${textStyle('body2')};
-                color: ${theme.content};
-                line-height: ${27}px; // 27px = line-height of textstyle('body1')
-                height: ${27 * 3}px; // 27px * 3 = line-height * 3 lines
-                display: -webkit-box;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 3;
-              `}
-            />
-
-            <DisputePhase
-              finalRuling={finalRuling}
-              nextTransition={nextTransition}
-              phase={phase}
-            />
-          </>
+          <DisputePhase
+            finalRuling={finalRuling}
+            nextTransition={nextTransition}
+            phase={phase}
+          />
         )}
       </div>
     </CardItem>

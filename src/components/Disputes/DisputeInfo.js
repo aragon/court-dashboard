@@ -238,12 +238,12 @@ function DisputeHeader({ id, dispute }) {
               />
             )}
           </h1>
-          {dispute?.status !== Status.Voided && transaction ? (
+          {Boolean(dispute?.status !== Status.Voided && transaction) && (
             <TransactionBadge
               transaction={transaction}
               networkType={network.type}
             />
-          ) : null}
+          )}
         </div>
       </div>
     </div>

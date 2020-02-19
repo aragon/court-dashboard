@@ -2,10 +2,12 @@ import { networks, RINKEBY_COURT, RINKEBY_USABILITY_COURT } from './networks'
 import { getNetworkName } from './lib/web3-utils'
 import env from './environment'
 
-const DEFAULT_VOID_TEXT = 'This is a text'
+// TODO: Add text and link when available
 const DEFAULT_VOID_LINK = ''
+const DEFAULT_VOID_TEXT = ''
+const DEFAULT_VOID_DESCRIPTION = 'This dispute has been voided and discontinued'
 
-export const VOIDED_DISPUTES = {
+const VOIDED_DISPUTES = {
   rpc: new Map([[networks.rpc.court, new Map([])]]),
   ropsten: new Map([[networks.ropsten.court, new Map([])]]),
   rinkeby: new Map([
@@ -19,9 +21,9 @@ export const VOIDED_DISPUTES = {
         [
           {
             id: '0',
-            text: DEFAULT_VOID_TEXT,
             link: DEFAULT_VOID_LINK,
-            // TODO: Add texts and links when available
+            description: DEFAULT_VOID_DESCRIPTION,
+            text: DEFAULT_VOID_TEXT,
           },
         ].map(dispute => [dispute.id, dispute])
       ),
@@ -30,6 +32,10 @@ export const VOIDED_DISPUTES = {
 }
 
 export function getVoidedDisputesByCourt() {
+  if (env('SKIP_VOIDING')) {
+    return new Map([])
+  }
+
   const networkName = getNetworkName(env('CHAIN_ID'))
   const courtAddress = networks[networkName].court
 

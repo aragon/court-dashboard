@@ -39,7 +39,6 @@ export default function DisputeStatus({ dispute, ...props }) {
       css={`
         padding: 1px 16px;
         border-radius: 100px;
-        background: #d2d2d2;
         text-transform: uppercase;
         font-size: 12px;
         color: ${color};
