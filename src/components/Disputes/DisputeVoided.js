@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import iconWarningSvg from '../../assets/IconWarning.svg'
 
-function DisputeVoided({ id, text, link }) {
+function DisputeVoided({ id, description, link }) {
   const theme = useTheme()
 
   return (
@@ -18,7 +18,7 @@ function DisputeVoided({ id, text, link }) {
       <div
         css={`
           display: grid;
-          grid-row-gap: ${2 * GU}px;
+          grid-row-gap: ${3 * GU}px;
         `}
       >
         <h1
@@ -32,9 +32,10 @@ function DisputeVoided({ id, text, link }) {
         <span
           css={`
             color: ${theme.contentSecondary};
+            ${textStyle('body1')}
           `}
         >
-          {text}
+          {description}
         </span>
         <Button
           label="Read more"

@@ -80,7 +80,7 @@ const DisputeInfo = React.memo(function({
             return (
               <DisputeVoided
                 id={id}
-                text={dispute.voidedText}
+                description={dispute.voidedDescription}
                 link={dispute.voidedLink}
               />
             )

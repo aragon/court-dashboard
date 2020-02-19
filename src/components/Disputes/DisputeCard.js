@@ -16,7 +16,7 @@ function DisputeCard({ dispute, onSelectDispute }) {
     finalRuling,
     nextTransition,
     phase,
-    voidedDescription,
+    voidedText,
   } = dispute
   const handleClick = useCallback(() => {
     onSelectDispute(id)
@@ -43,7 +43,7 @@ function DisputeCard({ dispute, onSelectDispute }) {
           <strong> Dispute #{id}</strong>
         </h3>
         <DisputeText
-          text={voidedDescription || description}
+          text={voidedText || description}
           css={`
             overflow: hidden;
             ${textStyle('body2')};
