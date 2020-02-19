@@ -4,6 +4,7 @@ import { getTermStartTime } from './court-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { getOutcomeNumber } from './crvoting-utils'
 import { bigNum } from '../lib/math-utils'
+import { getVoidedDisputesByCourt } from '../voided-disputes'
 
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
@@ -11,15 +12,23 @@ export const PCT_BASE = bigNum(10000)
 const juryDraftingTerms = 3
 
 export const transformResponseDisputeAttributes = dispute => {
-  return {
+  const voidedDisputes = getVoidedDisputesByCourt()
+  const isDisputeVoided = voidedDisputes.some(
+    voidedDispute => voidedDispute.id === dispute.id
+  )
+
+  const disputeStatus = isDisputeVoided
+    ? DisputesTypes.Status.Voided
+    : DisputesTypes.convertFromString(dispute.state) ===
+      DisputesTypes.Phase.Ruled
+    ? DisputesTypes.Status.Closed
+    : DisputesTypes.Status.Open
+
+  const transformedDispute = {
     ...dispute,
     createdAt: parseInt(dispute.createdAt, 10) * 1000,
     state: DisputesTypes.convertFromString(dispute.state),
-    status:
-      DisputesTypes.convertFromString(dispute.state) ===
-      DisputesTypes.Phase.Ruled
-        ? DisputesTypes.Status.Closed
-        : DisputesTypes.Status.Open,
+    status: disputeStatus,
     rounds: dispute.rounds.map(round => {
       const { vote, appeal } = round
 
@@ -51,6 +60,19 @@ export const transformResponseDisputeAttributes = dispute => {
         state: DisputesTypes.convertFromString(round.state),
       }
     }),
+  }
+
+  if (transformedDispute.status !== DisputesTypes.Status.Voided) {
+    return transformedDispute
+  }
+
+  // If the dispute is voided we will override certain data
+  return overrideVoidedDispute(transformedDispute)
+}
+
+function overrideVoidedDispute(dispute) {
+  return {
+    ...dispute,
   }
 }
 
