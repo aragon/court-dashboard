@@ -190,7 +190,11 @@ const BannerWithProbability = ({ activeBalance }) => {
         align-items: center;
       `}
     >
-      <span css="margin-right: 8px">
+      <span
+        css={`
+          margin-right: ${1 * GU}px;
+        `}
+      >
         On average, you will be drafted into a jury
         <span
           css={`
@@ -201,16 +205,27 @@ const BannerWithProbability = ({ activeBalance }) => {
         </span>
       </span>
       <Help hint="How is the probability calculated?">
-        {`This is a numerical estimate of your likelihood of being selected for arbitration.
-        It’s calculated dividing your active ANJ balance by the total Court active ANJ balance, during the current term. You currently have <1% of all activated ANJ, 
-        hence are unlikely to be drafted unless a dispute goes to the final round or many disputes are created.
-        Activate more ANJ to increase your chances of being selected as a juror.`}
+        <p>
+          This is a numerical estimate of your likelihood of being selected for
+          arbitration. It’s calculated by dividing your active ANJ balance
+          against the Court's total active ANJ balance during the current term.
+        </p>
+        <p
+          css={`
+            margin-top: ${1 * GU}px;
+          `}
+        >
+          You currently have &lt;1% of all activated ANJ and hence are unlikely
+          to be drafted unless a dispute goes to the final round or many
+          disputes are created. Activate more ANJ to increase your chances of
+          being selected as a juror.
+        </p>
       </Help>
     </div>
   )
 
   const paragraph =
-    'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute'
+    'The more ANJ you activate, the more likely you will be selected to arbitrate a dispute'
 
   // TODO - change this for the loading indicator once ready
   return fetchingTotalBalance ? (
