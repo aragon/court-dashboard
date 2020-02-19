@@ -9,7 +9,7 @@
     "prettier": "^1.19.1"
   },
   "scripts": {
-    "build": "rm -rf ./dist && ./generate-templates && cp -r assets ./dist/assets",
+    "build": "./build-emails",
     "build:mock": "MOCK_DATA=1 yarn build",
     "build:postmark": "ASSETS_URL=https://storage.googleapis.com/aragon/court-dashboard/emails/assets yarn build"
   }
