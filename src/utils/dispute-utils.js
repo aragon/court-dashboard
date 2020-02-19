@@ -362,6 +362,10 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       showOutcome: now.isAfter(revealEndTime),
     },
     {
+      // If the round was appealed we know it's a past phase and must update the endTime for the time this took effect (appeal.createdAt)
+      // If it wasn't appealed we have two cases:
+      //       - It's a past phase so in that case the endTime will be the time at where it's supposed to end if taking the full appealTerms duration
+      //       - It's the dispute active phase (the round can still be appealed) so the endTime will be used to tell the timer remaining time before the appeal phase is closed
       phase: DisputesTypes.Phase.AppealRuling,
       endTime: roundAppealed ? appeal.createdAt : appealEndTime,
       active:
@@ -370,8 +374,14 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       roundId,
       outcome: roundAppealed ? appeal.appealedRuling : null,
       showOutcome: roundAppealed || now.isAfter(appealEndTime),
+      // If the round was appealed, we'll show the outcome (appeal ruling),
+      // If it wasn't appealed then we'll show a "Nobodoy appealed" message
     },
     {
+      // If the round was appeal confirmed we know it's a past phase and must update the endTime for the time this took effect (appeal.confirmedAt)
+      // If it wasn't appeal confirmed we have two cases:
+      //       - It's a past phase so in that case the endTime will be the time at where it's supposed to end if taking the full confirmAppealTerms duration
+      //       - It's the dispute active phase (the round can still be appeal confirmed) so the endTime will be used to tell the timer remaining time before the confirm appeal phase is closed
       phase: DisputesTypes.Phase.ConfirmAppeal,
       endTime: roundAppealConfirmed ? appeal.confirmedAt : confirmAppealEndTime,
       active:
@@ -379,7 +389,8 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
       outcome: roundAppealConfirmed ? appeal.opposedRuling : null,
-      showOutcome: roundAppealConfirmed || now.isAfter(confirmAppealEndTime),
+      showOutcome: roundAppealConfirmed,
+      // We only need to ensure that the appeal was confirmed in this case because if it's not confirmed, then it won't appear in the timeline
     },
   ]
 
