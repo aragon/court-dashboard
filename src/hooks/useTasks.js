@@ -16,7 +16,6 @@ export default function useTasks() {
 }
 
 function useOpenTasks(tasks, now, courtSettings) {
-  console.log('tasks ', tasks)
   const voidedDisputes = getVoidedDisputesByCourt()
   const convertedTasks = useMemo(() => {
     if (!tasks) {
