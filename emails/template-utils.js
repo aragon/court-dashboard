@@ -51,6 +51,7 @@ function table(attributes, content) {
   `
 }
 
+// To be replaced by base2 eventually
 function base({ title, subtitle }, content) {
   return `
     <!doctype html>
