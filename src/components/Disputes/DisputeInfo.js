@@ -11,23 +11,21 @@ import {
 } from '@aragon/ui'
 import styled from 'styled-components'
 
-import DisputeStatus from './DisputeStatus'
-import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
+import DisputeCurrentRuling from './DisputeCurrentRuling'
+import DisputeOutcomeText from './DisputeOutcomeText'
+import DisputeRoundPill from './DisputeRoundPill'
+import DisputeStatus from './DisputeStatus'
+import DisputeVoided from './DisputeVoided'
+import ErrorLoading from '../ErrorLoading'
 import Loading from './Loading'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { useWallet } from '../../providers/Wallet'
 import useNetwork from '../../hooks/useNetwork'
 
-import {
-  Phase as DisputePhase,
-  Status as DipsuteStatus,
-} from '../../types/dispute-status-types'
+import { Phase as DisputePhase, Status } from '../../types/dispute-status-types'
 import iconCourt from '../../assets/courtIcon.svg'
 import { addressesEqual } from '../../lib/web3-utils'
-import DisputeRoundPill from './DisputeRoundPill'
-import DisputeOutcomeText from './DisputeOutcomeText'
-import ErrorLoading from '../ErrorLoading'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -54,7 +52,7 @@ const DisputeInfo = React.memo(function({
   const creator = plaintiff || dispute?.subject?.id
 
   const isFinalRulingEnsured =
-    phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
+    phase === DisputePhase.ExecuteRuling || status === Status.Closed
 
   const lastRound = dispute?.rounds?.[dispute.lastRoundId]
   const appealedRuling = lastRound?.appeal?.appealedRuling
@@ -83,6 +81,10 @@ const DisputeInfo = React.memo(function({
                 border={false}
               />
             )
+          }
+
+          if (dispute.status === Status.Voided) {
+            return <DisputeVoided id={id} />
           }
           return (
             <>
@@ -146,20 +148,25 @@ const DisputeInfo = React.memo(function({
             </>
           )
         })()}
-
-        {(phase === DisputePhase.AppealRuling ||
-          phase === DisputePhase.ConfirmAppeal ||
-          isFinalRulingEnsured) && <DisputeCurrentRuling dispute={dispute} />}
-        {!loading && (
-          <DisputeActions
-            dispute={dispute}
-            onDraft={onDraft}
-            onRequestCommit={onRequestCommit}
-            onRequestReveal={onRequestReveal}
-            onLeak={onLeak}
-            onRequestAppeal={onRequestAppeal}
-            onExecuteRuling={onExecuteRuling}
-          />
+        {dispute?.status !== Status.Voided && (
+          <>
+            {(phase === DisputePhase.AppealRuling ||
+              phase === DisputePhase.ConfirmAppeal ||
+              isFinalRulingEnsured) && (
+              <DisputeCurrentRuling dispute={dispute} />
+            )}
+            {!loading && (
+              <DisputeActions
+                dispute={dispute}
+                onDraft={onDraft}
+                onRequestCommit={onRequestCommit}
+                onRequestReveal={onRequestReveal}
+                onLeak={onLeak}
+                onRequestAppeal={onRequestAppeal}
+                onExecuteRuling={onExecuteRuling}
+              />
+            )}
+          </>
         )}
       </section>
     </Box>

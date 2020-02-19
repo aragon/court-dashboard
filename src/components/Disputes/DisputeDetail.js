@@ -67,37 +67,28 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
       </Bar>
 
       {(() => {
+        const DisputeInfoComponent = (
+          <DisputeInfo
+            id={disputeId}
+            dispute={dispute}
+            loading={disputeFetching}
+            onDraft={actions.draft}
+            onRequestCommit={requests.commit}
+            onRequestReveal={requests.reveal}
+            onLeak={actions.leak}
+            onRequestAppeal={requests.appeal}
+            onExecuteRuling={actions.executeRuling}
+          />
+        )
         if (dispute?.status === DisputeStatus.Voided) {
-          return (
-            <DisputeInfo
-              id={disputeId}
-              dispute={dispute}
-              loading={disputeFetching}
-              onDraft={actions.draft}
-              onRequestCommit={requests.commit}
-              onRequestReveal={requests.reveal}
-              onLeak={actions.leak}
-              onRequestAppeal={requests.appeal}
-              onExecuteRuling={actions.executeRuling}
-            />
-          )
+          return DisputeInfoComponent
         }
 
         return (
           <Split
             primary={
               <React.Fragment>
-                <DisputeInfo
-                  id={disputeId}
-                  dispute={dispute}
-                  loading={disputeFetching}
-                  onDraft={actions.draft}
-                  onRequestCommit={requests.commit}
-                  onRequestReveal={requests.reveal}
-                  onLeak={actions.leak}
-                  onRequestAppeal={requests.appeal}
-                  onExecuteRuling={actions.executeRuling}
-                />
+                {DisputeInfoComponent}
                 {(() => {
                   if (disputeFetching) {
                     return null

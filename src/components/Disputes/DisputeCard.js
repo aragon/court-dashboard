@@ -6,6 +6,8 @@ import DisputeText from './DisputeText'
 import DisputeStatus from './DisputeStatus'
 import DisputePhase from './DisputePhase'
 
+import { Status } from '../../types/dispute-status-types'
+
 function DisputeCard({ dispute, onSelectDispute }) {
   const theme = useTheme()
   const { id, description, finalRuling, nextTransition, phase } = dispute
@@ -53,11 +55,13 @@ function DisputeCard({ dispute, onSelectDispute }) {
           `}
         />
       </div>
-      <DisputePhase
-        finalRuling={finalRuling}
-        nextTransition={nextTransition}
-        phase={phase}
-      />
+      {dispute.status !== Status.Voided && (
+        <DisputePhase
+          finalRuling={finalRuling}
+          nextTransition={nextTransition}
+          phase={phase}
+        />
+      )}
     </CardItem>
   )
 }
