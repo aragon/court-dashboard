@@ -59,71 +59,64 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     return null
   }
 
+  const DisputeInfoComponent = (
+    <DisputeInfo
+      id={disputeId}
+      dispute={dispute}
+      loading={disputeFetching}
+      onDraft={actions.draft}
+      onRequestCommit={requests.commit}
+      onRequestReveal={requests.reveal}
+      onLeak={actions.leak}
+      onRequestAppeal={requests.appeal}
+      onExecuteRuling={actions.executeRuling}
+    />
+  )
+
   return (
     <React.Fragment>
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
-
-      {(() => {
-        const DisputeInfoComponent = (
-          <DisputeInfo
-            id={disputeId}
-            dispute={dispute}
-            loading={disputeFetching}
-            onDraft={actions.draft}
-            onRequestCommit={requests.commit}
-            onRequestReveal={requests.reveal}
-            onLeak={actions.leak}
-            onRequestAppeal={requests.appeal}
-            onExecuteRuling={actions.executeRuling}
-          />
-        )
-        if (dispute?.status === DisputeStatus.Voided) {
-          return DisputeInfoComponent
-        }
-
-        return (
-          <Split
-            primary={
-              <React.Fragment>
-                {DisputeInfoComponent}
-                {(() => {
-                  if (disputeFetching) {
-                    return null
-                  }
-                  if (evidences.length === 0) {
-                    return <NoEvidence />
-                  }
-                  return (
-                    // TODO- in next PR will get plaintiff and deffendant from the dispute
-                    <DisputeEvidences
-                      evidences={evidences}
-                      plaintiff={creatorAddress}
-                      defendant=""
-                    />
-                  )
-                })()}
-              </React.Fragment>
-            }
-            secondary={
-              <React.Fragment>
-                {dispute?.status === DisputeStatus.voided && (
-                  <Box heading="Dispute timeline" padding={0}>
-                    {disputeFetching ? (
-                      <div css="height: 200px" />
-                    ) : (
-                      <DisputeTimeline dispute={dispute} />
-                    )}
-                  </Box>
+      {dispute?.status === DisputeStatus.Voided ? (
+        DisputeInfoComponent
+      ) : (
+        <Split
+          primary={
+            <React.Fragment>
+              {DisputeInfoComponent}
+              {(() => {
+                if (disputeFetching) {
+                  return null
+                }
+                if (evidences.length === 0) {
+                  return <NoEvidence />
+                }
+                return (
+                  // TODO- in next PR will get plaintiff and deffendant from the dispute
+                  <DisputeEvidences
+                    evidences={evidences}
+                    plaintiff={creatorAddress}
+                    defendant=""
+                  />
+                )
+              })()}
+            </React.Fragment>
+          }
+          secondary={
+            <React.Fragment>
+              <Box heading="Dispute timeline" padding={0}>
+                {disputeFetching ? (
+                  <div css="height: 200px" />
+                ) : (
+                  <DisputeTimeline dispute={dispute} />
                 )}
-              </React.Fragment>
-            }
-          />
-        )
-      })()}
-
+              </Box>
+            </React.Fragment>
+          }
+        />
+      )}
       <SidePanel
         title={<PanelTitle requestMode={requestMode} disputeId={disputeId} />}
         opened={panelState.visible}
