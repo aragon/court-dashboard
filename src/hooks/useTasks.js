@@ -4,6 +4,7 @@ import { useTasksSubscription } from './subscription-hooks'
 import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { useCourtConfig } from '../providers/CourtConfig'
+import { getVoidedDisputesByCourt } from '../voided-disputes'
 
 export default function useTasks() {
   const courtConfig = useCourtConfig()
@@ -15,15 +16,24 @@ export default function useTasks() {
 }
 
 function useOpenTasks(tasks, now, courtSettings) {
+  console.log('tasks ', tasks)
+  const voidedDisputes = getVoidedDisputesByCourt()
   const convertedTasks = useMemo(() => {
     if (!tasks) {
       return null
     }
-    return tasks.map(task => ({
-      ...task,
-      ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
-    }))
-  }, [courtSettings, now, tasks])
+    return tasks
+      .filter(
+        task =>
+          !voidedDisputes.some(
+            voidedDispute => voidedDispute.id === task.dispute.id
+          )
+      )
+      .map(task => ({
+        ...task,
+        ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
+      }))
+  }, [courtSettings, now, tasks, voidedDisputes])
 
   const convertedTasksPhasesKey = convertedTasks
     ? convertedTasks
