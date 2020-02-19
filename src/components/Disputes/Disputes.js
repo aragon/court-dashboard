@@ -61,6 +61,7 @@ function Disputes() {
         css={`
           width: 100%;
           margin-top: -${2 * GU}px;
+          padding-bottom: ${3 * GU}px;
         `}
       >
         <DisputeList

@@ -54,7 +54,11 @@ function WithSubscription({ Provider, connectedAccount, children }) {
   } = useJurorDraftsNotRewardedSubscription(account)
 
   const fetching = balancesFetching || appealsFetching || jurorDraftsFetching
-  const errors = [...balanceErrors, ...appealErrors, jurorDraftsError]
+  const errors = [
+    ...balanceErrors,
+    ...appealErrors,
+    ...(jurorDraftsError ? [jurorDraftsError] : []),
+  ]
 
   return (
     <Provider

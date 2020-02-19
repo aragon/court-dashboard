@@ -1,30 +1,11 @@
 import React from 'react'
-// import { useNetwork } from '@aragon/api-react'
 import { IdentityBadge } from '@aragon/ui'
-// import { useIdentity } from '../IdentityManager/IdentityManager'
-import LocalLabelPopoverTitle from './LocalLabelPopoverTitle'
-import LocalLabelPopoverActionLabel from './LocalLabelPopoverActionLabel'
+import useNetwork from '../../hooks/useNetwork'
 
 const LocalIdentityBadge = ({ entity, ...props }) => {
-  const network = { type: 'local' }
-  const label = ''
-  // const [label, showLocalIdentityModal] = useIdentity(entity)
-  //  const handleClick = () => showLocalIdentityModal(entity)
-  return (
-    <IdentityBadge
-      label={label || ''}
-      entity={entity}
-      networkType={network && network.type}
-      popoverAction={{
-        label: <LocalLabelPopoverActionLabel hasLabel={Boolean(label)} />,
-        onClick: () => {},
-      }}
-      popoverTitle={
-        label ? <LocalLabelPopoverTitle label={label} /> : undefined
-      }
-      {...props}
-    />
-  )
+  const network = useNetwork()
+
+  return <IdentityBadge entity={entity} networkType={network.type} {...props} />
 }
 
 LocalIdentityBadge.propTypes = {

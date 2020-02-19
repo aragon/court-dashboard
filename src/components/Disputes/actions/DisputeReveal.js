@@ -14,7 +14,7 @@ function DisputeReveal({ onRequestReveal }) {
       >
         Reveal your vote
       </Button>
-      <Info mode="description">
+      <Info>
         You will be asked a one-time-use code before you can reveal your vote.
       </Info>
     </div>

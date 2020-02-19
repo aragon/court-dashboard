@@ -10,22 +10,32 @@ function DisputeRoundPill({ roundId }) {
 
   const label = `Round ${numberToWord(roundId)}`
   return (
-    <span
+    <div
       css={`
-        padding: 1px ${2 * GU}px;
-        border-radius: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
         background: linear-gradient(
           14deg,
           ${theme.accentStart.alpha(0.3)} 0,
           ${theme.accentEnd.alpha(0.3)}88%
         );
-        ${textStyle('label2')}
-        color: ${theme.accent};
-        margin-top: 2px;
+        border-radius: 100px;
+        height: ${2.5 * GU}px;
+        width: ${14 * GU}px;
+        margin-top: ${0.5 * GU}px;
       `}
     >
-      {label}
-    </span>
+      <span
+        css={`
+          ${textStyle('label2')};
+          color: ${theme.accent};
+          transform: translateY(1px);
+        `}
+      >
+        {label}
+      </span>
+    </div>
   )
 }
 

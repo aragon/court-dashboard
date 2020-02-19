@@ -60,7 +60,7 @@ module.exports = function() {
         anyone, including you. If you disagree with the ruling made by your
         fellow jurors and believe it will be overturned by larger set of jurors
         you can appeal the dispute and earn a reward if you are successful.
-      `
+      `,
     },
   }
 }
