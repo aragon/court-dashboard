@@ -44,7 +44,7 @@ Use `build:postmark` to get this variable set on the URLs used with our Postmark
 yarn build:postmark
 ```
 
-After running this command, the genertaed .html and .txt templates are ready to be used on Postmark.
+After running this command, the generated .html and .txt templates are ready to be used on Postmark.
 
 Use `PRINT_DATA_FOR` to get the data corresponding to a template:
 
