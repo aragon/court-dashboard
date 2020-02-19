@@ -58,8 +58,9 @@ module.exports = function() {
       secondary: `
         Now that Voting has ended, Preliminary Rulings can be appealed by
         anyone, including you. If you disagree with the ruling made by your
-        fellow jurors and believe it will be overturned by larger set of jurors
-        you can appeal the dispute and earn a reward if you are successful.
+        fellow jurors and believe it will be overturned by a larger set of
+        jurors, you can appeal the dispute and earn a reward if your appeal
+        is successful.
       `,
     },
   }
