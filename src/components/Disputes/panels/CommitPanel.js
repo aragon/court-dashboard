@@ -258,8 +258,8 @@ const RevealService = React.memo(function RevealService({
       >
         By enabling this feature you trust Aragon One to reveal your vote on
         your behalf in this and following disputes. You can always turn off this
-        service later if you choose. <Link>Learn more</Link>
-        {/* TODO: Add ref */}
+        service later if you choose.
+        {/* TODO: Add ref:  <Link>Learn more</Link>. */}
       </div>
     </React.Fragment>
   )

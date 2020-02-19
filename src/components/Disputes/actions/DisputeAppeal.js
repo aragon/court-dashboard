@@ -39,8 +39,9 @@ function DisputeAppeal({ onRequestAppeal, confirm }) {
         an appeal is confirmed, a new adjudication round is initiated and a new
         jury is drafted.{' '}
         <Link href="https://help.aragon.org/article/43-dispute-lifecycle#appeal">
-          Learn more.
+          Learn more
         </Link>
+        .
       </Info>
     </div>
   )
