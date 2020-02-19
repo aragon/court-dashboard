@@ -55,11 +55,17 @@ function DisputeCard({ dispute, onSelectDispute }) {
           `}
         />
       </div>
-      {dispute.status !== Status.Voided && (
+      {dispute.status !== Status.Voided ? (
         <DisputePhase
           finalRuling={finalRuling}
           nextTransition={nextTransition}
           phase={phase}
+        />
+      ) : (
+        <div
+          css={`
+            height: ${9 * GU}px;
+          `}
         />
       )}
     </CardItem>
