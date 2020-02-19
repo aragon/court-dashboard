@@ -75,15 +75,6 @@ const DisputeInfo = React.memo(function({
           if (loading) {
             return <Loading border={false} />
           }
-          if (error) {
-            return (
-              <ErrorLoading
-                subject="dispute"
-                errors={['Error loading content from ipfs']}
-                border={false}
-              />
-            )
-          }
 
           if (isDisputeVoided) {
             return (
@@ -94,6 +85,17 @@ const DisputeInfo = React.memo(function({
               />
             )
           }
+
+          if (error) {
+            return (
+              <ErrorLoading
+                subject="dispute"
+                errors={['Error loading content from ipfs']}
+                border={false}
+              />
+            )
+          }
+
           return (
             <>
               <Row>
