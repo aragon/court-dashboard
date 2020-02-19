@@ -66,6 +66,8 @@ export const transformResponseDisputeAttributes = dispute => {
 function overrideVoidedDispute(dispute, voidedDispute) {
   return {
     ...dispute,
+    evidences: [],
+    metadata: '',
     status: DisputesTypes.Status.Voided,
     voidedDescription: voidedDispute.description,
     voidedLink: voidedDispute.link,
