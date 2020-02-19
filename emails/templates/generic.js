@@ -7,12 +7,7 @@ module.exports = function() {
       {
         title: '{{title}}',
         preheader: '',
-        banner: banner({
-          height: 388,
-          url: asset('banner-1.png'),
-          color: '#ffffff',
-          tag: { label: '{{network}}', bg: '#7C80F2', fg: '#ffffff' },
-        }),
+        banner: '{{{bannerHtml}}}',
         warningTitle: 'IMPORTANT NOTICE',
         warningContent: '{{{notice}}}',
       },
@@ -49,6 +44,12 @@ module.exports = function() {
       actionUrl: 'http://example.org/',
       title: 'Open Rinkeby environment',
       network: 'TEST NETWORK',
+      bannerHtml: banner({
+        height: 388,
+        url: asset('banner-1.png'),
+        color: '#ffffff',
+        tag: { label: 'TEST NETWORK', bg: '#7C80F2', fg: '#ffffff' },
+      }),
       content: `
         <p>
           The Juror Playground is a separate instance of the Juror Dashboard and
