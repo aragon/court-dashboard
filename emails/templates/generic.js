@@ -1,13 +1,4 @@
-const {
-  action,
-  addressBadge,
-  asset,
-  banner,
-  base2,
-  button,
-  infobox,
-  link,
-} = require('../template-utils')
+const { asset, banner, base2, button } = require('../template-utils')
 const { accountData } = require('../mock-utils')
 
 module.exports = function() {
