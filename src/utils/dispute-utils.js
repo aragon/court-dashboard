@@ -333,6 +333,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     appealEndTime + termDuration * appealConfirmationTerms
 
   const roundAppealed = !!appeal
+  const roundAppealConfirmed = roundAppealed && appeal.opposedRuling > 0
 
   const roundPhasesAndTime = [
     {
@@ -368,24 +369,17 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
       outcome: roundAppealed ? appeal.appealedRuling : null,
-      showOutcome:
-        now.isAfter(appealEndTime) ||
-        (roundAppealed && !!appeal.appealedRuling),
+      showOutcome: roundAppealed || now.isAfter(appealEndTime),
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime:
-        roundAppealed && appeal.opposedRuling > 0
-          ? appeal.confirmedAt
-          : confirmAppealEndTime,
+      endTime: roundAppealConfirmed ? appeal.confirmedAt : confirmAppealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
-      outcome: roundAppealed ? appeal.opposedRuling : null,
-      showOutcome:
-        now.isAfter(confirmAppealEndTime) ||
-        (roundAppealed && !!appeal.opposedRuling),
+      outcome: roundAppealConfirmed ? appeal.opposedRuling : null,
+      showOutcome: roundAppealConfirmed || now.isAfter(confirmAppealEndTime),
     },
   ]
 
