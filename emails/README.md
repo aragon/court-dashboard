@@ -1,13 +1,16 @@
 # Emails
 
-<<<<<<< HEAD
-## How to build
+Email notification templates for use with Aragon Court (may be moved in the future to where the notification service lives).
 
-Build the email templates:
+Currently intended for use through any [Mustache](https://mustache.github.io/) compatible email service, including [Postmark](https://postmarkapp.com/).
 
-```console
-yarn build
-```
+## Generating templates
+
+Install the dependencies in this directory via `yarn`, and then generate templates with `yarn build`.
+
+To test each template, mock data has been included and fully rendered emails can be generated with `yarn build:mock`.
+
+Two outputs are generated per template: one `.html` and one `.txt`. If the email service supports it, you should include both versions.
 
 ## Environment variables
 
@@ -48,16 +51,3 @@ Use `PRINT_DATA_FOR` to get the data corresponding to a template:
 ```console
 PRINT_DATA_FOR=generic yarn build
 ```
-=======
-Email notification templates for use with Aragon Court (may be moved in the future to where the notification service lives).
-
-Currently intended for use through any [Mustache](https://mustache.github.io/) compatible email service, including [Postmark](https://postmarkapp.com/).
-
-## Generating templates
-
-Install the dependencies in this directory via `yarn`, and then generate templates with `yarn build`.
-
-To test each template, mock data has been included and fully rendered emails can be generated with `yarn build:mock`.
-
-Two outputs are generated per template: one `.html` and one `.txt`. If the email service supports it, you should include both versions.
->>>>>>> 036c59387765fe2f7a63179202538dd860353f04
