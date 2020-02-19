@@ -73,6 +73,7 @@ export const transformResponseDisputeAttributes = dispute => {
 function overrideVoidedDispute(dispute) {
   return {
     ...dispute,
+    // TODO: Add voided text and link
   }
 }
 
