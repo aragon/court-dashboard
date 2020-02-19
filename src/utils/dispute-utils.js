@@ -12,23 +12,15 @@ export const PCT_BASE = bigNum(10000)
 const juryDraftingTerms = 3
 
 export const transformResponseDisputeAttributes = dispute => {
-  const voidedDisputes = getVoidedDisputesByCourt()
-  const isDisputeVoided = voidedDisputes.some(
-    voidedDispute => voidedDispute.id === dispute.id
-  )
-
-  const disputeStatus = isDisputeVoided
-    ? DisputesTypes.Status.Voided
-    : DisputesTypes.convertFromString(dispute.state) ===
-      DisputesTypes.Phase.Ruled
-    ? DisputesTypes.Status.Closed
-    : DisputesTypes.Status.Open
-
   const transformedDispute = {
     ...dispute,
     createdAt: parseInt(dispute.createdAt, 10) * 1000,
     state: DisputesTypes.convertFromString(dispute.state),
-    status: disputeStatus,
+    status:
+      DisputesTypes.convertFromString(dispute.state) ===
+      DisputesTypes.Phase.Ruled
+        ? DisputesTypes.Status.Closed
+        : DisputesTypes.Status.Open,
     rounds: dispute.rounds.map(round => {
       const { vote, appeal } = round
 
@@ -62,18 +54,21 @@ export const transformResponseDisputeAttributes = dispute => {
     }),
   }
 
-  if (transformedDispute.status !== DisputesTypes.Status.Voided) {
-    return transformedDispute
-  }
-
   // If the dispute is voided we will override certain data
-  return overrideVoidedDispute(transformedDispute)
+  const voidedDisputes = getVoidedDisputesByCourt()
+  const voidedDispute = voidedDisputes.get(dispute.id)
+
+  return voidedDispute
+    ? overrideVoidedDispute(transformedDispute, voidedDispute)
+    : transformedDispute
 }
 
-function overrideVoidedDispute(dispute) {
+function overrideVoidedDispute(dispute, voidedDispute) {
   return {
     ...dispute,
-    // TODO: Add voided text and link
+    status: DisputesTypes.Status.Voided,
+    voidedText: voidedDispute.text,
+    voidedLink: voidedDispute.link,
   }
 }
 

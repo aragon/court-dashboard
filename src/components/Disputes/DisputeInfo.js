@@ -58,8 +58,10 @@ const DisputeInfo = React.memo(function({
   const appealedRuling = lastRound?.appeal?.appealedRuling
   const voteWinningOutcome = lastRound?.vote?.winningOutcome
 
+  const isDisputeVoided = dispute?.status === Status.Voided
+
   return (
-    <Box>
+    <Box padding={5 * GU}>
       <section
         css={`
           display: grid;
@@ -83,8 +85,14 @@ const DisputeInfo = React.memo(function({
             )
           }
 
-          if (dispute.status === Status.Voided) {
-            return <DisputeVoided id={id} />
+          if (isDisputeVoided) {
+            return (
+              <DisputeVoided
+                id={id}
+                text={dispute.voidedText}
+                link={dispute.voidedLink}
+              />
+            )
           }
           return (
             <>
@@ -148,7 +156,7 @@ const DisputeInfo = React.memo(function({
             </>
           )
         })()}
-        {dispute?.status !== Status.Voided && (
+        {!isDisputeVoided && (
           <>
             {(phase === DisputePhase.AppealRuling ||
               phase === DisputePhase.ConfirmAppeal ||
@@ -228,12 +236,12 @@ function DisputeHeader({ id, dispute }) {
               />
             )}
           </h1>
-          {transaction && (
+          {dispute?.status !== Status.Voided && transaction ? (
             <TransactionBadge
               transaction={transaction}
               networkType={network.type}
             />
-          )}
+          ) : null}
         </div>
       </div>
     </div>
