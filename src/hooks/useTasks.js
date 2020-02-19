@@ -33,16 +33,22 @@ function useOpenTasks(tasks, now, courtSettings) {
         .join('')
     : null
 
+  const incompleteTasks = useMemo(() => {
+    if (!convertedTasks) {
+      return null
+    }
+    return convertedTasks.filter(
+      task =>
+        !voidedDisputes.has(task.dispute.id) &&
+        task.phase !== DisputesTypes.Phase.Ended
+    )
+  }, [convertedTasks]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return useMemo(() => {
     if (!convertedTasks) {
       return []
     }
     const openTasks = []
-    const incompleteTasks = convertedTasks.filter(
-      task =>
-        !voidedDisputes.has(task.dispute.id) &&
-        task.phase !== DisputesTypes.Phase.Ended
-    )
 
     for (let i = 0; i < incompleteTasks.length; i++) {
       const currentPhase = incompleteTasks[i].phase
@@ -87,7 +93,7 @@ function useOpenTasks(tasks, now, courtSettings) {
     }
     return openTasks
     // Since we are using our own generated cache key we don't need to add the convertedTasks to the dependency list.
-  }, [convertedTasksPhasesKey, voidedDisputes]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [convertedTasksPhasesKey, incompleteTasks]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function getTaskName(phase) {
