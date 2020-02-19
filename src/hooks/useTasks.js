@@ -21,18 +21,11 @@ function useOpenTasks(tasks, now, courtSettings) {
     if (!tasks) {
       return null
     }
-    return tasks
-      .filter(
-        task =>
-          !voidedDisputes.some(
-            voidedDispute => voidedDispute.id === task.dispute.id
-          )
-      )
-      .map(task => ({
-        ...task,
-        ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
-      }))
-  }, [courtSettings, now, tasks, voidedDisputes])
+    return tasks.map(task => ({
+      ...task,
+      ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
+    }))
+  }, [courtSettings, now, tasks])
 
   const convertedTasksPhasesKey = convertedTasks
     ? convertedTasks
@@ -44,10 +37,11 @@ function useOpenTasks(tasks, now, courtSettings) {
     if (!convertedTasks) {
       return []
     }
-
     const openTasks = []
     const incompleteTasks = convertedTasks.filter(
-      task => task.phase !== DisputesTypes.Phase.Ended
+      task =>
+        !voidedDisputes.has(task.dispute.id) &&
+        task.phase !== DisputesTypes.Phase.Ended
     )
 
     for (let i = 0; i < incompleteTasks.length; i++) {
@@ -93,7 +87,7 @@ function useOpenTasks(tasks, now, courtSettings) {
     }
     return openTasks
     // Since we are using our own generated cache key we don't need to add the convertedTasks to the dependency list.
-  }, [convertedTasksPhasesKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [convertedTasksPhasesKey, voidedDisputes]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function getTaskName(phase) {
