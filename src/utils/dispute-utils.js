@@ -47,6 +47,7 @@ export const transformResponseDisputeAttributes = dispute => {
               appealedRuling: parseInt(appeal.appealedRuling, 10),
               opposedRuling: parseInt(appeal.opposedRuling, 10),
               createdAt: parseInt(appeal.createdAt) * 1000,
+              confirmedAt: parseInt(appeal.confirmedAt || 0) * 1000,
             }
           : null,
         state: DisputesTypes.convertFromString(round.state),
@@ -361,7 +362,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.AppealRuling,
-      endTime: appeal ? appeal.createdAt : appealEndTime,
+      endTime: roundAppealed ? appeal.createdAt : appealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
@@ -373,7 +374,10 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime: confirmAppealEndTime,
+      endTime:
+        roundAppealed && appeal.opposedRuling > 0
+          ? appeal.confirmedAt
+          : confirmAppealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,

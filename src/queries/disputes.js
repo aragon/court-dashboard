@@ -109,6 +109,7 @@ export const SingleDispute = gql`
           opposedRuling
           settled
           createdAt
+          confirmedAt
         }
       }
     }
