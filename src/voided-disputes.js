@@ -3,7 +3,8 @@ import { getNetworkName } from './lib/web3-utils'
 import env from './environment'
 
 // TODO: Add text and link when available
-const DEFAULT_VOID_LINK = ''
+const DEFAULT_VOID_LINK =
+  'https://blog.aragon.one/update-on-aragon-courts-first-mock-dispute/'
 const DEFAULT_VOID_TEXT = 'This dispute has been voided and discontinued'
 const DEFAULT_VOID_DESCRIPTION =
   'Dispute #0 is void and all related content has been removed from the Dashboard. Aragon One has made the decision to void the dispute and consider it non-existent when considering precedence for future Aragon Court cases.'
