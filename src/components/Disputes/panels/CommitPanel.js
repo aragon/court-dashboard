@@ -5,7 +5,6 @@ import {
   IconCopy,
   IconDownload,
   Info,
-  Link,
   Switch,
   Tag,
   TextInput,
