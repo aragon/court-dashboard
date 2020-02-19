@@ -15,20 +15,18 @@ export default function useTasks() {
 }
 
 function useOpenTasks(tasks, now, courtSettings) {
-  const incompleteTasks = useMemo(() => {
+  const convertedTasks = useMemo(() => {
     if (!tasks) {
       return null
     }
-    return tasks
-      .map(task => ({
-        ...task,
-        ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
-      }))
-      .filter(task => task.phase !== DisputesTypes.Phase.Ended)
+    return tasks.map(task => ({
+      ...task,
+      ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
+    }))
   }, [courtSettings, now, tasks])
 
-  const incompleteTasksPhasesKey = incompleteTasks
-    ? incompleteTasks
+  const convertedTasksPhasesKey = convertedTasks
+    ? convertedTasks
         .map(phase => DisputesTypes.convertToString(phase.phase))
         .join('')
     : null
@@ -39,6 +37,9 @@ function useOpenTasks(tasks, now, courtSettings) {
     }
 
     const openTasks = []
+    const incompleteTasks = convertedTasks.filter(
+      task => task.phase !== DisputesTypes.Phase.Ended
+    )
 
     for (let i = 0; i < incompleteTasks.length; i++) {
       const currentPhase = incompleteTasks[i].phase
@@ -82,7 +83,7 @@ function useOpenTasks(tasks, now, courtSettings) {
       }
     }
     return openTasks
-  }, [incompleteTasksPhasesKey, tasks]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [convertedTasksPhasesKey, tasks]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function getTaskName(phase) {
