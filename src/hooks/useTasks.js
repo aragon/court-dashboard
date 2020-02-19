@@ -32,7 +32,7 @@ function useOpenTasks(tasks, now, courtSettings) {
     : null
 
   return useMemo(() => {
-    if (!tasks) {
+    if (!convertedTasks) {
       return []
     }
 
@@ -83,7 +83,8 @@ function useOpenTasks(tasks, now, courtSettings) {
       }
     }
     return openTasks
-  }, [convertedTasksPhasesKey, tasks]) // eslint-disable-line react-hooks/exhaustive-deps
+    // Since we are using our own generated cache key we don't need to add the convertedTasks to the dependency list.
+  }, [convertedTasksPhasesKey]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function getTaskName(phase) {
@@ -103,25 +104,20 @@ function getTaskName(phase) {
 
 function isAppealTaskOpen(round, currentPhase) {
   if (currentPhase === DisputesTypes.Phase.AppealRuling) {
-    if (round.appeal) {
-      return false
-    }
-    return true
+    return !round.appeal
   }
   if (currentPhase === DisputesTypes.Phase.ConfirmAppeal) {
-    if (Number(round?.appeal?.opposedRuling) !== 0) {
-      return false
+    if (round?.appeal?.opposedRuling) {
+      return Number(round.appeal.opposedRuling) === 0
     }
+
     return true
   }
 }
 
 function isVotingTaskOpen(draft, currentPhase) {
   if (currentPhase === DisputesTypes.Phase.VotingPeriod) {
-    if (draft.commitment) {
-      return false
-    }
-    return true
+    return !draft.commitment
   }
   if (currentPhase === DisputesTypes.Phase.RevealVote) {
     if (draft.outcome || !draft.commitment) {
