@@ -2,7 +2,7 @@ import React from 'react'
 import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
 
 import DisputeOutcomeText from './DisputeOutcomeText'
-import { Phase, convertToString } from '../../types/dispute-status-types'
+import { convertToString } from '../../types/dispute-status-types'
 
 function DisputePhase({ finalRuling, nextTransition, phase }) {
   const stringPhase = convertToString(phase)
@@ -65,14 +65,10 @@ function DisputePhase({ finalRuling, nextTransition, phase }) {
   )
 }
 
-function DisplayTime({ phase, nextTransition }) {
+function DisplayTime({ nextTransition }) {
   const theme = useTheme()
 
-  if (
-    phase === Phase.ExecuteRuling ||
-    phase === Phase.ClaimRewards ||
-    phase === Phase.JuryDrafting
-  ) {
+  if (!nextTransition) {
     return (
       <div>
         <span
