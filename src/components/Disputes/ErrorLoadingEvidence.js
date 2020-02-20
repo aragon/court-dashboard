@@ -39,7 +39,7 @@ export default function ErrorLoadingEvidence() {
             ${textStyle('title2')}
           `}
         >
-          Oops, we couldn't load this piece of evidence
+          Oops, we couldn’t load this piece of evidence
         </span>
         <div
           css={`
