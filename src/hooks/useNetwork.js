@@ -1,9 +1,7 @@
-import { getNetworkName } from '../lib/web3-utils'
-import env from '../environment'
+import { getNetworkType } from '../lib/web3-utils'
 
 export default function useNetwork() {
-  const networkType = getNetworkName(env('CHAIN_ID'))
-
+  const networkType = getNetworkType()
   return {
     type: networkType === 'mainnet' ? 'main' : networkType,
   }

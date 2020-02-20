@@ -112,6 +112,16 @@ export function getNetworkType(chainId = env('CHAIN_ID')) {
   return DEFAULT_LOCAL_CHAIN
 }
 
+export function getNetworkName(chainId = env('CHAIN_ID')) {
+  chainId = String(chainId)
+
+  if (chainId === '1') return 'Mainnet'
+  if (chainId === '3') return 'Ropsten'
+  if (chainId === '4') return 'Rinkeby'
+
+  return ''
+}
+
 export function isLocalOrUnknownNetwork(chainId) {
   return getNetworkType(chainId) === DEFAULT_LOCAL_CHAIN
 }

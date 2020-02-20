@@ -8,7 +8,6 @@ import { highlights } from './content'
 import Navigation from './Navigation'
 import HighlightScreen, { RATIO_LEFT } from './HighlightScreen'
 import { getNetworkType } from '../../lib/web3-utils'
-import env from '../../environment'
 
 const OnboardingModal = React.memo(function OnboardingModal({
   onClose,
