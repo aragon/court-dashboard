@@ -27,7 +27,7 @@ function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
           disabled={!isJurorDrafted}
           onClick={() => onRequestCommit(VOTE_OPTION_IN_FAVOR)}
         >
-          In favor
+          In favor of the plaintiff
         </VotingButton>
         <VotingButton
           mode="negative"
@@ -35,7 +35,7 @@ function DisputeVoting({ isJurorDrafted, onRequestCommit }) {
           disabled={!isJurorDrafted}
           onClick={() => onRequestCommit(VOTE_OPTION_AGAINST)}
         >
-          Against
+          Against the plaintiff
         </VotingButton>
         <VotingButton
           wide
