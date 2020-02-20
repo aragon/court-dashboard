@@ -6,10 +6,9 @@ import { useJurorDraftRewardedQuery } from '../../hooks/query-hooks'
 import iconNoRewardsSvg from '../../assets/IconNoRewards.svg'
 
 function NoRewards() {
+  // This component is only rendered when an account is connected so we are safe to assume that the wallet is not empty
   const wallet = useWallet()
-  const hasJurorClaimedRewards = useJurorDraftRewardedQuery(
-    wallet?.account.toLowerCase()
-  )
+  const hasJurorClaimedRewards = useJurorDraftRewardedQuery(wallet.account)
 
   const title = 'No rewards yet!'
   const paragraph = hasJurorClaimedRewards

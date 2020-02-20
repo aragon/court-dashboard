@@ -29,8 +29,6 @@ function DashboardStateProvider({ children }) {
 }
 
 function WithSubscription({ Provider, connectedAccount, children }) {
-  const account = connectedAccount.toLowerCase()
-
   // Juror balances
   const {
     balances,
@@ -38,21 +36,21 @@ function WithSubscription({ Provider, connectedAccount, children }) {
     treasury,
     fetching: balancesFetching,
     errors: balanceErrors,
-  } = useJurorBalancesSubscription(account)
+  } = useJurorBalancesSubscription(connectedAccount)
 
   // Appeals
   const {
     appeals,
     fetching: appealsFetching,
     errors: appealErrors,
-  } = useAppealsByUserSubscription(account, false) // Non settled appeals
+  } = useAppealsByUserSubscription(connectedAccount, false) // Non settled appeals
 
   // juror drafts not rewarded
   const {
     jurorDrafts,
     fetching: jurorDraftsFetching,
     error: jurorDraftsError,
-  } = useJurorDraftsNotRewardedSubscription(account)
+  } = useJurorDraftsNotRewardedSubscription(connectedAccount)
 
   const fetching = balancesFetching || appealsFetching || jurorDraftsFetching
   const errors = [

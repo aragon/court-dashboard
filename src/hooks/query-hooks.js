@@ -3,12 +3,11 @@ import { useQuery } from 'urql'
 import { JurorDrafts, JurorDraftRewarded } from '../queries/jurorDrafts'
 import { FirstANJActivationMovement } from '../queries/balances'
 
-import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
-
 export function useJurorDraftQuery(jurorId) {
   const [result] = useQuery({
     query: JurorDrafts,
-    variables: { id: jurorId },
+    variables: { id: jurorId?.toLowerCase() },
+    pause: !jurorId,
   })
 
   if (result.fetching || result.error) {
@@ -17,36 +16,32 @@ export function useJurorDraftQuery(jurorId) {
 
   const { juror } = result.data || {}
 
-  return juror
-    ? juror.drafts.map(draft =>
-        transformResponseDisputeAttributes(draft.round.dispute)
-      )
-    : []
+  return juror ? juror.drafts.map(draft => draft.round.dispute.id) : []
 }
 
 /**
- * Queries if the juror has already recieve rewards
+ * Queries if the juror has ever claimed rewards
  *
  * @param {String} jurorId Address of the juror
- * @returns {Object} All `jurorId` drafts not yet rewarded
+ * @returns {Boolean} True if the juror has ever claimed rewards
  */
 export function useJurorDraftRewardedQuery(jurorId) {
   const [{ data }] = useQuery({
     query: JurorDraftRewarded,
-    variables: { id: jurorId },
+    variables: { id: jurorId.toLowerCase() },
   })
 
-  if (!data) {
+  if (!data || !data.juror) {
     return false
   }
 
-  return Boolean(data.juror?.drafts?.length > 0)
+  return data.juror.drafts.length > 0
 }
 
 export function useFirstANJActivationQuery(jurorId, { pause = false }) {
   const [result] = useQuery({
     query: FirstANJActivationMovement,
-    variables: { id: jurorId },
+    variables: { id: jurorId.toLowerCase() },
     pause,
   })
 

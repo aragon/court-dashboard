@@ -53,7 +53,6 @@ export const CurrentTermJurorDrafts = gql`
   }
 `
 
-// TODO: Check if all the data is necessary
 // All juror drafts by `id`
 export const JurorDrafts = gql`
   query JurorDrafts($id: ID!) {
@@ -61,52 +60,10 @@ export const JurorDrafts = gql`
       id
       drafts {
         id
-        weight
-        rewarded
-        commitment
-        outcome
-        leaker
-        createdAt
         round {
           id
-          number
           dispute {
             id
-            txHash
-            createTermId
-            possibleRulings
-            finalRuling
-            lastRoundId
-            state
-            metadata
-            createdAt
-            rounds {
-              state
-              number
-              draftTermId
-              jurorsNumber
-              settledPenalties
-              jurorFees
-              delayedTerms
-              selectedJurors
-              coherentJurors
-              collectedTokens
-              createdAt
-              jurors {
-                juror {
-                  id
-                }
-              }
-              appeal {
-                id
-                maker
-                appealedRuling
-                taker
-                opposedRuling
-                settled
-                createdAt
-              }
-            }
           }
         }
       }

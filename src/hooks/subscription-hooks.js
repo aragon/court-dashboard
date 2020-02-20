@@ -26,7 +26,7 @@ const NO_AMOUNT = bigNum(0)
 function useANJBalance(jurorId) {
   const [{ data, error }] = useSubscription({
     query: ANJBalance,
-    variables: { id: jurorId },
+    variables: { id: jurorId.toLowerCase() },
   })
 
   return { data, error }
@@ -42,7 +42,7 @@ function useJuror(jurorId) {
 
   const [{ data, error }] = useSubscription({
     query: Juror,
-    variables: { id: jurorId, from: yesterday },
+    variables: { id: jurorId.toLowerCase(), from: yesterday },
   })
 
   return { data, error }
@@ -119,7 +119,7 @@ export function useJurorBalancesSubscription(jurorId) {
 export function useCourtConfigSubscription(courtAddress) {
   const [result] = useSubscription({
     query: CourtConfig,
-    variables: { id: courtAddress },
+    variables: { id: courtAddress.toLowerCase() },
   })
 
   // TODO: handle possible errors
@@ -188,7 +188,7 @@ export function useCurrentTermJurorDraftsSubscription(
 ) {
   const [result] = useSubscription({
     query: CurrentTermJurorDrafts,
-    variables: { id: jurorId, from: termStartTime },
+    variables: { id: jurorId.toLowerCase(), from: termStartTime },
     pause,
   })
 
@@ -208,7 +208,7 @@ export function useCurrentTermJurorDraftsSubscription(
 export function useJurorDraftsNotRewardedSubscription(jurorId) {
   const [{ data, error }] = useSubscription({
     query: JurorDraftsNotRewarded,
-    variables: { id: jurorId },
+    variables: { id: jurorId.toLowerCase() },
   })
 
   const jurorDrafts = useMemo(() => {
@@ -225,7 +225,7 @@ export function useJurorDraftsNotRewardedSubscription(jurorId) {
 function useAppealsByMaker(jurorId, settled) {
   const [{ data, error }] = useSubscription({
     query: AppealsByMaker,
-    variables: { maker: jurorId, settled },
+    variables: { maker: jurorId.toLowerCase(), settled },
   })
 
   return { data, error }
@@ -234,7 +234,7 @@ function useAppealsByMaker(jurorId, settled) {
 function useAppealsByTaker(jurorId, settled) {
   const [{ data, error }] = useSubscription({
     query: AppealsByTaker,
-    variables: { taker: jurorId, settled },
+    variables: { taker: jurorId.toLowerCase(), settled },
   })
 
   return { data, error }

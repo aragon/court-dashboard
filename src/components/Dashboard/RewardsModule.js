@@ -14,6 +14,7 @@ import NoRewards from './NoRewards'
 
 import { useWallet } from '../../providers/Wallet'
 import { useCourtConfig } from '../../providers/CourtConfig'
+import { getProviderFromUseWalletId } from '../../ethereum-providers'
 import { bigNum, formatTokenAmount } from '../../lib/math-utils'
 import { addressesEqual } from '../../lib/web3-utils'
 
@@ -59,43 +60,39 @@ const RewardsModule = React.memo(function RewardsModule({
   const handleFormSubmit = async event => {
     event.preventDefault()
 
-    const claimRewards = async () => {
-      if (!rewards) return
-
-      const transactionBag = []
-      try {
-        // Claim all arbitrable fee rewards
-        for (const arbitrableFee of rewards.arbitrableFees) {
-          const { disputeId, rounds } = arbitrableFee
-          for (const roundId of rounds) {
-            transactionBag.push(
-              await onSettleReward(disputeId, roundId, wallet.account)
-            )
-          }
-        }
-
-        // Claim all appeal fee rewards
-        for (const appealFee of rewards.appealFees) {
-          const { disputeId, rounds } = appealFee
-          for (const roundId of rounds) {
-            transactionBag.push(await onSettleAppealDeposit(disputeId, roundId))
-          }
-        }
-
-        // Withdraw funds from treasury
-        transactionBag.push(
-          await onWithdraw(feeToken.id, wallet.account, totalFees)
-        )
-
-        await Promise.all(transactionBag.map(tx => tx.wait()))
-      } catch (err) {
-        console.log(`Error claiming rewards: ${err}`)
-      }
-    }
-
     if (!rewards) return
 
-    claimRewards()
+    const rewardTransactionQueue = []
+    try {
+      // Claim all arbitrable fee rewards
+      for (const arbitrableFee of rewards.arbitrableFees) {
+        const { disputeId, rounds } = arbitrableFee
+        for (const roundId of rounds) {
+          rewardTransactionQueue.push(
+            await onSettleReward(disputeId, roundId, wallet.account)
+          )
+        }
+      }
+
+      // Claim all appeal fee rewards
+      for (const appealFee of rewards.appealFees) {
+        const { disputeId, rounds } = appealFee
+        for (const roundId of rounds) {
+          rewardTransactionQueue.push(
+            await onSettleAppealDeposit(disputeId, roundId)
+          )
+        }
+      }
+
+      // Withdraw funds from treasury
+      rewardTransactionQueue.push(
+        await onWithdraw(feeToken.id, wallet.account, totalFees)
+      )
+
+      await Promise.all(rewardTransactionQueue.map(tx => tx.wait()))
+    } catch (err) {
+      console.log(`Error claiming rewards: ${err}`)
+    }
   }
 
   const hasRewardsToClaim = rewards?.rulingFees.gt(0) || totalFees.gt(0)
@@ -243,9 +240,11 @@ const DisputesFees = ({
 
 function TotalFees({ totalFees, treasuryBalance }) {
   const theme = useTheme()
+  const { activated } = useWallet()
   const { feeToken } = useCourtConfig()
-  const { symbol, decimals } = feeToken
+  const provider = getProviderFromUseWalletId(activated)
 
+  const { symbol, decimals } = feeToken
   const totalFeesFormatted = formatTokenAmount(totalFees, true, decimals, true)
 
   // We'll show the info section in the case that the account has settlements to do
@@ -272,21 +271,18 @@ function TotalFees({ totalFees, treasuryBalance }) {
             margin-bottom: ${2 * GU}px;
           `}
         />
-        <Button
-          mode="positive"
-          type="submit"
-          wide
-          css={`
-            margin-bottom: ${showInfoSection ? 2 * GU : 0}px;
-          `}
-        >
+        <Button mode="positive" type="submit" wide>
           Claim rewards
         </Button>
         {showInfoSection && (
-          <Info>
-            This action requires multiple transactions to be signed in Metamask.
-            Potentially, one transaction per round of rewards. Please confirm
-            them one after another.
+          <Info
+            css={`
+              margin-top: ${2 * GU}px;
+            `}
+          >
+            This action requires multiple transactions to be signed in{' '}
+            {provider.name}. Potentially, one transaction per round of rewards.
+            Please confirm them one after another.
           </Info>
         )}
       </div>
