@@ -5,13 +5,15 @@
 /.pnp
 .pnp.js
 
-/public/aragon-ui
-
 # testing
 /coverage
 
 # production
 /build
+/public/aragon-ui
+
+# zeit now configuration
+.now
 
 # misc
 .DS_Store
@@ -24,5 +26,3 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
-
-aragon-ui

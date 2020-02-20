@@ -28,7 +28,7 @@ export default function Clock() {
         </span>
       </span>
       <span>Ends in </span>
-      <Timer format="ms" end={currentTermEndDate} />
+      <Timer end={currentTermEndDate} />
     </div>
   )
 }

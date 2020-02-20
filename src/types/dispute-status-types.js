@@ -1,6 +1,11 @@
+export const ERROR_TYPES = {
+  ERROR_FETCHING_IPFS: Symbol('Error fetching ipfs content'),
+}
+
 export const Status = {
   Open: Symbol('Open'),
   Closed: Symbol('Closed'),
+  Voided: Symbol('Voided'),
 }
 
 export const Phase = {

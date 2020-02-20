@@ -1,11 +1,12 @@
 import React from 'react'
 import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
 
-import dayjs from '../../lib/dayjs'
+import DisputeOutcomeText from './DisputeOutcomeText'
 import { Phase, convertToString } from '../../types/dispute-status-types'
 
-function DisputePhase({ phase, nextTransition }) {
+function DisputePhase({ finalRuling, nextTransition, phase }) {
   const stringPhase = convertToString(phase)
+
   return (
     <div
       css={`
@@ -55,7 +56,11 @@ function DisputePhase({ phase, nextTransition }) {
         </span>
       </div>
 
-      <DisplayTime phase={phase} nextTransition={nextTransition} />
+      {finalRuling ? (
+        <DisputeOutcomeText outcome={finalRuling} isFinalRuling />
+      ) : (
+        <DisplayTime phase={phase} nextTransition={nextTransition} />
+      )}
     </div>
   )
 }
@@ -88,7 +93,7 @@ function DisplayTime({ phase, nextTransition }) {
         margin-bottom: ${2 * GU}px;
       `}
     >
-      <Timer end={dayjs(nextTransition)} />
+      <Timer end={new Date(nextTransition)} />
     </div>
   )
 }

@@ -7,13 +7,17 @@ import useKeyboardArrows from '../../hooks/useKeyboardArrows'
 import { highlights } from './content'
 import Navigation from './Navigation'
 import HighlightScreen, { RATIO_LEFT } from './HighlightScreen'
+import { getNetworkType } from '../../lib/web3-utils'
+import env from '../../environment'
 
 const OnboardingModal = React.memo(function OnboardingModal({
   onClose,
   onComplete,
   visible,
 }) {
-  const content = highlights.rinkeby
+  const content =
+    getNetworkType() === 'mainnet' ? highlights.mainnet : highlights.rinkeby
+
   const steps = content.length
   const { step, next, prev, setStep, direction } = useSteps(steps)
 

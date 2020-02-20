@@ -12,10 +12,21 @@ const getStatusAttributes = (dispute, theme) => {
     }
   }
 
+  if (dispute.status === Status.Closed) {
+    return {
+      label: 'Closed',
+      color: theme.content,
+      background: 'rgba(200, 215, 234, 0.4)', // TODO: use theme when available
+    }
+  }
+
+  // Voided dispute
   return {
-    label: 'Closed',
-    color: theme.content,
-    background: 'rgba(200, 215, 234, 0.4)', // TODO: use theme when available
+    label: 'VOID',
+    color: theme.accent,
+    background: `linear-gradient(14deg, ${theme.accentStart.alpha(
+      0.3
+    )} 0, ${theme.accentEnd.alpha(0.3)} 88%)`,
   }
 }
 
@@ -28,7 +39,6 @@ export default function DisputeStatus({ dispute, ...props }) {
       css={`
         padding: 1px 16px;
         border-radius: 100px;
-        background: #d2d2d2;
         text-transform: uppercase;
         font-size: 12px;
         color: ${color};

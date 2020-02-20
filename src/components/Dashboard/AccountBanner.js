@@ -1,5 +1,5 @@
 import React from 'react'
-import { CircleGraph, GU, Help, useTheme } from '@aragon/ui'
+import { CircleGraph, GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 
 import AccountBannerInfo from './AccountBannerInfo'
 
@@ -9,14 +9,12 @@ import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
-import { formatUnits, getPercentageBN } from '../../lib/math-utils'
-import { getProbabilityText } from '../../utils/account-utils'
+import { formatUnits, getPercentageBN, bigNum } from '../../lib/math-utils'
 
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
 import gavelIcon from '../../assets/IconGavel.svg'
 import { useJurorDrafted } from '../../hooks/useJurorDrafted'
-import Loading from './Loading'
 
 const getBannerAttributes = (
   status,
@@ -85,11 +83,12 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
     theme
   )
 
-  if (loading) return <Loading height={48} />
-
-  if (attributes.showProbability)
+  if (loading) {
+    return <BannerLoadingRing />
+  }
+  if (attributes.showProbability) {
     return <BannerWithProbability activeBalance={activeBalance} />
-
+  }
   const {
     icon,
     title,
@@ -167,6 +166,7 @@ const BannerWithProbability = ({ activeBalance }) => {
   const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
     currentTermId
   )
+  const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
 
   const totalPercentage = getPercentageBN(
     activeBalanceCurrentTerm,
@@ -176,7 +176,9 @@ const BannerWithProbability = ({ activeBalance }) => {
   // Calculate probability (since the total active balance is asynchronous
   // it can happen that it has not been updated yet when the juror active balance has)
   const draftingProbability = Math.min(1, totalPercentage / 100)
-  const probabilityText = getProbabilityText(draftingProbability)
+
+  const probablilityTooLow = totalPercentage < 1
+  const chances = totalPercentage > 0 && Math.floor(100 / totalPercentage)
 
   const title = (
     <div
@@ -185,30 +187,77 @@ const BannerWithProbability = ({ activeBalance }) => {
         align-items: center;
       `}
     >
-      <span css="margin-right: 8px">
-        <span
-          css={`
-            color: ${theme.accent};
-          `}
-        >
-          {probabilityText} probability{' '}
-        </span>
-        to be drafted
-      </span>
-      <Help hint="How is the probability calculated?">
-        The probability of being drafted is calculated dividing your active ANJ
-        balance by the total active ANJ in the Court during the current term.
-      </Help>
+      {(() => {
+        if (probablilityTooLow) {
+          return (
+            <span css="margin-right: 8px">
+              Activate more ANJ to increase your chances of being selected as a
+              juror
+            </span>
+          )
+        }
+        return (
+          <>
+            <span css="margin-right: 8px">
+              On average, you will be drafted
+              <span
+                css={`
+                  color: ${theme.accent};
+                `}
+              >
+                {` 1 on every ${chances} times `}
+              </span>
+            </span>
+            <Help hint="How is the probability calculated?">
+              Probability of being drafted is calculated dividing your active
+              ANJ balance by the total Court active ANJ, during the current
+              term.
+            </Help>
+          </>
+        )
+      })()}
     </div>
   )
 
   const paragraph =
     'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute'
-  return (
+
+  // TODO - change this for the loading indicator once ready
+  return fetchingTotalBalance ? (
+    <BannerLoadingRing />
+  ) : (
     <Wrapper
-      mainIcon={<CircleGraph value={draftingProbability} size={6 * GU} />}
+      mainIcon={
+        probablilityTooLow ? (
+          <img
+            css={`
+              display: block;
+              margin: 0 auto;
+            `}
+            height={6 * GU}
+            src={anjSpringIcon}
+            alt=""
+          />
+        ) : (
+          <CircleGraph value={draftingProbability} size={6 * GU} />
+        )
+      }
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
     />
+  )
+}
+
+function BannerLoadingRing() {
+  return (
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+        height: ${6 * GU}px;
+      `}
+    >
+      <LoadingRing />
+    </div>
   )
 }
 

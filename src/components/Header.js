@@ -4,6 +4,8 @@ import Account from './Account/Account'
 import Clock from './Clock'
 import ActivityButton from './Activity/ActivityButton'
 
+import headerLogoSvg from '../assets/HeaderLogo.svg'
+
 const Header = React.memo(function Header() {
   return (
     <header
@@ -19,17 +21,33 @@ const Header = React.memo(function Header() {
         padding: 0;
       `}
     >
-      <h1
+      <div
         css={`
           display: flex;
           height: 100%;
-          padding-left: ${2 * GU}px;
           align-items: center;
-          ${textStyle('body1')};
         `}
       >
-        Aragon Court
-      </h1>
+        <img
+          alt=""
+          src={headerLogoSvg}
+          width={4 * GU}
+          css={`
+            margin-right: ${1 * GU}px;
+          `}
+        />
+        <h1
+          css={`
+            display: flex;
+            height: 100%;
+            padding-left: ${2 * GU}px;
+            align-items: center;
+            ${textStyle('body1')};
+          `}
+        >
+          Aragon Court
+        </h1>
+      </div>
 
       <div
         css={`

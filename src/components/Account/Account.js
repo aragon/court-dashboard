@@ -222,7 +222,12 @@ function Account() {
                     return <ScreenConnected wallet={wallet} />
                   }
                   if (screen.id === 'error') {
-                    return <ScreenError onBack={clearError} />
+                    return (
+                      <ScreenError
+                        error={activationError}
+                        onBack={clearError}
+                      />
+                    )
                   }
                   return <ScreenProviders onActivate={activate} />
                 })()}

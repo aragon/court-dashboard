@@ -20,7 +20,9 @@ import { retryMax } from '../utils/retry-max'
 import { useActivity } from '../providers/Activity'
 
 const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
-const GAS_LIMIT = 1200000 // Should be relative to every tx ?
+const GAS_LIMIT = 1200000
+const ANJ_ACTIVATE_GAS_LIMIT = 500000
+const ANJ_ACTIONS_GAS_LIMIT = 325000
 
 // ANJ contract
 function useANJTokenContract() {
@@ -70,7 +72,9 @@ export function useANJActions() {
   const activateANJ = useCallback(
     amount => {
       return addTransactionActivity(
-        jurorRegistryContract.activate(amount, { gasLimit: GAS_LIMIT }),
+        jurorRegistryContract.activate(amount, {
+          gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
+        }),
         `Activate ${String(amount)} ANJ`
       )
     },
@@ -80,7 +84,9 @@ export function useANJActions() {
   const deactivateANJ = useCallback(
     amount => {
       return addTransactionActivity(
-        jurorRegistryContract.deactivate(amount, { gasLimit: GAS_LIMIT }),
+        jurorRegistryContract.deactivate(amount, {
+          gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+        }),
         `Deactivate ${String(amount)} ANJ`
       )
     },
@@ -95,7 +101,7 @@ export function useANJActions() {
           jurorRegistryContract.address,
           amount,
           ACTIVATE_SELECTOR,
-          { gasLimit: GAS_LIMIT }
+          { gasLimit: ANJ_ACTIVATE_GAS_LIMIT }
         ),
         `Stake and activate ${formatUnits(amount)} ANJ`
       )
@@ -106,7 +112,9 @@ export function useANJActions() {
   const withdrawANJ = useCallback(
     amount => {
       return addTransactionActivity(
-        jurorRegistryContract.unstake(amount, '0x', { gasLimit: GAS_LIMIT }),
+        jurorRegistryContract.unstake(amount, '0x', {
+          gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+        }),
         `Withdraw ${String(amount)} ANJ`
       )
     },

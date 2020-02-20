@@ -4,6 +4,7 @@ import { getTermStartTime } from './court-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { getOutcomeNumber } from './crvoting-utils'
 import { bigNum } from '../lib/math-utils'
+import { getVoidedDisputesByCourt } from '../voided-disputes'
 
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
@@ -11,7 +12,7 @@ export const PCT_BASE = bigNum(10000)
 const juryDraftingTerms = 3
 
 export const transformResponseDisputeAttributes = dispute => {
-  return {
+  const transformedDispute = {
     ...dispute,
     createdAt: parseInt(dispute.createdAt, 10) * 1000,
     state: DisputesTypes.convertFromString(dispute.state),
@@ -31,6 +32,8 @@ export const transformResponseDisputeAttributes = dispute => {
         number: parseInt(round.number),
         jurors: round.jurors.map(juror => ({
           ...juror,
+          commitmentDate: parseInt(juror.commitmentDate || 0, 10) * 1000,
+          revealDate: parseInt(juror.revealDate || 0, 10) * 1000,
           weight: parseInt(juror.weight, 10),
         })),
         vote: vote
@@ -50,11 +53,30 @@ export const transformResponseDisputeAttributes = dispute => {
       }
     }),
   }
+
+  // If the dispute is voided we will override certain data
+  const voidedDisputes = getVoidedDisputesByCourt()
+  const voidedDispute = voidedDisputes.get(dispute.id)
+
+  return voidedDispute
+    ? overrideVoidedDispute(transformedDispute, voidedDispute)
+    : transformedDispute
+}
+
+function overrideVoidedDispute(dispute, voidedDispute) {
+  return {
+    ...dispute,
+    evidences: [],
+    metadata: '',
+    status: DisputesTypes.Status.Voided,
+    voidedDescription: voidedDispute.description,
+    voidedLink: voidedDispute.link,
+    voidedText: voidedDispute.text,
+  }
 }
 
 export function getDisputeTimeLine(dispute, courtConfig) {
   const { createdAt } = dispute
-  const { termDuration, evidenceTerms } = courtConfig
 
   const currentPhaseAndTime = getPhaseAndTransition(
     dispute,
@@ -62,10 +84,15 @@ export function getDisputeTimeLine(dispute, courtConfig) {
     new Date()
   )
 
+  const firstRound = dispute.rounds[0]
+
+  // If the evidence period is closed before the full `evidenceTerms` period,
+  // the drafTermId for the first round is updated to the term this happened.
+  const evidenceEndTime = getTermStartTime(firstRound.draftTermId, courtConfig)
   const timeLine = [
     {
       phase: DisputesTypes.Phase.Evidence,
-      endTime: createdAt + termDuration * evidenceTerms,
+      endTime: evidenceEndTime,
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.Evidence,
       roundId: 0,
     },
@@ -294,14 +321,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     appealConfirmationTerms,
   } = courtConfig
 
-  const {
-    draftTermId,
-    delayedTerms,
-    number: roundId,
-    createdAt,
-    vote,
-    appeal,
-  } = round
+  const { draftTermId, delayedTerms, number: roundId, vote, appeal } = round
   const isCurrentRound = roundId === currentPhase.roundId
   const { winningOutcome } = vote || {}
 
@@ -336,7 +356,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   const roundPhasesAndTime = [
     {
       phase: DisputesTypes.Phase.JuryDrafting,
-      endTime: createdAt + termDuration * juryDraftingTerms,
+      endTime: disputeDraftTermEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.JuryDrafting === currentPhase.phase,
