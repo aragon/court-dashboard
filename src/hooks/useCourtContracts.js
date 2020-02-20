@@ -213,7 +213,7 @@ export function useDisputeActions() {
         `Appeal round ${roundId} of dispute #${disputeId}`
       )
     },
-    [disputeManagerContract]
+    [disputeManagerContract, addTransactionActivity]
   )
 
   // Confirm appeal round of dispute
@@ -226,7 +226,7 @@ export function useDisputeActions() {
         `Confirm appeal round ${round} of dispute #${disputeId}`
       )
     },
-    [disputeManagerContract]
+    [disputeManagerContract, addTransactionActivity]
   )
 
   const executeRuling = useCallback(
