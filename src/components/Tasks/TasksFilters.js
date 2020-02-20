@@ -14,7 +14,7 @@ const TasksFilters = ({
         margin-bottom: ${1 * GU}px;
         display: grid;
         grid-gap: ${1.5 * GU}px;
-        grid-template-columns: auto auto auto 1fr auto;
+        grid-template-columns: 170px auto;
       `}
     >
       <DropDown
@@ -23,7 +23,6 @@ const TasksFilters = ({
         items={phaseTypes}
         selected={phaseFilter}
         onChange={onPhaseChange}
-        width={`${16 * GU}px`}
       />
       <DateRangePicker
         startDate={dateRangeFilter.start}
