@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { BackButton, Bar, Box, GU, Header, SidePanel, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
+import { utils as EthersUtils } from 'ethers'
 
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
@@ -10,8 +11,8 @@ import CommitPanel from './panels/CommitPanel'
 import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
 
+import { Status as DisputeStatus } from '../../types/dispute-status-types'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
-import { utils as EthersUtils } from 'ethers'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
@@ -26,8 +27,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     requests,
   } = useDisputeLogic(disputeId)
 
-  const plaintiff = dispute?.plaintiff
-  const defendant = dispute?.defendant
   const creatorAddress = dispute?.subject?.id
 
   const evidenceList = dispute?.evidences
@@ -59,55 +58,64 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     return null
   }
 
+  const DisputeInfoComponent = (
+    <DisputeInfo
+      id={disputeId}
+      dispute={dispute}
+      loading={disputeFetching}
+      onDraft={actions.draft}
+      onRequestCommit={requests.commit}
+      onRequestReveal={requests.reveal}
+      onLeak={actions.leak}
+      onRequestAppeal={requests.appeal}
+      onExecuteRuling={actions.executeRuling}
+    />
+  )
+
   return (
     <React.Fragment>
       <Header primary="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
-      <Split
-        primary={
-          <React.Fragment>
-            <DisputeInfo
-              id={disputeId}
-              dispute={dispute}
-              loading={disputeFetching}
-              onDraft={actions.draft}
-              onRequestCommit={requests.commit}
-              onRequestReveal={requests.reveal}
-              onLeak={actions.leak}
-              onRequestAppeal={requests.appeal}
-              onExecuteRuling={actions.executeRuling}
-            />
-            {(() => {
-              if (disputeFetching) {
-                return null
-              }
-              if (evidences.length === 0) {
-                return <NoEvidence />
-              }
-              return (
-                <DisputeEvidences
-                  evidences={evidences}
-                  plaintiff={plaintiff || creatorAddress}
-                  defendant={defendant}
-                />
-              )
-            })()}
-          </React.Fragment>
-        }
-        secondary={
-          <React.Fragment>
-            <Box heading="Dispute timeline" padding={0}>
-              {disputeFetching ? (
-                <div css="height: 200px" />
-              ) : (
-                <DisputeTimeline dispute={dispute} />
-              )}
-            </Box>
-          </React.Fragment>
-        }
-      />
+      {dispute?.status === DisputeStatus.Voided ? (
+        DisputeInfoComponent
+      ) : (
+        <Split
+          primary={
+            <React.Fragment>
+              {DisputeInfoComponent}
+              {(() => {
+                if (disputeFetching) {
+                  return null
+                }
+                if (evidences.length === 0) {
+                  return <NoEvidence />
+                }
+                return (
+                  // TODO- in next PR will get plaintiff and deffendant from the dispute
+                  <DisputeEvidences
+                    evidences={evidences}
+                    plaintiff={creatorAddress}
+                    defendant=""
+                  />
+                )
+              })()}
+            </React.Fragment>
+          }
+          secondary={
+            <React.Fragment>
+              <Box heading="Dispute timeline" padding={0}>
+                {disputeFetching ? (
+                  <div css="height: 200px" />
+                ) : (
+                  <DisputeTimeline dispute={dispute} />
+                )}
+              </Box>
+            </React.Fragment>
+          }
+        />
+      )}
       <SidePanel
         title={<PanelTitle requestMode={requestMode} disputeId={disputeId} />}
         opened={panelState.visible}

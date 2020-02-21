@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react'
-import { Button, Info, GU, useTheme } from '@aragon/ui'
+import { Button, GU, Info, Link } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 
 function DisputeAppeal({ onRequestAppeal, confirm }) {
-  const theme = useTheme()
   const wallet = useWallet()
 
   const actionLabel = confirm ? 'Confirm appeal' : 'Appeal Ruling'
@@ -25,15 +24,24 @@ function DisputeAppeal({ onRequestAppeal, confirm }) {
       >
         {actionLabel}
       </Button>
-      <Info mode="description">
-        Anyone can trigger this action, and whoever does will get some{' '}
-        <span
-          css={`
-            color: ${theme.help};
-          `}
-        >
-          rewards.
-        </span>
+      <Info>
+        <strong>Anyone</strong> can{' '}
+        <strong>
+          lock DAI as collateral to{' '}
+          {confirm ? 'confirm an appeal' : 'initiate an appeal'}{' '}
+        </strong>
+        if they believe the{' '}
+        {confirm ? 'ruling appealed for' : 'current outcome'} is incorrect. When
+        the final ruling is confirmed, the user who{' '}
+        {confirm ? 'confirmed the appeal' : 'appealed'} gets rewarded if the
+        ruling has switched in their favor. If not, their entire collateral
+        could be re-distributed to the winning party. {confirm ? 'When' : 'If'}{' '}
+        an appeal is confirmed, a new adjudication round is initiated and a new
+        jury is drafted.{' '}
+        <Link href="https://help.aragon.org/article/43-dispute-lifecycle#appeal">
+          Learn more
+        </Link>
+        .
       </Info>
     </div>
   )

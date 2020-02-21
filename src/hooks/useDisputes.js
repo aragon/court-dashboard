@@ -8,7 +8,7 @@ import {
   useDisputesSubscription,
 } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
-import { convertToString } from '../types/dispute-status-types'
+import { convertToString, Status } from '../types/dispute-status-types'
 import { ipfsGet, getIpfsCidFromString } from '../lib/ipfs-utils'
 
 export default function useDisputes() {
@@ -60,23 +60,27 @@ export function useDispute(disputeId) {
     defendant: '',
     plaintiff: '',
     error: false,
+    fetching: true,
   })
 
   const courtConfig = useCourtConfig()
   const now = useNow() // TODO: use court clock
   const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
+
   useEffect(() => {
     const fetchDataFromIpfs = async () => {
       if (!dispute) {
-        return
+        return setDisputeProcessed({ ...disputeProcessed, fetching })
       }
-
+      if (dispute.status === Status.Voided) {
+        return setDisputeProcessed({ ...dispute, fetching: false })
+      }
       const [disputeDescription, disputeMetadata] = getDisputeInfoFromMetadata(
         dispute.metadata
       )
 
       if (!disputeMetadata) {
-        return setDisputeProcessed({ ...dispute, error: true })
+        return setDisputeProcessed({ ...dispute, fetching: false, error: true })
       }
 
       const ipfsPath = getIpfsCidFromString(disputeMetadata)
@@ -84,7 +88,11 @@ export function useDispute(disputeId) {
       if (ipfsPath) {
         const { data, error } = await ipfsGet(ipfsPath)
         if (error) {
-          return setDisputeProcessed({ ...dispute, error: true })
+          return setDisputeProcessed({
+            ...dispute,
+            fetching: false,
+            error: true,
+          })
         }
         try {
           const parsedDisputeData = JSON.parse(data)
@@ -104,16 +112,21 @@ export function useDispute(disputeId) {
             defendant: parsedDisputeData.defendant || '',
             plaintiff: parsedDisputeData.plaintiff || '',
             error: false,
+            fetching: false,
           })
         } catch (err) {
-          return setDisputeProcessed({ ...dispute, description: data })
+          return setDisputeProcessed({
+            ...dispute,
+            description: data,
+            fetching: false,
+          })
         }
       }
-      return setDisputeProcessed({ ...dispute, error: true })
+      return setDisputeProcessed({ ...dispute, fetching: false, error: true })
     }
 
     fetchDataFromIpfs()
-  }, [dispute])
+  }, [dispute]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
   const disputePhaseKey = disputePhase
@@ -121,18 +134,13 @@ export function useDispute(disputeId) {
     : ''
 
   return useMemo(() => {
-    if (fetching || !disputeProcessed.description) {
-      return { fetching: true }
-    }
-
     return {
       dispute: {
         ...disputeProcessed,
         ...disputePhase,
       },
-      fetching,
     }
-  }, [disputeProcessed, dispute, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [disputeProcessed, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function getDisputeInfoFromMetadata(disputeMetadata) {
