@@ -10,9 +10,9 @@ function getEndDay(dueDate) {
     return ' Due Today'
   }
   if (diff === 1) {
-    return 'In the next day'
+    return 'Due In the next day'
   }
-  return `In ${diff} days`
+  return `Due In ${diff} days`
 }
 
 const TaskStatus = React.memo(function TaskStatus({ dueDate }) {
