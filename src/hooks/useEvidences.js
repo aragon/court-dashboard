@@ -42,25 +42,41 @@ export default function useEvidences(rawEvidences) {
       return { ...baseEvidence, error: ERROR_TYPES.ERROR_FETCHING_IPFS }
     }
 
-    evidencesCache.current.set(id, data)
-    return {
+    const evidenceProcessed = {
       ...baseEvidence,
       metadata: data,
     }
+    evidencesCache.current.set(id, evidenceProcessed)
+
+    return evidenceProcessed
   }, [])
 
   useEffect(() => {
     let cancelled = false
 
     const updateEvidences = async () => {
-      const evidences = await Promise.all(rawEvidences.map(fetchEvidence))
-      if (!cancelled) {
-        setEvidences(
-          evidences.sort(
-            (evidenceA, evidenceB) => evidenceA.createdAt - evidenceB.createdAt
-          )
-        )
-      }
+      await Promise.all(
+        rawEvidences.map(async rawEvidence => {
+          const evidence = await fetchEvidence(rawEvidence)
+          if (cancelled) {
+            return
+          }
+          setEvidences(() => {
+            // already there
+            if (
+              evidences.findIndex(_evidence => _evidence.id === evidence.id) >
+              -1
+            ) {
+              return evidences
+            }
+
+            return [...evidences, evidence].sort(
+              (evidenceA, evidenceB) =>
+                evidenceA.createdAt - evidenceB.createdAt
+            )
+          })
+        })
+      )
     }
 
     updateEvidences()
@@ -68,7 +84,7 @@ export default function useEvidences(rawEvidences) {
     return () => {
       cancelled = true
     }
-  }, [rawEvidences, fetchEvidence])
+  }, [rawEvidences, fetchEvidence, evidences])
 
   return evidences
 }
