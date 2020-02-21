@@ -16,7 +16,7 @@ export const ipfsGet = async cid => {
   }
 }
 
-export const getIpfsCidFromString = string => {
+export const getIpfsCidFromUri = string => {
   const ipfsCid = string.replace(/^ipfs:/, '')
 
   if (isIPFS.cid(ipfsCid) || isIPFS.cidPath(ipfsCid)) {

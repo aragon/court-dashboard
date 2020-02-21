@@ -27,15 +27,13 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     requests,
   } = useDisputeLogic(disputeId)
 
-  const creatorAddress = dispute?.subject?.id
-
   const evidenceList = dispute?.evidences
 
   const evidences = useMemo(
     () =>
       (evidenceList || []).map(evidence => ({
         ...evidence,
-        createdAt: evidence.createdAt,
+        createdAt: evidence.createdAt * 1000,
         data: EthersUtils.toUtf8String(evidence.data),
       })),
     [evidenceList]
@@ -94,11 +92,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
                 }
                 return (
                   // TODO- in next PR will get plaintiff and deffendant from the dispute
-                  <DisputeEvidences
-                    evidences={evidences}
-                    plaintiff={creatorAddress}
-                    defendant=""
-                  />
+                  <DisputeEvidences evidences={evidences} />
                 )
               })()}
             </React.Fragment>

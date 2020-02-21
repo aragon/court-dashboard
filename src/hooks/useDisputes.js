@@ -9,8 +9,16 @@ import {
 } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { convertToString, Status } from '../types/dispute-status-types'
-import { ipfsGet, getIpfsCidFromString } from '../lib/ipfs-utils'
+import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
 
+const DISPUTE_PROCESSED_DEFAULT = {
+  description: '',
+  agreementText: '',
+  defendant: '',
+  plaintiff: '',
+  error: false,
+  fetching: true,
+}
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
   const { disputes, fetching, error } = useDisputesSubscription()
@@ -54,14 +62,9 @@ export default function useDisputes() {
 }
 
 export function useDispute(disputeId) {
-  const [disputeProcessed, setDisputeProcessed] = useState({
-    description: '',
-    agreementText: '',
-    defendant: '',
-    plaintiff: '',
-    error: false,
-    fetching: true,
-  })
+  const [disputeProcessed, setDisputeProcessed] = useState(
+    DISPUTE_PROCESSED_DEFAULT
+  )
 
   const courtConfig = useCourtConfig()
   const now = useNow() // TODO: use court clock
@@ -75,15 +78,15 @@ export function useDispute(disputeId) {
       if (dispute.status === Status.Voided) {
         return setDisputeProcessed({ ...dispute, fetching: false })
       }
-      const [disputeDescription, disputeMetadata] = getDisputeInfoFromMetadata(
+      const [disputeDescription, uriOrData] = getDisputeInfoFromMetadata(
         dispute.metadata
       )
 
-      if (!disputeMetadata) {
+      if (!uriOrData) {
         return setDisputeProcessed({ ...dispute, fetching: false, error: true })
       }
 
-      const ipfsPath = getIpfsCidFromString(disputeMetadata)
+      const ipfsPath = getIpfsCidFromUri(uriOrData)
 
       if (ipfsPath) {
         const { data, error } = await ipfsGet(ipfsPath)
