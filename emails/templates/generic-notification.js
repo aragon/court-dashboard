@@ -44,7 +44,9 @@ module.exports = function() {
               <td style="${style(`
                 padding-bottom: 50px;
               `)}">
-                ${action('Read more', '{{actionUrl}}', { padding: '16px 0 0' })}
+                ${action('{{actionLabel}}', '{{actionUrl}}', {
+                  padding: '16px 0 0',
+                })}
               </td>
             </tr>
           `
@@ -60,7 +62,7 @@ module.exports = function() {
 
       {{content}}
 
-      Read more: {{actionUrl}}
+      {{actionLabel}}: {{actionUrl}}
 
       This service is provided by Aragon One AG [1]. You are receiving this email
       because you are subscribed to Aragon Court Email Notifications. You can
@@ -114,6 +116,7 @@ module.exports = function() {
       `,
       headerUrl: asset('header-dispute0.png'),
       date: 'Thursday, 17 Dec. 2019',
+      actionLabel: 'Read more',
       actionUrl: '',
     },
   }
