@@ -3,8 +3,6 @@ const {
   addressBadge,
   asset,
   base,
-  infobox,
-  link,
   table,
   style,
 } = require('../template-utils')
@@ -75,11 +73,11 @@ module.exports = function() {
       title: 'You have been drafted in a void dispute (Dispute #0)',
       content: `
         Juror, you are receiving this email because you were drafted in Dispute
-        #0 which was recently voided and all related content has been removed
+        #0, which was recently voided with all related content being removed
         from the Juror Dashboard.
 
-        Since you were drafted, the protocol has locked your tokens, and these
-        will remain locked until the dispute reaches a final ruling.
+        Since you were drafted, the protocol has locked some of your tokens, and
+        these will remain locked until the dispute reaches a final ruling.
 
         Given the circumstances of the dispute becoming void, we recommend all
         selected jurors abstain from casting votes and allow their locked
@@ -91,13 +89,13 @@ module.exports = function() {
       contentHtml: `
         <p>
           Juror, you are receiving this email because you were drafted in
-          Dispute #0 which was recently voided and all related content has been
+          Dispute #0, which was recently voided with all related content being
           removed from the Juror Dashboard.
         </p>
 
         <p>
-          Since you were drafted, the protocol has locked your tokens, and
-          these will remain locked until the dispute reaches a final ruling.
+          Since you were drafted, the protocol has locked some of your tokens,
+          and these will remain locked until the dispute reaches a final ruling.
         </p>
 
         <p>
