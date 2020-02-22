@@ -56,6 +56,10 @@ module.exports = function() {
 
       Your account {{account}} received a notification on {{date}}:
 
+      {{title}}
+
+      {{content}}
+
       Read more: {{actionUrl}}
 
       This service is provided by Aragon One AG [1]. You are receiving this email
