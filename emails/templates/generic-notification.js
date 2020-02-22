@@ -80,7 +80,7 @@ module.exports = function() {
         these will remain locked until the dispute reaches a final ruling.
 
         Given the circumstances of the dispute becoming void, we recommend all
-        selected jurors abstain from casting votes and allow their locked
+        drafted jurors abstain from casting votes and allow their locked
         tokens be slashed by the protocol at the end of the dispute.
 
         However, all slashed tokens will be automatically reimbursed to your
@@ -100,7 +100,7 @@ module.exports = function() {
 
         <p>
           Given the circumstances of the dispute becoming void, we recommend
-          all selected jurors <strong>abstain</strong> from casting votes and
+          all drafted jurors <strong>abstain</strong> from casting votes and
           allow their locked tokens be slashed by the protocol at the end of
           the dispute.
         </p>
