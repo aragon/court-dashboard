@@ -29,8 +29,8 @@ export function voteOptionToString(outcome) {
 
 const appealOptionStringMapping = {
   [VOTE_OPTION_REFUSE]: 'Refuse',
-  [VOTE_OPTION_AGAINST]: 'Against',
-  [VOTE_OPTION_IN_FAVOR]: 'In favor',
+  [VOTE_OPTION_AGAINST]: 'Against the plaintiff',
+  [VOTE_OPTION_IN_FAVOR]: 'In favor of the plaintiff',
 }
 
 export function appealOptionToString(outcome) {
