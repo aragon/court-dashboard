@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Card, GU, useTheme, useViewport } from '@aragon/ui'
 import globalError from '../assets/globalError.svg'
+import backgroundError from '../assets/backgroundError.svg'
 
 function GlobalErrorScreen({ children }) {
   return (
@@ -10,6 +11,8 @@ function GlobalErrorScreen({ children }) {
         height: 100vh;
         min-width: ${45 * GU}px;
         overflow: auto;
+        background: url(${backgroundError}),
+          linear-gradient(187.6deg, #fffaf1 -3.6%, #ffebeb 216.17%);
       `}
     >
       <div
