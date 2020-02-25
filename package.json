@@ -30,7 +30,7 @@
     "styled-components": "^4.4.1",
     "subscriptions-transport-ws": "^0.9.16",
     "urql": "^1.6.3",
-    "use-wallet": "^0.4.1"
+    "use-wallet": "^0.4.4"
   },
   "scripts": {
     "start": "npm run sync-assets && REACT_APP_BUILD=$(git log --pretty=format:'%h' -n 1) react-app-rewired start",
