@@ -201,7 +201,7 @@ const BannerWithProbability = ({ activeBalance }) => {
             color: ${theme.accent};
           `}
         >
-          {` 1 in ${chances} times `}
+          1 in {chances} times
         </span>
       </span>
       <Help hint="How is the probability calculated?">
