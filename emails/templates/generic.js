@@ -1,5 +1,4 @@
 const { asset, banner, base2, button } = require('../template-utils')
-const { accountData } = require('../mock-utils')
 
 module.exports = function() {
   return {
@@ -8,8 +7,6 @@ module.exports = function() {
         title: '{{title}}',
         preheader: '',
         banner: '{{{bannerHtml}}}',
-        warningTitle: 'IMPORTANT NOTICE',
-        warningContent: '{{{notice}}}',
       },
       `
         <h1>{{title}}</h1>
@@ -24,9 +21,6 @@ module.exports = function() {
     templateText: `
       {{title}}
 
-      Important notice:
-      {{noticeText}}
-
       {{contentText}}
 
       {{actionLabel}}: {{actionUrl}}
@@ -38,79 +32,30 @@ module.exports = function() {
       [1] https://aragon.one/
     `,
     mockData: {
-      ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
-      date: 'Thursday, 17 Dec. 2019',
-      actionLabel: 'Try the Playground',
-      actionUrl: 'http://example.org/',
-      title: 'Open Rinkeby environment',
-      network: 'TEST NETWORK',
+      actionLabel: 'Dispute #0 has been voided',
+      actionUrl:
+        'https://blog.aragon.one/update-on-aragon-courts-first-mock-dispute/',
+      title: 'Dispute #0 has been voided',
       bannerHtml: banner({
         height: 388,
-        url: asset('banner-1.png'),
-        color: '#ffffff',
-        tag: { label: 'TEST NETWORK', bg: '#7C80F2', fg: '#ffffff' },
+        url: asset('banner-dispute0.png'),
+        color: '#171717',
       }),
       content: `
         <p>
-          The Juror Playground is a separate instance of the Juror Dashboard and
-          Aragon Court on the Rinkeby testnet.
-        </p>
-
-        <p>
-          We’re opening the Playground to existing jurors who wish to participate
-          in stress-testing the Dashboard and Court.
-        </p>
-
-        <p>
-          This is a perfect opportunity for jurors looking to familiarize
-          themselves with the Dashboard in a safe environment before adjudicating
-          disputes on mainnet.
-        </p>
-
-        <p>
-          As always with testnets, the tokens will be valueless, so jurors are
-          not subject to real financial risks (or rewards) when using the
-          Playground.
-        </p>
-
-        <p>
-          To get started, fill out the form linked below.
-        </p>
-
-        <p>
-          Have fun, and break things!
+          Jurors, be advised, Dispute #0 has been voided and discontinued due
+          to unforeseen and exceptional circumstances. Your tokens are safe:
+          we will resolve this dispute as the protocol allows us to, and we
+          are sorry for any inconvenience. You can read more about this unique
+          situation from the blog post linked below.
         </p>
       `,
       contentText: `
-        The Juror Playground is a separate instance of the Juror Dashboard and
-        Aragon Court on the Rinkeby testnet.
-
-        We’re opening the Playground to existing jurors who wish to participate
-        in stress-testing the Dashboard and Court.
-
-        This is a perfect opportunity for jurors looking to familiarize
-        themselves with the Dashboard in a safe environment before adjudicating
-        disputes on mainnet.
-
-        As always with testnets, the tokens will be valueless, so jurors are
-        not subject to real financial risks (or rewards) when using the
-        Playground.
-
-        To get started, fill out the form linked below.
-
-        Have fun, and break things!
-      `,
-      notice: `
-        This is an email from <strong>Aragon Court’s Rinkeby test environment</strong>. This
-        environment has been configured so jurors can have a playground to try
-        out the new dashboard and ensure that the system is working
-        correctly.
-      `,
-      noticeText: `
-        This is an email from Aragon Court’s Rinkeby test environment. This
-        environment has been configured so jurors can have a playground to try
-        out the new dashboard and ensure that the system is working
-        correctly.
+        Jurors, be advised, Dispute #0 has been voided and discontinued due
+        to unforeseen and exceptional circumstances. Your tokens are safe:
+        we will resolve this dispute as the protocol allows us to, and we
+        are sorry for any inconvenience. You can read more about this unique
+        situation from the blog post linked below.
       `,
     },
   }
