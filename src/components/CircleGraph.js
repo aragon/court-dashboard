@@ -67,7 +67,7 @@ function CircleGraph({ value, comparisonOperator, label, size, strokeWidth }) {
             {comparisonOperator && <div>{comparisonOperator}</div>}
             <AnimatedSpan
               css={`
-                font-size: 20px;
+                font-size: 21px;
               `}
             >
               {progressValue.interpolate(t =>
