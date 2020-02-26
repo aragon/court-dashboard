@@ -9,8 +9,6 @@ import { getVoidedDisputesByCourt } from '../voided-disputes'
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
 
-const juryDraftingTerms = 3
-
 export const transformResponseDisputeAttributes = dispute => {
   const transformedDispute = {
     ...dispute,
@@ -165,8 +163,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
 
     if (now > evidenceSubmissionEndTime) {
       phase = DisputesTypes.Phase.JuryDrafting
-      nextTransition =
-        evidenceSubmissionEndTime + termDuration * juryDraftingTerms
     } else {
       phase = state
       nextTransition = evidenceSubmissionEndTime
@@ -179,7 +175,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
     let phase
     // There is no end time for juty drafting?
 
-    const { createdAt } = lastRound
     const juryDraftingStartTime = getTermStartTime(
       lastRound.draftTermId,
       courtConfig
@@ -191,7 +186,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
       nextTransition = juryDraftingStartTime
     } else {
       phase = DisputesTypes.Phase.JuryDrafting
-      nextTransition = createdAt + termDuration * juryDraftingTerms
     }
     return { phase, nextTransition, roundId: number }
   }
@@ -341,12 +335,9 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     ]
   }
 
-  const disputeDraftTermEndTime =
-    disputeDraftStartTime + delayedTerms * termDuration
-
-  const revealEndTime =
-    disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms)
-
+  const votingEndTime =
+    disputeDraftStartTime + termDuration * (delayedTerms + commitTerms)
+  const revealEndTime = votingEndTime + termDuration * revealTerms
   const appealEndTime = revealEndTime + termDuration * appealTerms
   const confirmAppealEndTime =
     appealEndTime + termDuration * appealConfirmationTerms
@@ -355,8 +346,8 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
 
   const roundPhasesAndTime = [
     {
+      // Jurors can be drafted at any time
       phase: DisputesTypes.Phase.JuryDrafting,
-      endTime: disputeDraftTermEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.JuryDrafting === currentPhase.phase,
@@ -364,7 +355,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.VotingPeriod,
-      endTime: disputeDraftTermEndTime + termDuration * commitTerms,
+      endTime: votingEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.VotingPeriod === currentPhase.phase,
