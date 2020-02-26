@@ -5,9 +5,10 @@ import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
+import courtSubscriptionsAbi from '../abi/CourtSubscriptions.json'
+import disputeManagerAbi from '../abi/DisputeManager.json'
 import jurorRegistryAbi from '../abi/JurorRegistry.json'
 import tokenAbi from '../abi/ERC20.json'
-import disputeManagerAbi from '../abi/DisputeManager.json'
 import votingAbi from '../abi/CRVoting.json'
 
 import { getFunctionSignature } from '../lib/web3-utils'
@@ -232,7 +233,7 @@ export function useRewardActions() {
   )
 
   const settleAppealDeposit = useCallback(
-    (disputeId, roundId, juror) => {
+    (disputeId, roundId) => {
       return disputeManagerContract.settleAppealDeposit(disputeId, roundId, {
         gasLimit: GAS_LIMIT,
       })
@@ -241,6 +242,40 @@ export function useRewardActions() {
   )
 
   return { settleReward, settleAppealDeposit }
+}
+
+export function useCourtSubscriptionActions() {
+  const courtSubscriptionsContract = useCourtContract(
+    CourtModuleType.Subscriptions,
+    courtSubscriptionsAbi
+  )
+
+  const claimFees = useCallback(
+    periodId => {
+      return courtSubscriptionsContract.claimFees(periodId)
+    },
+    [courtSubscriptionsContract]
+  )
+
+  const getCurrentPeriodId = useCallback(() => {
+    return courtSubscriptionsContract.getCurrentPeriodId()
+  }, [courtSubscriptionsContract])
+
+  const getJurorShare = useCallback(
+    (juror, periodId) => {
+      return courtSubscriptionsContract.getJurorShare(juror, periodId)
+    },
+    [courtSubscriptionsContract]
+  )
+
+  const hasJurorClaimed = useCallback(
+    (juror, periodId) => {
+      return courtSubscriptionsContract.hasJurorClaimed(juror, periodId)
+    },
+    [courtSubscriptionsContract]
+  )
+
+  return { claimFees, getCurrentPeriodId, getJurorShare, hasJurorClaimed }
 }
 
 /**
@@ -369,3 +404,5 @@ export function useTotalActiveBalancePolling(termId) {
 
   return totalActiveBalance
 }
+
+export function useJurorSubscriptionShare(juror, periodId) {}

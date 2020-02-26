@@ -1,6 +1,10 @@
 import { useCallback, useState } from 'react'
 
-import { useANJActions, useRewardActions } from './hooks/useCourtContracts'
+import {
+  useANJActions,
+  useRewardActions,
+  useCourtSubscriptionActions,
+} from './hooks/useCourtContracts'
 import { useSidePanel } from './hooks/useSidePanel'
 import { useANJBalances } from './hooks/useANJ'
 import { useDashboardState } from './components/Dashboard/DashboardStateProvider'
@@ -72,6 +76,7 @@ export function useDashboardLogic() {
   const panelState = useSidePanel()
   const balances = useANJBalances()
   const rewards = useJurorRewards()
+  const subscriptionFees = useJurorSubscriptionFees()
   const appealCollaterals = useJurorAppealCollaterals()
   const { fetching: fetchingData, errors: errorsFetching } = useDashboardState()
 
@@ -79,9 +84,11 @@ export function useDashboardLogic() {
   const requests = usePanelRequestActions(setMode)
 
   const { settleReward, settleAppealDeposit } = useRewardActions()
+  const { claimFees: claimSubscriptionFees } = useCourtSubscriptionActions()
   const actions = {
     activateANJ:
       mode === REQUEST_MODE.STAKE_ACTIVATE ? stakeActivateANJ : activateANJ,
+    claimSubscriptionFees,
     deactivateANJ,
     withdrawANJ,
     settleAppealDeposit,
@@ -93,6 +100,7 @@ export function useDashboardLogic() {
     appealCollaterals,
     balances,
     rewards,
+    subscriptionFees,
     fetchingData,
     errorsFetching,
     mode,
