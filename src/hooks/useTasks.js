@@ -4,6 +4,7 @@ import { useTasksSubscription } from './subscription-hooks'
 import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { useCourtConfig } from '../providers/CourtConfig'
+import { getVoidedDisputesByCourt } from '../voided-disputes'
 
 export default function useTasks() {
   const courtConfig = useCourtConfig()
@@ -15,6 +16,7 @@ export default function useTasks() {
 }
 
 function useOpenTasks(tasks, now, courtSettings) {
+  const voidedDisputes = getVoidedDisputesByCourt()
   const convertedTasks = useMemo(() => {
     if (!tasks) {
       return null
@@ -31,15 +33,22 @@ function useOpenTasks(tasks, now, courtSettings) {
         .join('')
     : null
 
+  const incompleteTasks = useMemo(() => {
+    if (!convertedTasks) {
+      return null
+    }
+    return convertedTasks.filter(
+      task =>
+        !voidedDisputes.has(task.dispute.id) &&
+        task.phase !== DisputesTypes.Phase.Ended
+    )
+  }, [convertedTasks]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return useMemo(() => {
     if (!convertedTasks) {
       return []
     }
-
     const openTasks = []
-    const incompleteTasks = convertedTasks.filter(
-      task => task.phase !== DisputesTypes.Phase.Ended
-    )
 
     for (let i = 0; i < incompleteTasks.length; i++) {
       const currentPhase = incompleteTasks[i].phase
@@ -84,7 +93,7 @@ function useOpenTasks(tasks, now, courtSettings) {
     }
     return openTasks
     // Since we are using our own generated cache key we don't need to add the convertedTasks to the dependency list.
-  }, [convertedTasksPhasesKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [convertedTasksPhasesKey, incompleteTasks]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function getTaskName(phase) {

@@ -76,7 +76,7 @@ function DisputeCurrentRuling({ dispute }) {
               key={index}
               css={`
                 color: ${theme.contentSecondary};
-                width: 120px;
+                width: 220px;
               `}
             >
               {item}
