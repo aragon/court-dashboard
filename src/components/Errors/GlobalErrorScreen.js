@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Card, GU, useTheme, useViewport } from '@aragon/ui'
-import globalError from '../assets/globalError.svg'
-import backgroundError from '../assets/backgroundError.svg'
+import globalError from '../../assets/globalError.svg'
+import backgroundError from '../../assets/backgroundError.svg'
 
 function GlobalErrorScreen({ children }) {
   return (

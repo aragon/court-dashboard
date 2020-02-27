@@ -6,7 +6,6 @@ import { utils as EthersUtils } from 'ethers'
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeTimeline from './DisputeTimeline'
-import ErrorLoading from '../ErrorLoading'
 import NoEvidence from './NoEvidence'
 import CommitPanel from './panels/CommitPanel'
 import RevealPanel from './panels/RevealPanel'
@@ -15,6 +14,7 @@ import AppealPanel from './panels/AppealPanel'
 import { toDate } from '../../lib/web3-utils'
 import { Status as DisputeStatus } from '../../types/dispute-status-types'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
+import { DisputeNotFound } from '../../errors'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
@@ -49,6 +49,10 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   const noDispute = !dispute && !disputeFetching
 
+  if (noDispute) {
+    throw new DisputeNotFound(disputeId)
+  }
+
   const DisputeInfoComponent = (
     <DisputeInfo
       id={disputeId}
@@ -69,52 +73,43 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
-      {noDispute ? (
-        <ErrorLoading
-          subject="dispute"
-          errors={[`Dispute #${disputeId} does not exist`]}
-        />
+      {dispute?.status === DisputeStatus.Voided ? (
+        DisputeInfoComponent
       ) : (
-        <>
-          {dispute?.status === DisputeStatus.Voided ? (
-            DisputeInfoComponent
-          ) : (
-            <Split
-              primary={
-                <React.Fragment>
-                  {DisputeInfoComponent}
-                  {(() => {
-                    if (disputeFetching) {
-                      return null
-                    }
-                    if (evidences.length === 0) {
-                      return <NoEvidence />
-                    }
-                    return (
-                      // TODO- in next PR will get plaintiff and deffendant from the dispute
-                      <DisputeEvidences
-                        evidences={evidences}
-                        plaintiff={creatorAddress}
-                        defendant=""
-                      />
-                    )
-                  })()}
-                </React.Fragment>
-              }
-              secondary={
-                <React.Fragment>
-                  <Box heading="Dispute timeline" padding={0}>
-                    {disputeFetching ? (
-                      <div css="height: 200px" />
-                    ) : (
-                      <DisputeTimeline dispute={dispute} />
-                    )}
-                  </Box>
-                </React.Fragment>
-              }
-            />
-          )}
-        </>
+        <Split
+          primary={
+            <React.Fragment>
+              {DisputeInfoComponent}
+              {(() => {
+                if (disputeFetching) {
+                  return null
+                }
+                if (evidences.length === 0) {
+                  return <NoEvidence />
+                }
+                return (
+                  // TODO- in next PR will get plaintiff and deffendant from the dispute
+                  <DisputeEvidences
+                    evidences={evidences}
+                    plaintiff={creatorAddress}
+                    defendant=""
+                  />
+                )
+              })()}
+            </React.Fragment>
+          }
+          secondary={
+            <React.Fragment>
+              <Box heading="Dispute timeline" padding={0}>
+                {disputeFetching ? (
+                  <div css="height: 200px" />
+                ) : (
+                  <DisputeTimeline dispute={dispute} />
+                )}
+              </Box>
+            </React.Fragment>
+          }
+        />
       )}
       <SidePanel
         title={<PanelTitle requestMode={requestMode} disputeId={disputeId} />}

@@ -4,7 +4,7 @@ import { Bar, CardLayout, GU, useTheme } from '@aragon/ui'
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
 import DisputesLoading from './Loading'
-import ErrorLoading from '../ErrorLoading'
+import ErrorLoading from '../Errors/ErrorLoading'
 import NoFilterResults from './NoFilterResults'
 import MessageCard from '../MessageCard'
 
