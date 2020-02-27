@@ -1,6 +1,7 @@
 import { useQuery } from 'urql'
 
-import { JurorDrafts, JurorDraftRewarded } from '../queries/jurorDrafts'
+import { JurorDrafts } from '../queries/jurorDrafts'
+import { JurorFeesClaimed } from '../queries/juror'
 import { FirstANJActivationMovement } from '../queries/balances'
 
 export function useJurorDraftQuery(jurorId) {
@@ -20,14 +21,14 @@ export function useJurorDraftQuery(jurorId) {
 }
 
 /**
- * Queries if the juror has ever claimed rewards
+ * Queries if juror has ever claimed any rewards
  *
  * @param {String} jurorId Address of the juror
- * @returns {Boolean} True if the juror has ever claimed rewards
+ * @returns {Boolean} True if juror has already claimed rewards
  */
-export function useJurorDraftRewardedQuery(jurorId) {
+export function useJurorRewardsClaimedQuery(jurorId) {
   const [{ data }] = useQuery({
-    query: JurorDraftRewarded,
+    query: JurorFeesClaimed,
     variables: { id: jurorId.toLowerCase() },
   })
 
@@ -35,7 +36,12 @@ export function useJurorDraftRewardedQuery(jurorId) {
     return false
   }
 
-  return data.juror.drafts.length > 0
+  const {
+    drafts: rewardedDrafts,
+    feeMovements: claimedSubscriptionFeeMovements,
+  } = data.juror
+
+  return rewardedDrafts.length > 0 || claimedSubscriptionFeeMovements.length > 0
 }
 
 export function useFirstANJActivationQuery(jurorId, { pause = false }) {

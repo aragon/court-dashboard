@@ -13,25 +13,32 @@ export default function useJurorSubscriptionFees() {
         return
       }
 
-      const currentPeriodId = await getters.getCurrentPeriodId()
+      try {
+        const currentPeriodId = await getters.getCurrentPeriodId()
 
-      const jurorSubscriptionsFees = []
-      for (let periodId = 0; periodId <= currentPeriodId; periodId++) {
-        const jurorShare = await getters.getJurorShare(wallet.account, periodId)
+        const jurorSubscriptionsFees = []
+        for (let periodId = 0; periodId < currentPeriodId; periodId++) {
+          const jurorShare = await getters.getJurorShare(
+            wallet.account,
+            periodId
+          )
 
-        if (
-          jurorShare.gt(0) &&
-          !(await getters.hasJurorClaimed(wallet.account, periodId))
-        ) {
-          jurorSubscriptionsFees.push({ periodId, amount: jurorShare[1] })
+          if (
+            jurorShare[1].gt(0) &&
+            !(await getters.hasJurorClaimed(wallet.account, periodId))
+          ) {
+            jurorSubscriptionsFees.push({ periodId, amount: jurorShare[1] })
+          }
         }
-      }
 
-      setSubscriptionFees(jurorSubscriptionsFees)
+        setSubscriptionFees(jurorSubscriptionsFees)
+      } catch (err) {
+        console.error(`Error fethcing juror subscription fees: ${err}`)
+      }
     }
 
     fetchSubscriptionFees()
   }, [getters, wallet.account])
 
-  return subscriptionFees
+  return [subscriptionFees, setSubscriptionFees]
 }

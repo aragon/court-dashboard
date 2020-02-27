@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useContract } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
@@ -292,9 +292,18 @@ export function useCourtSubscriptionActions() {
 
   return {
     claimFees,
-    getters: courtSubscriptionsContract
-      ? { getCurrentPeriodId, getJurorShare, hasJurorClaimed }
-      : null,
+    getters: useMemo(
+      () =>
+        courtSubscriptionsContract
+          ? { getCurrentPeriodId, getJurorShare, hasJurorClaimed }
+          : null,
+      [
+        courtSubscriptionsContract,
+        getCurrentPeriodId,
+        getJurorShare,
+        hasJurorClaimed,
+      ]
+    ),
   }
 }
 

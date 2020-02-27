@@ -28,18 +28,6 @@ export const JurorDraftsNotRewarded = gql`
   }
 `
 
-// First juror draft already rewarded
-export const JurorDraftRewarded = gql`
-  query JurorDraft($id: ID!) {
-    juror(id: $id) {
-      id
-      drafts(where: { rewarded: true }, first: 1) {
-        id
-      }
-    }
-  }
-`
-
 // Jurors drafts by `id` for current term
 export const CurrentTermJurorDrafts = gql`
   subscription JurorDrafts($id: ID!, $from: BigInt!) {

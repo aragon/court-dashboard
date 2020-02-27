@@ -8,7 +8,6 @@ import {
 import { useANJBalances } from './hooks/useANJ'
 import { useSidePanel } from './hooks/useSidePanel'
 import useJurorRewards from './hooks/useJurorRewards'
-import useJurorSubscriptionFees from './hooks/useJurorSubscriptionFees'
 import useJurorAppealCollaterals from './hooks/useJurorAppealCollaterals'
 import { useDashboardState } from './components/Dashboard/DashboardStateProvider'
 
@@ -77,7 +76,7 @@ export function useDashboardLogic() {
   const rewards = useJurorRewards()
   const balances = useANJBalances()
   const panelState = useSidePanel()
-  const subscriptionFees = useJurorSubscriptionFees()
+
   const appealCollaterals = useJurorAppealCollaterals()
   const {
     treasury,
@@ -111,7 +110,6 @@ export function useDashboardLogic() {
     panelState,
     requests,
     rewards,
-    subscriptionFees,
     treasury,
   }
 }
