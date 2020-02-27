@@ -1,12 +1,32 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import { GU, Layout, Root, ScrollView, useViewport } from '@aragon/ui'
-import NavBar from './NavBar'
+import MenuPanel from './MenuPanel'
 import Header from './Header'
 
 const NAV_BAR_WIDTH = 25 * GU
 
 function MainView({ children }) {
-  const { width: vw } = useViewport()
+  const { width: vw, below } = useViewport()
+  const autoClosingPanel = below('medium')
+
+  const [menuPanelOpen, setMenuPanelOpen] = useState(!autoClosingPanel)
+  const toggleMenuPanel = useCallback(
+    () => setMenuPanelOpen(opened => !opened),
+    []
+  )
+
+  // const handleCloseMenuPanel = useCallback(() => setMenuPanelOpen(false), [])
+
+  // const handleOpenPage = useCallback(() => {
+  //   if (autoClosingPanel) {
+  //     handleCloseMenuPanel()
+  //   }
+  // }, [autoClosingPanel, handleCloseMenuPanel])
+
+  // useEffect(() => {
+  //   setMenuPanelOpen(!autoClosingPanel)
+  // }, [autoClosingPanel])
+
   return (
     <div
       css={`
@@ -20,7 +40,10 @@ function MainView({ children }) {
           flex-shrink: 0;
         `}
       >
-        <Header />
+        <Header
+          autoClosingPanel={autoClosingPanel}
+          toggleMenuPanel={toggleMenuPanel}
+        />
       </div>
       <div
         css={`
@@ -38,7 +61,7 @@ function MainView({ children }) {
             width: ${NAV_BAR_WIDTH}px;
           `}
         >
-          <NavBar />
+          <MenuPanel opened={menuPanelOpen} />
         </div>
         <Root.Provider
           css={`

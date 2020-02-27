@@ -1,11 +1,14 @@
 import React from 'react'
-import { GU, textStyle } from '@aragon/ui'
+import { ButtonIcon, GU, IconMenu, textStyle } from '@aragon/ui'
 import Account from './Account/Account'
 import Clock from './Clock'
 
 import headerLogoSvg from '../assets/HeaderLogo.svg'
 
-const Header = React.memo(function Header() {
+const Header = React.memo(function Header({
+  autoClosingPanel,
+  toggleMenuPanel,
+}) {
   return (
     <header
       css={`
@@ -27,24 +30,40 @@ const Header = React.memo(function Header() {
           align-items: center;
         `}
       >
-        <img
-          alt=""
-          src={headerLogoSvg}
-          width={4 * GU}
-          css={`
-            margin-right: ${1 * GU}px;
-          `}
-        />
-        <h1
-          css={`
-            display: flex;
-            height: 100%;
-            align-items: center;
-            ${textStyle('body1')};
-          `}
-        >
-          Aragon Court
-        </h1>
+        {autoClosingPanel ? (
+          <ButtonIcon
+            label="Open menu"
+            onClick={toggleMenuPanel}
+            css={`
+              position: relative;
+              top: ${2 * GU}px;
+              left: ${2 * GU}px;
+            `}
+          >
+            <IconMenu />
+          </ButtonIcon>
+        ) : (
+          <>
+            <img
+              alt=""
+              src={headerLogoSvg}
+              width={4 * GU}
+              css={`
+                margin-right: ${1 * GU}px;
+              `}
+            />
+            <h1
+              css={`
+                display: flex;
+                height: 100%;
+                align-items: center;
+                ${textStyle('body1')};
+              `}
+            >
+              Aragon Court
+            </h1>
+          </>
+        )}
       </div>
 
       <div
