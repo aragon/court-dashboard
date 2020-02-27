@@ -31,7 +31,9 @@ function vspace(height) {
 }
 
 function asset(path) {
-  return `${ASSETS_URL}/${path}`
+  // Remove trailing slashes, if any
+  const assetBasePath = ASSETS_URL.replace(/\/+$/, '')
+  return `${assetBasePath}/${path}`
 }
 
 function table(attributes, content) {
