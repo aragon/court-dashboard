@@ -19,6 +19,13 @@ jobs:
     - name: npm lint
       run: npm run lint
     - name: now
-      run: now -A now-mainnet.json --prod --token=${{ secrets.ZEIT_TOKEN }} --build-env NOW_GITHUB_COMMIT_REF="development" --build-env NOW_GITHUB_COMMIT_SHA="$(git log --pretty=format:'%h' -n 1)"
+      run: >
+        now
+        -A now-mainnet.json
+        --confirm
+        --prod
+        --token=${{ secrets.ZEIT_TOKEN }}
+        --build-env NOW_GITHUB_COMMIT_REF="development"
+        --build-env NOW_GITHUB_COMMIT_SHA="$(git log --pretty=format:'%h' -n 1)"
     env:
       CI: true

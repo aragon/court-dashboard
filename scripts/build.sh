@@ -35,10 +35,3 @@ npm run sync-assets
 echo "Building app…"
 echo ""
 REACT_APP_ENABLE_SENTRY=$enable_sentry REACT_APP_BUILD=$build npx react-app-rewired build
-
-echo "Add post-build HTML tags"
-if [ -n "$FORTMATIC_SITE_VERIFICATION" ]; then
-  sed "s/<meta name=\"head\-extra\" value=\"\"\/>/<meta name=\"fortmatic-site-verification\" content=\"${FORTMATIC_SITE_VERIFICATION}\"\/>/" -i ./build/index.html
-else
-  sed "s/<meta name=\"head\-extra\" value=\"\"\/>//" -i ./build/index.html
-fi

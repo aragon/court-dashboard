@@ -4,14 +4,13 @@ import { getTermStartTime } from './court-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { getOutcomeNumber } from './crvoting-utils'
 import { bigNum } from '../lib/math-utils'
+import { getVoidedDisputesByCourt } from '../voided-disputes'
 
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
 
-const juryDraftingTerms = 3
-
 export const transformResponseDisputeAttributes = dispute => {
-  return {
+  const transformedDispute = {
     ...dispute,
     createdAt: parseInt(dispute.createdAt, 10) * 1000,
     state: DisputesTypes.convertFromString(dispute.state),
@@ -46,11 +45,33 @@ export const transformResponseDisputeAttributes = dispute => {
               ...appeal,
               appealedRuling: parseInt(appeal.appealedRuling, 10),
               opposedRuling: parseInt(appeal.opposedRuling, 10),
+              createdAt: parseInt(appeal.createdAt) * 1000,
+              confirmedAt: parseInt(appeal.confirmedAt || 0) * 1000,
             }
           : null,
         state: DisputesTypes.convertFromString(round.state),
       }
     }),
+  }
+
+  // If the dispute is voided we will override certain data
+  const voidedDisputes = getVoidedDisputesByCourt()
+  const voidedDispute = voidedDisputes.get(dispute.id)
+
+  return voidedDispute
+    ? overrideVoidedDispute(transformedDispute, voidedDispute)
+    : transformedDispute
+}
+
+function overrideVoidedDispute(dispute, voidedDispute) {
+  return {
+    ...dispute,
+    evidences: [],
+    metadata: '',
+    status: DisputesTypes.Status.Voided,
+    voidedDescription: voidedDispute.description,
+    voidedLink: voidedDispute.link,
+    voidedText: voidedDispute.text,
   }
 }
 
@@ -144,8 +165,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
 
     if (now > evidenceSubmissionEndTime) {
       phase = DisputesTypes.Phase.JuryDrafting
-      nextTransition =
-        evidenceSubmissionEndTime + termDuration * juryDraftingTerms
     } else {
       phase = state
       nextTransition = evidenceSubmissionEndTime
@@ -158,7 +177,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
     let phase
     // There is no end time for juty drafting?
 
-    const { createdAt } = lastRound
     const juryDraftingStartTime = getTermStartTime(
       lastRound.draftTermId,
       courtConfig
@@ -170,7 +188,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
       nextTransition = juryDraftingStartTime
     } else {
       phase = DisputesTypes.Phase.JuryDrafting
-      nextTransition = createdAt + termDuration * juryDraftingTerms
     }
     return { phase, nextTransition, roundId: number }
   }
@@ -320,22 +337,20 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     ]
   }
 
-  const disputeDraftTermEndTime =
-    disputeDraftStartTime + delayedTerms * termDuration
-
-  const revealEndTime =
-    disputeDraftTermEndTime + termDuration * (commitTerms + revealTerms)
-
+  const votingEndTime =
+    disputeDraftStartTime + termDuration * (delayedTerms + commitTerms)
+  const revealEndTime = votingEndTime + termDuration * revealTerms
   const appealEndTime = revealEndTime + termDuration * appealTerms
   const confirmAppealEndTime =
     appealEndTime + termDuration * appealConfirmationTerms
 
   const roundAppealed = !!appeal
+  const roundAppealConfirmed = roundAppealed && appeal.opposedRuling > 0
 
   const roundPhasesAndTime = [
     {
+      // Jurors can be drafted at any time
       phase: DisputesTypes.Phase.JuryDrafting,
-      endTime: disputeDraftTermEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.JuryDrafting === currentPhase.phase,
@@ -343,7 +358,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.VotingPeriod,
-      endTime: disputeDraftTermEndTime + termDuration * commitTerms,
+      endTime: votingEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.VotingPeriod === currentPhase.phase,
@@ -359,28 +374,35 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       showOutcome: now.isAfter(revealEndTime),
     },
     {
+      // If the round was appealed we know it's a past phase and must update the endTime for the time this took effect (appeal.createdAt)
+      // If it wasn't appealed we have two cases:
+      //       - It's a past phase so in that case the endTime will be the time at where it's supposed to end if taking the full appealTerms duration
+      //       - It's the dispute active phase (the round can still be appealed) so the endTime will be used to tell the timer remaining time before the appeal phase is closed
       phase: DisputesTypes.Phase.AppealRuling,
-      endTime: appealEndTime,
+      endTime: roundAppealed ? appeal.createdAt : appealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
       outcome: roundAppealed ? appeal.appealedRuling : null,
-      showOutcome:
-        now.isAfter(appealEndTime) ||
-        (roundAppealed && !!appeal.appealedRuling),
+      showOutcome: roundAppealed || now.isAfter(appealEndTime),
+      // If the round was appealed, we'll show the outcome (appeal ruling),
+      // If it wasn't appealed then we'll show a "Nobodoy appealed" message
     },
     {
+      // If the round was appeal confirmed we know it's a past phase and must update the endTime for the time this took effect (appeal.confirmedAt)
+      // If it wasn't appeal confirmed we have two cases:
+      //       - It's a past phase so in that case the endTime will be the time at where it's supposed to end if taking the full confirmAppealTerms duration
+      //       - It's the dispute active phase (the round can still be appeal confirmed) so the endTime will be used to tell the timer remaining time before the confirm appeal phase is closed
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime: confirmAppealEndTime,
+      endTime: roundAppealConfirmed ? appeal.confirmedAt : confirmAppealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
-      outcome: roundAppealed ? appeal.opposedRuling : null,
-      showOutcome:
-        now.isAfter(confirmAppealEndTime) ||
-        (roundAppealed && !!appeal.opposedRuling),
+      outcome: roundAppealConfirmed ? appeal.opposedRuling : null,
+      showOutcome: roundAppealed,
+      // We only need to ensure that the round was appealed in order to show the confirm appeal outcome in this case because if it wasn't appealed, this phase will not appear in the timeline
     },
   ]
 
