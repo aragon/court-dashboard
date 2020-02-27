@@ -5,11 +5,12 @@ import {
   useRewardActions,
   useCourtSubscriptionActions,
 } from './hooks/useCourtContracts'
-import { useSidePanel } from './hooks/useSidePanel'
 import { useANJBalances } from './hooks/useANJ'
-import { useDashboardState } from './components/Dashboard/DashboardStateProvider'
+import { useSidePanel } from './hooks/useSidePanel'
 import useJurorRewards from './hooks/useJurorRewards'
+import useJurorSubscriptionFees from './hooks/useJurorSubscriptionFees'
 import useJurorAppealCollaterals from './hooks/useJurorAppealCollaterals'
+import { useDashboardState } from './components/Dashboard/DashboardStateProvider'
 
 export const REQUEST_MODE = {
   ACTIVATE: Symbol('ACTIVATE'),

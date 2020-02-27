@@ -275,7 +275,12 @@ export function useCourtSubscriptionActions() {
     [courtSubscriptionsContract]
   )
 
-  return { claimFees, getCurrentPeriodId, getJurorShare, hasJurorClaimed }
+  return {
+    claimFees,
+    getters: courtSubscriptionsContract
+      ? { getCurrentPeriodId, getJurorShare, hasJurorClaimed }
+      : null,
+  }
 }
 
 /**
