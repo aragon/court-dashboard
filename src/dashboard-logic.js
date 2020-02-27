@@ -74,38 +74,44 @@ export function useDashboardLogic() {
     withdrawANJ,
   } = useANJActions()
 
-  const panelState = useSidePanel()
-  const balances = useANJBalances()
   const rewards = useJurorRewards()
+  const balances = useANJBalances()
+  const panelState = useSidePanel()
   const subscriptionFees = useJurorSubscriptionFees()
   const appealCollaterals = useJurorAppealCollaterals()
-  const { fetching: fetchingData, errors: errorsFetching } = useDashboardState()
+  const {
+    treasury,
+    fetching: fetchingData,
+    errors: errorsFetching,
+  } = useDashboardState()
 
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
 
-  const { settleReward, settleAppealDeposit } = useRewardActions()
   const { claimFees: claimSubscriptionFees } = useCourtSubscriptionActions()
+  const { settleReward, settleAppealDeposit, withdraw } = useRewardActions()
   const actions = {
     activateANJ:
       mode === REQUEST_MODE.STAKE_ACTIVATE ? stakeActivateANJ : activateANJ,
     claimSubscriptionFees,
     deactivateANJ,
     withdrawANJ,
-    settleAppealDeposit,
     settleReward,
+    settleAppealDeposit,
+    withdraw,
   }
 
   return {
     actions,
     appealCollaterals,
     balances,
-    rewards,
-    subscriptionFees,
-    fetchingData,
     errorsFetching,
+    fetchingData,
     mode,
     panelState,
     requests,
+    rewards,
+    subscriptionFees,
+    treasury,
   }
 }

@@ -213,10 +213,7 @@ function useFilteredMovements(movements, acceptedMovements) {
 export function useJurorFirstTimeANJActivation(options) {
   const wallet = useWallet()
   const { currentTermId } = useCourtClock()
-  const firstANJActivation = useFirstANJActivationQuery(
-    wallet.account.toLowerCase(),
-    options
-  )
+  const firstANJActivation = useFirstANJActivationQuery(wallet.account, options)
 
   if (!firstANJActivation) return false
 

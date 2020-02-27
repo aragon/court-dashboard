@@ -1,31 +1,32 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useContract } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
-import { useContract } from '../web3-contracts'
 
-import aragonCourtAbi from '../abi/AragonCourt.json'
-import courtSubscriptionsAbi from '../abi/CourtSubscriptions.json'
-import disputeManagerAbi from '../abi/DisputeManager.json'
-import jurorRegistryAbi from '../abi/JurorRegistry.json'
 import tokenAbi from '../abi/ERC20.json'
 import votingAbi from '../abi/CRVoting.json'
+import aragonCourtAbi from '../abi/AragonCourt.json'
+import jurorRegistryAbi from '../abi/JurorRegistry.json'
+import courtTreasuryAbi from '../abi/CourtTreasury.json'
+import disputeManagerAbi from '../abi/DisputeManager.json'
+import courtSubscriptionsAbi from '../abi/CourtSubscriptions.json'
 
-import { getFunctionSignature } from '../lib/web3-utils'
 import {
   hashVote,
   getOutcomeFromCommitment,
   getVoteId,
   hashPassword,
 } from '../utils/crvoting-utils'
-import { getModuleAddress } from '../utils/court-utils'
 import { bigNum } from '../lib/math-utils'
 import { retryMax } from '../utils/retry-max'
+import { getModuleAddress } from '../utils/court-utils'
+import { getFunctionSignature } from '../lib/web3-utils'
 
-const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 const GAS_LIMIT = 1200000
 const ANJ_ACTIVATE_GAS_LIMIT = 500000
 const ANJ_ACTIONS_GAS_LIMIT = 325000
+const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 
 // ANJ contract
 function useANJTokenContract() {
@@ -223,6 +224,11 @@ export function useRewardActions() {
     disputeManagerAbi
   )
 
+  const treasuryContract = useCourtContract(
+    CourtModuleType.Treasury,
+    courtTreasuryAbi
+  )
+
   const settleReward = useCallback(
     (disputeId, roundId, juror) => {
       return disputeManagerContract.settleReward(disputeId, roundId, juror, {
@@ -241,7 +247,16 @@ export function useRewardActions() {
     [disputeManagerContract]
   )
 
-  return { settleReward, settleAppealDeposit }
+  const withdraw = useCallback(
+    (token, to, amount) => {
+      return treasuryContract.withdraw(token, to, amount, {
+        gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+      })
+    },
+    [treasuryContract]
+  )
+
+  return { settleReward, settleAppealDeposit, withdraw }
 }
 
 export function useCourtSubscriptionActions() {
