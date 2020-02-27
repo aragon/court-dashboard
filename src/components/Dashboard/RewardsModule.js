@@ -54,6 +54,7 @@ const RewardsModule = React.memo(function RewardsModule({
 }) {
   const wallet = useWallet()
   const { feeToken } = useCourtConfig()
+
   // Subscriptions are fetched directly from the subscriptions contract
   const [subscriptionFees, setSubscriptionFees] = useJurorSubscriptionFees()
   const { anjRewards, feeRewards } = rewards || {}
