@@ -9,7 +9,6 @@ function GlobalErrorScreen({ children }) {
   const theme = useTheme()
   return (
     <div
-      id="testt2"
       css={`
         height: 100vh;
         min-width: ${45 * GU}px;
@@ -30,7 +29,6 @@ function GlobalErrorScreen({ children }) {
         src={logo}
       />
       <div
-        id="testttt"
         css={`
           display: flex;
           justify-content: center;
