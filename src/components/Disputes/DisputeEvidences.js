@@ -80,7 +80,7 @@ const EvidenceContent = React.memo(function EvidenceContent({
     <div
       css={`
         margin-bottom: ${2 * GU}px;
-        padding: ${3 * GU}px ${8 * GU}px;
+        padding: ${3 * GU}px ${8 * GU - 3}px;
       `}
     >
       <div
