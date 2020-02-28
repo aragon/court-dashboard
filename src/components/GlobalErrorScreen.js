@@ -3,19 +3,34 @@ import PropTypes from 'prop-types'
 import { Card, GU, useTheme, useViewport } from '@aragon/ui'
 import globalError from '../assets/globalError.svg'
 import backgroundError from '../assets/backgroundError.svg'
+import logo from '../assets/logo.svg'
 
 function GlobalErrorScreen({ children }) {
+  const theme = useTheme()
   return (
     <div
+      id="testt2"
       css={`
         height: 100vh;
         min-width: ${45 * GU}px;
         overflow: auto;
         background: url(${backgroundError}),
           linear-gradient(187.6deg, #fffaf1 -3.6%, #ffebeb 216.17%);
+        border-top-style: solid;
+        border-top-width: 4px;
+        border-top-color: ${theme.accent};
       `}
     >
+      <img
+        css={`
+          position: absolute;
+          top: 16px;
+          left: 16px;
+        `}
+        src={logo}
+      />
       <div
+        id="testttt"
         css={`
           display: flex;
           justify-content: center;
