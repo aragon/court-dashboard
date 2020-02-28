@@ -7,25 +7,27 @@ import { GU, useTheme } from '@aragon/ui'
 const STROKE_WIDTH = 4
 
 const SIZE_DEFAULT = 80
-const SUFFIX_DEFAULT = '%'
-const VALUE_DEFAULT = value => {
+const VALUE_DEFAULT = 1
+const LABEL_DEFAULT = value => {
   if (value === 0) {
-    return '0'
+    return { value: '0', suffix: '%' }
   }
   if (Math.round(value * 100) < 1) {
-    return '1'
+    return { prefix: '<', value: '1', suffix: '%' }
   }
-  return String(Math.round(value * 100))
+  return {
+    value: String(Math.round(value * 100)),
+    suffix: '%',
+  }
 }
-const PREFIX_DEFAULT = value => (Math.round(value * 100) < 1 ? `<` : '')
-const LABEL_DEFAULT = value => `${Math.round(value * 100)}`
 
 const { span: AnimatedSpan, circle: AnimatedCircle } = animated
 
-function CircleGraph({ value, prefix, suffix, label, size, strokeWidth }) {
+function CircleGraph({ value, label, size, strokeWidth }) {
   const theme = useTheme()
   const length = Math.PI * 2 * (size - strokeWidth)
   const radius = (size - strokeWidth) / 2
+  const { prefix, value: stringValue, suffix } = label(value)
   return (
     <Spring to={{ progressValue: value }} native>
       {({ progressValue }) => (
