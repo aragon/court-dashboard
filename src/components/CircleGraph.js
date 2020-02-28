@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// import styled from 'styled-components'
 import { Spring, animated } from 'react-spring/renderprops'
 import { GU, useTheme } from '@aragon/ui'
 
@@ -27,7 +26,7 @@ function CircleGraph({ value, label, size, strokeWidth }) {
   const theme = useTheme()
   const length = Math.PI * 2 * (size - strokeWidth)
   const radius = (size - strokeWidth) / 2
-  const { prefix, value: stringValue, suffix } = label(value)
+  const { prefix, suffix } = label(value)
   return (
     <Spring to={{ progressValue: value }} native>
       {({ progressValue }) => (
@@ -92,9 +91,12 @@ function CircleGraph({ value, label, size, strokeWidth }) {
                 font-size: 18px;
               `}
             >
-              {progressValue.interpolate(t =>
-                label(Math.min(1, Math.max(0, t)))
-              )}
+              {progressValue.interpolate(t => {
+                const { value: stringValue } = label(
+                  Math.min(1, Math.max(0, t))
+                )
+                return stringValue
+              })}
             </AnimatedSpan>
             <div
               css={`
@@ -115,18 +117,13 @@ function CircleGraph({ value, label, size, strokeWidth }) {
 CircleGraph.propTypes = {
   value: PropTypes.number,
   size: PropTypes.number,
-  prefix: PropTypes.string,
-  suffix: PropTypes.string,
   label: PropTypes.func,
   strokeWidth: PropTypes.number,
 }
 
 CircleGraph.defaultProps = {
-  prefix: PREFIX_DEFAULT,
   value: VALUE_DEFAULT,
   size: SIZE_DEFAULT,
-
-  suffix: SUFFIX_DEFAULT,
   label: LABEL_DEFAULT,
   strokeWidth: STROKE_WIDTH,
 }

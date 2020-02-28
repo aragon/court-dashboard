@@ -195,7 +195,7 @@ const BannerWithProbability = ({ activeBalance }) => {
           margin-right: ${1 * GU}px;
         `}
       >
-        On average, you will be drafted into a jury
+        {'On average, you will be drafted into a jury '}
         <span
           css={`
             color: ${theme.accent};
@@ -227,17 +227,11 @@ const BannerWithProbability = ({ activeBalance }) => {
   const paragraph =
     'The more ANJ you activate, the more likely you will be drafted to arbitrate a dispute'
 
-  // TODO - change this for the loading indicator once ready
   return fetchingTotalBalance ? (
     <BannerLoadingRing />
   ) : (
     <Wrapper
-      mainIcon={
-        <CircleGraph
-          value={probablilityTooLow ? 0.01 : draftingProbability}
-          size={7 * GU}
-        />
-      }
+      mainIcon={<CircleGraph value={draftingProbability} size={7 * GU} />}
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
     />
   )
