@@ -104,11 +104,12 @@ const ANJForm = React.memo(function ANJForm({
 
     try {
       const tx = await onSubmit(amount.valueBN)
+
+      onDone()
       await tx.wait()
     } catch (err) {
       console.log('Error submitting tx: ', err) // TODO: How should we handle errors ?
     }
-    onDone()
   }
 
   const errorMessage = amount.error

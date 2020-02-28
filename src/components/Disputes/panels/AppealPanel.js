@@ -112,8 +112,9 @@ const AppealPanel = React.memo(function AppealPanel({
         dispute.lastRoundId,
         appealOption.outcome
       )
-      await tx.wait()
+
       onDone()
+      await tx.wait()
     } catch (err) {
       console.log('Error submitting tx: ', err)
     }
