@@ -1,23 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { GU, textStyle, useTheme } from '@aragon/ui'
-// import { formatDistance, formatDistanceStrict } from 'date-fns'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import useNow from '../../hooks/useNow'
 
-function formatDistance() {
-  return ''
-}
-
-function formatDistanceStrict() {
-  return ''
-}
+dayjs.extend(relativeTime)
 
 function getRelativeTime(now, targetDate) {
-  const past = targetDate < now
-  const fn = past ? formatDistance : formatDistanceStrict
-  const options = { addSuffix: true, ...(past && { unit: 'minute' }) }
-  return fn(targetDate, now, options)
-    .replace('about', '')
+  return dayjs(targetDate)
+    .from(now)
     .replace(/minutes?/, 'min')
     .replace(/seconds?/, 'sec')
     .trim()
@@ -34,8 +26,8 @@ function TimeTag({ date, label, ...props }) {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        ${textStyle('label2')}
         color: ${theme.surfaceContentSecondary};
+        ${textStyle('label2')};
       `}
       {...props}
     >

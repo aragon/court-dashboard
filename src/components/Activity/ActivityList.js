@@ -8,9 +8,11 @@ import {
   useTheme,
   useViewport,
 } from '@aragon/ui'
-import activityNoResults from './assets/activity-no-results.png'
-import { useActivity, ACTIVITY_STATUS_PENDING } from '../../providers/Activity'
+import { ACTIVITY_STATUS_PENDING } from './symbols'
+import { useActivity } from './ActivityProvider'
 import ActivityItem from './ActivityItem'
+
+import activityNoResults from './assets/activity-no-results.png'
 
 // 8GU for top bar, 4GU for activity heading,
 // 11GU for HelpScout beacon (3GU top/bottom padding, 5GU beacon)

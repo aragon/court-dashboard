@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@aragon/ui'
 import ActivityList from './ActivityList'
-import { useActivity } from '../../providers/Activity'
+import { useActivity } from './ActivityProvider'
 
 const ActivityButton = React.memo(function ActivityButton() {
   const theme = useTheme()

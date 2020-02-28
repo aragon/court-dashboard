@@ -12,19 +12,25 @@ import {
   IdentityBadge,
 } from '@aragon/ui'
 import { transformAddresses, getNetworkType } from '../../lib/web3-utils'
-import TimeTag from './TimeTag'
-import TransactionProgress from './TransactionProgress'
 import {
-  useActivity,
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_CONFIRMED,
   ACTIVITY_STATUS_FAILED,
   ACTIVITY_STATUS_TIMED_OUT,
-} from '../../providers/Activity'
+} from './symbols'
+import TransactionProgress from './TransactionProgress'
+import { useActivity } from './ActivityProvider'
+import { getActivityData } from './activity-types'
+import TimeTag from './TimeTag'
 
 function ActivityItem({ activity }) {
   const theme = useTheme()
   const { clearActivity } = useActivity()
+
+  const activityData = getActivityData(
+    activity.activityType,
+    activity.activityParams
+  )
 
   const handleOpen = useCallback(() => {
     if (activity.transactionHash) {
@@ -37,6 +43,8 @@ function ActivityItem({ activity }) {
       )
     }
   }, [activity])
+
+  const canClear = activity.status !== ACTIVITY_STATUS_PENDING
 
   const handleClose = useCallback(() => {
     if (activity.transactionHash) {
@@ -84,14 +92,23 @@ function ActivityItem({ activity }) {
           >
             <div
               css={`
+                flex-shrink: 0;
+                display: flex;
+                margin-right: ${1 * GU}px;
+              `}
+            >
+              <img src={activityData.icon} alt="" />
+            </div>
+            <div
+              css={`
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-                ${textStyle('body2')}
                 color: ${theme.surfaceContent};
+                ${textStyle('body1')};
               `}
             >
-              Transaction
+              {activityData.title}
             </div>
             {activity.status !== ACTIVITY_STATUS_PENDING && (
               <TimeTag
@@ -108,7 +125,7 @@ function ActivityItem({ activity }) {
               margin-top: ${2 * GU}px;
             `}
           >
-            <ItemContent text={activity.description} />
+            <ItemContent text={activityData.description} />
             <StatusMessage activity={activity} />
             <TransactionProgress
               status={activity.status}
@@ -117,22 +134,24 @@ function ActivityItem({ activity }) {
           </div>
         </section>
       </ButtonBase>
-      <ButtonIcon
-        label="Remove"
-        onClick={handleClose}
-        css={`
-          position: absolute;
-          top: ${1 * GU}px;
-          right: ${1 * GU}px;
-          z-index: 1;
-        `}
-      >
-        <IconCross
+      {canClear && (
+        <ButtonIcon
+          label="Remove"
+          onClick={handleClose}
           css={`
-            color: ${theme.surfaceIcon};
+            position: absolute;
+            top: ${1 * GU}px;
+            right: ${1 * GU}px;
+            z-index: 1;
           `}
-        />
-      </ButtonIcon>
+        >
+          <IconCross
+            css={`
+              color: ${theme.surfaceIcon};
+            `}
+          />
+        </ButtonIcon>
+      )}
     </div>
   )
 }

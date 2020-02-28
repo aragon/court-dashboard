@@ -1,14 +1,14 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import StoredList from '../StoredList'
-import { getNetworkType } from '../lib/web3-utils'
-import { useWallet } from './Wallet'
-
-export const ACTIVITY_STATUS_CONFIRMED = Symbol('ACTIVITY_STATUS_CONFIRMED')
-export const ACTIVITY_STATUS_FAILED = Symbol('ACTIVITY_STATUS_FAILED')
-export const ACTIVITY_STATUS_PENDING = Symbol('ACTIVITY_STATUS_PENDING')
-export const ACTIVITY_STATUS_TIMED_OUT = Symbol('ACTIVITY_STATUS_TIMED_OUT')
-export const ACTIVITY_TYPE_TRANSACTION = Symbol('ACTIVITY_TYPE_TRANSACTION')
+import StoredList from '../../StoredList'
+import { getNetworkType } from '../../lib/web3-utils'
+import { useWallet } from '../../providers/Wallet'
+import {
+  ACTIVITY_STATUS_CONFIRMED,
+  ACTIVITY_STATUS_FAILED,
+  ACTIVITY_STATUS_PENDING,
+  ACTIVITY_STATUS_TIMED_OUT,
+} from './symbols'
 
 const ActivityContext = React.createContext()
 
@@ -18,10 +18,9 @@ const TEN_MINUTES = 1000 * 60 * 10
 const SymbolsByName = new Map(
   Object.entries({
     ACTIVITY_STATUS_CONFIRMED,
-    ACTIVITY_STATUS_PENDING,
     ACTIVITY_STATUS_FAILED,
+    ACTIVITY_STATUS_PENDING,
     ACTIVITY_STATUS_TIMED_OUT,
-    ACTIVITY_TYPE_TRANSACTION,
   })
 )
 
@@ -30,12 +29,10 @@ function getStoredList(account) {
     preStringify: activity => ({
       ...activity,
       status: activity.status.description.replace('ACTIVITY_STATUS_', ''),
-      type: activity.type.description.replace('ACTIVITY_TYPE_', ''),
     }),
     postParse: activity => ({
       ...activity,
       status: SymbolsByName.get(`ACTIVITY_STATUS_${activity.status}`),
-      type: SymbolsByName.get(`ACTIVITY_TYPE_${activity.type}`),
     }),
   })
 }
@@ -112,20 +109,29 @@ class ActivityProviderBase extends React.Component {
     })
   }
 
-  addTransactionActivity = async (transaction, description = '') => {
-    const tx = await transaction
+  addTransactionActivity = async (
+    tx,
+
+    // see methods and params defined in activity-types.js
+    activityType = 'transaction',
+    activityParams = {}
+  ) => {
+    // tx might be a promise resolving into a tx
+    tx = await tx
+
     this.setState({
       activities: this._storedList.add({
+        activityParams,
+        activityType,
         createdAt: Date.now(),
-        description,
-        from: transaction.from,
+        from: tx.from,
         read: false,
         status: ACTIVITY_STATUS_PENDING,
-        to: transaction.to,
-        transactionHash: transaction.hash,
-        type: ACTIVITY_TYPE_TRANSACTION,
+        to: tx.to,
+        transactionHash: tx.hash,
       }),
     })
+
     return tx
   }
 
