@@ -401,8 +401,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
       outcome: roundAppealConfirmed ? appeal.opposedRuling : null,
-      showOutcome: roundAppealed,
-      // We only need to ensure that the round was appealed in order to show the confirm appeal outcome in this case because if it wasn't appealed, this phase will not appear in the timeline
+      showOutcome: roundAppealConfirmed || now.isAfter(confirmAppealEndTime),
     },
   ]
 
