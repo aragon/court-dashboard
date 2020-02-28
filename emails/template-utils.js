@@ -1075,5 +1075,6 @@ module.exports = {
   infobox,
   link,
   style,
+  table,
   vspace,
 }

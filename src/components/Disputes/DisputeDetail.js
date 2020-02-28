@@ -30,7 +30,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   } = useDisputeLogic(disputeId)
 
   const creatorAddress = dispute?.subject?.id
-
   const evidenceList = dispute?.evidences
 
   const evidences = useMemo(

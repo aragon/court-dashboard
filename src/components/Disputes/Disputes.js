@@ -16,7 +16,13 @@ function Disputes() {
     fetching: disputesFetching,
     error: errorFetching,
   } = useDisputes()
-  const jurorDisputes = useJurorDraftQuery(wallet.account)
+
+  // Query for all dispute ids where the juror has been drafted
+  const jurorDisputeIds = useJurorDraftQuery(wallet.account)
+
+  const jurorDisputes = disputes?.filter(dispute =>
+    jurorDisputeIds.includes(dispute.id)
+  )
 
   const history = useHistory()
   const handleSelectDispute = useCallback(
