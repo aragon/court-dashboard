@@ -27,6 +27,7 @@ function GlobalErrorScreen({ children }) {
           left: 16px;
         `}
         src={logo}
+        alt=""
       />
       <div
         css={`
