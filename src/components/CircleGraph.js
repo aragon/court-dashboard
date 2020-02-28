@@ -1,34 +1,54 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
+// import styled from 'styled-components'
 import { Spring, animated } from 'react-spring/renderprops'
 import { GU, useTheme } from '@aragon/ui'
 
 const STROKE_WIDTH = 4
 
-const VALUE_DEFAULT = 1
 const SIZE_DEFAULT = 80
+const SUFFIX_DEFAULT = '%'
+const VALUE_DEFAULT = value => {
+  if (value === 0) {
+    return '0'
+  }
+  if (Math.round(value * 100) < 1) {
+    return '1'
+  }
+  return String(Math.round(value * 100))
+}
+const PREFIX_DEFAULT = value => (Math.round(value * 100) < 1 ? `<` : '')
 const LABEL_DEFAULT = value => `${Math.round(value * 100)}`
 
 const { span: AnimatedSpan, circle: AnimatedCircle } = animated
 
-function CircleGraph({ value, comparisonOperator, label, size, strokeWidth }) {
+function CircleGraph({ value, prefix, suffix, label, size, strokeWidth }) {
   const theme = useTheme()
   const length = Math.PI * 2 * (size - strokeWidth)
   const radius = (size - strokeWidth) / 2
   return (
     <Spring to={{ progressValue: value }} native>
       {({ progressValue }) => (
-        <Main
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: `${size}px`,
-            height: `${size}px`,
-          }}
+        <div
+          css={`
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content center;
+            width: ${size}px;
+            height: ${size}px;
+          `}
         >
-          <CircleSvg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <svg
+            css={`
+              position: absolute;
+              top: 0;
+              left: 0;
+            `}
+            width={size}
+            height={size}
+            viewBox={`0 0 ${size} ${size}`}
+          >
             <circle
               cx={size / 2}
               cy={size / 2}
@@ -56,18 +76,18 @@ function CircleGraph({ value, comparisonOperator, label, size, strokeWidth }) {
                 transform-origin: 50% 50%;
               `}
             />
-          </CircleSvg>
+          </svg>
           <div
             css={`
               display: flex;
               align-items: baseline;
-              margin-left: ${comparisonOperator ? `0px ` : `${0.5 * GU}px`};
+              margin-left: ${prefix ? `0px ` : `${0.5 * GU}px`};
             `}
           >
-            {comparisonOperator && <div>{comparisonOperator}</div>}
+            {prefix && <div>{prefix}</div>}
             <AnimatedSpan
               css={`
-                font-size: 21px;
+                font-size: 18px;
               `}
             >
               {progressValue.interpolate(t =>
@@ -81,10 +101,10 @@ function CircleGraph({ value, comparisonOperator, label, size, strokeWidth }) {
                 color: ${theme.surfaceContentSecondary};
               `}
             >
-              %
+              {suffix}
             </div>
           </div>
-        </Main>
+        </div>
       )}
     </Spring>
   )
@@ -93,25 +113,20 @@ function CircleGraph({ value, comparisonOperator, label, size, strokeWidth }) {
 CircleGraph.propTypes = {
   value: PropTypes.number,
   size: PropTypes.number,
+  prefix: PropTypes.string,
+  suffix: PropTypes.string,
   label: PropTypes.func,
   strokeWidth: PropTypes.number,
 }
 
 CircleGraph.defaultProps = {
+  prefix: PREFIX_DEFAULT,
   value: VALUE_DEFAULT,
   size: SIZE_DEFAULT,
+
+  suffix: SUFFIX_DEFAULT,
   label: LABEL_DEFAULT,
   strokeWidth: STROKE_WIDTH,
 }
-
-const Main = styled.div`
-  position: relative;
-`
-
-const CircleSvg = styled.svg`
-  position: absolute;
-  top: 0;
-  left: 0;
-`
 
 export default CircleGraph

@@ -235,7 +235,6 @@ const BannerWithProbability = ({ activeBalance }) => {
       mainIcon={
         <CircleGraph
           value={probablilityTooLow ? 0.01 : draftingProbability}
-          comparisonOperator={probablilityTooLow && '<'}
           size={7 * GU}
         />
       }
