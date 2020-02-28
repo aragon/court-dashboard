@@ -67,7 +67,10 @@ export default function useJurorRewards() {
         const nextRoundId = round.number + 1
         const nextRound = round.dispute.rounds[nextRoundId]
 
-        const totalFees = getRoundFees(nextRound, courtConfig)
+        // It could happen that the appeal is never confirmed. In this case the appealer should get the entire appeal deposit
+        const totalFees = nextRound
+          ? getRoundFees(nextRound, courtConfig)
+          : bigNum(0)
 
         const appealerFees = getAppealerFees(appeal, totalFees, wallet.account)
 
@@ -83,7 +86,10 @@ export default function useJurorRewards() {
       rulingFees,
       arbitrableFees: feeMapToArray(arbitrableFees),
       appealFees: feeMapToArray(appealFees),
-      totalDisputesFees: getTotalDisputesFees(arbitrableFees, appealFees),
+      disputesFeesDistribution: getDisputesFeesDistribution(
+        arbitrableFees,
+        appealFees
+      ),
     }
   }, [appeals, wallet, courtConfig, jurorDrafts])
 }
@@ -121,7 +127,7 @@ function setOrUpdateFee(feeMap, disputeId, roundId, feeAmount) {
  * @returns {Array} New array with the total fees for each dispute
  */
 
-function getTotalDisputesFees(artbitrableFeesMap, appealFeesMap) {
+function getDisputesFeesDistribution(artbitrableFeesMap, appealFeesMap) {
   const appealFeesMapCopy = new Map([...appealFeesMap])
 
   const disputeFees = []

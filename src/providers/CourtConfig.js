@@ -11,7 +11,7 @@ const CourtConfigContext = React.createContext()
 
 function CourtConfigProvider({ children }) {
   const courtAddress = networks[getNetworkType(CHAIN_ID)].court
-  const courtConfig = useCourtConfigSubscription(courtAddress.toLowerCase())
+  const courtConfig = useCourtConfigSubscription(courtAddress)
 
   const convertedCourtConfig = courtConfig
     ? {

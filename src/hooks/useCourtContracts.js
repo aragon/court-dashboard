@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
-import aragonCourtAbi from '../abi/AragonCourt.json'
-import jurorRegistryAbi from '../abi/JurorRegistry.json'
-import tokenAbi from '../abi/ERC20.json'
-import disputeManagerAbi from '../abi/DisputeManager.json'
-import votingAbi from '../abi/CRVoting.json'
+import { useCourtConfig } from '../providers/CourtConfig'
 import { getFunctionSignature } from '../lib/web3-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import {
@@ -19,10 +14,17 @@ import { getModuleAddress } from '../utils/court-utils'
 import { retryMax } from '../utils/retry-max'
 import { useActivity } from '../components/Activity/ActivityProvider'
 
-const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
+import aragonCourtAbi from '../abi/AragonCourt.json'
+import courtTreasuryAbi from '../abi/CourtTreasury.json'
+import disputeManagerAbi from '../abi/DisputeManager.json'
+import jurorRegistryAbi from '../abi/JurorRegistry.json'
+import tokenAbi from '../abi/ERC20.json'
+import votingAbi from '../abi/CRVoting.json'
+
 const GAS_LIMIT = 1200000
 const ANJ_ACTIVATE_GAS_LIMIT = 500000
 const ANJ_ACTIONS_GAS_LIMIT = 325000
+const ACTIVATE_SELECTOR = getFunctionSignature('activate(uint256)')
 
 // ANJ contract
 function useANJTokenContract() {
@@ -71,7 +73,7 @@ export function useANJActions() {
   // activate ANJ directly from available balance
   const activateANJ = useCallback(
     amount => {
-      addTransactionActivity(
+      return addTransactionActivity(
         jurorRegistryContract.activate(amount, {
           gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
         }),
@@ -84,7 +86,7 @@ export function useANJActions() {
 
   const deactivateANJ = useCallback(
     amount => {
-      addTransactionActivity(
+      return addTransactionActivity(
         jurorRegistryContract.deactivate(amount, {
           gasLimit: ANJ_ACTIONS_GAS_LIMIT,
         }),
@@ -98,7 +100,7 @@ export function useANJActions() {
   // approve, stake and activate ANJ
   const stakeActivateANJ = useCallback(
     amount => {
-      addTransactionActivity(
+      return addTransactionActivity(
         anjTokenContract.approveAndCall(
           jurorRegistryContract.address,
           amount,
@@ -114,7 +116,7 @@ export function useANJActions() {
 
   const withdrawANJ = useCallback(
     amount => {
-      addTransactionActivity(
+      return addTransactionActivity(
         jurorRegistryContract.unstake(amount, '0x', {
           gasLimit: ANJ_ACTIONS_GAS_LIMIT,
         }),
@@ -150,7 +152,7 @@ export function useDisputeActions() {
   // Draft jurors
   const draft = useCallback(
     disputeId => {
-      addTransactionActivity(
+      return addTransactionActivity(
         disputeManagerContract.draft(disputeId, {
           gasLimit: GAS_LIMIT,
         }),
@@ -166,7 +168,7 @@ export function useDisputeActions() {
     (disputeId, roundId, commitment, password) => {
       const voteId = getVoteId(disputeId, roundId)
       const hashedCommitment = hashVote(commitment, password)
-      addTransactionActivity(
+      return addTransactionActivity(
         votingContract.commit(voteId, hashedCommitment),
         'commitVote',
         { disputeId, roundId, commitment }
@@ -180,7 +182,7 @@ export function useDisputeActions() {
     (disputeId, roundId, voter, commitment, salt) => {
       const voteId = getVoteId(disputeId, roundId)
       const outcome = getOutcomeFromCommitment(commitment, salt)
-      addTransactionActivity(
+      return addTransactionActivity(
         votingContract.reveal(voteId, voter, outcome, hashPassword(salt)),
         'revealVote',
         { roundId, disputeId }
@@ -192,7 +194,7 @@ export function useDisputeActions() {
   // Leak
   const leak = useCallback(
     (voteId, voter, outcome, salt) => {
-      addTransactionActivity(
+      return addTransactionActivity(
         votingContract.leak(voteId, voter, outcome, salt),
         'leakVote',
         { voteId, voter }
@@ -203,7 +205,7 @@ export function useDisputeActions() {
 
   const approveFeeDeposit = useCallback(
     value => {
-      addTransactionActivity(
+      return addTransactionActivity(
         feeTokenContract.approve(disputeManagerContract.address, value),
         'approveFeeDeposit',
         { amount: formatUnits(value) }
@@ -215,7 +217,7 @@ export function useDisputeActions() {
   // Appeal round of dispute
   const appeal = useCallback(
     (disputeId, roundId, ruling) => {
-      addTransactionActivity(
+      return addTransactionActivity(
         disputeManagerContract.createAppeal(disputeId, roundId, ruling, {
           gasLimit: GAS_LIMIT,
         }),
@@ -229,7 +231,7 @@ export function useDisputeActions() {
   // Confirm appeal round of dispute
   const confirmAppeal = useCallback(
     (disputeId, round, ruling) => {
-      addTransactionActivity(
+      return addTransactionActivity(
         disputeManagerContract.confirmAppeal(disputeId, round, ruling, {
           gasLimit: GAS_LIMIT,
         }),
@@ -242,7 +244,7 @@ export function useDisputeActions() {
 
   const executeRuling = useCallback(
     disputeId => {
-      addTransactionActivity(
+      return addTransactionActivity(
         aragonCourtContract.executeRuling(disputeId, {
           gasLimit: GAS_LIMIT,
         }),
@@ -271,9 +273,14 @@ export function useRewardActions() {
     disputeManagerAbi
   )
 
+  const treasuryContract = useCourtContract(
+    CourtModuleType.Treasury,
+    courtTreasuryAbi
+  )
+
   const settleReward = useCallback(
     (disputeId, roundId, juror) => {
-      addTransactionActivity(
+      return addTransactionActivity(
         disputeManagerContract.settleReward(disputeId, roundId, juror, {
           gasLimit: GAS_LIMIT,
         }),
@@ -285,8 +292,8 @@ export function useRewardActions() {
   )
 
   const settleAppealDeposit = useCallback(
-    (disputeId, roundId, juror) => {
-      addTransactionActivity(
+    (disputeId, roundId) => {
+      return addTransactionActivity(
         disputeManagerContract.settleAppealDeposit(disputeId, roundId, {
           gasLimit: GAS_LIMIT,
         }),
@@ -297,7 +304,16 @@ export function useRewardActions() {
     [addTransactionActivity, disputeManagerContract]
   )
 
-  return { settleReward, settleAppealDeposit }
+  const withdraw = useCallback(
+    (token, to, amount) => {
+      return treasuryContract.withdraw(token, to, amount, {
+        gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+      })
+    },
+    [treasuryContract]
+  )
+
+  return { settleReward, settleAppealDeposit, withdraw }
 }
 
 /**

@@ -1,12 +1,19 @@
 import React from 'react'
-import MessageCard from '../MessageCard'
+import { useWallet } from 'use-wallet'
 
+import MessageCard from '../MessageCard'
+import { useJurorDraftRewardedQuery } from '../../hooks/query-hooks'
 import iconNoRewardsSvg from '../../assets/IconNoRewards.svg'
 
 function NoRewards() {
+  // This component is only rendered when an account is connected so we are safe to assume that the wallet is not empty
+  const wallet = useWallet()
+  const hasJurorClaimedRewards = useJurorDraftRewardedQuery(wallet.account)
+
   const title = 'No rewards yet!'
-  const paragraph =
-    'Once you start arbitrating disputes, your rewards will appear here.'
+  const paragraph = hasJurorClaimedRewards
+    ? 'You have already claimed all your rewards'
+    : 'Once you start arbitrating disputes, your rewards will appear here.'
 
   return (
     <MessageCard

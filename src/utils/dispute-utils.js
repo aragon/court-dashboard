@@ -45,6 +45,8 @@ export const transformResponseDisputeAttributes = dispute => {
               ...appeal,
               appealedRuling: parseInt(appeal.appealedRuling, 10),
               opposedRuling: parseInt(appeal.opposedRuling, 10),
+              createdAt: parseInt(appeal.createdAt) * 1000,
+              confirmedAt: parseInt(appeal.confirmedAt || 0) * 1000,
             }
           : null,
         state: DisputesTypes.convertFromString(round.state),
@@ -343,6 +345,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     appealEndTime + termDuration * appealConfirmationTerms
 
   const roundAppealed = !!appeal
+  const roundAppealConfirmed = roundAppealed && appeal.opposedRuling > 0
 
   const roundPhasesAndTime = [
     {
@@ -371,28 +374,35 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       showOutcome: now.isAfter(revealEndTime),
     },
     {
+      // If the round was appealed we know it's a past phase and must update the endTime for the time this took effect (appeal.createdAt)
+      // If it wasn't appealed we have two cases:
+      //       - It's a past phase so in that case the endTime will be the time at where it's supposed to end if taking the full appealTerms duration
+      //       - It's the dispute active phase (the round can still be appealed) so the endTime will be used to tell the timer remaining time before the appeal phase is closed
       phase: DisputesTypes.Phase.AppealRuling,
-      endTime: appealEndTime,
+      endTime: roundAppealed ? appeal.createdAt : appealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
       outcome: roundAppealed ? appeal.appealedRuling : null,
-      showOutcome:
-        now.isAfter(appealEndTime) ||
-        (roundAppealed && !!appeal.appealedRuling),
+      showOutcome: roundAppealed || now.isAfter(appealEndTime),
+      // If the round was appealed, we'll show the outcome (appeal ruling),
+      // If it wasn't appealed then we'll show a "Nobodoy appealed" message
     },
     {
+      // If the round was appeal confirmed we know it's a past phase and must update the endTime for the time this took effect (appeal.confirmedAt)
+      // If it wasn't appeal confirmed we have two cases:
+      //       - It's a past phase so in that case the endTime will be the time at where it's supposed to end if taking the full confirmAppealTerms duration
+      //       - It's the dispute active phase (the round can still be appeal confirmed) so the endTime will be used to tell the timer remaining time before the confirm appeal phase is closed
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime: confirmAppealEndTime,
+      endTime: roundAppealConfirmed ? appeal.confirmedAt : confirmAppealEndTime,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
-      outcome: roundAppealed ? appeal.opposedRuling : null,
-      showOutcome:
-        now.isAfter(confirmAppealEndTime) ||
-        (roundAppealed && !!appeal.opposedRuling),
+      outcome: roundAppealConfirmed ? appeal.opposedRuling : null,
+      showOutcome: roundAppealed,
+      // We only need to ensure that the round was appealed in order to show the confirm appeal outcome in this case because if it wasn't appealed, this phase will not appear in the timeline
     },
   ]
 
@@ -455,10 +465,11 @@ export function getRoundFees(round, courtConfig) {
   } = courtConfig
 
   // Final round
-  if (round.number === maxRegularAppealRounds)
+  if (round.number === maxRegularAppealRounds) {
     return round.jurorsNumber
       .mul(jurorFee)
       .div(FINAL_ROUND_WEIGHT_PRECISION.mul(finalRoundReduction).div(PCT_BASE))
+  }
 
   // Regular round
   return draftFee
