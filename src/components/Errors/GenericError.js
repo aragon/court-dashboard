@@ -11,7 +11,7 @@ import {
   useTheme,
 } from '@aragon/ui'
 
-const SUPPORT_URL = 'https://github.com/aragon/aragon/issues/new'
+const SUPPORT_URL = 'https://github.com/aragon/court-dashboard/issues/new'
 
 const GenericError = React.memo(function GenericError({
   detailsTitle,
