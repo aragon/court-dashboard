@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ButtonBase, GU, springs, textStyle, useTheme } from '@aragon/ui'
 
-import { Spring, animated } from 'react-spring'
+import { Spring, animated } from 'react-spring/renderprops'
+import HeaderLogo from './HeaderLogo'
 
 import dashboardMenuIcon from '../assets/dashboardMenuIcon.svg'
 import tasksMenuIcon from '../assets/tasksMenuIcon.svg'
 import disputesMenuIcon from '../assets/disputesMenuIcon.svg'
+import { lerp } from '../lib/math-utils'
+
+export const MENU_PANEL_SHADOW_WIDTH = 3
+export const MENU_PANEL_WIDTH = 25 * GU
 
 const { div: AnimDiv } = animated
 
-function MenuPanel() {
+function MenuPanel({ showHeaderLogo, onOpenPage }) {
   const theme = useTheme()
 
   return (
@@ -20,38 +25,71 @@ function MenuPanel() {
         flex-direction: column;
         width: 100%;
         height: 100%;
-        padding: ${2 * GU}px 0;
         background: ${theme.surface};
         margin-top: 2px;
         box-shadow: rgba(0, 0, 0, 0.05) 2px 0px 3px;
       `}
     >
-      <h2
+      {showHeaderLogo && (
+        <div
+          css={`
+            padding: ${2 * GU}px ${3 * GU}px;
+          `}
+        >
+          <HeaderLogo />
+        </div>
+      )}
+      <div
         css={`
-          color: ${theme.surfaceContentSecondary};
-          margin-bottom: ${1 * GU}px;
-          padding: 0 ${3 * GU}px;
-          ${textStyle('label2')};
+          padding: ${2 * GU}px 0;
         `}
       >
-        Menu
-      </h2>
-
-      <MenuItem to="/dashboard" icon={dashboardMenuIcon} label="Dashboard" />
-      <MenuItem to="/tasks" icon={tasksMenuIcon} label="Tasks" />
-      <MenuItem to="/disputes" icon={disputesMenuIcon} label="Disputes" />
+        <h2
+          css={`
+            color: ${theme.surfaceContentSecondary};
+            margin-bottom: ${1 * GU}px;
+            padding: 0 ${3 * GU}px;
+            ${textStyle('label2')};
+          `}
+        >
+          Menu
+        </h2>
+        <MenuItem
+          to="/dashboard"
+          icon={dashboardMenuIcon}
+          label="Dashboard"
+          onActivate={onOpenPage}
+        />
+        <MenuItem
+          to="/tasks"
+          icon={tasksMenuIcon}
+          label="Tasks"
+          onActivate={onOpenPage}
+        />
+        <MenuItem
+          to="/disputes"
+          icon={disputesMenuIcon}
+          label="Disputes"
+          onActivate={onOpenPage}
+        />
+      </div>
     </nav>
   )
 }
 
-function MenuItem({ to, icon, label }) {
+function MenuItem({ to, icon, label, onActivate }) {
   const history = useHistory()
   const theme = useTheme()
   const active = useRouteMatch(to) !== null
 
+  const handlePageRequest = useCallback(() => {
+    onActivate()
+    history.push(to)
+  }, [history, onActivate, to])
+
   return (
     <ButtonBase
-      onClick={() => history.push(to)}
+      onClick={handlePageRequest}
       css={`
         display: flex;
         align-items: center;
@@ -98,7 +136,12 @@ function MenuItem({ to, icon, label }) {
   )
 }
 
-function AnimatedMenuPanel({ autoClosing, opened, onMenuPanelClose }) {
+function AnimatedMenuPanel({
+  autoClosing,
+  opened,
+  onMenuPanelClose,
+  ...props
+}) {
   const theme = useTheme()
   const [animate, setAnimate] = useState(autoClosing)
 
@@ -109,7 +152,7 @@ function AnimatedMenuPanel({ autoClosing, opened, onMenuPanelClose }) {
     setAnimate(false)
     const animateTimer = setTimeout(() => setAnimate(true), 0)
     return () => clearTimeout(animateTimer)
-  }, [])
+  }, [autoClosing])
 
   return (
     <Spring
@@ -122,11 +165,11 @@ function AnimatedMenuPanel({ autoClosing, opened, onMenuPanelClose }) {
       {({ menuPanelProgress }) => (
         <div
           css={`
+            height: 100%;
             /* When the panel is autoclosing, we want it over the top bar as well */
             ${autoClosing
               ? `
               position: absolute;
-              height: 100%;
               width: 100%;
               top: 0;
               ${!opened ? 'pointer-events: none' : ''}
@@ -151,24 +194,24 @@ function AnimatedMenuPanel({ autoClosing, opened, onMenuPanelClose }) {
           )}
           <AnimDiv
             css={`
-              width: 100%;
+              width: ${MENU_PANEL_WIDTH}px;
               height: 100%;
               flex: none;
             `}
-            // style={{
-            //   position: autoClosing ? 'absolute' : 'relative',
-            //   transform: menuPanelProgress.interpolate(
-            //     v =>
-            //       `translate3d(
-            //       ${lerp(
-            //         v,
-            //         -(MENU_PANEL_WIDTH + MENU_PANEL_SHADOW_WIDTH),
-            //         0
-            //       )}px, 0, 0)`
-            //   ),
-            // }}
+            style={{
+              position: autoClosing ? 'absolute' : 'relative',
+              transform: menuPanelProgress.interpolate(
+                v =>
+                  `translate3d(
+                  ${lerp(
+                    v,
+                    -(MENU_PANEL_WIDTH + MENU_PANEL_SHADOW_WIDTH),
+                    0
+                  )}px, 0, 0)`
+              ),
+            }}
           >
-            <MenuPanel />
+            <MenuPanel showHeaderLogo={autoClosing} {...props} />
           </AnimDiv>
         </div>
       )}

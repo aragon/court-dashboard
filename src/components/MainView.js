@@ -1,9 +1,7 @@
-import React, { useCallback, useState } from 'react'
-import { GU, Layout, Root, ScrollView, useViewport } from '@aragon/ui'
-import MenuPanel from './MenuPanel'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Layout, Root, ScrollView, useViewport } from '@aragon/ui'
+import MenuPanel, { MENU_PANEL_WIDTH } from './MenuPanel'
 import Header from './Header'
-
-const NAV_BAR_WIDTH = 25 * GU
 
 function MainView({ children }) {
   const { width: vw, below } = useViewport()
@@ -15,17 +13,17 @@ function MainView({ children }) {
     []
   )
 
-  // const handleCloseMenuPanel = useCallback(() => setMenuPanelOpen(false), [])
+  const handleCloseMenuPanel = useCallback(() => setMenuPanelOpen(false), [])
 
-  // const handleOpenPage = useCallback(() => {
-  //   if (autoClosingPanel) {
-  //     handleCloseMenuPanel()
-  //   }
-  // }, [autoClosingPanel, handleCloseMenuPanel])
+  const handleOpenPage = useCallback(() => {
+    if (autoClosingPanel) {
+      handleCloseMenuPanel()
+    }
+  }, [autoClosingPanel, handleCloseMenuPanel])
 
-  // useEffect(() => {
-  //   setMenuPanelOpen(!autoClosingPanel)
-  // }, [autoClosingPanel])
+  useEffect(() => {
+    setMenuPanelOpen(!autoClosingPanel)
+  }, [autoClosingPanel])
 
   return (
     <div
@@ -47,7 +45,6 @@ function MainView({ children }) {
       </div>
       <div
         css={`
-          position: relative;
           flex-grow: 1;
           flex-shrink: 1;
           height: 0;
@@ -58,19 +55,28 @@ function MainView({ children }) {
           css={`
             flex-shrink: 0;
             z-index: 3;
-            width: ${NAV_BAR_WIDTH}px;
+            height: 100%;
           `}
         >
-          <MenuPanel opened={menuPanelOpen} />
+          <MenuPanel
+            autoClosing={autoClosingPanel}
+            opened={menuPanelOpen}
+            onMenuPanelClose={handleCloseMenuPanel}
+            onOpenPage={handleOpenPage}
+          />
         </div>
         <Root.Provider
           css={`
             flex-grow: 1;
             height: 100%;
+            position: relative;
           `}
         >
           <ScrollView>
-            <Layout parentWidth={vw - NAV_BAR_WIDTH} paddingBottom={0}>
+            <Layout
+              parentWidth={vw - (autoClosingPanel ? 0 : MENU_PANEL_WIDTH)}
+              paddingBottom={0}
+            >
               {children}
             </Layout>
           </ScrollView>
