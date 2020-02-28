@@ -84,15 +84,15 @@ export function getDisputeTimeLine(dispute, courtConfig) {
     new Date()
   )
 
-  const firstRound = dispute.rounds[0]
+  const evidenceSubmissionEndTime = getEvidenceSubmissionEndTime(
+    dispute,
+    courtConfig
+  )
 
-  // If the evidence period is closed before the full `evidenceTerms` period,
-  // the drafTermId for the first round is updated to the term this happened.
-  const evidenceEndTime = getTermStartTime(firstRound.draftTermId, courtConfig)
   const timeLine = [
     {
       phase: DisputesTypes.Phase.Evidence,
-      endTime: evidenceEndTime,
+      endTime: evidenceSubmissionEndTime,
       active: currentPhaseAndTime.phase === DisputesTypes.Phase.Evidence,
       roundId: 0,
     },
@@ -143,11 +143,11 @@ export function getDisputeTimeLine(dispute, courtConfig) {
 export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   if (!dispute) return null
 
-  const { state, createdAt } = dispute
-  const now = dayjs(nowDate)
   let phase
   let nextTransition
+  const now = dayjs(nowDate)
 
+  const { state } = dispute
   const lastRound = dispute.rounds[dispute.lastRoundId]
   const { number } = lastRound
 
@@ -157,11 +157,12 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
     return { phase, roundId: number }
   }
 
-  const { termDuration, evidenceTerms } = courtConfig
-
   // Evidence submission
   if (state === DisputesTypes.Phase.Evidence) {
-    const evidenceSubmissionEndTime = createdAt + termDuration * evidenceTerms
+    const evidenceSubmissionEndTime = getEvidenceSubmissionEndTime(
+      dispute,
+      courtConfig
+    )
 
     if (now > evidenceSubmissionEndTime) {
       phase = DisputesTypes.Phase.JuryDrafting
@@ -174,9 +175,6 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
 
   // Jury Drafting
   if (state === DisputesTypes.Phase.JuryDrafting) {
-    let phase
-    // There is no end time for juty drafting?
-
     const juryDraftingStartTime = getTermStartTime(
       lastRound.draftTermId,
       courtConfig
@@ -431,23 +429,12 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   return roundPhasesAndTime.slice(0, currentPhaseIndex + 1)
 }
 
-export function getCommitEndTime(round, courtConfig) {
-  const { termDuration, commitTerms } = courtConfig
+function getEvidenceSubmissionEndTime(dispute, courtConfig) {
+  const firstRound = dispute.rounds[0]
 
-  const { draftTermId, delayedTerms } = round
-
-  const disputeDraftTermTime = getTermStartTime(
-    draftTermId + delayedTerms,
-    courtConfig
-  )
-  return disputeDraftTermTime + termDuration * commitTerms
-}
-
-export function getRevealEndTime(round, courtConfig) {
-  const { termDuration, revealTerms } = courtConfig
-  const commitEndTime = getCommitEndTime(round, courtConfig)
-
-  return commitEndTime + revealTerms * termDuration
+  // If the evidence period is closed before the full `evidenceTerms` period,
+  // the drafTermId for the first round is updated to the term this happened.
+  return getTermStartTime(firstRound.draftTermId, courtConfig)
 }
 
 export function getDisputeLastRound(dispute) {
