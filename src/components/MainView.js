@@ -5,9 +5,9 @@ import Header from './Header'
 
 function MainView({ children }) {
   const { width: vw, below } = useViewport()
-  const autoClosingPanel = below('medium')
+  const compactMode = below('medium')
 
-  const [menuPanelOpen, setMenuPanelOpen] = useState(!autoClosingPanel)
+  const [menuPanelOpen, setMenuPanelOpen] = useState(!compactMode)
   const toggleMenuPanel = useCallback(
     () => setMenuPanelOpen(opened => !opened),
     []
@@ -16,14 +16,14 @@ function MainView({ children }) {
   const handleCloseMenuPanel = useCallback(() => setMenuPanelOpen(false), [])
 
   const handleOpenPage = useCallback(() => {
-    if (autoClosingPanel) {
+    if (compactMode) {
       handleCloseMenuPanel()
     }
-  }, [autoClosingPanel, handleCloseMenuPanel])
+  }, [compactMode, handleCloseMenuPanel])
 
   useEffect(() => {
-    setMenuPanelOpen(!autoClosingPanel)
-  }, [autoClosingPanel])
+    setMenuPanelOpen(!compactMode)
+  }, [compactMode])
 
   return (
     <div
@@ -38,10 +38,7 @@ function MainView({ children }) {
           flex-shrink: 0;
         `}
       >
-        <Header
-          autoClosingPanel={autoClosingPanel}
-          toggleMenuPanel={toggleMenuPanel}
-        />
+        <Header compactMode={compactMode} toggleMenuPanel={toggleMenuPanel} />
       </div>
       <div
         css={`
@@ -59,7 +56,7 @@ function MainView({ children }) {
           `}
         >
           <MenuPanel
-            autoClosing={autoClosingPanel}
+            autoClosing={compactMode}
             opened={menuPanelOpen}
             onMenuPanelClose={handleCloseMenuPanel}
             onOpenPage={handleOpenPage}
@@ -74,7 +71,7 @@ function MainView({ children }) {
         >
           <ScrollView>
             <Layout
-              parentWidth={vw - (autoClosingPanel ? 0 : MENU_PANEL_WIDTH)}
+              parentWidth={vw - (compactMode ? 0 : MENU_PANEL_WIDTH)}
               paddingBottom={0}
             >
               {children}

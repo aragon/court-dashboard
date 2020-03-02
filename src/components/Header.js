@@ -4,10 +4,7 @@ import Account from './Account/Account'
 import Clock from './Clock'
 import HeaderLogo from './HeaderLogo'
 
-const Header = React.memo(function Header({
-  autoClosingPanel,
-  toggleMenuPanel,
-}) {
+const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
   return (
     <header
       css={`
@@ -22,7 +19,7 @@ const Header = React.memo(function Header({
         padding: 0 ${2 * GU}px;
       `}
     >
-      {autoClosingPanel ? (
+      {compactMode ? (
         <ButtonIcon label="Open menu" onClick={toggleMenuPanel}>
           <IconMenu />
         </ButtonIcon>
@@ -37,7 +34,7 @@ const Header = React.memo(function Header({
           justify-content: center;
         `}
       >
-        {!autoClosingPanel && <Clock />}
+        {!compactMode && <Clock />}
       </div>
       <Account />
     </header>
