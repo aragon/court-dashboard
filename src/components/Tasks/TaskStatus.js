@@ -3,7 +3,7 @@ import { textStyle, GU } from '@aragon/ui'
 import dayjs from 'dayjs'
 import { datesDiff } from '../../utils/date-utils'
 
-function getEndDay(dueDate) {
+function getDueDayText(dueDate) {
   const diff = datesDiff(dayjs(), dayjs(dueDate))
 
   if (diff === 0) {
@@ -25,7 +25,7 @@ const TaskStatus = React.memo(function TaskStatus({ dueDate }) {
         margin-left: ${GU * 0.7}px;
       `}
       >
-        {`Open: ${getEndDay(dueDate)}`}
+        {`Open: ${getDueDayText(dueDate)}`}
       </span>
     </div>
   )

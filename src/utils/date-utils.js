@@ -13,14 +13,14 @@ export function datesDiff(startDate, endDate) {
   const endDateOfMonth = endDate.get('date')
   const endMonth = endDate.get('month')
   const endYear = endDate.get('year')
-  const currentDateOfMonth = startDate.get('date')
-  const currentMonth = startDate.get('month')
-  const currentEndYear = startDate.get('year')
+  const startDateOfMonth = startDate.get('date')
+  const startMonth = startDate.get('month')
+  const startEndYear = startDate.get('year')
 
   if (
-    endDateOfMonth === currentDateOfMonth &&
-    endMonth === currentMonth &&
-    endYear === currentEndYear
+    endDateOfMonth === startDateOfMonth &&
+    endMonth === startMonth &&
+    endYear === startEndYear
   ) {
     return 0
   }
