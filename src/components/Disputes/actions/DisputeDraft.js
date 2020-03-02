@@ -12,7 +12,7 @@ function DisputeDraft({ disputeId, onDraft }) {
       const tx = await onDraft(disputeId)
       await tx.wait()
     } catch (err) {
-      console.log('Error submitting tx: ', err)
+      console.error('Error submitting tx: ', err)
     }
   }
 

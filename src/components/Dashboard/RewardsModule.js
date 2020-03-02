@@ -91,7 +91,7 @@ const RewardsModule = React.memo(function RewardsModule({
 
       await Promise.all(rewardTransactionQueue.map(tx => tx.wait()))
     } catch (err) {
-      console.log(`Error claiming rewards: ${err}`)
+      console.error(`Error claiming rewards: ${err}`)
     }
   }
 
