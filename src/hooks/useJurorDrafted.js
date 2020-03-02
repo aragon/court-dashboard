@@ -8,11 +8,10 @@ export function useJurorDrafted({ pause }) {
   const wallet = useWallet()
   const { currentTermStartDate } = useCourtClock()
 
-  const account = wallet.account.toLowerCase()
   const currnetTermStartTime = dayjs(currentTermStartDate).unix()
 
   const jurorDrafts = useCurrentTermJurorDraftsSubscription(
-    account,
+    wallet.account,
     currnetTermStartTime,
     pause
   )

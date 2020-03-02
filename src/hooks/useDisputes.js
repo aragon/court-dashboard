@@ -9,7 +9,7 @@ import {
   useDisputesSubscription,
 } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
-import { convertToString } from '../types/dispute-status-types'
+import { convertToString, Status } from '../types/dispute-status-types'
 import { ipfsGet } from '../lib/ipfs-utils'
 
 export default function useDisputes() {
@@ -55,57 +55,11 @@ export default function useDisputes() {
 }
 
 export function useDispute(disputeId) {
-  const [disputeProcessed, setDisputeProcessed] = useState()
   const courtConfig = useCourtConfig()
   const now = useNow() // TODO: use court clock
+
   const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
-  useEffect(() => {
-    const fetchDataFromIpfs = async () => {
-      if (dispute) {
-        const [
-          disputeDescription,
-          disputeMetadata,
-        ] = getDisputeInfoFromMetadata(dispute.metadata)
-
-        if (!disputeMetadata) {
-          return setDisputeProcessed({ ...dispute, error: true })
-        }
-        const ipfsPath = disputeMetadata.replace(/^ipfs:/, '')
-
-        if (isIPFS.cidPath(ipfsPath)) {
-          const { data, error } = await ipfsGet(ipfsPath)
-          if (error) {
-            return setDisputeProcessed({ ...dispute, error: true })
-          }
-          try {
-            const parsedDisputeData = JSON.parse(data)
-            const agreementText = parsedDisputeData.agreementText.replace(
-              /^.\//,
-              ''
-            )
-            const agreementUrl = resolvePathname(
-              agreementText,
-              `${IPFS_ENDPOINT}/${ipfsPath}`
-            )
-            return setDisputeProcessed({
-              ...dispute,
-              description: parsedDisputeData.description || disputeDescription,
-              agreementText: agreementText || '',
-              agreementUrl,
-              defendant: parsedDisputeData.defendant || '',
-              plaintiff: parsedDisputeData.plaintiff || '',
-              error: false,
-            })
-          } catch (err) {
-            return setDisputeProcessed({ ...dispute, description: data })
-          }
-        }
-        return setDisputeProcessed({ ...dispute, error: true })
-      }
-    }
-
-    fetchDataFromIpfs()
-  }, [dispute])
+  const disputeProcessed = useProcessedDispute(dispute)
 
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
   const disputePhaseKey = disputePhase
@@ -113,18 +67,78 @@ export function useDispute(disputeId) {
     : ''
 
   return useMemo(() => {
-    if (fetching || !disputeProcessed) {
+    if (fetching || (dispute && !disputeProcessed)) {
       return { fetching: true }
     }
 
     return {
-      dispute: {
-        ...disputeProcessed,
-        ...disputePhase,
-      },
-      fetching,
+      dispute: dispute
+        ? {
+            ...disputeProcessed,
+            ...disputePhase,
+          }
+        : null,
     }
-  }, [disputeProcessed, dispute, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [disputeProcessed, dispute, disputePhaseKey, fetching]) // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+function useProcessedDispute(dispute) {
+  const [disputeProcessed, setDisputeProcessed] = useState(null)
+
+  useEffect(() => {
+    const fetchDataFromIpfs = async () => {
+      if (dispute) {
+        if (dispute.status !== Status.Voided) {
+          const [
+            disputeDescription,
+            disputeMetadata,
+          ] = getDisputeInfoFromMetadata(dispute.metadata)
+
+          if (!disputeMetadata) {
+            return setDisputeProcessed({ ...dispute, error: true })
+          }
+          const ipfsPath = disputeMetadata.replace(/^ipfs:/, '')
+
+          if (isIPFS.cidPath(ipfsPath)) {
+            const { data, error } = await ipfsGet(ipfsPath)
+            if (error) {
+              return setDisputeProcessed({ ...dispute, error: true })
+            }
+            try {
+              const parsedDisputeData = JSON.parse(data)
+              const agreementText = parsedDisputeData.agreementText.replace(
+                /^.\//,
+                ''
+              )
+              const agreementUrl = resolvePathname(
+                agreementText,
+                `${IPFS_ENDPOINT}/${ipfsPath}`
+              )
+              return setDisputeProcessed({
+                ...dispute,
+                description:
+                  parsedDisputeData.description || disputeDescription,
+                agreementText: agreementText || '',
+                agreementUrl,
+                defendant: parsedDisputeData.defendant || '',
+                plaintiff: parsedDisputeData.plaintiff || '',
+                error: false,
+              })
+            } catch (err) {
+              return setDisputeProcessed({ ...dispute, description: data })
+            }
+          }
+          return setDisputeProcessed({ ...dispute, error: true })
+        }
+
+        return setDisputeProcessed({ ...dispute })
+      }
+    }
+
+    fetchDataFromIpfs()
+  }, [dispute])
+
+  return disputeProcessed
 }
 
 function getDisputeInfoFromMetadata(disputeMetadata) {

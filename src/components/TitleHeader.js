@@ -1,9 +1,12 @@
 import React from 'react'
-import { Button, GU, Header } from '@aragon/ui'
+import { Button, GU, Header, useLayout } from '@aragon/ui'
 
 import ANJIcon from '../assets/IconANJButton.svg'
 
 function TitleHeader({ title, onlyTitle = false }) {
+  const { layoutName } = useLayout()
+  const compactMode = layoutName === 'small'
+
   return (
     <Header
       primary={title}
@@ -15,14 +18,16 @@ function TitleHeader({ title, onlyTitle = false }) {
               align-items: center;
             `}
           >
-            <Button
-              label="User guide"
-              href="https://help.aragon.org/article/41-aragon-court"
-              css={`
-                margin-right: ${1.5 * GU}px;
-                width: 150px;
-              `}
-            />
+            {!compactMode && (
+              <Button
+                label="User guide"
+                href="https://help.aragon.org/article/41-aragon-court"
+                css={`
+                  margin-right: ${1.5 * GU}px;
+                  width: 150px;
+                `}
+              />
+            )}
             <Button
               icon={
                 <div
@@ -30,7 +35,7 @@ function TitleHeader({ title, onlyTitle = false }) {
                     display: flex;
                     height: ${GU * 3}px;
                     width: ${GU * 3}px;
-                    margin-right: -6px;
+                    margin-right: ${compactMode ? 0 : -6}px;
                   `}
                 >
                   <img
@@ -45,7 +50,7 @@ function TitleHeader({ title, onlyTitle = false }) {
               }
               label="Buy ANJ"
               mode="strong"
-              display="all"
+              display={compactMode ? 'icon' : 'all'}
               href="https://anj.aragon.org/"
               target="_blank"
             />

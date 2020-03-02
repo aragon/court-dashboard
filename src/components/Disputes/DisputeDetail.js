@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { BackButton, Bar, Box, GU, Header, SidePanel, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
+import { utils as EthersUtils } from 'ethers'
 
 import DisputeInfo from './DisputeInfo'
 import DisputeEvidences from './DisputeEvidences'
@@ -11,8 +12,9 @@ import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
 
 import { toDate } from '../../lib/web3-utils'
+import { Status as DisputeStatus } from '../../types/dispute-status-types'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
-import { utils as EthersUtils } from 'ethers'
+import { DisputeNotFound } from '../../errors'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()
@@ -28,7 +30,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   } = useDisputeLogic(disputeId)
 
   const creatorAddress = dispute?.subject?.id
-
   const evidenceList = dispute?.evidences
 
   const evidences = useMemo(
@@ -47,16 +48,23 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   const noDispute = !dispute && !disputeFetching
 
-  useEffect(() => {
-    // TODO: display a proper error state and let the user retry or go back
-    if (noDispute) {
-      history.push('/disputes')
-    }
-  }, [noDispute, history])
-
   if (noDispute) {
-    return null
+    throw new DisputeNotFound(disputeId)
   }
+
+  const DisputeInfoComponent = (
+    <DisputeInfo
+      id={disputeId}
+      dispute={dispute}
+      loading={disputeFetching}
+      onDraft={actions.draft}
+      onRequestCommit={requests.commit}
+      onRequestReveal={requests.reveal}
+      onLeak={actions.leak}
+      onRequestAppeal={requests.appeal}
+      onExecuteRuling={actions.executeRuling}
+    />
+  )
 
   return (
     <React.Fragment>
@@ -64,50 +72,44 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
-      <Split
-        primary={
-          <React.Fragment>
-            <DisputeInfo
-              id={disputeId}
-              dispute={dispute}
-              loading={disputeFetching}
-              onDraft={actions.draft}
-              onRequestCommit={requests.commit}
-              onRequestReveal={requests.reveal}
-              onLeak={actions.leak}
-              onRequestAppeal={requests.appeal}
-              onExecuteRuling={actions.executeRuling}
-            />
-            {(() => {
-              if (disputeFetching) {
-                return null
-              }
-              if (evidences.length === 0) {
-                return <NoEvidence />
-              }
-              return (
-                // TODO- in next PR will get plaintiff and deffendant from the dispute
-                <DisputeEvidences
-                  evidences={evidences}
-                  plaintiff={creatorAddress}
-                  defendant=""
-                />
-              )
-            })()}
-          </React.Fragment>
-        }
-        secondary={
-          <React.Fragment>
-            <Box heading="Dispute timeline" padding={0}>
-              {disputeFetching ? (
-                <div css="height: 200px" />
-              ) : (
-                <DisputeTimeline dispute={dispute} />
-              )}
-            </Box>
-          </React.Fragment>
-        }
-      />
+      {dispute?.status === DisputeStatus.Voided ? (
+        DisputeInfoComponent
+      ) : (
+        <Split
+          primary={
+            <React.Fragment>
+              {DisputeInfoComponent}
+              {(() => {
+                if (disputeFetching) {
+                  return null
+                }
+                if (evidences.length === 0) {
+                  return <NoEvidence />
+                }
+                return (
+                  // TODO- in next PR will get plaintiff and deffendant from the dispute
+                  <DisputeEvidences
+                    evidences={evidences}
+                    plaintiff={creatorAddress}
+                    defendant=""
+                  />
+                )
+              })()}
+            </React.Fragment>
+          }
+          secondary={
+            <React.Fragment>
+              <Box heading="Dispute timeline" padding={0}>
+                {disputeFetching ? (
+                  <div css="height: 200px" />
+                ) : (
+                  <DisputeTimeline dispute={dispute} />
+                )}
+              </Box>
+            </React.Fragment>
+          }
+        />
+      )}
       <SidePanel
         title={<PanelTitle requestMode={requestMode} disputeId={disputeId} />}
         opened={panelState.visible}

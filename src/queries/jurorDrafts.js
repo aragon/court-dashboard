@@ -28,6 +28,18 @@ export const JurorDraftsNotRewarded = gql`
   }
 `
 
+// First juror draft already rewarded
+export const JurorDraftRewarded = gql`
+  query JurorDraft($id: ID!) {
+    juror(id: $id) {
+      id
+      drafts(where: { rewarded: true }, first: 1) {
+        id
+      }
+    }
+  }
+`
+
 // Jurors drafts by `id` for current term
 export const CurrentTermJurorDrafts = gql`
   subscription JurorDrafts($id: ID!, $from: BigInt!) {
@@ -41,7 +53,6 @@ export const CurrentTermJurorDrafts = gql`
   }
 `
 
-// TODO: Check if all the data is necessary
 // All juror drafts by `id`
 export const JurorDrafts = gql`
   query JurorDrafts($id: ID!) {
@@ -49,52 +60,10 @@ export const JurorDrafts = gql`
       id
       drafts {
         id
-        weight
-        rewarded
-        commitment
-        outcome
-        leaker
-        createdAt
         round {
           id
-          number
           dispute {
             id
-            txHash
-            createTermId
-            possibleRulings
-            finalRuling
-            lastRoundId
-            state
-            metadata
-            createdAt
-            rounds {
-              state
-              number
-              draftTermId
-              jurorsNumber
-              settledPenalties
-              jurorFees
-              delayedTerms
-              selectedJurors
-              coherentJurors
-              collectedTokens
-              createdAt
-              jurors {
-                juror {
-                  id
-                }
-              }
-              appeal {
-                id
-                maker
-                appealedRuling
-                taker
-                opposedRuling
-                settled
-                createdAt
-              }
-            }
           }
         }
       }

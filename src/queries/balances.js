@@ -16,6 +16,15 @@ export const Juror = gql`
       availableBalance
       deactivationBalance
       withdrawalsLockTermId
+      treasuryTokens {
+        token {
+          id
+          name
+          symbol
+          decimals
+        }
+        balance
+      }
       movements(
         orderBy: createdAt
         orderDirection: desc

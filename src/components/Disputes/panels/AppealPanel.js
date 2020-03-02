@@ -112,10 +112,11 @@ const AppealPanel = React.memo(function AppealPanel({
         dispute.lastRoundId,
         appealOption.outcome
       )
-      await tx.wait()
+
       onDone()
+      await tx.wait()
     } catch (err) {
-      console.log('Error submitting tx: ', err)
+      console.error('Error submitting tx: ', err)
     }
   }
 
@@ -194,8 +195,11 @@ const AppealPanel = React.memo(function AppealPanel({
       )}
       <Info>
         Please note that if the final ruling outcome is different from your
-        selected appeal, the entire amount of your collateral will be slashed.{' '}
-        <Link href="#">Learn more</Link> {/* TODO: add ref */}
+        selected appeal, the entire amount of your collateral could be slashed.{' '}
+        <Link href="https://help.aragon.org/article/43-dispute-lifecycle#appeal">
+          Learn more
+        </Link>
+        .
       </Info>
     </form>
   )

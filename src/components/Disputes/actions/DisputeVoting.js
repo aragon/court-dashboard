@@ -64,7 +64,7 @@ function VotingActions({ canJurorVote, onRequestCommit }) {
           disabled={!canJurorVote}
           onClick={() => onRequestCommit(VOTE_OPTION_IN_FAVOR)}
         >
-          In favor
+          In favor of the plaintiff
         </VotingButton>
         <VotingButton
           mode="negative"
@@ -72,7 +72,7 @@ function VotingActions({ canJurorVote, onRequestCommit }) {
           disabled={!canJurorVote}
           onClick={() => onRequestCommit(VOTE_OPTION_AGAINST)}
         >
-          Against
+          Against the plaintiff
         </VotingButton>
         <VotingButton
           wide

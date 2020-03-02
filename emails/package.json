@@ -1,0 +1,16 @@
+{
+  "name": "emails",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "handlebars": "^4.7.3",
+    "prettier": "^1.19.1"
+  },
+  "scripts": {
+    "build": "./build-emails",
+    "build:mock": "MOCK_DATA=1 yarn build",
+    "build:postmark": "ASSETS_URL=https://storage.googleapis.com/aragon/court-dashboard/emails/assets yarn build"
+  }
+}

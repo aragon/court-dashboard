@@ -39,11 +39,12 @@ const RevealPanel = React.memo(function RevealPanel({
         jurorDraft.commitment,
         password
       )
+
+      onDone()
       await tx.wait()
       removeCodeFromLocalStorage(wallet.account, dispute.id)
-      onDone()
     } catch (err) {
-      console.log('Error submitting tx: ', err)
+      console.error('Error submitting tx: ', err)
     }
   }
 

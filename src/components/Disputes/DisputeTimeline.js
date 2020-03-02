@@ -242,13 +242,9 @@ function PhaseIcon({ phase, active }) {
 }
 
 function DisplayTime({ item }) {
-  const { endTime, active, phase } = item
+  const { endTime, active } = item
   if (active) {
-    if (
-      phase === DisputePhase.ExecuteRuling ||
-      phase === DisputePhase.ClaimRewards ||
-      phase === DisputePhase.JuryDrafting
-    ) {
+    if (!endTime) {
       return 'ANY TIME'
     }
     return <Timer end={new Date(endTime)} maxUnits={3} />

@@ -1,9 +1,8 @@
 import React from 'react'
-import { Button, GU, Info, useTheme } from '@aragon/ui'
+import { Button, GU, Info } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 
 function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
-  const theme = useTheme()
   const wallet = useWallet()
 
   const handleSubmit = async event => {
@@ -13,7 +12,7 @@ function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
       const tx = await onExecuteRuling(disputeId)
       await tx.wait()
     } catch (err) {
-      console.log('Error submitting tx: ', err)
+      console.error('Error submitting tx: ', err)
     }
   }
 
@@ -31,14 +30,7 @@ function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
         </Button>
       </div>
       <Info>
-        Anyone can now trigger this action and earn some{' '}
-        <span
-          css={`
-            color: ${theme.help};
-          `}
-        >
-          rewards.
-        </span>
+        <strong>Anyone</strong> can now trigger this action.
       </Info>
     </form>
   )

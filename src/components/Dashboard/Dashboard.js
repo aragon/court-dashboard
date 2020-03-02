@@ -4,7 +4,7 @@ import { GU, SidePanel, Split, useLayout } from '@aragon/ui'
 import Welcome from './Welcome'
 import Tasks from '../Tasks/Tasks'
 import TitleHeader from '../TitleHeader'
-import ErrorLoading from '../ErrorLoading'
+import ErrorLoading from '../Errors/ErrorLoading'
 import BalanceModule from './BalanceModule'
 import RewardsModule from './RewardsModule'
 import ActivateANJ from './panels/ActivateANJ'
@@ -30,12 +30,13 @@ function Dashboard() {
     actions,
     appealCollaterals,
     balances,
-    rewards,
-    fetchingData,
     errorsFetching,
+    fetchingData,
     mode,
     panelState,
     requests,
+    rewards,
+    treasury,
   } = useDashboardLogic()
 
   const { name: layout } = useLayout()
@@ -73,7 +74,9 @@ function Dashboard() {
                 <>
                   <RewardsModule
                     rewards={rewards}
+                    treasury={treasury}
                     loading={fetchingData}
+                    onWithdraw={actions.withdraw}
                     onSettleReward={actions.settleReward}
                     onSettleAppealDeposit={actions.settleAppealDeposit}
                   />
@@ -88,7 +91,6 @@ function Dashboard() {
           )}
         </>
       )}
-
       <SidePanel
         title={`${getRequestModeString(mode)} ANJ`}
         opened={panelState.visible}

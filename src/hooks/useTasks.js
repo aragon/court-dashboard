@@ -4,6 +4,7 @@ import { useTasksSubscription } from './subscription-hooks'
 import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { useCourtConfig } from '../providers/CourtConfig'
+import { getVoidedDisputesByCourt } from '../voided-disputes'
 
 export default function useTasks() {
   const courtConfig = useCourtConfig()
@@ -15,67 +16,84 @@ export default function useTasks() {
 }
 
 function useOpenTasks(tasks, now, courtSettings) {
-  const currentRoundPhases = useMemo(() => {
+  const voidedDisputes = getVoidedDisputesByCourt()
+  const convertedTasks = useMemo(() => {
     if (!tasks) {
       return null
     }
-    return tasks.map(t =>
-      getAdjudicationPhase(t.dispute, t, now, courtSettings)
-    )
+    return tasks.map(task => ({
+      ...task,
+      ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
+    }))
   }, [courtSettings, now, tasks])
 
-  const currentRoundPhasesKey = currentRoundPhases
-    ? currentRoundPhases
+  const convertedTasksPhasesKey = convertedTasks
+    ? convertedTasks
         .map(phase => DisputesTypes.convertToString(phase.phase))
         .join('')
     : null
 
+  const incompleteTasks = useMemo(() => {
+    if (!convertedTasks) {
+      return null
+    }
+    return convertedTasks.filter(
+      task =>
+        !voidedDisputes.has(task.dispute.id) &&
+        task.phase !== DisputesTypes.Phase.Ended
+    )
+  }, [convertedTasks]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return useMemo(() => {
+    if (!convertedTasks) {
+      return []
+    }
     const openTasks = []
-    if (tasks) {
-      for (let i = 0; i < tasks.length; i++) {
-        // If we are in appeal or confirm we just need to generate 1 task
-        if (
-          currentRoundPhases[i].phase === DisputesTypes.Phase.AppealRuling ||
-          currentRoundPhases[i].phase === DisputesTypes.Phase.ConfirmAppeal
-        ) {
-          openTasks.push({
-            number: tasks[i].number,
-            state: tasks[i].state,
-            createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
-            juror: 'Anyone',
-            disputeId: tasks[i].dispute.id,
-            phase: getTaskName(currentRoundPhases[i].phase),
-            dueDate: currentRoundPhases[i].nextTransition,
-            phaseType: currentRoundPhases[i].phase,
-            open: isAppealTaskOpen(tasks[i], currentRoundPhases[i].phase),
-          })
-        } else {
-          for (let j = 0; j < tasks[i].jurors.length; j++) {
-            if (currentRoundPhases[i].phase !== DisputesTypes.Phase.Ended) {
-              openTasks.push({
-                number: tasks[i].number,
-                state: tasks[i].state,
-                createdAt: parseInt(tasks[i].createdAt, 10) * 1000,
-                juror: tasks[i].jurors[j].juror.id,
-                disputeId: tasks[i].dispute.id,
-                commitment: tasks[i].jurors[j].commitment,
-                outcome: tasks[i].jurors[j].outcome,
-                phase: getTaskName(currentRoundPhases[i].phase),
-                phaseType: currentRoundPhases[i].phase,
-                dueDate: currentRoundPhases[i].nextTransition,
-                open: isVotingTaskOpen(
-                  tasks[i].jurors[j],
-                  currentRoundPhases[i].phase
-                ),
-              })
-            }
+
+    for (let i = 0; i < incompleteTasks.length; i++) {
+      const currentPhase = incompleteTasks[i].phase
+      const nextTransition = incompleteTasks[i].nextTransition
+
+      if (
+        currentPhase !== DisputesTypes.Phase.AppealRuling &&
+        currentPhase !== DisputesTypes.Phase.ConfirmAppeal
+      ) {
+        for (let j = 0; j < incompleteTasks[i].jurors.length; j++) {
+          if (isVotingTaskOpen(incompleteTasks[i].jurors[j], currentPhase)) {
+            openTasks.push({
+              number: incompleteTasks[i].number,
+              state: incompleteTasks[i].state,
+              createdAt: parseInt(incompleteTasks[i].createdAt, 10) * 1000,
+              juror: incompleteTasks[i].jurors[j].juror.id,
+              disputeId: incompleteTasks[i].dispute.id,
+              commitment: incompleteTasks[i].jurors[j].commitment,
+              outcome: incompleteTasks[i].jurors[j].outcome,
+              phase: getTaskName(currentPhase),
+              phaseType: currentPhase,
+              dueDate: nextTransition,
+            })
           }
+        }
+      } else {
+        if (isAppealTaskOpen(incompleteTasks[i], currentPhase)) {
+          // We are in appeal or confirm and only need to generate a single task
+          // (rather than one per juror) if the task is still open
+          openTasks.push({
+            number: incompleteTasks[i].number,
+            state: incompleteTasks[i].state,
+            createdAt: parseInt(incompleteTasks[i].createdAt, 10) * 1000,
+            juror: 'Anyone',
+            disputeId: incompleteTasks[i].dispute.id,
+            phase: getTaskName(currentPhase),
+            dueDate: nextTransition,
+            phaseType: currentPhase,
+          })
         }
       }
     }
     return openTasks
-  }, [currentRoundPhasesKey, tasks]) // eslint-disable-line react-hooks/exhaustive-deps
+    // Since we are using our own generated cache key we don't need to add the convertedTasks to the dependency list.
+  }, [convertedTasksPhasesKey, incompleteTasks]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function getTaskName(phase) {
@@ -95,25 +113,20 @@ function getTaskName(phase) {
 
 function isAppealTaskOpen(round, currentPhase) {
   if (currentPhase === DisputesTypes.Phase.AppealRuling) {
-    if (round.appeal) {
-      return false
-    }
-    return true
+    return !round.appeal
   }
   if (currentPhase === DisputesTypes.Phase.ConfirmAppeal) {
-    if (round?.appeal?.opposedRuling !== 0) {
-      return false
+    if (round?.appeal?.opposedRuling) {
+      return Number(round.appeal.opposedRuling) === 0
     }
+
     return true
   }
 }
 
 function isVotingTaskOpen(draft, currentPhase) {
   if (currentPhase === DisputesTypes.Phase.VotingPeriod) {
-    if (draft.commitment) {
-      return false
-    }
-    return true
+    return !draft.commitment
   }
   if (currentPhase === DisputesTypes.Phase.RevealVote) {
     if (draft.outcome || !draft.commitment) {

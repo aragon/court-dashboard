@@ -11,23 +11,21 @@ import {
 } from '@aragon/ui'
 import styled from 'styled-components'
 
-import DisputeStatus from './DisputeStatus'
-import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeActions from './DisputeActions'
+import DisputeCurrentRuling from './DisputeCurrentRuling'
+import DisputeOutcomeText from './DisputeOutcomeText'
+import DisputeRoundPill from './DisputeRoundPill'
+import DisputeStatus from './DisputeStatus'
+import DisputeVoided from './DisputeVoided'
+import ErrorLoading from '../Errors/ErrorLoading'
 import Loading from './Loading'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { useWallet } from '../../providers/Wallet'
 import useNetwork from '../../hooks/useNetwork'
 
-import {
-  Phase as DisputePhase,
-  Status as DipsuteStatus,
-} from '../../types/dispute-status-types'
+import { Phase as DisputePhase, Status } from '../../types/dispute-status-types'
 import iconCourt from '../../assets/courtIcon.svg'
 import { addressesEqual } from '../../lib/web3-utils'
-import DisputeRoundPill from './DisputeRoundPill'
-import DisputeOutcomeText from './DisputeOutcomeText'
-import ErrorLoading from '../ErrorLoading'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -54,14 +52,16 @@ const DisputeInfo = React.memo(function({
   const creator = plaintiff || dispute?.subject?.id
 
   const isFinalRulingEnsured =
-    phase === DisputePhase.ExecuteRuling || status === DipsuteStatus.Closed
+    phase === DisputePhase.ExecuteRuling || status === Status.Closed
 
   const lastRound = dispute?.rounds?.[dispute.lastRoundId]
   const appealedRuling = lastRound?.appeal?.appealedRuling
   const voteWinningOutcome = lastRound?.vote?.winningOutcome
 
+  const isDisputeVoided = dispute?.status === Status.Voided
+
   return (
-    <Box>
+    <Box padding={5 * GU}>
       <section
         css={`
           display: grid;
@@ -75,6 +75,17 @@ const DisputeInfo = React.memo(function({
           if (loading) {
             return <Loading border={false} />
           }
+
+          if (isDisputeVoided) {
+            return (
+              <DisputeVoided
+                id={id}
+                description={dispute.voidedDescription}
+                link={dispute.voidedLink}
+              />
+            )
+          }
+
           if (error) {
             return (
               <ErrorLoading
@@ -84,6 +95,7 @@ const DisputeInfo = React.memo(function({
               />
             )
           }
+
           return (
             <>
               <Row>
@@ -146,20 +158,25 @@ const DisputeInfo = React.memo(function({
             </>
           )
         })()}
-
-        {(phase === DisputePhase.AppealRuling ||
-          phase === DisputePhase.ConfirmAppeal ||
-          isFinalRulingEnsured) && <DisputeCurrentRuling dispute={dispute} />}
-        {!loading && (
-          <DisputeActions
-            dispute={dispute}
-            onDraft={onDraft}
-            onRequestCommit={onRequestCommit}
-            onRequestReveal={onRequestReveal}
-            onLeak={onLeak}
-            onRequestAppeal={onRequestAppeal}
-            onExecuteRuling={onExecuteRuling}
-          />
+        {!isDisputeVoided && (
+          <>
+            {(phase === DisputePhase.AppealRuling ||
+              phase === DisputePhase.ConfirmAppeal ||
+              isFinalRulingEnsured) && (
+              <DisputeCurrentRuling dispute={dispute} />
+            )}
+            {!loading && (
+              <DisputeActions
+                dispute={dispute}
+                onDraft={onDraft}
+                onRequestCommit={onRequestCommit}
+                onRequestReveal={onRequestReveal}
+                onLeak={onLeak}
+                onRequestAppeal={onRequestAppeal}
+                onExecuteRuling={onExecuteRuling}
+              />
+            )}
+          </>
         )}
       </section>
     </Box>
@@ -221,7 +238,7 @@ function DisputeHeader({ id, dispute }) {
               />
             )}
           </h1>
-          {transaction && (
+          {Boolean(dispute?.status !== Status.Voided && transaction) && (
             <TransactionBadge
               transaction={transaction}
               networkType={network.type}

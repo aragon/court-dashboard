@@ -5,6 +5,7 @@ export const ERROR_TYPES = {
 export const Status = {
   Open: Symbol('Open'),
   Closed: Symbol('Closed'),
+  Voided: Symbol('Voided'),
 }
 
 export const Phase = {

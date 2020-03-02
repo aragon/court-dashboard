@@ -5,7 +5,6 @@ import {
   IconCopy,
   IconDownload,
   Info,
-  Link,
   Switch,
   Tag,
   TextInput,
@@ -45,11 +44,12 @@ const CommitPanel = React.memo(function CommitPanel({
           commitment,
           oneTimeCode
         )
+
+        onDone()
         await tx.wait()
         saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode)
-        onDone()
       } catch (err) {
-        console.log('Error submitting transaction: ', err)
+        console.error('Error submitting transaction: ', err)
       }
     },
     [
@@ -270,8 +270,8 @@ const RevealService = React.memo(function RevealService({
       >
         By enabling this feature you trust Aragon One to reveal your vote on
         your behalf in this and following disputes. You can always turn off this
-        service later if you choose. <Link>Learn more</Link>
-        {/* TODO: Add ref */}
+        service later if you choose.
+        {/* TODO: Add ref:  <Link>Learn more</Link>. */}
       </div>
     </React.Fragment>
   )
