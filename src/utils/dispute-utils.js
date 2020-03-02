@@ -477,6 +477,12 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   )
 }
 
+/**
+ *
+ * @param {Object} dispute The dispute in cuestion
+ * @param {Object} courtConfig The court configuration
+ * @returns {Number} The end time of the evidence submission phase in ms
+ */
 function getEvidenceSubmissionEndTime(dispute, courtConfig) {
   const firstRound = dispute.rounds[0]
 
@@ -485,6 +491,12 @@ function getEvidenceSubmissionEndTime(dispute, courtConfig) {
   return getTermStartTime(firstRound.draftTermId, courtConfig)
 }
 
+/**
+ * Tells wether the dispute has reached the maximum number of rounds possible
+ * @param {Object} dispute The dispute in cuestion
+ * @param {Object} courtConfig The court configuration
+ * @returns {Boolean} True if dispute has reached maximum number of rounds possible
+ */
 function hasDisputeReachedMaxAppeals(dispute, courtConfig) {
   const { maxRegularAppealRounds } = courtConfig
   const numberOfRounds = dispute.rounds.length
