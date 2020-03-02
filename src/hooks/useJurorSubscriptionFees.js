@@ -23,6 +23,7 @@ export default function useJurorSubscriptionFees() {
             periodId
           )
 
+          // jurorShare is conformed by [address: token, BigNum: shareAmount]
           if (
             jurorShare[1].gt(0) &&
             !(await getters.hasJurorClaimed(wallet.account, periodId))

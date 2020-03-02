@@ -143,9 +143,14 @@ const RewardsModule = React.memo(function RewardsModule({
       padding={hasRewardsToClaim ? 0 : 3 * GU}
     >
       {(() => {
-        if (loading) return <Loading height={150} />
+        if (loading) {
+          return <Loading height={150} />
+        }
 
-        if (!hasRewardsToClaim) return <NoRewards />
+        if (!hasRewardsToClaim) {
+          return <NoRewards />
+        }
+
         return (
           <div>
             {rewards && anjRewards.gt(0) && <ANJRewards amount={anjRewards} />}

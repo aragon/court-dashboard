@@ -290,20 +290,22 @@ export function useCourtSubscriptionActions() {
     [courtSubscriptionsContract]
   )
 
+  const getters = useMemo(
+    () =>
+      courtSubscriptionsContract
+        ? { getCurrentPeriodId, getJurorShare, hasJurorClaimed }
+        : null,
+    [
+      courtSubscriptionsContract,
+      getCurrentPeriodId,
+      getJurorShare,
+      hasJurorClaimed,
+    ]
+  )
+
   return {
     claimFees,
-    getters: useMemo(
-      () =>
-        courtSubscriptionsContract
-          ? { getCurrentPeriodId, getJurorShare, hasJurorClaimed }
-          : null,
-      [
-        courtSubscriptionsContract,
-        getCurrentPeriodId,
-        getJurorShare,
-        hasJurorClaimed,
-      ]
-    ),
+    getters,
   }
 }
 
