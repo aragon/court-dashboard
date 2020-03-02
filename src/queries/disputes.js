@@ -109,7 +109,7 @@ export const SingleDispute = gql`
           opposedRuling
           settled
           createdAt
-          # confirmedAt TODO: Uncomment when graph updated
+          confirmedAt
         }
       }
     }
