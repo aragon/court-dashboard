@@ -1,11 +1,10 @@
 import React from 'react'
-import { GU, textStyle } from '@aragon/ui'
+import { ButtonIcon, GU, IconMenu } from '@aragon/ui'
 import Account from './Account/Account'
 import Clock from './Clock'
+import HeaderLogo from './HeaderLogo'
 
-import headerLogoSvg from '../assets/HeaderLogo.svg'
-
-const Header = React.memo(function Header() {
+const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
   return (
     <header
       css={`
@@ -20,32 +19,13 @@ const Header = React.memo(function Header() {
         padding: 0 ${2 * GU}px;
       `}
     >
-      <div
-        css={`
-          display: flex;
-          height: 100%;
-          align-items: center;
-        `}
-      >
-        <img
-          alt=""
-          src={headerLogoSvg}
-          width={4 * GU}
-          css={`
-            margin-right: ${1 * GU}px;
-          `}
-        />
-        <h1
-          css={`
-            display: flex;
-            height: 100%;
-            align-items: center;
-            ${textStyle('body1')};
-          `}
-        >
-          Aragon Court
-        </h1>
-      </div>
+      {compactMode ? (
+        <ButtonIcon label="Open menu" onClick={toggleMenuPanel}>
+          <IconMenu />
+        </ButtonIcon>
+      ) : (
+        <HeaderLogo />
+      )}
 
       <div
         css={`
@@ -54,9 +34,8 @@ const Header = React.memo(function Header() {
           justify-content: center;
         `}
       >
-        <Clock />
+        {!compactMode && <Clock />}
       </div>
-
       <Account />
     </header>
   )
