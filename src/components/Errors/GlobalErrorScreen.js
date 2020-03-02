@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Card, GU, useTheme, useViewport } from '@aragon/ui'
-import globalError from '../assets/globalError.svg'
-import backgroundError from '../assets/backgroundError.svg'
-import logo from '../assets/logo.svg'
+import globalError from '../../assets/globalError.svg'
+import backgroundError from '../../assets/backgroundError.svg'
+import logo from '../../assets/logo.svg'
 
 function GlobalErrorScreen({ children }) {
   const theme = useTheme()
@@ -27,7 +27,6 @@ function GlobalErrorScreen({ children }) {
           left: 16px;
         `}
         src={logo}
-        alt=""
       />
       <div
         css={`

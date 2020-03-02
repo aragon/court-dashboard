@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import * as Sentry from '@sentry/browser'
-import GenericError from './components/GenericError'
-// import { DAONotFound } from './errors'
+import GenericError from './components/Errors/GenericError'
+import GlobalErrorScreen from './components/Errors/GlobalErrorScreen'
+import DisputeNotFoundError from './components/Disputes/DisputeNotFoundError'
+
 import env from './environment'
-import GlobalErrorScreen from './components/GlobalErrorScreen'
+import { DisputeNotFound } from './errors'
 import { getNetworkName } from './lib/web3-utils'
 
 const SENTRY_DSN = env('SENTRY_DNS')
@@ -55,11 +57,15 @@ class GlobalErrorHandler extends React.Component {
 
     return error ? (
       <GlobalErrorScreen>
-        <GenericError
-          detailsTitle={error.message}
-          detailsContent={errorStack}
-          reportCallback={SENTRY_DSN ? this.handleReportClick : null}
-        />
+        {error instanceof DisputeNotFound ? (
+          <DisputeNotFoundError disputeId={error.disputeId} />
+        ) : (
+          <GenericError
+            detailsTitle={error.message}
+            detailsContent={errorStack}
+            reportCallback={SENTRY_DSN ? this.handleReportClick : null}
+          />
+        )}
       </GlobalErrorScreen>
     ) : (
       children

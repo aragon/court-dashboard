@@ -6,7 +6,7 @@ import NoMyTasks from './NoMyTasks'
 import TaskTable from './TasksTable'
 import TasksLoading from '../Loading'
 import TitleHeader from '../TitleHeader'
-import ErrorLoading from '../ErrorLoading'
+import ErrorLoading from '../Errors/ErrorLoading'
 import { useWallet } from '../../providers/Wallet'
 import useFilteredTasks from '../../hooks/useFilteredTasks'
 
