@@ -166,7 +166,11 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
   // Dispute already ruled
   if (state === DisputesTypes.Phase.Ruled) {
     phase = DisputesTypes.Phase.ClaimRewards
-    return { phase, roundId: number }
+    return {
+      phase,
+      roundId: number,
+      maxAppealReached: hasDisputeReachedMaxAppeals(dispute, courtConfig),
+    }
   }
 
   // Evidence submission
@@ -187,7 +191,7 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
 
   // Jury Drafting phase
   if (state === DisputesTypes.Phase.JuryDrafting) {
-    const juryDraftingStartTime = getTermStartTime(
+    const drafTermStartTime = getTermStartTime(
       lastRound.draftTermId,
       courtConfig
     )
@@ -236,13 +240,12 @@ export function getAdjudicationPhase(dispute, round, now, courtConfig) {
     revealTerms,
     appealTerms,
     appealConfirmationTerms,
-    maxRegularAppealRounds,
   } = courtConfig
-  const numberOfRounds = dispute.rounds.length
+
   const { draftTermId, delayedTerms, number: roundId } = round
 
   const drafTermStartTime = getTermStartTime(draftTermId, courtConfig)
-  const maxAppealReached = numberOfRounds > maxRegularAppealRounds
+  const maxAppealReached = hasDisputeReachedMaxAppeals(dispute, courtConfig)
 
   // Case where we are at the last possible round and voting period has not started yet
   if (
@@ -480,6 +483,12 @@ function getEvidenceSubmissionEndTime(dispute, courtConfig) {
   // If the evidence period is closed before the full `evidenceTerms` period,
   // the drafTermId for the first round is updated to the term this happened.
   return getTermStartTime(firstRound.draftTermId, courtConfig)
+}
+
+function hasDisputeReachedMaxAppeals(dispute, courtConfig) {
+  const { maxRegularAppealRounds } = courtConfig
+  const numberOfRounds = dispute.rounds.length
+  return numberOfRounds > maxRegularAppealRounds
 }
 
 /**

@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react'
 import { GU, Help, textStyle, useTheme } from '@aragon/ui'
-import { Phase as DisputePhase } from '../../types/dispute-status-types'
+import {
+  Phase as DisputePhase,
+  Status as DisputeStatus,
+} from '../../types/dispute-status-types'
 import DisputeVoting from './actions/DisputeVoting'
 import DisputeDraft from './actions/DisputeDraft'
 import DisputeReveal from './actions/DisputeReveal'
@@ -32,7 +35,7 @@ function DisputeActions({
   onRequestAppeal,
   onExecuteRuling,
 }) {
-  const { phase } = dispute
+  const { phase, status } = dispute
   const lastRound = getDisputeLastRound(dispute)
 
   const wallet = useWallet()
@@ -65,6 +68,7 @@ function DisputeActions({
     <React.Fragment>
       <InformationSection
         phase={phase}
+        status={status}
         jurorDraft={jurorDraft}
         hasJurorVoted={jurorHasVoted}
         lastRound={lastRound}
@@ -112,11 +116,18 @@ function DisputeActions({
   )
 }
 
-function InformationSection({ phase, jurorDraft, hasJurorVoted, lastRound }) {
+function InformationSection({
+  phase,
+  status,
+  jurorDraft,
+  hasJurorVoted,
+  lastRound,
+}) {
   const theme = useTheme()
 
   const { title, paragraph, background, icon, hint } = useInfoAttributes(
     phase,
+    status,
     jurorDraft,
     hasJurorVoted,
     lastRound,
@@ -179,6 +190,7 @@ function InformationSection({ phase, jurorDraft, hasJurorVoted, lastRound }) {
 // Helper function that returns main attributes for the YourVoteInfo component
 const useInfoAttributes = (
   phase,
+  status,
   jurorDraft,
   hasJurorVoted,
   lastRound,
@@ -192,7 +204,8 @@ const useInfoAttributes = (
 
     // If the dispute is in the execute ruling phase it means that the final
     // ruling can already be ensured regarding if the ruling was computed or not
-    const finalRulingConfirmed = phase === DisputePhase.ExecuteRuling
+    const finalRulingConfirmed =
+      phase === DisputePhase.ExecuteRuling || status === DisputeStatus.Closed
 
     // Note that we can assume that the evidence submission and drafting phases have already passed since we do an early return above
     const votingPeriodEnded =
@@ -288,6 +301,7 @@ const useInfoAttributes = (
     negativeBackground,
     phase,
     positiveBackground,
+    status,
     theme.accent,
   ])
 }
