@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import * as Sentry from '@sentry/browser'
 import GenericError from './components/Errors/GenericError'
 import GlobalErrorScreen from './components/Errors/GlobalErrorScreen'
-import DisputeNotFoundError from './components/Errors/DisputeNotFoundError'
+import DisputeNotFoundError from './components/Disputes/DisputeNotFoundError'
 
 import env from './environment'
 import { DisputeNotFound } from './errors'
