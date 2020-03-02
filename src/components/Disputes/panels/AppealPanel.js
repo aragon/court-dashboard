@@ -116,7 +116,7 @@ const AppealPanel = React.memo(function AppealPanel({
       onDone()
       await tx.wait()
     } catch (err) {
-      console.log('Error submitting tx: ', err)
+      console.error('Error submitting tx: ', err)
     }
   }
 

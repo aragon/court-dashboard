@@ -49,7 +49,7 @@ const CommitPanel = React.memo(function CommitPanel({
         await tx.wait()
         saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode)
       } catch (err) {
-        console.log('Error submitting transaction: ', err)
+        console.error('Error submitting transaction: ', err)
       }
     },
     [

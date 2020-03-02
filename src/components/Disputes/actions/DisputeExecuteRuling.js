@@ -12,7 +12,7 @@ function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
       const tx = await onExecuteRuling(disputeId)
       await tx.wait()
     } catch (err) {
-      console.log('Error submitting tx: ', err)
+      console.error('Error submitting tx: ', err)
     }
   }
 

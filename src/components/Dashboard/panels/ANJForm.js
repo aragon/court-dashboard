@@ -108,7 +108,7 @@ const ANJForm = React.memo(function ANJForm({
       onDone()
       await tx.wait()
     } catch (err) {
-      console.log('Error submitting tx: ', err) // TODO: How should we handle errors ?
+      console.error('Error submitting tx: ', err) // TODO: How should we handle errors ?
     }
   }
 
