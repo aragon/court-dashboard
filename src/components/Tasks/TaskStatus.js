@@ -10,7 +10,7 @@ function getDueDayText(dueDate) {
     return ' Due Today'
   }
   if (diff === 1) {
-    return 'Due In the next day'
+    return 'Due in the next day'
   }
   return `Due In ${diff} days`
 }
