@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, DropDown, Field, GU, Info, Link } from '@aragon/ui'
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import {
@@ -15,7 +15,7 @@ import {
 import { useCourtConfig } from '../../../providers/CourtConfig'
 import { useWallet } from '../../../providers/Wallet'
 
-const AppealPanel = React.memo(function AppealPanel({
+function AppealPanel({
   dispute,
   onApproveFeeDeposit,
   onAppeal,
@@ -213,19 +213,17 @@ const AppealPanel = React.memo(function AppealPanel({
       </Info>
     </form>
   )
-})
+}
 
-function Panel({ dispute, confirm, ...props }) {
+const Panel = React.memo(function Panel({ dispute, confirm, ...props }) {
   const { appeal } = getDisputeLastRound(dispute)
 
-  return useMemo(() => {
-    // Cases where a confirm appeal is done, the next round is created (with no appeal) and the panel hasn't closed yet
-    if (confirm && !appeal) {
-      return null
-    }
+  // Cases where a confirm appeal is done, the next round is created (with no appeal) and the panel hasn't closed yet
+  if (confirm && !appeal) {
+    return null
+  }
 
-    return <AppealPanel dispute={dispute} confirm={confirm} {...props} />
-  }, [appeal, confirm, dispute, props])
-}
+  return <AppealPanel dispute={dispute} confirm={confirm} {...props} />
+})
 
 export default Panel
