@@ -169,6 +169,10 @@ const BannerWithProbability = ({ activeBalance }) => {
   )
   const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
 
+  if (fetchingTotalBalance) {
+    return <BannerLoadingRing />
+  }
+
   const totalPercentage = getPercentageBN(
     activeBalanceCurrentTerm,
     totalActiveBalanceCurrentTerm
@@ -243,9 +247,7 @@ const BannerWithProbability = ({ activeBalance }) => {
   const paragraph =
     'The more ANJ you activate, the more likely you will be drafted to arbitrate a dispute'
 
-  return fetchingTotalBalance ? (
-    <BannerLoadingRing />
-  ) : (
+  return (
     <Wrapper
       mainIcon={<CircleGraph value={draftingProbability} size={7 * GU} />}
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
