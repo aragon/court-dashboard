@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button, DropDown, Field, GU, Info, Link } from '@aragon/ui'
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import {
@@ -29,9 +29,15 @@ const AppealPanel = React.memo(function AppealPanel({
     error: null,
   })
 
-  const handleOutcomeSelected = useCallback(newOutcome => {
-    setSelectedOutcome({ value: newOutcome })
-  }, [])
+  // get connected account fee balance and  allowance
+  const feeBalance = useFeeBalanceOf(connectedAccount)
+  const feeAllowance = useAppealFeeAllowance(connectedAccount)
+
+  // get required appeal desposits (appeal and confirm appeal)
+  const [appealDeposit, confirmAppealDeposit] = useAppealDeposits(
+    dispute.id,
+    dispute.lastRoundId
+  )
 
   // If users have the appeal panel open but the phase has already pass
   // don't let them continue and close it
@@ -45,16 +51,6 @@ const AppealPanel = React.memo(function AppealPanel({
     }
   }, [confirm, dispute.phase, onDone])
 
-  // get connected account fee balance and  allowance
-  const feeBalance = useFeeBalanceOf(connectedAccount)
-  const feeAllowance = useAppealFeeAllowance(connectedAccount)
-
-  // get required appeal desposits (appeal and confirm appeal)
-  const [appealDeposit, confirmAppealDeposit] = useAppealDeposits(
-    dispute.id,
-    dispute.lastRoundId
-  )
-
   // Reqiured deposits for appealing and confirming appeal are different
   const requiredDeposit = confirm ? confirmAppealDeposit : appealDeposit
 
@@ -66,6 +62,10 @@ const AppealPanel = React.memo(function AppealPanel({
   const appealOptions = getAppealRulingOptions(
     confirm ? appeal.appealedRuling : winningOutcome
   )
+
+  const handleOutcomeSelected = useCallback(newOutcome => {
+    setSelectedOutcome({ value: newOutcome })
+  }, [])
 
   // For submission
   const handleAppeal = useCallback(
@@ -215,19 +215,17 @@ const AppealPanel = React.memo(function AppealPanel({
   )
 })
 
-export default ({ dispute, confirm, ...props }) => {
+function Panel({ dispute, confirm, ...props }) {
   const { appeal } = getDisputeLastRound(dispute)
-  // Cases where a confirm appeal is done, the next round is created (with no appeal) and the panel hasn't closed yet
-  if (confirm && !appeal) {
-    return null
-  }
 
-  return (
-    <AppealPanel
-      dispute={dispute}
-      appeal={appeal}
-      confirm={confirm}
-      {...props}
-    />
-  )
+  return useMemo(() => {
+    // Cases where a confirm appeal is done, the next round is created (with no appeal) and the panel hasn't closed yet
+    if (confirm && !appeal) {
+      return null
+    }
+
+    return <AppealPanel dispute={dispute} confirm={confirm} {...props} />
+  }, [appeal, confirm, dispute, props])
 }
+
+export default Panel
