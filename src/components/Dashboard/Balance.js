@@ -53,7 +53,6 @@ const Balance = React.memo(function Balance({
   } = useCourtConfig()
 
   const convertedAmount = useANJBalanceToUsd(amount)
-  console.log('convetedAmount', convertedAmount)
 
   const springProps = useSpring({
     to: { opacity: 1 },
@@ -124,7 +123,7 @@ const Balance = React.memo(function Balance({
                 display:block;
               `}
               >
-                $ {formatUnits(convertedAmount, { digits: decimals })}
+                $ {convertedAmount}
               </span>
             </div>
           </animated.div>
