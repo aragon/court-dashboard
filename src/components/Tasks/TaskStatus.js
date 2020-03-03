@@ -6,7 +6,7 @@ function getDueDayText(dueDate) {
   const diff = dayjs(dueDate).diff(dayjs(), 'day')
 
   if (diff === 0) {
-    return ' Due Today'
+    return 'Due today'
   }
   if (diff === 1) {
     return 'Due in the next day'
