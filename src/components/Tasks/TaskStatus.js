@@ -16,13 +16,13 @@ function getDueDayText(dueDate) {
 
 const TaskStatus = React.memo(function TaskStatus({ dueDate }) {
   const [refresh, setRefresh] = useState(false)
+  const now = dayjs()
 
-  const now = new Date()
+  const startOfNextDay = dayjs()
+    .add(1, 'day')
+    .startOf('day')
 
-  const endofTime = dayjs()
-    .endOf('day')
-    .add(1, 'millisecond')
-  const refreshTime = endofTime - now
+  const refreshTime = startOfNextDay.diff(now) // default milliseconds
 
   useEffect(() => {
     if (refreshTime <= 0) {
