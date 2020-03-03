@@ -15,12 +15,16 @@ function DisputeVoting({
   isJurorDrafted,
   onRequestCommit,
 }) {
-  return isFinalRound ? (
-    <VotingFinalRound
-      draftTermId={draftTermId}
-      onRequestCommit={onRequestCommit}
-    />
-  ) : (
+  if (isFinalRound) {
+    return (
+      <VotingFinalRound
+        draftTermId={draftTermId}
+        onRequestCommit={onRequestCommit}
+      />
+    )
+  }
+
+  return (
     <VotingActions
       canJurorVote={isJurorDrafted}
       onRequestCommit={onRequestCommit}
