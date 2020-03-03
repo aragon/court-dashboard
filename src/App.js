@@ -10,6 +10,7 @@ import { WalletProvider } from './providers/Wallet'
 import AppLoader from './components/AppLoader'
 import OnboardingLoader from './components/OnboardingLoader'
 import Routes from './Routes'
+import GlobalErrorHandler from './GlobalErrorHandler'
 
 function App() {
   return (
@@ -22,19 +23,21 @@ function App() {
             scrollView={false}
             theme={theme}
           >
-            <ToastHub threshold={1} timeout={1500}>
-              <CourtConfigProvider>
-                <CourtClockProvider>
-                  <MainView>
-                    <OnboardingLoader>
-                      <AppLoader>
-                        <Routes />
-                      </AppLoader>
-                    </OnboardingLoader>
-                  </MainView>
-                </CourtClockProvider>
-              </CourtConfigProvider>
-            </ToastHub>
+            <GlobalErrorHandler>
+              <ToastHub threshold={1} timeout={1500}>
+                <CourtConfigProvider>
+                  <CourtClockProvider>
+                    <MainView>
+                      <OnboardingLoader>
+                        <AppLoader>
+                          <Routes />
+                        </AppLoader>
+                      </OnboardingLoader>
+                    </MainView>
+                  </CourtClockProvider>
+                </CourtConfigProvider>
+              </ToastHub>
+            </GlobalErrorHandler>
           </Main>
         </ActivityProvider>
       </BrowserRouter>

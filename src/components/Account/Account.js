@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useWallet } from 'use-wallet'
-import { Button, GU, IconConnect, springs } from '@aragon/ui'
+import { Button, GU, IconConnect, springs, useViewport } from '@aragon/ui'
 import { Transition, animated } from 'react-spring/renderprops'
 import { shortenAddress, getUseWalletProviders } from '../../lib/web3-utils'
 import AccountButton from './AccountButton'
@@ -44,6 +44,9 @@ function Account() {
   const [activatingDelayed, setActivatingDelayed] = useState(false)
   const [activationError, setActivationError] = useState(null)
   const popoverFocusElement = useRef()
+
+  const { below } = useViewport()
+  const compactMode = below('medium')
 
   const { account, activating } = wallet
 
@@ -161,6 +164,7 @@ function Account() {
           icon={<IconConnect />}
           label="Enable account"
           onClick={toggle}
+          display={compactMode ? 'icon' : 'all'}
         />
       )}
       <AccountPopover

@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react'
-import { Bar, CardLayout, GU, useTheme } from '@aragon/ui'
+import { Bar, CardLayout, GU, useLayout, useTheme } from '@aragon/ui'
 
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
 import DisputesLoading from './Loading'
-import ErrorLoading from '../ErrorLoading'
+import ErrorLoading from '../Errors/ErrorLoading'
 import NoFilterResults from './NoFilterResults'
 import MessageCard from '../MessageCard'
 
@@ -74,6 +74,8 @@ function DisputeList({
   const [selectedDateRange, setSelectedDateRange] = useState(INITIAL_DATE_RANGE)
   const [selectedStatus, setSelectedStatus] = useState(UNSELECTED_FILTER)
   const [selectedPhase, setSelectedPhase] = useState(UNSELECTED_FILTER)
+  const { layoutName } = useLayout()
+  const compactMode = layoutName === 'small'
 
   const handleSelectedDateRangeChange = range => {
     setSelectedDateRange(range)
@@ -108,25 +110,33 @@ function DisputeList({
     selectedPhase !== UNSELECTED_FILTER
 
   return (
-    <div>
-      <Bar
-        css={`
-          border-top: 0;
-          border-top-left-radius: 0;
-          border-top-right-radius: 0;
-        `}
-      >
-        <DisputeFilters
-          phaseTypes={DISPUTES_PHASE_STRING}
-          statusTypes={DISPUTES_STATUS_STRING}
-          dateRangeFilter={selectedDateRange}
-          phaseFilter={selectedPhase}
-          statusFilter={selectedStatus}
-          onDateRangeChange={handleSelectedDateRangeChange}
-          onPhaseChange={handlePhaseChange}
-          onStatusChange={handleStatusChange}
-        />
-      </Bar>
+    <div
+      css={`
+        width: 100%;
+        margin-top: ${compactMode ? 0 : -2 * GU}px;
+        padding-bottom: ${3 * GU}px;
+      `}
+    >
+      {!compactMode && (
+        <Bar
+          css={`
+            border-top: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+          `}
+        >
+          <DisputeFilters
+            phaseTypes={DISPUTES_PHASE_STRING}
+            statusTypes={DISPUTES_STATUS_STRING}
+            dateRangeFilter={selectedDateRange}
+            phaseFilter={selectedPhase}
+            statusFilter={selectedStatus}
+            onDateRangeChange={handleSelectedDateRangeChange}
+            onPhaseChange={handlePhaseChange}
+            onStatusChange={handleStatusChange}
+          />
+        </Bar>
+      )}
 
       {(() => {
         if (filteredDisputes.length === 0 && filtersSelected)

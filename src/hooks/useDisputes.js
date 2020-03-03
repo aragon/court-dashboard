@@ -55,10 +55,35 @@ export default function useDisputes() {
 }
 
 export function useDispute(disputeId) {
-  const [disputeProcessed, setDisputeProcessed] = useState(null)
   const courtConfig = useCourtConfig()
   const now = useNow() // TODO: use court clock
+
   const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
+  const disputeProcessed = useProcessedDispute(dispute)
+
+  const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
+  const disputePhaseKey = disputePhase
+    ? convertToString(Object.values(disputePhase)[0])
+    : ''
+
+  return useMemo(() => {
+    if (fetching || (dispute && !disputeProcessed)) {
+      return { fetching: true }
+    }
+
+    return {
+      dispute: dispute
+        ? {
+            ...disputeProcessed,
+            ...disputePhase,
+          }
+        : null,
+    }
+  }, [disputeProcessed, dispute, disputePhaseKey, fetching]) // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+function useProcessedDispute(dispute) {
+  const [disputeProcessed, setDisputeProcessed] = useState(null)
 
   useEffect(() => {
     const fetchDataFromIpfs = async () => {
@@ -113,24 +138,7 @@ export function useDispute(disputeId) {
     fetchDataFromIpfs()
   }, [dispute])
 
-  const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
-  const disputePhaseKey = disputePhase
-    ? convertToString(Object.values(disputePhase)[0])
-    : ''
-
-  return useMemo(() => {
-    if (fetching || !disputeProcessed) {
-      return { fetching: true }
-    }
-
-    return {
-      dispute: {
-        ...disputeProcessed,
-        ...disputePhase,
-      },
-      fetching,
-    }
-  }, [disputeProcessed, dispute, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  return disputeProcessed
 }
 
 function getDisputeInfoFromMetadata(disputeMetadata) {
