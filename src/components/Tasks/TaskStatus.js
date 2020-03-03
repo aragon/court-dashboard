@@ -12,7 +12,7 @@ function getDueDayText(dueDate) {
   if (diff === 1) {
     return 'Due in the next day'
   }
-  return `Due In ${diff} days`
+  return `Due in ${diff} days`
 }
 
 const TaskStatus = React.memo(function TaskStatus({ dueDate }) {
