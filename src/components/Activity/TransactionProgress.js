@@ -5,7 +5,10 @@ import { Transition, animated } from 'react-spring/renderprops'
 import { ActivityStatusType } from './prop-types'
 import { norm } from '../../lib/math-utils'
 import useNow from '../../hooks/useNow'
-import { ACTIVITY_STATUS_CONFIRMED, ACTIVITY_STATUS_PENDING } from './symbols'
+import {
+  ACTIVITY_STATUS_CONFIRMED,
+  ACTIVITY_STATUS_PENDING,
+} from './activity-statuses'
 import TimeTag from './TimeTag'
 
 const MINUTE = 60 * 1000

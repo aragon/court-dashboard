@@ -8,7 +8,7 @@ import {
   useTheme,
   useViewport,
 } from '@aragon/ui'
-import { ACTIVITY_STATUS_PENDING } from './symbols'
+import { ACTIVITY_STATUS_PENDING } from './activity-statuses'
 import { useActivity } from './ActivityProvider'
 import ActivityItem from './ActivityItem'
 

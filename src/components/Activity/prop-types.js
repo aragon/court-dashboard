@@ -4,7 +4,7 @@ import {
   ACTIVITY_STATUS_FAILED,
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_TIMED_OUT,
-} from './symbols'
+} from './activity-statuses'
 
 export const ActivityStatusType = PropTypes.oneOf([
   ACTIVITY_STATUS_CONFIRMED,
