@@ -1,24 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { GU, textStyle, useTheme } from '@aragon/ui'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
+import { getRelativeTime } from '../../utils/date-utils'
 import useNow from '../../hooks/useNow'
-
-dayjs.extend(relativeTime)
-
-function getRelativeTime(now, targetDate) {
-  return dayjs(targetDate)
-    .from(now)
-    .replace(/minutes?/, 'min')
-    .replace(/seconds?/, 'sec')
-    .trim()
-}
 
 function TimeTag({ date, label, ...props }) {
   const theme = useTheme()
   const now = useNow()
-  const targetDate = new Date(date)
   return (
     <div
       css={`
@@ -31,7 +19,7 @@ function TimeTag({ date, label, ...props }) {
       `}
       {...props}
     >
-      {label || getRelativeTime(now, targetDate)}
+      {label || getRelativeTime(now, date)}
     </div>
   )
 }

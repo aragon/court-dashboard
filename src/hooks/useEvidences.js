@@ -1,7 +1,7 @@
 import isIPFS from 'is-ipfs'
 import { useEffect, useState } from 'react'
 import { ipfsGet } from '../lib/ipfs-utils'
-import dayjs from '../lib/dayjs'
+import { dayjs } from '../utils/date-utils'
 import { ERROR_TYPES } from '../types/evidences-status-types'
 
 export default function useEvidences(evidences) {

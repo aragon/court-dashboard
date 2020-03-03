@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import { dayjs } from '../utils/date-utils'
 import { CourtModuleType } from '../types/court-module-types'
 
 function getFirstTermDate(courtConfig) {
