@@ -1,20 +1,23 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Button, GU, Info } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 
 function DisputeDraft({ disputeId, onDraft }) {
   const wallet = useWallet()
 
-  const handleSubmit = async event => {
-    event.preventDefault()
+  const handleSubmit = useCallback(
+    async event => {
+      event.preventDefault()
 
-    try {
-      const tx = await onDraft(disputeId)
-      await tx.wait()
-    } catch (err) {
-      console.error('Error submitting tx: ', err)
-    }
-  }
+      try {
+        const tx = await onDraft(disputeId)
+        await tx.wait()
+      } catch (err) {
+        console.error('Error submitting tx: ', err)
+      }
+    },
+    [disputeId, onDraft]
+  )
 
   return (
     <form onSubmit={handleSubmit}>

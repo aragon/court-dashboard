@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import {
   Box,
   Button,
@@ -57,43 +57,56 @@ const RewardsModule = React.memo(function RewardsModule({
   const totalFees = totalDisputesFees.add(treasuryBalance)
 
   // Form submission
-  const handleFormSubmit = async event => {
-    event.preventDefault()
+  const handleFormSubmit = useCallback(
+    async event => {
+      event.preventDefault()
 
-    if (!rewards) return
-
-    const rewardTransactionQueue = []
-    try {
-      // Claim all arbitrable fee rewards
-      for (const arbitrableFee of rewards.arbitrableFees) {
-        const { disputeId, rounds } = arbitrableFee
-        for (const roundId of rounds) {
-          rewardTransactionQueue.push(
-            await onSettleReward(disputeId, roundId, wallet.account)
-          )
-        }
+      if (!rewards) {
+        return
       }
 
-      // Claim all appeal fee rewards
-      for (const appealFee of rewards.appealFees) {
-        const { disputeId, rounds } = appealFee
-        for (const roundId of rounds) {
-          rewardTransactionQueue.push(
-            await onSettleAppealDeposit(disputeId, roundId)
-          )
+      const rewardTransactionQueue = []
+      try {
+        // Claim all arbitrable fee rewards
+        for (const arbitrableFee of rewards.arbitrableFees) {
+          const { disputeId, rounds } = arbitrableFee
+          for (const roundId of rounds) {
+            rewardTransactionQueue.push(
+              await onSettleReward(disputeId, roundId, wallet.account)
+            )
+          }
         }
+
+        // Claim all appeal fee rewards
+        for (const appealFee of rewards.appealFees) {
+          const { disputeId, rounds } = appealFee
+          for (const roundId of rounds) {
+            rewardTransactionQueue.push(
+              await onSettleAppealDeposit(disputeId, roundId)
+            )
+          }
+        }
+
+        // Withdraw funds from treasury
+        rewardTransactionQueue.push(
+          await onWithdraw(feeToken.id, wallet.account, totalFees)
+        )
+
+        await Promise.all(rewardTransactionQueue.map(tx => tx.wait()))
+      } catch (err) {
+        console.error(`Error claiming rewards: ${err}`)
       }
-
-      // Withdraw funds from treasury
-      rewardTransactionQueue.push(
-        await onWithdraw(feeToken.id, wallet.account, totalFees)
-      )
-
-      await Promise.all(rewardTransactionQueue.map(tx => tx.wait()))
-    } catch (err) {
-      console.error(`Error claiming rewards: ${err}`)
-    }
-  }
+    },
+    [
+      feeToken.id,
+      onSettleAppealDeposit,
+      onSettleReward,
+      onWithdraw,
+      rewards,
+      totalFees,
+      wallet.account,
+    ]
+  )
 
   const hasRewardsToClaim = rewards?.rulingFees.gt(0) || totalFees.gt(0)
 

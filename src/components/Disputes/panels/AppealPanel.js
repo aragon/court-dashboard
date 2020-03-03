@@ -23,11 +23,11 @@ const AppealPanel = React.memo(function AppealPanel({
   onDone,
 }) {
   const { feeToken } = useCourtConfig()
+  const { account: connectedAccount } = useWallet()
   const [selectedOutcome, setSelectedOutcome] = useState({
     value: -1,
     error: null,
   })
-  const { account: connectedAccount } = useWallet()
 
   const handleOutcomeSelected = useCallback(newOutcome => {
     setSelectedOutcome({ value: newOutcome })
@@ -58,16 +58,62 @@ const AppealPanel = React.memo(function AppealPanel({
   // Reqiured deposits for appealing and confirming appeal are different
   const requiredDeposit = confirm ? confirmAppealDeposit : appealDeposit
 
+  const { vote, appeal } = getDisputeLastRound(dispute)
+  const { winningOutcome } = vote || {}
+
   // If appealing => options are the opossed of the wining outcome
   // If confirming appeal => options are the opossed of the appealed ruling
-  const { vote, appeal } = getDisputeLastRound(dispute)
-
-  // Cases where a confirm appeal is done, the next round is created (with no appeal) and the panel hasn't closed yet
-  if (confirm && !appeal) return null
-
-  const { winningOutcome } = vote || {}
   const appealOptions = getAppealRulingOptions(
     confirm ? appeal.appealedRuling : winningOutcome
+  )
+
+  // For submission
+  const handleAppeal = useCallback(
+    async event => {
+      event.preventDefault()
+
+      const errored = validateForm(selectedOutcome.value)
+      if (errored) {
+        return
+      }
+
+      try {
+        if (feeAllowance.lt(requiredDeposit)) {
+          // TODO: some ERC20s don't let to set a new allowance if the current allowance is positive (handle this cases)
+          if (feeAllowance.eq(0)) {
+            console.warn('Allowance must be zero')
+          }
+          // Approve fee deposit for appealing
+          const approveTx = await onApproveFeeDeposit(requiredDeposit)
+          await approveTx.wait()
+        }
+
+        const appealOption = appealOptions[selectedOutcome.value]
+
+        // Appeal ruling
+        const tx = await onAppeal(
+          dispute.id,
+          dispute.lastRoundId,
+          appealOption.outcome
+        )
+
+        onDone()
+        await tx.wait()
+      } catch (err) {
+        console.error('Error submitting tx: ', err)
+      }
+    },
+    [
+      appealOptions,
+      dispute.id,
+      dispute.lastRoundId,
+      feeAllowance,
+      onAppeal,
+      onApproveFeeDeposit,
+      onDone,
+      requiredDeposit,
+      selectedOutcome.value,
+    ]
   )
 
   // check if connected account has the minimum required deposit to be able to appeal
@@ -82,42 +128,6 @@ const AppealPanel = React.memo(function AppealPanel({
     }
 
     return false
-  }
-
-  // For submission
-  const handleAppeal = async event => {
-    try {
-      event.preventDefault()
-
-      const errored = validateForm(selectedOutcome.value)
-      if (errored) {
-        return
-      }
-
-      if (feeAllowance.lt(requiredDeposit)) {
-        // TODO: some ERC20s don't let to set a new allowance if the current allowance is positive (handle this cases)
-        if (feeAllowance.eq(0)) {
-          console.warn('Allowance must be zero')
-        }
-        // Approve fee deposit for appealing
-        const approveTx = await onApproveFeeDeposit(requiredDeposit)
-        await approveTx.wait()
-      }
-
-      const appealOption = appealOptions[selectedOutcome.value]
-
-      // Appeal ruling
-      const tx = await onAppeal(
-        dispute.id,
-        dispute.lastRoundId,
-        appealOption.outcome
-      )
-
-      onDone()
-      await tx.wait()
-    } catch (err) {
-      console.error('Error submitting tx: ', err)
-    }
   }
 
   const actionLabel = confirm ? 'Confirm appeal' : 'Appeal ruling'
@@ -205,4 +215,19 @@ const AppealPanel = React.memo(function AppealPanel({
   )
 })
 
-export default AppealPanel
+export default ({ dispute, confirm, ...props }) => {
+  const { appeal } = getDisputeLastRound(dispute)
+  // Cases where a confirm appeal is done, the next round is created (with no appeal) and the panel hasn't closed yet
+  if (confirm && !appeal) {
+    return null
+  }
+
+  return (
+    <AppealPanel
+      dispute={dispute}
+      appeal={appeal}
+      confirm={confirm}
+      {...props}
+    />
+  )
+}
