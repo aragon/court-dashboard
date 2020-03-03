@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { textStyle, GU } from '@aragon/ui'
-import dayjs from 'dayjs'
-import { datesDiff } from '../../utils/date-utils'
+import dayjs from '../../lib/dayjs'
 
 function getDueDayText(dueDate) {
-  const diff = datesDiff(dayjs(), dayjs(dueDate))
+  const diff = dayjs(dueDate).diff(dayjs(), 'day')
 
   if (diff === 0) {
     return ' Due Today'
@@ -19,7 +18,11 @@ const TaskStatus = React.memo(function TaskStatus({ dueDate }) {
   const [refresh, setRefresh] = useState(false)
 
   const now = new Date()
-  const refreshTime = dueDate - now
+
+  const endofTime = dayjs()
+    .endOf('day')
+    .add(1, 'millisecond')
+  const refreshTime = endofTime - now
 
   useEffect(() => {
     if (refreshTime <= 0) {
