@@ -1,17 +1,13 @@
 import { useEffect, useState } from 'react'
-import {
-  TRADE_EXACT,
-  getMarketDetails,
-  getTokenReserves,
-  getTradeDetails,
-} from '@uniswap/sdk'
+import { getMarketDetails, getTokenReserves } from '@uniswap/sdk'
 import { useCourtConfig } from '../providers/CourtConfig'
 
 import env from '../environment'
 import { getDaiAddress } from '../utils/known-tokens'
-import { bigNum, formatUnits } from '../lib/math-utils'
+import { formatUnits, bigNum } from '../lib/math-utils'
 import { addressesEqual, ETH_FAKE_ADDRESS } from '../lib/web3-utils'
 
+const UNISWAP_PRECISION = 18
 const UNISWAP_MARKET_RETRY_EVERY = 1000
 
 async function getANJMarketDetails(tokenAddress, anjTokenAddress) {
@@ -34,19 +30,10 @@ async function getANJMarketDetails(tokenAddress, anjTokenAddress) {
   return getMarketDetails(tokenData, anjData)
 }
 
-async function getANJTradeDetails(tokenAddress, anjTokenAddress, tradeAmount) {
-  const anjMarketDetails = await getANJMarketDetails(
-    tokenAddress,
-    anjTokenAddress
-  )
-
-  return getTradeDetails(TRADE_EXACT.OUTPUT, tradeAmount, anjMarketDetails)
-}
-
 export default function useANJBalanceToUsd(amount) {
   const { anjToken } = useCourtConfig()
 
-  // We'll use the ANJ <> DAI trade details to get the exact ANJ value
+  // We'll use the ANJ <> DAI market details to get the spot price
   const daiAddress = getDaiAddress()
 
   const [convertedAmount, setConvertedAmount] = useState('0')
@@ -61,19 +48,19 @@ export default function useANJBalanceToUsd(amount) {
 
     const updateConvertedAmount = async () => {
       try {
-        const { inputAmount } = await getANJTradeDetails(
+        const { marketRate } = await getANJMarketDetails(
           daiAddress,
           anjToken.id,
           amount
         )
 
-        const convertedAmount = formatUnits(
-          // BigNumber used by uniswap has different properties as the one we use so we need to convert it
-          bigNum(inputAmount.amount.toString(10)),
-          {
-            digits: inputAmount.token.decimals,
-          }
-        )
+        const precision = bigNum(10).pow(UNISWAP_PRECISION)
+
+        const rate = bigNum(marketRate.rateInverted.times(precision).toFixed(0))
+
+        const convertedAmount = formatUnits(amount.mul(rate).div(precision), {
+          digits: anjToken.decimals,
+        })
 
         if (!cancelled) {
           setConvertedAmount(convertedAmount)
@@ -95,7 +82,7 @@ export default function useANJBalanceToUsd(amount) {
       cancelled = true
       clearTimeout(retryTimer)
     }
-  }, [amount, anjToken.id, daiAddress])
+  }, [amount, anjToken, daiAddress])
 
   return convertedAmount
 }
