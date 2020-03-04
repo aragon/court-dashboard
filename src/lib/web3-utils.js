@@ -4,6 +4,7 @@ import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
 export const DEFAULT_LOCAL_CHAIN = 'rpc'
+export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
