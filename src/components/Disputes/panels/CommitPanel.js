@@ -35,20 +35,21 @@ const CommitPanel = React.memo(function CommitPanel({
 
   const handleCommit = useCallback(
     async event => {
-      try {
-        event.preventDefault()
+      event.preventDefault()
 
+      try {
         const tx = await onCommit(
           dispute.id,
           dispute.lastRoundId,
           commitment,
           oneTimeCode
         )
+
+        onDone()
         await tx.wait()
         saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode)
-        onDone()
       } catch (err) {
-        console.log('Error submitting transaction: ', err)
+        console.error('Error submitting transaction: ', err)
       }
     },
     [

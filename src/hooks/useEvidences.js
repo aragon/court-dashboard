@@ -5,6 +5,7 @@ import { ERROR_TYPES } from '../types/evidences-status-types'
 export default function useEvidences(rawEvidences) {
   // Contains valid evidences + errored evidences
   const [evidences, setEvidences] = useState([])
+  const [fetchingEvidences, setFetchingEvidences] = useState(true)
 
   // Contains valid evidences only
   const evidencesCache = useRef(new Map())
@@ -77,6 +78,7 @@ export default function useEvidences(rawEvidences) {
           })
         })
       )
+      setFetchingEvidences(false)
     }
 
     updateEvidences()
@@ -86,5 +88,5 @@ export default function useEvidences(rawEvidences) {
     }
   }, [rawEvidences, fetchEvidence, evidences])
 
-  return evidences
+  return [evidences, fetchingEvidences]
 }

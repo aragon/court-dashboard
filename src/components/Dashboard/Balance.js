@@ -153,31 +153,29 @@ const Balance = React.memo(function Balance({
               <span>No activity in the last 24h</span>
             )}
           </div>
-
-          {amount.gt(0) && (
-            <div
-              css={`
-                display: grid;
-                grid-template-columns: repeat(
-                  auto-fit,
-                  minmax(calc(50% - 8px), 1fr)
-                );
-                grid-column-gap: 8px;
-              `}
-            >
-              {actions.map((action, index) => {
-                return (
-                  <Button
-                    key={index}
-                    label={action.label}
-                    mode={action.mode}
-                    onClick={action.onClick}
-                    wide
-                  />
-                )
-              })}
-            </div>
-          )}
+          <div
+            css={`
+              display: grid;
+              grid-template-columns: repeat(
+                auto-fit,
+                minmax(calc(50% - 8px), 1fr)
+              );
+              grid-column-gap: 8px;
+            `}
+          >
+            {actions.map((action, index) => {
+              return (
+                <Button
+                  key={index}
+                  label={action.label}
+                  mode={action.mode}
+                  onClick={action.onClick}
+                  wide
+                  disabled={amount.eq(0)}
+                />
+              )
+            })}
+          </div>
         </animated.div>
       )}
     </div>

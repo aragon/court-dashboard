@@ -12,12 +12,11 @@ import { dateFormat } from '../../utils/date-utils'
 import folderIcon from '../../assets/folderIcon.svg'
 
 const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
-  const evidenceProcessed = useEvidences(evidences)
-  const evidencesFetching = evidenceProcessed.length < evidences.length
+  const [evidenceProcessed, fetchingEvidences] = useEvidences(evidences)
 
   return (
     <React.Fragment>
-      <SyncIndicator visible={evidencesFetching} label="Loading evidences..." />
+      <SyncIndicator visible={fetchingEvidences} label="Loading evidences..." />
       {evidenceProcessed &&
         evidenceProcessed.map((evidence, index) => {
           const { createdAt, submitter, metadata, error } = evidence
@@ -72,7 +71,7 @@ const EvidenceContent = React.memo(function EvidenceContent({
     <div
       css={`
         margin-bottom: ${2 * GU}px;
-        padding: ${3 * GU}px ${8 * GU}px;
+        padding: ${3 * GU}px ${8 * GU - 3}px;
       `}
     >
       <div

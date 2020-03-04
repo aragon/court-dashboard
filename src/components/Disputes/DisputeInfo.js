@@ -17,7 +17,7 @@ import DisputeOutcomeText from './DisputeOutcomeText'
 import DisputeRoundPill from './DisputeRoundPill'
 import DisputeStatus from './DisputeStatus'
 import DisputeVoided from './DisputeVoided'
-import ErrorLoading from '../ErrorLoading'
+import ErrorLoading from '../Errors/ErrorLoading'
 import Loading from './Loading'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { useWallet } from '../../providers/Wallet'
@@ -162,9 +162,8 @@ const DisputeInfo = React.memo(function({
           <>
             {(phase === DisputePhase.AppealRuling ||
               phase === DisputePhase.ConfirmAppeal ||
-              isFinalRulingEnsured) && (
-              <DisputeCurrentRuling dispute={dispute} />
-            )}
+              isFinalRulingEnsured) &&
+              !loading && <DisputeCurrentRuling dispute={dispute} />}
             {!loading && (
               <DisputeActions
                 dispute={dispute}
