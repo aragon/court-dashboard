@@ -28,6 +28,7 @@ function CourtConfigProvider({ children }) {
           10
         ),
         termDuration: parseInt(courtConfig.termDuration, 10) * 1000,
+        currentTerm: parseInt(courtConfig.currentTerm, 10),
         evidenceTerms: parseInt(courtConfig.evidenceTerms, 10),
         commitTerms: parseInt(courtConfig.commitTerms, 10),
         revealTerms: parseInt(courtConfig.revealTerms, 10),

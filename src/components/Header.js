@@ -1,7 +1,7 @@
 import React from 'react'
 import { ButtonIcon, GU, IconMenu } from '@aragon/ui'
 import Account from './Account/Account'
-import Clock from './Clock'
+import Clock from './ClockModule'
 import HeaderLogo from './HeaderLogo'
 
 const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
@@ -17,6 +17,10 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
         align-items: center;
         justify-content: space-between;
         padding: 0 ${2 * GU}px;
+
+        & > * {
+          align-self: stretch;
+        }
       `}
     >
       {compactMode ? (
@@ -30,13 +34,15 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
       <div
         css={`
           display: flex;
-          flex-grow: 1;
-          justify-content: center;
+
+          & > * {
+            align-self: stretch;
+          }
         `}
       >
         {!compactMode && <Clock />}
+        <Account />
       </div>
-      <Account />
     </header>
   )
 })
