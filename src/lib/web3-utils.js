@@ -120,15 +120,3 @@ export function hexToAscii(hexx) {
     str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
   return str
 }
-
-export function toDate(evmTimestamp) {
-  const milliseconds = evmTimestamp.toString() * 1000
-  const date = new Date(milliseconds)
-  return (
-    date
-      .toISOString()
-      .slice(0, 19)
-      .replace(/-/g, '/')
-      .replace('T', ' ') + ' UTC'
-  )
-}
