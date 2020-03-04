@@ -66,7 +66,7 @@ export default function useANJBalanceToUsd(amount) {
           setConvertedAmount(convertedAmount)
         }
       } catch (err) {
-        console.log('err', err)
+        console.error('Could not fetch Uniswap price for ANJ', err)
         if (!cancelled) {
           retryTimer = setTimeout(
             updateConvertedAmount,
