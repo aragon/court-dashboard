@@ -68,17 +68,18 @@ export function useDispute(disputeId) {
 
   return useMemo(() => {
     if (fetching || (dispute && !disputeProcessed)) {
-      return { fetching: true }
+      return [null, true]
     }
 
-    return {
-      dispute: dispute
+    return [
+      dispute
         ? {
             ...disputeProcessed,
             ...disputePhase,
           }
         : null,
-    }
+      false,
+    ]
   }, [disputeProcessed, dispute, disputePhaseKey, fetching]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
