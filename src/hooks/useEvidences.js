@@ -54,6 +54,7 @@ export default function useEvidences(rawEvidences) {
 
   useEffect(() => {
     let cancelled = false
+    setFetchingEvidences(true)
 
     const updateEvidences = async () => {
       await Promise.all(
