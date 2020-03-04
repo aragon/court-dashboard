@@ -44,7 +44,7 @@ const TaskStatus = React.memo(function TaskStatus({ dueDate }) {
         margin-left: ${GU * 0.7}px;
       `}
       >
-        {`Open: ${getDueDayText(dueDate)}`}
+        Open: {getDueDayText(dueDate)}
       </span>
     </div>
   )
