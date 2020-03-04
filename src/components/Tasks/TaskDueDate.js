@@ -1,9 +1,8 @@
 import React from 'react'
 import { Timer } from '@aragon/ui'
-import dayjs from '../../lib/dayjs'
 
 function TaskDueDate({ dueDate }) {
-  return <Timer end={dayjs(dueDate)} />
+  return <Timer end={new Date(dueDate)} />
 }
 
 export default TaskDueDate
