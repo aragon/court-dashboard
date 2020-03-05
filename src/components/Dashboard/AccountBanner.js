@@ -157,6 +157,14 @@ const Wrapper = ({ mainIcon, information }) => {
 const BannerWithProbability = ({ activeBalance }) => {
   const theme = useTheme()
   const { currentTermId } = useCourtClock()
+  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
+    currentTermId
+  )
+
+  const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
+  if (fetchingTotalBalance) {
+    return <BannerLoadingRing />
+  }
 
   // Calculate juror's active balance and total active balance for current term
   const {
@@ -164,15 +172,6 @@ const BannerWithProbability = ({ activeBalance }) => {
     amountNotEffective: activeAmountNotEffective,
   } = activeBalance
   const activeBalanceCurrentTerm = activeAmount.sub(activeAmountNotEffective)
-  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
-    currentTermId
-  )
-  const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
-
-  if (fetchingTotalBalance) {
-    return <BannerLoadingRing />
-  }
-
   const totalPercentage = getPercentageBN(
     activeBalanceCurrentTerm,
     totalActiveBalanceCurrentTerm
