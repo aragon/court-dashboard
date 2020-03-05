@@ -5,7 +5,7 @@ export const KNOWN_TOKEN_BY_ENV = {
   DAI: {
     mainnet: {
       address: '0x6b175474e89094c44da98b954eedeac495271d0f',
-      deciamls: 18,
+      decimals: 18,
     },
   },
 }
