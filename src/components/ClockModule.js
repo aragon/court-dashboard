@@ -107,7 +107,21 @@ function ClockModule() {
           >
             {currentTermId ? (
               <>
-                <Timer end={currentTermEndDate} />
+                {isSynced ? (
+                  <Timer end={currentTermEndDate} />
+                ) : (
+                  <div>
+                    <span
+                      css={`
+                        ${textStyle('body2')}
+                        line-height: 1;
+                      `}
+                    >
+                      0
+                    </span>{' '}
+                    S
+                  </div>
+                )}
                 <span
                   css={`
                     ${textStyle('body4')};
