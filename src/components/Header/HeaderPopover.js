@@ -5,16 +5,15 @@ import { Spring, animated } from 'react-spring/renderprops'
 
 const AnimatedSection = animated.section
 
-function AccountModulePopover({
+function HeaderPopover({
   animateHeight,
   children,
   height,
+  width,
   heading,
   onClose,
   opener,
   visible,
-  screenId,
-  onOpen,
 }) {
   const theme = useTheme()
 
@@ -26,7 +25,7 @@ function AccountModulePopover({
       placement="bottom-end"
       visible={visible}
       css={`
-        width: ${51 * GU}px;
+        width: ${width}px;
       `}
     >
       <Spring
@@ -76,16 +75,14 @@ function AccountModulePopover({
   )
 }
 
-AccountModulePopover.propTypes = {
+HeaderPopover.propTypes = {
   animateHeight: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired,
   heading: PropTypes.node.isRequired,
   height: PropTypes.number.isRequired,
   onClose: PropTypes.func.isRequired,
-  onOpen: PropTypes.func.isRequired,
   opener: PropTypes.any,
-  screenId: PropTypes.string.isRequired,
   visible: PropTypes.bool.isRequired,
 }
 
-export default AccountModulePopover
+export default HeaderPopover

@@ -3,7 +3,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ButtonBase, GU, springs, textStyle, useTheme } from '@aragon/ui'
 
 import { Spring, animated } from 'react-spring/renderprops'
-import HeaderLogo from './HeaderLogo'
+import HeaderLogo from './Header/HeaderLogo'
 
 import dashboardMenuIcon from '../assets/dashboardMenuIcon.svg'
 import tasksMenuIcon from '../assets/tasksMenuIcon.svg'
