@@ -29,6 +29,7 @@ function CourtClockProvider({ children }) {
       currentTermId: actualCurrentTerm,
       currentTermStartDate: new Date(termStartTime),
       currentTermEndDate: new Date(termEndTime),
+      isSynced: expectedCurrentTerm === actualCurrentTerm,
       neededTransitions: expectedCurrentTerm - actualCurrentTerm,
     }),
     [actualCurrentTerm, expectedCurrentTerm, termEndTime, termStartTime]

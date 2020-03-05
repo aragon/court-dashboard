@@ -38,10 +38,9 @@ function ClockModule() {
   const {
     currentTermId,
     currentTermEndDate,
+    isSynced,
     neededTransitions,
   } = useCourtClock()
-
-  const isSynced = neededTransitions === 0
 
   const toggle = useCallback(() => setOpened(opened => !opened), [])
 
