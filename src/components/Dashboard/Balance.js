@@ -6,7 +6,7 @@ import Loading from './Loading'
 import ANJLockedDistribution from './ANJLockedDistribution'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
-import useANJBalanceToUsd from '../../hooks/useANJBalanceToUsd'
+import { useANJBalanceToUsd } from '../../hooks/useTokenBalanceToUsd'
 
 import { PCT_BASE } from '../../utils/dispute-utils'
 import { bigNum, formatTokenAmount, formatUnits } from '../../lib/math-utils'
