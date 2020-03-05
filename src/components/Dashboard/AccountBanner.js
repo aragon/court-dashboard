@@ -6,7 +6,6 @@ import AccountBannerInfo from './AccountBannerInfo'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
-import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits, getPercentageBN, bigNum } from '../../lib/math-utils'
@@ -155,7 +154,6 @@ const Wrapper = ({ mainIcon, information }) => {
 
 const BannerWithProbability = ({ activeBalance }) => {
   const theme = useTheme()
-  const { currentTermId } = useCourtClock()
 
   // Calculate juror's active balance and total active balance for current term
   const {
@@ -163,9 +161,7 @@ const BannerWithProbability = ({ activeBalance }) => {
     amountNotEffective: activeAmountNotEffective,
   } = activeBalance
   const activeBalanceCurrentTerm = activeAmount.sub(activeAmountNotEffective)
-  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
-    currentTermId
-  )
+  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling()
   const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
 
   const totalPercentage = getPercentageBN(

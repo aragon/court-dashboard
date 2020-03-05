@@ -42,24 +42,47 @@ const CourtStats = () => {
 
   return (
     <Box heading="Court Metrics" padding={3 * GU}>
-      <span
-        css={`      
+      <div
+        css={`
+          margin-bottom: ${2 * GU}px;
+          &:last-child {
+            margin-bottom: 0;
+          }
+        `}
+      >
+        <span
+          css={`      
           ${textStyle('body2')}
           color: ${theme.surfaceContentSecondary};
           display:block;
           margin-bottom:${1 * GU}px;
         `}
+        >
+          {stats.title}
+        </span>
+
+        <TokenStats token={stats.token} theme={theme} />
+      </div>
+    </Box>
+  )
+}
+
+function TokenStats({ token, theme }) {
+  const { value, icon, symbol, usdValue } = token
+  return (
+    <>
+      <div
+        css={`
+          margin-bottom: ${1 * GU}px;
+        `}
       >
-        {stats.title}
-      </span>
-      <div>
         <span
           css={`
             ${textStyle('title2')}
             font-weight: 300;
           `}
         >
-          {stats.token.value}
+          {value}
         </span>
         <img
           css={`
@@ -67,17 +90,25 @@ const CourtStats = () => {
           `}
           height="20"
           width="18"
-          src={stats.token.icon}
+          src={icon}
           alt="ANJ"
         />
         <span
           css={` ${textStyle('body2')}
           color: ${theme.surfaceContentSecondary};`}
         >
-          {stats.token.symbol}
+          {symbol}
         </span>
       </div>
-    </Box>
+      <span
+        css={`
+          ${textStyle('body2')}
+          color: ${theme.positive};
+        `}
+      >
+        ${usdValue}
+      </span>
+    </>
   )
 }
 

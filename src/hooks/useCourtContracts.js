@@ -351,7 +351,7 @@ export function useAppealFeeAllowance(owner) {
   return allowance
 }
 
-export function useTotalActiveBalancePolling(termId) {
+export function useTotalActiveBalancePolling() {
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
@@ -363,7 +363,7 @@ export function useTotalActiveBalancePolling(termId) {
   const fetchTotalActiveBalance = useCallback(() => {
     timeoutId.current = setTimeout(() => {
       return jurorRegistryContract
-        .totalActiveBalanceAt(termId)
+        .totalActiveBalance()
         .then(balance => {
           setTotalActiveBalance(balance)
           clearTimeout(timeoutId.current)
@@ -374,7 +374,7 @@ export function useTotalActiveBalancePolling(termId) {
           fetchTotalActiveBalance()
         })
     }, 1000)
-  }, [jurorRegistryContract, termId])
+  }, [jurorRegistryContract])
 
   useEffect(() => {
     fetchTotalActiveBalance()
