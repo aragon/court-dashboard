@@ -24,7 +24,7 @@ export function formatDuration(duration) {
 
   return [days, hours, minutes, seconds]
     .map((elem, index) =>
-      elem > 0 ? `${elem} ${units[index]}${elem > 1 ? 's' : ''} ` : ''
+      elem > 0 ? `${elem} ${units[index]}${elem > 1 ? 's' : ''}` : ''
     )
-    .join('')
+    .join(' ')
 }

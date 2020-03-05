@@ -14,11 +14,11 @@ import {
 } from '@aragon/ui'
 import { useWallet } from 'use-wallet'
 
-import useNetwork from '../hooks/useNetwork'
 import HeaderModule from './Header/HeaderModule'
 import HeaderPopover from './Header/HeaderPopover'
-import { useCourtClock } from '../providers/CourtClock'
+import useNetwork from '../hooks/useNetwork'
 import { useHeartbeat } from '../hooks/useCourtContracts'
+import { useCourtClock } from '../providers/CourtClock'
 import { useCourtConfig } from '../providers/CourtConfig'
 
 import { shortenAddress } from '../lib/web3-utils'
@@ -51,7 +51,6 @@ function ClockModule() {
 
   const handleOnClick = useCallback(async () => {
     try {
-      console.log('needed transitions', neededTransitions)
       const tx = await onHeartbeat(neededTransitions)
       await tx.wait()
     } catch (err) {

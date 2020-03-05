@@ -32,7 +32,7 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
           display: flex;
           align-self: stretch;
 
-          & > {
+          & > * {
             align-self: stretch;
           }
         `}
