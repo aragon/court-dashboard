@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getMarketDetails, getTokenReserves } from '@uniswap/sdk'
-import { useCourtConfig } from '../providers/CourtConfig'
-
 import env from '../environment'
+import { useCourtConfig } from '../providers/CourtConfig'
 import { getKnownToken } from '../utils/known-tokens'
 import { formatUnits, bigNum } from '../lib/math-utils'
 import { addressesEqual, ETH_FAKE_ADDRESS } from '../lib/web3-utils'
