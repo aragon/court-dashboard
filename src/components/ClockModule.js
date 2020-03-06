@@ -150,7 +150,7 @@ function ClockModule() {
       <HeaderPopover
         animateHeight={false}
         heading="Court cLock"
-        height={isSynced ? 250 : 230}
+        height={(isSynced ? 27.5 : 26) * GU}
         width={45 * GU}
         onClose={handlePopoverClose}
         opener={buttonRef.current}
@@ -217,7 +217,7 @@ function ClockModule() {
               color: ${isSynced ? theme.positive : theme.negative};
               display: flex;
               align-items: center;
-              margin-top: ${2 * GU}px;
+              margin-top: ${1 * GU}px;
             `}
           >
             <IconSync />
@@ -232,7 +232,7 @@ function ClockModule() {
           </div>
           <div
             css={`
-              margin-top: ${2 * GU}px;
+              margin-top: ${1 * GU}px;
             `}
           >
             <span>
@@ -249,7 +249,7 @@ function ClockModule() {
           </div>
           <div
             css={`
-              margin-top: ${2 * GU}px;
+              margin-top: ${1.5 * GU}px;
             `}
           >
             {isSynced ? (
