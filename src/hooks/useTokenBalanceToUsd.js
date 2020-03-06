@@ -40,7 +40,8 @@ export function useANJBalanceToUsd(amount) {
   const { anjToken } = useCourtConfig()
 
   // We'll use the ANJ <> DAI market details to get the spot price
-  const { address: daiAddress } = getKnownToken('DAI')
+  const dai = getKnownToken('DAI')
+  const { address: daiAddress } = dai || {}
 
   const [convertedAmount, setConvertedAmount] = useState('0')
 
