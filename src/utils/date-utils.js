@@ -10,6 +10,7 @@ export const DAY = 24 * HOUR
 const KNOWN_FORMATS = {
   iso: 'YYYY-MM-DDTHH:mm:ssZ',
   standard: 'D MMM YY, h:mm A',
+  onlyDate: 'DD/MM/YY',
 }
 
 // dayjs plugins

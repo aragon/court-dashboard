@@ -1,74 +1,93 @@
-import isIPFS from 'is-ipfs'
-import { useEffect, useState } from 'react'
-import { ipfsGet } from '../lib/ipfs-utils'
-import { dayjs } from '../utils/date-utils'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
 import { ERROR_TYPES } from '../types/evidences-status-types'
 
-export default function useEvidences(evidences) {
-  const [evidenceProcessed, setEvidenceProcessed] = useState([])
+export default function useEvidences(rawEvidences) {
+  // Contains valid evidences + errored evidences
+  const [evidences, setEvidences] = useState([])
+  const [fetchingEvidences, setFetchingEvidences] = useState(true)
+
+  // Contains valid evidences only
+  const evidencesCache = useRef(new Map())
+
+  // Fetch an evidence data from IPFS if needed, prepares the evidence object,
+  // and cache it if valid. If invalid, returns an errored evidence object.
+  const fetchEvidence = useCallback(async rawEvidence => {
+    const { id, data: uriOrData, submitter, createdAt } = rawEvidence
+
+    if (evidencesCache.current.has(id)) {
+      return evidencesCache.current.get(id)
+    }
+
+    const baseEvidence = {
+      id,
+      metadata: null,
+      defendant: '',
+      agreementText: '',
+      submitter,
+      createdAt,
+      error: false,
+    }
+
+    const cid = getIpfsCidFromUri(uriOrData)
+
+    // Not an IPFS URI
+    if (!cid) {
+      evidencesCache.current.set(id, { ...baseEvidence, metadata: uriOrData })
+      return evidencesCache.current.get(id)
+    }
+
+    const { data, error } = await ipfsGet(cid)
+
+    if (error) {
+      return { ...baseEvidence, error: ERROR_TYPES.ERROR_FETCHING_IPFS }
+    }
+
+    const evidenceProcessed = {
+      ...baseEvidence,
+      metadata: data,
+    }
+    evidencesCache.current.set(id, evidenceProcessed)
+
+    return evidenceProcessed
+  }, [])
 
   useEffect(() => {
     let cancelled = false
-    const appendEvidence = evidence => {
-      if (cancelled) {
-        return
-      }
+    setFetchingEvidences(true)
 
-      setEvidenceProcessed(prev =>
-        [
-          ...prev,
-          evidence,
-        ].sort(({ createdAt: dateLeft }, { createdAt: dateRight }) =>
-          dayjs(dateLeft).isAfter(dayjs(dateRight))
-            ? 1
-            : dayjs(dateLeft).isSame(dayjs(dateRight))
-            ? 0
-            : -1
-        )
+    const updateEvidences = async () => {
+      await Promise.all(
+        rawEvidences.map(async rawEvidence => {
+          const evidence = await fetchEvidence(rawEvidence)
+          if (cancelled) {
+            return
+          }
+          setEvidences(() => {
+            // already there
+            if (
+              evidences.findIndex(_evidence => _evidence.id === evidence.id) >
+              -1
+            ) {
+              return evidences
+            }
+
+            return [...evidences, evidence].sort(
+              (evidenceA, evidenceB) =>
+                evidenceA.createdAt - evidenceB.createdAt
+            )
+          })
+        })
       )
+      setFetchingEvidences(false)
     }
 
-    evidences.forEach(async evidence => {
-      const { data: evidenceData, submitter, createdAt } = evidence
-
-      const ipfsHash = evidenceData.replace(/^ipfs:/, '')
-
-      // check if the metadata inside the evidence is a cid
-      // if the ipfs tag is not present return the metadata as plain string
-      if (isIPFS.multihash(ipfsHash) || isIPFS.cid(ipfsHash)) {
-        const { data, error } = await ipfsGet(ipfsHash)
-        if (error) {
-          return appendEvidence({ error: ERROR_TYPES.ERROR_FETCHING_IPFS })
-        }
-        if (data) {
-          return appendEvidence({
-            metadata: data || '',
-            submitter,
-            createdAt,
-            error: false,
-          })
-        }
-        // If the fetched data type is not one of the otherers return error
-        return appendEvidence({
-          error: ERROR_TYPES.ERROR_UNKNOWN_METADATA_TYPE,
-        })
-      }
-
-      // If evidence metadata is not an ipfs cid return it as it is
-      return appendEvidence({
-        metadata: evidenceData,
-        defendant: '',
-        agreementText: '',
-        submitter,
-        createdAt,
-        error: false,
-      })
-    })
+    updateEvidences()
 
     return () => {
       cancelled = true
     }
-  }, [evidences])
+  }, [rawEvidences, fetchEvidence, evidences])
 
-  return evidenceProcessed
+  return [evidences, fetchingEvidences]
 }

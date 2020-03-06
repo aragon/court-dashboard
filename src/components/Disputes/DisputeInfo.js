@@ -162,9 +162,8 @@ const DisputeInfo = React.memo(function({
           <>
             {(phase === DisputePhase.AppealRuling ||
               phase === DisputePhase.ConfirmAppeal ||
-              isFinalRulingEnsured) && (
-              <DisputeCurrentRuling dispute={dispute} />
-            )}
+              isFinalRulingEnsured) &&
+              !loading && <DisputeCurrentRuling dispute={dispute} />}
             {!loading && (
               <DisputeActions
                 dispute={dispute}

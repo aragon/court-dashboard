@@ -11,7 +11,6 @@ import CommitPanel from './panels/CommitPanel'
 import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
 
-import { toDate } from '../../lib/web3-utils'
 import { Status as DisputeStatus } from '../../types/dispute-status-types'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
 import { DisputeNotFound } from '../../errors'
@@ -29,14 +28,13 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     requests,
   } = useDisputeLogic(disputeId)
 
-  const creatorAddress = dispute?.subject?.id
   const evidenceList = dispute?.evidences
 
   const evidences = useMemo(
     () =>
       (evidenceList || []).map(evidence => ({
         ...evidence,
-        createdAt: toDate(evidence.createdAt),
+        createdAt: evidence.createdAt * 1000,
         data: EthersUtils.toUtf8String(evidence.data),
       })),
     [evidenceList]
@@ -86,14 +84,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
                 if (evidences.length === 0) {
                   return <NoEvidence />
                 }
-                return (
-                  // TODO- in next PR will get plaintiff and deffendant from the dispute
-                  <DisputeEvidences
-                    evidences={evidences}
-                    plaintiff={creatorAddress}
-                    defendant=""
-                  />
-                )
+                return <DisputeEvidences evidences={evidences} />
               })()}
             </React.Fragment>
           }

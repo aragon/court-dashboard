@@ -4,6 +4,7 @@ import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
 export const DEFAULT_LOCAL_CHAIN = 'rpc'
+export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
 const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
@@ -132,18 +133,6 @@ export function hexToAscii(hexx) {
   for (let i = 0; i < hex.length && hex.substr(i, 2) !== '00'; i += 2)
     str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
   return str
-}
-
-export function toDate(evmTimestamp) {
-  const milliseconds = evmTimestamp.toString() * 1000
-  const date = new Date(milliseconds)
-  return (
-    date
-      .toISOString()
-      .slice(0, 19)
-      .replace(/-/g, '/')
-      .replace('T', ' ') + ' UTC'
-  )
 }
 
 // Detect Ethereum addresses in a string and transform each part.

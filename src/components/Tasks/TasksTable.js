@@ -85,7 +85,7 @@ const TaskTable = React.memo(function TaskTable({
           </Link>,
           <LocalIdentityBadge entity={juror} />,
 
-          <TaskStatus />,
+          <TaskStatus dueDate={dueDate} />,
           <TaskDueDate dueDate={dueDate} />,
         ]
       }}
