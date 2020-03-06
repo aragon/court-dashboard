@@ -225,7 +225,13 @@ function ActivityProvider({ children }) {
     return () => {
       cancelled = true
     }
-  }, [account, ethers, updateActivityStatus, updateActivitiesFromStorage])
+  }, [
+    account,
+    activities,
+    ethers,
+    updateActivitiesFromStorage,
+    updateActivityStatus,
+  ])
 
   return (
     <ActivityContext.Provider
