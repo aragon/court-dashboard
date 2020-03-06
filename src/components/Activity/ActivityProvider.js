@@ -1,7 +1,15 @@
-import React, { useContext } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import PropTypes from 'prop-types'
 import StoredList from '../../StoredList'
 import { getNetworkType } from '../../lib/web3-utils'
+import { MINUTE } from '../../utils/date-utils'
 import { useWallet } from '../../providers/Wallet'
 import {
   ACTIVITY_STATUS_CONFIRMED,
@@ -12,8 +20,6 @@ import {
 
 const ActivityContext = React.createContext()
 
-const TEN_MINUTES = 1000 * 60 * 10
-
 // Only used to serialize / deserialize the symbols
 const SymbolsByName = new Map(
   Object.entries({
@@ -23,6 +29,8 @@ const SymbolsByName = new Map(
     ACTIVITY_STATUS_TIMED_OUT,
   })
 )
+
+const TIMEOUT_DURATION = 10 * MINUTE
 
 function getStoredList(account) {
   return new StoredList(`activity:${getNetworkType()}:${account}`, {
@@ -37,222 +45,208 @@ function getStoredList(account) {
   })
 }
 
-// Provides easy access to the user activities list
-class ActivityProviderBase extends React.Component {
-  static propTypes = {
-    wallet: PropTypes.object,
-    children: PropTypes.node,
+async function getActivityFinalStatus(
+  ethers,
+  { createdAt, transactionHash, status }
+) {
+  if (status !== ACTIVITY_STATUS_PENDING) {
+    return status
   }
 
-  state = {
-    // activities of all accounts
-    activities: [],
-  }
+  const now = Date.now()
 
-  _storedList = null
-
-  componentDidMount() {
-    this.updateStoredList()
-    this._checkInterval = setInterval(this.checkForTimedOut, 1000 * 30)
-  }
-
-  componentDidUpdate(prevProps) {
-    const { wallet } = this.props
-    if (wallet.account !== prevProps.wallet.account) {
-      this.updateStoredList()
-    }
-  }
-
-  updateStoredList() {
-    const { wallet } = this.props
-    this._storedList = getStoredList(wallet.account)
-    this.setState(
-      { activities: this._storedList.getItems() },
-      this.refreshPendingActivities
-    )
-  }
-
-  componentWillUnmount() {
-    clearInterval(this._checkInterval)
-  }
-
-  // Refresh the status of pending activities
-  refreshPendingActivities() {
-    const { ethers } = this.props.wallet
-
-    this.state.activities
-      .filter(({ status }) => status === ACTIVITY_STATUS_PENDING)
-      .forEach(async ({ transactionHash }) => {
-        try {
-          const tx = await ethers.getTransaction(String(transactionHash))
-          // tx is null if no tx was found
-          if (tx && tx.blockNumber) {
-            this.setActivityConfirmed(transactionHash)
-          }
-        } catch (e) {
-          console.error(`Failed to refresh transaction ${transactionHash}`)
+  return Promise.race([
+    // Get the transaction status once mined
+    ethers
+      .getTransaction(String(transactionHash))
+      .then(tx => {
+        // tx is null if no tx was found
+        if (!tx) {
+          throw new Error('No transaction found')
         }
+        return tx.wait().then(receipt => {
+          return receipt.blockNumber
+            ? ACTIVITY_STATUS_CONFIRMED
+            : ACTIVITY_STATUS_FAILED
+        })
       })
-  }
+      .catch(() => {
+        return ACTIVITY_STATUS_FAILED
+      }),
 
-  checkForTimedOut = () => {
-    const now = Date.now()
-    this.state.activities.forEach(activity => {
-      const timeDelta = now - activity.createdAt
-      if (
-        timeDelta > TEN_MINUTES &&
-        activity.status === ACTIVITY_STATUS_PENDING
-      ) {
-        // Set pending items to timed out after 10 minutes
-        this.setActivityTimedOut(activity.transactionHash)
+    // Timeout after 10 minutes
+    new Promise(resolve => {
+      if (now - createdAt > TIMEOUT_DURATION) {
+        return ACTIVITY_STATUS_TIMED_OUT
+      }
+      setTimeout(() => {
+        resolve(ACTIVITY_STATUS_TIMED_OUT)
+      }, TIMEOUT_DURATION - (now - createdAt))
+    }),
+  ])
+}
+
+function ActivityProvider({ children }) {
+  const [activities, setActivities] = useState([])
+  const storedList = useRef(null)
+  const wallet = useWallet()
+  const { account, ethers } = wallet
+
+  // Update the activities, ensuring the activities
+  // are updated in the stored list and in the state.
+  const updateActivities = useCallback(
+    cb => {
+      const newActivities = cb(activities)
+      setActivities(newActivities)
+      if (storedList.current) {
+        storedList.current.update(newActivities)
+      }
+    },
+    [activities]
+  )
+
+  // Add a single activity.
+  const addActivity = useCallback(
+    async (
+      tx,
+
+      // see methods and params defined in activity-types.js
+      activityType = 'transaction',
+      activityParams = {}
+    ) => {
+      // tx might be a promise resolving into a tx
+      tx = await tx
+
+      updateActivities(activities => [
+        ...activities,
+        {
+          activityParams,
+          activityType,
+          createdAt: Date.now(),
+          from: tx.from,
+          nonce: tx.nonce,
+          read: false,
+          status: ACTIVITY_STATUS_PENDING,
+          to: tx.to,
+          transactionHash: tx.hash,
+        },
+      ])
+
+      return tx
+    },
+    [updateActivities]
+  )
+
+  // Clear a single activity
+  const removeActivity = useCallback(
+    transactionHash => {
+      updateActivities(activities =>
+        activities.filter(
+          activity => activity.transactionHash !== transactionHash
+        )
+      )
+    },
+    [updateActivities]
+  )
+
+  // Clear all non pending activities − we don’t clear
+  // pending because we’re awaiting state change.
+  const clearActivities = useCallback(() => {
+    updateActivities(activities =>
+      activities.filter(activity => activity.status === ACTIVITY_STATUS_PENDING)
+    )
+  }, [updateActivities])
+
+  // Update the status of a single activity,
+  // using its transaction hash.
+  const updateActivityStatus = useCallback(
+    (hash, status) => {
+      updateActivities(activities =>
+        activities.map(activity => {
+          if (activity.transactionHash !== hash) {
+            return activity
+          }
+          return { ...activity, read: false, status }
+        })
+      )
+    },
+    [updateActivities]
+  )
+
+  // Mark the current user’s activities as read
+  const markActivitiesRead = useCallback(() => {
+    updateActivities(activities =>
+      activities.map(activity => ({ ...activity, read: true }))
+    )
+  }, [updateActivities])
+
+  // Total number of unread activities
+  const unreadCount = useMemo(() => {
+    return activities.reduce((count, { read }) => count + Number(!read), 0)
+  }, [activities])
+
+  const updateActivitiesFromStorage = useCallback(() => {
+    if (!storedList.current) {
+      return
+    }
+
+    const activitiesFromStorage = storedList.current
+      .getItems()
+      .filter(({ transactionHash }) => {
+        return (
+          activities.findIndex(
+            activity => activity.transactionHash === transactionHash
+          ) === -1
+        )
+      })
+
+    if (activitiesFromStorage.length > 0) {
+      setActivities(activitiesFromStorage)
+    }
+  }, [activities])
+
+  // Triggered every time the account changes
+  useEffect(() => {
+    if (!account) {
+      return
+    }
+
+    let cancelled = false
+    storedList.current = getStoredList(account)
+    updateActivitiesFromStorage()
+
+    activities.forEach(async activity => {
+      const status = await getActivityFinalStatus(ethers, activity)
+      if (!cancelled && status !== activity.status) {
+        updateActivityStatus(activity.transactionHash, status)
       }
     })
-  }
 
-  addTransactionActivity = async (
-    tx,
+    return () => {
+      cancelled = true
+    }
+  }, [account, ethers, updateActivityStatus, updateActivitiesFromStorage])
 
-    // see methods and params defined in activity-types.js
-    activityType = 'transaction',
-    activityParams = {}
-  ) => {
-    // tx might be a promise resolving into a tx
-    tx = await tx
-
-    this.setState({
-      activities: this._storedList.add({
-        activityParams,
-        activityType,
-        createdAt: Date.now(),
-        from: tx.from,
-        read: false,
-        status: ACTIVITY_STATUS_PENDING,
-        to: tx.to,
-        transactionHash: tx.hash,
-      }),
-    })
-
-    return tx
-  }
-
-  remove = index => {
-    this.setState({
-      activities: this._storedList.remove(index),
-    })
-  }
-
-  updateActivities = activities => {
-    this.setState({
-      activities: this._storedList.update(activities),
-    })
-  }
-
-  filterActivities = (predicate = activity => true) => {
-    const filtered = this.state.activities.filter(predicate)
-
-    this.setState({
-      activities: this._storedList.update(filtered),
-    })
-  }
-
-  clearActivities = () => {
-    // Clear all non pending activities
-    // (we don't clear pending because we're awaiting state change)
-    this.filterActivities(
-      ({ status, from }) => status === ACTIVITY_STATUS_PENDING
-    )
-  }
-
-  clearActivity = transactionHash => {
-    this.filterActivities(
-      activity => activity.transactionHash !== transactionHash
-    )
-  }
-
-  markActivitiesRead = () => {
-    // Mark the current user's activities as read
-    const readActivities = this.state.activities.map(activity => ({
-      ...activity,
-      read: true,
-    }))
-
-    this.setState({
-      activities: this._storedList.update(readActivities),
-    })
-  }
-
-  // update activity status and set the activity to unread
-  setActivityStatus = status => transactionHash => {
-    const activities = this.state.activities.map(activity =>
-      activity.transactionHash === transactionHash
-        ? {
-            ...activity,
-            read: false,
-            status,
-          }
-        : activity
-    )
-
-    this.setState({
-      activities: this._storedList.update(activities),
-    })
-  }
-
-  setActivityConfirmed = this.setActivityStatus(ACTIVITY_STATUS_CONFIRMED)
-  setActivityFailed = this.setActivityStatus(ACTIVITY_STATUS_FAILED)
-  setActivityTimedOut = this.setActivityStatus(ACTIVITY_STATUS_TIMED_OUT)
-
-  setActivityNonce = ({ transactionHash, nonce }) => {
-    const activities = this.state.activities.map(activity =>
-      activity.transactionHash === transactionHash
-        ? {
-            ...activity,
-            nonce,
-          }
-        : activity
-    )
-
-    this.setState({
-      activities: this._storedList.update(activities),
-    })
-  }
-
-  getUnreadActivityCount = () =>
-    this.state.activities.reduce(
-      (count, { read }) => (read ? count : count + 1),
-      0
-    )
-
-  render() {
-    const { children } = this.props
-    const unreadActivityCount = this.getUnreadActivityCount()
-
-    return (
-      <ActivityContext.Provider
-        value={{
-          activities: this.state.activities,
-          addTransactionActivity: this.addTransactionActivity,
-          clearActivities: this.clearActivities,
-          clearActivity: this.clearActivity,
-          markActivitiesRead: this.markActivitiesRead,
-          setActivityConfirmed: this.setActivityConfirmed,
-          setActivityFailed: this.setActivityFailed,
-          setActivityNonce: this.setActivityNonce,
-          updateActivities: this.updateActivities,
-          unreadActivityCount,
-        }}
-      >
-        {children}
-      </ActivityContext.Provider>
-    )
-  }
+  return (
+    <ActivityContext.Provider
+      value={{
+        activities,
+        addActivity,
+        clearActivities,
+        markActivitiesRead,
+        removeActivity,
+        unreadCount,
+        updateActivities,
+      }}
+    >
+      {children}
+    </ActivityContext.Provider>
+  )
 }
 
-function ActivityProvider(props) {
-  const wallet = useWallet()
-  return <ActivityProviderBase wallet={wallet} {...props} />
+ActivityProvider.propTypes = {
+  children: PropTypes.node,
 }
-ActivityProvider.propTypes = ActivityProviderBase.propTypes
 
 function useActivity() {
   return useContext(ActivityContext)

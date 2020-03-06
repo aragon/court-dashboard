@@ -15,8 +15,7 @@ import { useActivity } from './ActivityProvider'
 const ActivityButton = React.memo(function ActivityButton() {
   const theme = useTheme()
   const [opened, setOpened] = useState(false)
-  const { markActivitiesRead, unreadActivityCount } = useActivity()
-
+  const { markActivitiesRead, unreadCount } = useActivity()
   const containerRef = useRef()
 
   const handleToggle = useCallback(
@@ -80,18 +79,13 @@ const ActivityButton = React.memo(function ActivityButton() {
               native
               from={{ opacity: 0, size: 0 }}
               to={{
-                opacity: unreadActivityCount > 0 ? 1 : 0,
-                size: 1,
+                opacity: Number(unreadCount > 0),
+                size: Number(unreadCount > 0),
               }}
-              config={springs.lazy}
+              config={springs.swift}
             >
               {({ opacity, size }) => (
                 <animated.div
-                  css={`
-                    position: absolute;
-                    top: -${0.5 * GU}px;
-                    right: -${0.5 * GU}px;
-                  `}
                   style={{
                     opacity,
                     transform: size
@@ -99,14 +93,15 @@ const ActivityButton = React.memo(function ActivityButton() {
                         [0, 0.2, 0.4, 0.6, 0.8, 1],
                         [1.5, 1, 1.5, 1, 1.5, 1]
                       )
-                      .interpolate(s => `scale(${s})`),
+                      .interpolate(s => `scale3d(${s}, ${s}, 1)`),
                   }}
+                  css={`
+                    position: absolute;
+                    top: -${0.5 * GU}px;
+                    right: -${0.5 * GU}px;
+                  `}
                 >
-                  <Tag
-                    limitDigits
-                    mode="activity"
-                    label={unreadActivityCount}
-                  />
+                  <Tag limitDigits mode="activity" label={unreadCount} />
                 </animated.div>
               )}
             </Spring>

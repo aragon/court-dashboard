@@ -2,6 +2,11 @@ import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
+export const SECOND = 1000
+export const MINUTE = 60 * SECOND
+export const HOUR = 60 * MINUTE
+export const DAY = 24 * HOUR
+
 const KNOWN_FORMATS = {
   iso: 'YYYY-MM-DDTHH:mm:ssZ',
   standard: 'D MMM YY, h:mm A',

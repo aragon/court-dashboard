@@ -25,7 +25,7 @@ import TimeTag from './TimeTag'
 
 function ActivityItem({ activity }) {
   const theme = useTheme()
-  const { clearActivity } = useActivity()
+  const { removeActivity } = useActivity()
 
   const activityData = getActivityData(
     activity.activityType,
@@ -48,9 +48,9 @@ function ActivityItem({ activity }) {
 
   const handleClose = useCallback(() => {
     if (activity.transactionHash) {
-      clearActivity(activity.transactionHash)
+      removeActivity(activity.transactionHash)
     }
-  }, [activity, clearActivity])
+  }, [activity, removeActivity])
 
   return (
     <div
