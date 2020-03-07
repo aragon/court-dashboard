@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Spring, animated } from 'react-spring/renderprops'
 import {
   ButtonIcon,
@@ -15,8 +15,9 @@ import { useActivity } from './ActivityProvider'
 const ActivityButton = React.memo(function ActivityButton() {
   const theme = useTheme()
   const [opened, setOpened] = useState(false)
-  const { markActivitiesRead, unreadCount } = useActivity()
+  const { activities, markActivitiesRead, unreadCount } = useActivity()
   const containerRef = useRef()
+  const popoverFocusElement = useRef()
 
   const handleToggle = useCallback(
     () =>
@@ -28,10 +29,17 @@ const ActivityButton = React.memo(function ActivityButton() {
       }),
     [markActivitiesRead]
   )
+
   const handleClose = useCallback(() => {
     markActivitiesRead()
     setOpened(false)
   }, [markActivitiesRead])
+
+  useEffect(() => {
+    if (popoverFocusElement.current) {
+      popoverFocusElement.current.focus()
+    }
+  }, [activities])
 
   return (
     <React.Fragment>
@@ -123,7 +131,9 @@ const ActivityButton = React.memo(function ActivityButton() {
         visible={opened}
         opener={containerRef.current}
       >
-        <ActivityList />
+        <div ref={popoverFocusElement} tabIndex="0" css="outline: 0">
+          <ActivityList />
+        </div>
       </Popover>
     </React.Fragment>
   )
