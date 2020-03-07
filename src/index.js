@@ -36,7 +36,7 @@ const client = createClient({
   ],
 })
 
-const sentryEnabled = !!(env('SENTRY_DSN') && env('ENABLE_SENTRY'))
+const sentryEnabled = Boolean(env('SENTRY_DSN') && env('ENABLE_SENTRY'))
 
 if (sentryEnabled) {
   Sentry.init({

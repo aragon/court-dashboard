@@ -16,9 +16,9 @@ const VOIDED_DISPUTES = {
     [RINKEBY_COURT, new Map([])],
     [RINKEBY_USABILITY_COURT, new Map([])],
   ]),
-  mainnet: new Map([
+  main: new Map([
     [
-      networks.mainnet.court,
+      networks.main.court,
       new Map(
         [
           {

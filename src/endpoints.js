@@ -26,12 +26,12 @@ function getAPIBase() {
 
 export default function endpoints() {
   const [API_BASE_HTTP, API_BASE_WS] = getAPIBase()
-  const networkName = getNetworkType(CHAIN_ID)
+  const networkType = getNetworkType(CHAIN_ID)
 
   const API_PATH =
-    networkName === 'mainnet'
+    networkType === 'main'
       ? GRAPH_API_PATH
-      : `${GRAPH_API_PATH}-${SUBGRAPH_NAME || networkName}`
+      : `${GRAPH_API_PATH}-${SUBGRAPH_NAME || networkType}`
 
   return [`${API_BASE_HTTP}${API_PATH}`, `${API_BASE_WS}${API_PATH}`]
 }
