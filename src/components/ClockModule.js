@@ -137,7 +137,7 @@ function ClockModule() {
               <div
                 css={`
                   background: ${theme.background};
-                  height: 40px;
+                  height: ${5 * GU}px;
                   border-radius: 10px;
                 `}
               />
