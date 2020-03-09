@@ -92,7 +92,7 @@ function ClockModule() {
           <div
             css={`
               line-height: 1;
-              width: 120px;
+              width: ${15 * GU}px;
 
               & > time {
                 & > span:first-child {
