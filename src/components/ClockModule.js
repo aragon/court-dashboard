@@ -149,7 +149,7 @@ function ClockModule() {
 
       <HeaderPopover
         animateHeight={false}
-        heading="Court cLock"
+        heading="Court clock"
         height={(isSynced ? 27.5 : 26) * GU}
         width={45 * GU}
         onClose={handlePopoverClose}
