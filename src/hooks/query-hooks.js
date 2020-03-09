@@ -45,6 +45,8 @@ export function useFirstANJActivationQuery(jurorId, { pause = false }) {
     pause,
   })
 
+  console.log('query result', result)
+
   const { juror } = result.data || {}
 
   return juror ? juror.movements[0] : null

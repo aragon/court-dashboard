@@ -40,7 +40,7 @@ export const Juror = gql`
 `
 
 export const FirstANJActivationMovement = gql`
-  query Juror($id: ID!) {
+  query JurorFirstANJActivationMovement($id: ID!) {
     juror(id: $id) {
       movements(
         where: { type: "Activation" }

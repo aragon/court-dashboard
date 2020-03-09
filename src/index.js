@@ -5,9 +5,9 @@ import {
   Provider as UrqlProvider,
   cacheExchange,
   debugExchange,
-  fetchExchange,
   subscriptionExchange,
 } from 'urql'
+import customFetchExchange from './mock/customFetchExchange'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { devtoolsExchange } from '@urql/devtools'
 import * as Sentry from '@sentry/browser'
@@ -29,7 +29,7 @@ const client = createClient({
     debugExchange,
     devtoolsExchange,
     cacheExchange,
-    fetchExchange,
+    customFetchExchange,
     subscriptionExchange({
       forwardSubscription: operation => subscriptionClient.request(operation),
     }),

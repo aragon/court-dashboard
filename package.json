@@ -31,7 +31,8 @@
     "styled-components": "^4.4.1",
     "subscriptions-transport-ws": "^0.9.16",
     "urql": "^1.6.3",
-    "use-wallet": "^0.4.1"
+    "use-wallet": "^0.4.1",
+    "wonka": "^4.0.7"
   },
   "scripts": {
     "start": "npm run sync-assets && REACT_APP_BUILD=$(git log --pretty=format:'%h' -n 1) react-app-rewired start",
@@ -44,6 +45,9 @@
     "build:mainnet": "REACT_APP_CHAIN_ID=1 npm run build",
     "build:ropsten": "REACT_APP_CHAIN_ID=3 npm run build",
     "build:rinkeby": "REACT_APP_CHAIN_ID=4 npm run build",
+    "mock:rpc": "REACT_APP_MOCK_TEST=1 npm run start:rpc",
+    "mock:mainnet": "REACT_APP_MOCK_TEST=1 npm run start:mainnet",
+    "mock:rinkeby": "REACT_APP_MOCK_TEST=1 npm run start:rinkeby",
     "lint": "eslint ./src",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",

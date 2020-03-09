@@ -361,6 +361,10 @@ export function useTotalActiveBalancePolling(termId) {
   const timeoutId = useRef(null)
 
   const fetchTotalActiveBalance = useCallback(() => {
+    if (!jurorRegistryContract) {
+      return
+    }
+
     timeoutId.current = setTimeout(() => {
       return jurorRegistryContract
         .totalActiveBalanceAt(termId)
