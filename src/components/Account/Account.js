@@ -150,7 +150,7 @@ function Account() {
         display: flex;
         align-items: center;
         height: 100%;
-        width: ${compactMode ? 'auto' : '196px'};
+        width: ${compactMode ? 'auto' : `${24.5 * GU}px`};
         outline: 0;
       `}
     >
