@@ -1,9 +1,7 @@
 import { useMemo } from 'react'
 import { useSubscription } from 'urql'
-import dayjs from 'dayjs'
-
+import { dayjs } from '../utils/date-utils'
 import { useCourtConfig } from '../providers/CourtConfig'
-
 import { ANJBalance, Juror } from '../queries/balances'
 import { CourtConfig } from '../queries/court'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
@@ -13,7 +11,6 @@ import {
 } from '../queries/jurorDrafts'
 import { SingleDispute, AllDisputes } from '../queries/disputes'
 import { OpenTasks } from '../queries/tasks'
-
 import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 import { bigNum } from '../lib/math-utils'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'

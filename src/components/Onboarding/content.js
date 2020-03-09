@@ -147,7 +147,7 @@ highlights.rinkeby = [
   },
 ]
 
-highlights.mainnet = [
+highlights.main = [
   {
     title: {
       small: null,

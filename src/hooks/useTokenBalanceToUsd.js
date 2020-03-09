@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getMarketDetails, getTokenReserves } from '@uniswap/sdk'
-import { useCourtConfig } from '../providers/CourtConfig'
-
 import env from '../environment'
+import { useCourtConfig } from '../providers/CourtConfig'
 import { getKnownToken } from '../utils/known-tokens'
 import { formatUnits, bigNum } from '../lib/math-utils'
 import { addressesEqual, ETH_FAKE_ADDRESS } from '../lib/web3-utils'
@@ -41,7 +40,8 @@ export function useANJBalanceToUsd(amount) {
   const { anjToken } = useCourtConfig()
 
   // We'll use the ANJ <> DAI market details to get the spot price
-  const { address: daiAddress } = getKnownToken('DAI')
+  const dai = getKnownToken('DAI')
+  const { address: daiAddress } = dai || {}
 
   const [convertedAmount, setConvertedAmount] = useState('0')
 

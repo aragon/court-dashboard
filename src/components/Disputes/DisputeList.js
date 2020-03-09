@@ -1,17 +1,15 @@
 import React, { useCallback, useState } from 'react'
 import { Bar, CardLayout, GU, useLayout, useTheme } from '@aragon/ui'
-
 import DisputeCard from './DisputeCard'
 import DisputeFilters from './DisputeFilters'
 import DisputesLoading from './Loading'
 import ErrorLoading from '../Errors/ErrorLoading'
 import NoFilterResults from './NoFilterResults'
 import MessageCard from '../MessageCard'
-
-import dayjs from '../../lib/dayjs'
+import { dayjs } from '../../utils/date-utils'
+import * as DisputesTypes from '../../types/dispute-status-types'
 
 import noDataSvg from '../../assets/noData.svg'
-import * as DisputesTypes from '../../types/dispute-status-types'
 import noDraftSvg from '../../assets/noDraft.svg'
 
 const ALL_FILTER = 0

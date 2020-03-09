@@ -7,7 +7,7 @@ import DisputeNotFoundError from './components/Disputes/DisputeNotFoundError'
 
 import env from './environment'
 import { DisputeNotFound } from './errors'
-import { getNetworkName } from './lib/web3-utils'
+import { getNetworkType } from './lib/web3-utils'
 
 const SENTRY_DSN = env('SENTRY_DNS')
 
@@ -41,7 +41,7 @@ class GlobalErrorHandler extends React.Component {
   handleReportClick = () => {
     Sentry.init({
       dsn: SENTRY_DSN,
-      environment: getNetworkName(env('CHAIN_ID')),
+      environment: getNetworkType(env('CHAIN_ID')),
     })
     const eventId = Sentry.captureException(this.state.error)
     Sentry.showReportDialog({ eventId })

@@ -14,5 +14,5 @@ export const networks = {
     court:
       SUBGRAPH_NAME === 'usability' ? RINKEBY_USABILITY_COURT : RINKEBY_COURT,
   },
-  mainnet: { court: '0xee4650cBe7a2B23701D416f58b41D8B76b617797' },
+  main: { court: '0xee4650cBe7a2B23701D416f58b41D8B76b617797' },
 }
