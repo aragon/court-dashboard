@@ -260,7 +260,7 @@ function ClockModule() {
                 `}
               >
                 Term is the time unit for measuring Aragon Court phases. Each
-                term lasts {formatDuration(courtConfig.termDuration / 1000)}
+                term lasts {formatDuration(courtConfig.termDuration / 1000)}.
               </span>
             ) : (
               <Button
