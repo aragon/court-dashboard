@@ -135,7 +135,7 @@ function ClockModule() {
                       : theme.negative};
                   `}
                 >
-                  {isSynced ? 'Court term synced' : 'Term out of sync'}
+                  {`Term ${isSynced ? 'is up-to-date' : 'needs updating'}`}
                 </span>
               </>
             ) : (
@@ -232,7 +232,7 @@ function ClockModule() {
                 text-transform: uppercase;
               `}
             >
-              {isSynced ? 'Term is in sync' : 'Term is out of sync'}
+              {`Term ${isSynced ? 'is up-to-date' : 'needs updating'}`}
             </span>
           </div>
           <div
@@ -247,7 +247,7 @@ function ClockModule() {
                   margin-right: ${0.5 * GU}px;
                 `}
               >
-                {isSynced ? 'Synced' : 'Out of sync'}:
+                {isSynced ? 'Up to date' : 'Needs updating'}:
               </span>
               {isSynced ? 'Current' : 'Last'} term {currentTermId}
             </span>
@@ -269,7 +269,7 @@ function ClockModule() {
               </span>
             ) : (
               <Button
-                label="Call Heartbeat"
+                label="Update term"
                 mode="strong"
                 wide
                 disabled={!wallet.account}
