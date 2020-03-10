@@ -1,7 +1,7 @@
 import { fetchExchange, makeResult } from 'urql'
 import { filter, make, merge, mergeMap, pipe, share, takeUntil } from 'wonka'
-import env from '../environment'
-import mockedData from './mock-data'
+import env from '../../environment'
+import mockedData from '../mock-data'
 
 const OPERATION_DEFINITION = 'OperationDefinition'
 
@@ -43,32 +43,35 @@ export default function customFetchExchange(ref) {
   }
 }
 
-// const getOperationName = query => {
-//   const node = query.definitions.find(node => {
-//     return node.kind === Kind.OPERATION_DEFINITION && node.name
-//   })
-
-//   return node !== undefined && node.name ? node.name.value : null
-// }
-
 const mockData = operation => {
   return make(({ next, complete }) => {
     const { name: queryName } = operation.query.definitions.find(
       node => node.kind === OPERATION_DEFINITION && node.name
     )
 
+    const abortController =
+      typeof AbortController !== 'undefined' ? new AbortController() : undefined
     const convertedData = mockedData[queryName.value]
 
-    console.log('convertedData', convertedData)
-    console.log('next', next)
-    console.log('complete', complete)
+    Promise.resolve()
+      .then(() =>
+        makeResult(
+          operation,
+          {
+            data: convertedData,
+          },
+          null
+        )
+      )
+      .then(result => {
+        next(result)
+        complete()
+      })
 
-    if (convertedData) {
-      const result = makeResult(operation, { data: convertedData })
-      console.log('result', result)
-      next(result)
+    return () => {
+      if (abortController !== undefined) {
+        abortController.abort()
+      }
     }
-
-    return complete()
   })
 }

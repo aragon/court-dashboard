@@ -5,10 +5,12 @@ import {
   Provider as UrqlProvider,
   cacheExchange,
   debugExchange,
-  subscriptionExchange,
 } from 'urql'
-import customFetchExchange from './mock/customFetchExchange'
-import { SubscriptionClient } from 'subscriptions-transport-ws'
+import fetchExchange from './mock/exchanges/customFetchExchange'
+import subscriptionExchange, {
+  subscriptionClient,
+} from './mock/exchanges/customSubscriptionExchange'
+
 import { devtoolsExchange } from '@urql/devtools'
 import * as Sentry from '@sentry/browser'
 import App from './App'
@@ -16,12 +18,7 @@ import endpoints from './endpoints'
 import env from './environment'
 import { getNetworkName } from './lib/web3-utils'
 
-const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
-
-const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {
-  reconnect: true,
-  reconnectionAttempts: 10,
-})
+const [GRAPH_API_ENDPOINT_HTTP] = endpoints()
 
 const client = createClient({
   url: GRAPH_API_ENDPOINT_HTTP,
@@ -29,10 +26,8 @@ const client = createClient({
     debugExchange,
     devtoolsExchange,
     cacheExchange,
-    customFetchExchange,
-    subscriptionExchange({
-      forwardSubscription: operation => subscriptionClient.request(operation),
-    }),
+    fetchExchange,
+    subscriptionExchange,
   ],
 })
 
