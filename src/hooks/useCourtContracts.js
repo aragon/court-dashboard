@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { useContract } from '../web3-contracts'
+import { useContract, useContractReadOnly } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { CourtModuleType } from '../types/court-module-types'
 
@@ -57,6 +57,14 @@ function useCourtContract(moduleType, abi) {
   }
 
   return useContract(contractAddress, abi)
+}
+
+function useCourtContractReadOnly(moduleType, abi) {
+  const { modules } = useCourtConfig()
+
+  const contractAddress = getModuleAddress(modules, moduleType)
+
+  return useContractReadOnly(contractAddress, abi)
 }
 
 /**
@@ -351,7 +359,7 @@ export function useAppealFeeAllowance(owner) {
   return allowance
 }
 
-export function useTotalActiveBalancePolling() {
+export function useTotalActiveBalancePolling(termId) {
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
@@ -363,7 +371,7 @@ export function useTotalActiveBalancePolling() {
   const fetchTotalActiveBalance = useCallback(() => {
     timeoutId.current = setTimeout(() => {
       return jurorRegistryContract
-        .totalActiveBalance()
+        .totalActiveBalanceAt(termId)
         .then(balance => {
           setTotalActiveBalance(balance)
           clearTimeout(timeoutId.current)
@@ -374,13 +382,67 @@ export function useTotalActiveBalancePolling() {
           fetchTotalActiveBalance()
         })
     }, 1000)
-  }, [jurorRegistryContract])
+  }, [jurorRegistryContract, termId])
 
   useEffect(() => {
     fetchTotalActiveBalance()
 
     return () => clearTimeout(timeoutId.current)
   }, [fetchTotalActiveBalance])
+
+  return totalActiveBalance
+}
+export function useTotalANTStaked() {
+  const [totalANTStaked, setTotalANTStaked] = useState(bigNum(-1))
+
+  const jurorRegistryContract = useCourtContractReadOnly(
+    CourtModuleType.JurorsRegistry,
+    jurorRegistryAbi
+  )
+  useEffect(() => {
+    if (!jurorRegistryContract) {
+      return
+    }
+    const getTotalANTStaked = async () => {
+      retryMax(() => jurorRegistryContract.totalStaked())
+        .then(totalStaked => {
+          setTotalANTStaked(totalStaked)
+        })
+        .catch(err => {
+          console.error(`Error fetching ANT staked: ${err}`)
+        })
+    }
+
+    getTotalANTStaked()
+  }, [jurorRegistryContract])
+
+  return totalANTStaked
+}
+
+export function useTotalActiveBalance() {
+  const jurorRegistryContract = useCourtContract(
+    CourtModuleType.JurorsRegistry,
+    jurorRegistryAbi
+  )
+
+  const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
+
+  useEffect(() => {
+    if (!jurorRegistryContract) {
+      return
+    }
+    const getTotalActiveBalance = async () => {
+      retryMax(() => jurorRegistryContract.totalActiveBalance())
+        .then(totalActive => {
+          setTotalActiveBalance(totalActive)
+        })
+        .catch(err => {
+          console.error(`Error fetching ANT staked: ${err}`)
+        })
+    }
+
+    getTotalActiveBalance()
+  }, [jurorRegistryContract])
 
   return totalActiveBalance
 }

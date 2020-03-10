@@ -1,4 +1,5 @@
 import environment from './environment'
+// import { networkConfigs } from './networks'
 
 import { isLocalOrUnknownNetwork, getNetworkName } from './lib/web3-utils'
 
@@ -17,6 +18,9 @@ export const IPFS_ENDPOINT = isLocalOrUnknownNetwork(CHAIN_ID)
   : 'https://ipfs.eth.aragon.network/ipfs'
 
 const GRAPH_API_PATH = '/subgraphs/name/aragon/aragon-court'
+
+// export const ETH_NODE =
+//   networkConfigs[getNetworkName(environment('CHAIN_ID'))].nodes.defaultEth
 
 function getAPIBase() {
   return isLocalOrUnknownNetwork(CHAIN_ID)

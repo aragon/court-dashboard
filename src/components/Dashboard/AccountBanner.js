@@ -2,7 +2,7 @@ import React from 'react'
 import { CircleGraph, GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 
 import AccountBannerInfo from './AccountBannerInfo'
-
+import { useCourtClock } from '../../providers/CourtClock'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
@@ -154,14 +154,17 @@ const Wrapper = ({ mainIcon, information }) => {
 
 const BannerWithProbability = ({ activeBalance }) => {
   const theme = useTheme()
-
+  const { currentTermId } = useCourtClock()
   // Calculate juror's active balance and total active balance for current term
   const {
     amount: activeAmount,
     amountNotEffective: activeAmountNotEffective,
   } = activeBalance
   const activeBalanceCurrentTerm = activeAmount.sub(activeAmountNotEffective)
-  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling()
+  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
+    currentTermId
+  )
+  console.log('activeeee ', totalActiveBalanceCurrentTerm)
   const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
 
   const totalPercentage = getPercentageBN(

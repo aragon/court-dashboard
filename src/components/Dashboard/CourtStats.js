@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, GU, textStyle, useTheme } from '@aragon/ui'
 import IconANJ from '../../assets/IconANJ.svg'
+import useCourtStats from '../../hooks/useCourtStats'
 // import { formatUnits, bigNum } from '../../lib/math-utils'
 // import LatestActivity from './LatestActivity'
 // import CourtStats from './CourtStats'
@@ -27,7 +28,7 @@ import IconANJ from '../../assets/IconANJ.svg'
 //   )
 // }
 
-const CourtStats = () => {
+const CourtStats = React.memo(function CourtStats() {
   const theme = useTheme()
   const stats = {
     title: 'Total Active ANJ',
@@ -39,6 +40,10 @@ const CourtStats = () => {
       usdValue: 82501892,
     },
   }
+
+  const cstats = useCourtStats()
+
+  console.log('court stats ', cstats)
 
   return (
     <Box heading="Court Metrics" padding={3 * GU}>
@@ -65,7 +70,7 @@ const CourtStats = () => {
       </div>
     </Box>
   )
-}
+})
 
 function TokenStats({ token, theme }) {
   const { value, icon, symbol, usdValue } = token

@@ -16,3 +16,20 @@ export const networks = {
   },
   mainnet: { court: '0xee4650cBe7a2B23701D416f58b41D8B76b617797' },
 }
+
+export const networkConfigs = {
+  rpc: {
+    nodes: {
+      defaultEth: 'http://localhost:8545',
+    },
+  },
+  mainnet: {
+    nodes: {
+      defaultEth: 'wss://mainnet.eth.aragon.network/ws',
+    },
+  },
+}
+
+export function getNetworkConfig(chainId) {
+  return networkConfigs[chainId]
+}

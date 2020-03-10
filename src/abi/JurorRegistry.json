@@ -2,5 +2,8 @@
   "function activate(uint256 _amount) external",
   "function deactivate(uint256 _amount) external",
   "function unstake(uint256 _amount, bytes _data) external",
-  "function totalActiveBalanceAt(uint64 _termId) external view returns (uint256)"
+  "function totalActiveBalance() external view returns (uint256)",
+  "function totalActiveBalanceAt(uint64 _termId) external view returns (uint256)",
+  "function totalStaked() external view returns (uint256)"
+
 ]

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Contract as EthersContract } from 'ethers'
 import { useWallet } from './providers/Wallet'
+import { getWeb3Provider } from './lib/web3-utils'
 
 export function useContract(address, abi, signer = true) {
   const { account, ethers } = useWallet()
@@ -18,4 +19,9 @@ export function useContract(address, abi, signer = true) {
       signer ? ethers.getSigner() : ethers
     )
   }, [abi, account, address, ethers, signer])
+}
+
+export function useContractReadOnly(address, abi) {
+  const ethers = getWeb3Provider()
+  return new EthersContract(address, abi, ethers)
 }
