@@ -360,16 +360,19 @@ export function useAppealFeeAllowance(owner) {
 }
 
 export function useTotalActiveBalancePolling(termId) {
-  const jurorRegistryContract = useCourtContract(
+  const jurorRegistryContract = useCourtContractReadOnly(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
   )
+  console.log('jurorRegistryContract ', jurorRegistryContract)
   const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
 
   const timeoutId = useRef(null)
 
   const fetchTotalActiveBalance = useCallback(() => {
+    if (!jurorRegistryContract) return
     timeoutId.current = setTimeout(() => {
+      console.log('jurorRegistryContract ', jurorRegistryContract)
       return jurorRegistryContract
         .totalActiveBalanceAt(termId)
         .then(balance => {
@@ -392,6 +395,7 @@ export function useTotalActiveBalancePolling(termId) {
 
   return totalActiveBalance
 }
+
 export function useTotalANTStaked() {
   const [totalANTStaked, setTotalANTStaked] = useState(bigNum(-1))
 
@@ -420,12 +424,11 @@ export function useTotalANTStaked() {
 }
 
 export function useTotalActiveBalance() {
-  const jurorRegistryContract = useCourtContract(
+  const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
+  const jurorRegistryContract = useCourtContractReadOnly(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
   )
-
-  const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
 
   useEffect(() => {
     if (!jurorRegistryContract) {

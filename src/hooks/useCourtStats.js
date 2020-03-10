@@ -1,5 +1,6 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { useTotalActiveBalance, useTotalANTStaked } from './useCourtContracts'
+// import { useCourtClock } from '../providers/CourtClock'
 import { getKnownToken } from '../utils/known-tokens'
 import { bigNum } from '../lib/math-utils'
 
@@ -16,32 +17,23 @@ const COURT_STATS = [
 ]
 
 function useCourtStats() {
-  const [fetching, setFetching] = useState(true)
+  // const [fetching, setFetching] = useState(true)
+  // const { currentTermId } = useCourtClock()
 
   const ANJActiveBalance = useTotalActiveBalance()
+  console.log('ANJActiveBalance ', ANJActiveBalance)
 
   const ANTTotalStake = useTotalANTStaked()
-
-  const ANJActiveBalanceKey = ANJActiveBalance.toString()
-  const ANTTotalStakeKey = ANTTotalStake.toString()
-
-  useEffect(() => {
-    console.log('useEffect')
-    if (!ANJActiveBalance.eq(bigNum(-1)) && !ANTTotalStake.eq(bigNum(-1))) {
-      setFetching(false)
-    }
-    console.log('fetching')
-  }, [ANJActiveBalanceKey, ANTTotalStakeKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  console.log('ANTTotalStake ', ANTTotalStake)
 
   return useMemo(() => {
-    console.log('return ')
-    if (fetching) {
+    if (!ANJActiveBalance.eq(bigNum(-1)) && !ANTTotalStake.eq(bigNum(-1))) {
       return [null, true]
     }
 
     const statsData = [ANJActiveBalance, ANTTotalStake]
     return [
-      ...COURT_STATS.map((stat, index) => {
+      COURT_STATS.map((stat, index) => {
         return {
           ...stat,
           value: statsData[index],
@@ -49,7 +41,7 @@ function useCourtStats() {
       }),
       false,
     ]
-  }, [ANJActiveBalanceKey, ANTTotalStakeKey, fetching]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ANTTotalStake.toString(), ANJActiveBalance.toString()]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 export default useCourtStats
