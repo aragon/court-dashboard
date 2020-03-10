@@ -364,7 +364,6 @@ export function useTotalActiveBalancePolling(termId) {
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
   )
-  console.log('jurorRegistryContract ', jurorRegistryContract)
   const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
 
   const timeoutId = useRef(null)
@@ -372,7 +371,6 @@ export function useTotalActiveBalancePolling(termId) {
   const fetchTotalActiveBalance = useCallback(() => {
     if (!jurorRegistryContract) return
     timeoutId.current = setTimeout(() => {
-      console.log('jurorRegistryContract ', jurorRegistryContract)
       return jurorRegistryContract
         .totalActiveBalanceAt(termId)
         .then(balance => {

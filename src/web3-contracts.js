@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
-import { Contract as EthersContract } from 'ethers'
+import { Contract as EthersContract, providers as Providers } from 'ethers'
 import { useWallet } from './providers/Wallet'
-import { getWeb3Provider } from './lib/web3-utils'
+import { getNetworkName } from './lib/web3-utils'
+import { networkConfigs } from './networks'
+import env from './environment'
 
 export function useContract(address, abi, signer = true) {
   const { account, ethers } = useWallet()
@@ -22,6 +24,11 @@ export function useContract(address, abi, signer = true) {
 }
 
 export function useContractReadOnly(address, abi) {
-  const ethers = getWeb3Provider()
-  return new EthersContract(address, abi, ethers)
+  const ethEndpoint =
+    networkConfigs[getNetworkName(env('CHAIN_ID'))].nodes.defaultEth
+
+  return useMemo(() => {
+    const provider = new Providers.JsonRpcProvider(ethEndpoint)
+    return new EthersContract(address, abi, provider)
+  }, [abi, address, ethEndpoint])
 }

@@ -164,7 +164,6 @@ const BannerWithProbability = ({ activeBalance }) => {
   const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
     currentTermId
   )
-  console.log('activeeee ', totalActiveBalanceCurrentTerm)
   const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
 
   const totalPercentage = getPercentageBN(

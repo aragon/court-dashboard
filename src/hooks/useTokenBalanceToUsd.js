@@ -102,7 +102,7 @@ export function useANJBalanceToUsd(amount) {
  * @param {BigNumber} balance The balance to convert into USD.
  * @returns { Number } The balance value in USD
  */
-export default function useTokenBalanceToUsd(symbol, decimals, balance) {
+export function useTokenBalanceToUsd(symbol, decimals, balance) {
   const [usd, setUsd] = useState('-')
   useEffect(() => {
     let cancelled = false

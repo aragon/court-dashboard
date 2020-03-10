@@ -1,7 +1,6 @@
 import env from '../environment'
 import { ethers } from 'ethers'
 import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
-// import { ETH_NODE } from '../endpoints'
 import { networkConfigs } from '../networks'
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256

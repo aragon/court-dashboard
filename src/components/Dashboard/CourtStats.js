@@ -1,79 +1,95 @@
 import React from 'react'
 import { Box, GU, textStyle, useTheme } from '@aragon/ui'
-import IconANJ from '../../assets/IconANJ.svg'
 import useCourtStats from '../../hooks/useCourtStats'
-// import { formatUnits, bigNum } from '../../lib/math-utils'
-// import LatestActivity from './LatestActivity'
-// import CourtStats from './CourtStats'
+import { formatUnits } from '../../lib/math-utils'
+import {
+  useANJBalanceToUsd,
+  useTokenBalanceToUsd,
+} from '../../hooks/useTokenBalanceToUsd'
+import Loading from './Loading'
 
-// const splitAmount = amount => {
-//   const [integer, fractional] = amount.split('.')
-//   return (
-//     <span
-//       css={`
-//         margin-right: 5px;
-//       `}
-//     >
-//       <span className="integer">{integer}</span>
-//       {fractional && (
-//         <span
-//           css={`
-//             font-size: 16px;
-//           `}
-//         >
-//           .{fractional}
-//         </span>
-//       )}
-//     </span>
-//   )
-// }
+const splitAmount = amount => {
+  const [integer, fractional] = amount.split('.')
+  return (
+    <span
+      css={`
+        margin-right: 5px;
+      `}
+    >
+      <span className="integer">{integer}</span>
+      {fractional && (
+        <span
+          css={`
+            font-size: 16px;
+          `}
+        >
+          .{fractional}
+        </span>
+      )}
+    </span>
+  )
+}
 
-const CourtStats = React.memo(function CourtStats() {
+function CourtStats() {
   const theme = useTheme()
-  const stats = {
-    title: 'Total Active ANJ',
-    token: {
-      symbol: 'ANJ',
-      value: 101490826,
-      decimals: 18,
-      icon: IconANJ,
-      usdValue: 82501892,
-    },
-  }
-
-  const cstats = useCourtStats()
-
-  console.log('court stats ', cstats)
+  const [stats, fetching] = useCourtStats()
 
   return (
     <Box heading="Court Metrics" padding={3 * GU}>
-      <div
-        css={`
-          margin-bottom: ${2 * GU}px;
-          &:last-child {
-            margin-bottom: 0;
-          }
-        `}
-      >
-        <span
-          css={`      
-          ${textStyle('body2')}
-          color: ${theme.surfaceContentSecondary};
-          display:block;
-          margin-bottom:${1 * GU}px;
-        `}
-        >
-          {stats.title}
-        </span>
-
-        <TokenStats token={stats.token} theme={theme} />
-      </div>
+      {(() => {
+        if (fetching) {
+          return <Loading height={86} />
+        }
+        return stats.map((stat, index) => {
+          return (
+            <div
+              key={index}
+              css={`
+                margin-bottom: ${2 * GU}px;
+                &:last-child {
+                  margin-bottom: 0;
+                }
+              `}
+            >
+              <span
+                css={`      
+               ${textStyle('body2')}
+               color: ${theme.surfaceContentSecondary};
+               display:block;
+               margin-bottom:${1 * GU}px;
+             `}
+              >
+                {stat.label}
+              </span>
+              {stat.token ? (
+                <TokenStats stat={stat} theme={theme} />
+              ) : (
+                <Stat value={stat.value} />
+              )}
+            </div>
+          )
+        })
+      })()}
     </Box>
   )
-})
+}
 
-function TokenStats({ token, theme }) {
-  const { value, icon, symbol, usdValue } = token
+function Stat({ value }) {
+  return (
+    <span
+      css={`
+        ${textStyle('title2')}
+        font-weight: 300;
+      `}
+    >
+      {value}
+    </span>
+  )
+}
+
+function TokenStats({ stat, theme }) {
+  const { value, token } = stat
+  const { decimals, icon, symbol } = token
   return (
     <>
       <div
@@ -87,23 +103,28 @@ function TokenStats({ token, theme }) {
             font-weight: 300;
           `}
         >
-          {value}
+          {splitAmount(formatUnits(value, { digits: decimals }))}
         </span>
-        <img
+        <div
           css={`
-            margin-right: 5px;
+            display: inline-flex;
           `}
-          height="20"
-          width="18"
-          src={icon}
-          alt="ANJ"
-        />
-        <span
-          css={` ${textStyle('body2')}
-          color: ${theme.surfaceContentSecondary};`}
         >
-          {symbol}
-        </span>
+          <img
+            css={`
+              margin-right: 5px;
+            `}
+            height="20"
+            width="18"
+            src={icon}
+          />
+          <span
+            css={` ${textStyle('body2')}
+          color: ${theme.surfaceContentSecondary};`}
+          >
+            {symbol}
+          </span>
+        </div>
       </div>
       <span
         css={`
@@ -111,10 +132,21 @@ function TokenStats({ token, theme }) {
           color: ${theme.positive};
         `}
       >
-        ${usdValue}
+        ${symbol === 'ANJ' ? AnjUsdValue(value) : TokenUsdValue(token, value)}
       </span>
     </>
   )
+}
+
+function AnjUsdValue(amount) {
+  const usdValue = useANJBalanceToUsd(amount)
+  return usdValue
+}
+
+function TokenUsdValue(token, amount) {
+  const { decimals, symbol } = token
+  const usdValue = useTokenBalanceToUsd(symbol, decimals, amount)
+  return usdValue
 }
 
 export default CourtStats

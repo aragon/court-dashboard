@@ -68,7 +68,7 @@ const Balance = React.memo(function Balance({
         `}
       >
         {loading ? (
-          <Loading height={86} />
+          <Loading height={150} />
         ) : (
           <animated.div
             style={springProps}
