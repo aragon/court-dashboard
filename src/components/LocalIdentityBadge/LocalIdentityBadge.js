@@ -1,11 +1,11 @@
 import React from 'react'
 import { IdentityBadge } from '@aragon/ui'
-import useNetwork from '../../hooks/useNetwork'
+import { getNetworkType } from '../../lib/web3-utils'
 
-const LocalIdentityBadge = ({ entity, ...props }) => {
-  const network = useNetwork()
-
-  return <IdentityBadge entity={entity} networkType={network.type} {...props} />
+function LocalIdentityBadge({ entity, ...props }) {
+  return (
+    <IdentityBadge entity={entity} networkType={getNetworkType()} {...props} />
+  )
 }
 
 LocalIdentityBadge.propTypes = {

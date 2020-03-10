@@ -1,17 +1,12 @@
 import env from '../environment'
-import { ethers } from 'ethers'
 import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
-import { networkConfigs } from '../networks'
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
 export const DEFAULT_LOCAL_CHAIN = 'rpc'
 export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
-export function getWeb3Provider() {
-  const ethEndpoint =
-    networkConfigs[getNetworkName(env('CHAIN_ID'))].nodes.defaultEth
-  return new ethers.providers.JsonRpcProvider(ethEndpoint)
-}
+const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
+const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
@@ -107,18 +102,28 @@ export function shortenAddress(address, charsLength = 4) {
   )
 }
 
-export function getNetworkName(chainId) {
+export function getNetworkType(chainId = env('CHAIN_ID')) {
   chainId = String(chainId)
 
-  if (chainId === '1') return 'mainnet'
+  if (chainId === '1') return 'main'
   if (chainId === '3') return 'ropsten'
   if (chainId === '4') return 'rinkeby'
 
   return DEFAULT_LOCAL_CHAIN
 }
 
+export function getNetworkName(chainId = env('CHAIN_ID')) {
+  chainId = String(chainId)
+
+  if (chainId === '1') return 'Mainnet'
+  if (chainId === '3') return 'Ropsten'
+  if (chainId === '4') return 'Rinkeby'
+
+  return 'unknown'
+}
+
 export function isLocalOrUnknownNetwork(chainId) {
-  return getNetworkName(chainId) === DEFAULT_LOCAL_CHAIN
+  return getNetworkType(chainId) === DEFAULT_LOCAL_CHAIN
 }
 
 export function hexToAscii(hexx) {
@@ -127,4 +132,18 @@ export function hexToAscii(hexx) {
   for (let i = 0; i < hex.length && hex.substr(i, 2) !== '00'; i += 2)
     str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
   return str
+}
+
+// Detect Ethereum addresses in a string and transform each part.
+//
+// `callback` is called on every part with two params:
+//   - The string of the current part.
+//   - A boolean indicating if it is an address.
+//
+export function transformAddresses(str, callback) {
+  return str
+    .split(ETH_ADDRESS_SPLIT_REGEX)
+    .map((part, index) =>
+      callback(part, ETH_ADDRESS_TEST_REGEX.test(part), index)
+    )
 }

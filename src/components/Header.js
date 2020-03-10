@@ -2,6 +2,7 @@ import React from 'react'
 import { ButtonIcon, GU, IconMenu } from '@aragon/ui'
 import Account from './Account/Account'
 import Clock from './Clock'
+import ActivityButton from './Activity/ActivityButton'
 import HeaderLogo from './HeaderLogo'
 
 const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
@@ -16,7 +17,7 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 ${2 * GU}px;
+        padding: 0;
       `}
     >
       {compactMode ? (
@@ -36,7 +37,25 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
       >
         {!compactMode && <Clock />}
       </div>
-      <Account />
+
+      <div
+        css={`
+          flex-grow: 0;
+          display: flex;
+          height: 100%;
+        `}
+      >
+        <Account />
+        <div
+          css={`
+            display: flex;
+            height: 100%;
+            margin-left: ${2 * GU}px;
+          `}
+        >
+          <ActivityButton />
+        </div>
+      </div>
     </header>
   )
 })
