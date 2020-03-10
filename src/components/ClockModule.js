@@ -16,13 +16,12 @@ import { useWallet } from 'use-wallet'
 
 import HeaderModule from './Header/HeaderModule'
 import HeaderPopover from './Header/HeaderPopover'
-import useNetwork from '../hooks/useNetwork'
-import { useHeartbeat } from '../hooks/useCourtContracts'
 import { useCourtClock } from '../providers/CourtClock'
 import { useCourtConfig } from '../providers/CourtConfig'
+import { useHeartbeat } from '../hooks/useCourtContracts'
 
-import { shortenAddress } from '../lib/web3-utils'
 import { formatDuration } from '../utils/date-utils'
+import { shortenAddress, getNetworkType } from '../lib/web3-utils'
 
 import logoSvg from '../assets/LogoAccent.svg'
 
@@ -34,7 +33,7 @@ function ClockModule() {
   const wallet = useWallet()
   const onHeartbeat = useHeartbeat()
   const courtConfig = useCourtConfig()
-  const { type: networkType } = useNetwork()
+
   const {
     currentTermId,
     currentTermEndDate,
@@ -201,7 +200,7 @@ function ClockModule() {
               <ButtonBase
                 disabled={!courtConfig}
                 href={blockExplorerUrl('address', courtConfig?.id, {
-                  networkType,
+                  networkType: getNetworkType(),
                 })}
               >
                 <IconExternal

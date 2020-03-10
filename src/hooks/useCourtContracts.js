@@ -267,6 +267,7 @@ export function useDisputeActions() {
 }
 
 export function useHeartbeat() {
+  const { addActivity } = useActivity()
   const aragonCourtContract = useCourtContract(
     CourtModuleType.AragonCourt,
     aragonCourtAbi
@@ -274,9 +275,13 @@ export function useHeartbeat() {
 
   return useCallback(
     transitions => {
-      return aragonCourtContract.heartbeat(transitions)
+      return addActivity(
+        aragonCourtContract.heartbeat(transitions),
+        'heartbeat',
+        { transitions }
+      )
     },
-    [aragonCourtContract]
+    [addActivity, aragonCourtContract]
   )
 }
 
