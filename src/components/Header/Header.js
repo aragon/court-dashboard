@@ -1,6 +1,6 @@
 import React from 'react'
 import { ButtonIcon, GU, IconMenu } from '@aragon/ui'
-import Account from '../Account/Account'
+import AccountModule from '../Account/AccountModule'
 import ClockModule from '../ClockModule'
 import HeaderLogo from './HeaderLogo'
 
@@ -30,15 +30,11 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
       <div
         css={`
           display: flex;
-          align-self: stretch;
-
-          & > * {
-            align-self: stretch;
-          }
+          height: 100%;
         `}
       >
         {!compactMode && <ClockModule />}
-        <Account />
+        <AccountModule />
       </div>
     </header>
   )

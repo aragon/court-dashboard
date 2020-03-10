@@ -66,8 +66,9 @@ function ClockModule() {
       css={`
         display: flex;
         align-items: center;
-        height: 100%;
+        justify-content: space-around;
         outline: 0;
+        margin-right: ${1 * GU}px;
       `}
     >
       <HeaderModule
@@ -78,7 +79,6 @@ function ClockModule() {
               display: flex;
               border-radius: 100px;
               padding: 2px;
-              margin-right: ${0.5 * GU}px;
             `}
           >
             <IconClock
@@ -94,31 +94,32 @@ function ClockModule() {
               line-height: 1;
               width: ${15 * GU}px;
 
-              & > time {
-                & > span:first-child {
-                  display: none;
-                }
-                & * {
-                  line-height: 1;
-                }
+              & span {
+                line-height: 1;
               }
             `}
           >
             {currentTermId ? (
               <>
                 {isSynced ? (
-                  <Timer end={currentTermEndDate} />
+                  <Timer end={currentTermEndDate} showIcon={false} />
                 ) : (
                   <div>
                     <span
                       css={`
                         ${textStyle('body2')}
-                        line-height: 1;
                       `}
                     >
-                      0
+                      00
                     </span>{' '}
-                    S
+                    <span
+                      css={`
+                        ${textStyle('body2')}
+                        color: ${theme.contentSecondary};
+                      `}
+                    >
+                      S
+                    </span>
                   </div>
                 )}
                 <span
@@ -127,7 +128,6 @@ function ClockModule() {
                     color: ${isSynced
                       ? theme.contentSecondary
                       : theme.negative};
-                    line-height: 1;
                   `}
                 >
                   {isSynced ? 'Court term synced' : 'Term out of sync'}

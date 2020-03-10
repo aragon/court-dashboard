@@ -36,7 +36,7 @@ const SCREENS = [
   },
 ]
 
-function Account() {
+function AccountModule() {
   const buttonRef = useRef()
   const wallet = useWallet()
   const [opened, setOpened] = useState(false)
@@ -149,7 +149,7 @@ function Account() {
       css={`
         display: flex;
         align-items: center;
-        height: 100%;
+        justify-content: space-around;
         width: ${compactMode ? 'auto' : `${24.5 * GU}px`};
         outline: 0;
       `}
@@ -244,4 +244,4 @@ function Account() {
   )
 }
 
-export default Account
+export default AccountModule

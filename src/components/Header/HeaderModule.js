@@ -8,8 +8,6 @@ function HeaderModule({ icon, content, onClick }) {
     <ButtonBase
       onClick={onClick}
       css={`
-        display: flex;
-        align-items: center;
         height: 100%;
         padding: 0 ${1 * GU}px;
         &:active {
@@ -22,7 +20,7 @@ function HeaderModule({ icon, content, onClick }) {
           display: flex;
           align-items: center;
           text-align: left;
-          padding: 0 ${1 * GU}px 0 ${2 * GU}px;
+          padding: 0 ${1 * GU}px;
         `}
       >
         <>

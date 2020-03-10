@@ -27,4 +27,5 @@ export function formatDuration(duration) {
       elem > 0 ? `${elem} ${units[index]}${elem > 1 ? 's' : ''}` : ''
     )
     .join(' ')
+    .trim()
 }
