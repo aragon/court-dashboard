@@ -67,7 +67,6 @@ function ClockModule() {
         align-items: center;
         justify-content: space-around;
         outline: 0;
-        margin-right: ${1 * GU}px;
       `}
     >
       <HeaderModule
@@ -96,12 +95,19 @@ function ClockModule() {
               & span {
                 line-height: 1;
               }
+
+              // TODO: Use showIcon new prop when available, see: https://github.com/aragon/aragon-ui/pull/734
+              & > time {
+                & > span:first-child {
+                  display: none;
+                }
+              }
             `}
           >
             {currentTermId ? (
               <>
                 {isSynced ? (
-                  <Timer end={currentTermEndDate} showIcon={false} />
+                  <Timer end={currentTermEndDate} />
                 ) : (
                   <div>
                     <span

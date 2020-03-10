@@ -36,7 +36,16 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
         `}
       >
         {!compactMode && <ClockModule />}
-        <AccountModule />
+        <div
+          css={`
+            display: flex;
+            height: 100%;
+            margin-left: ${1 * GU}px;
+          `}
+        >
+          <AccountModule />
+        </div>
+
         <div
           css={`
             display: flex;
