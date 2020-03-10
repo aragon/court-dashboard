@@ -23,7 +23,7 @@ export const networkConfigs = {
       defaultEth: 'http://localhost:8545',
     },
   },
-  mainnet: {
+  main: {
     nodes: {
       defaultEth: 'wss://mainnet.eth.aragon.network/ws',
     },
