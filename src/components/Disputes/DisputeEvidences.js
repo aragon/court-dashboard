@@ -1,12 +1,11 @@
 import React from 'react'
 import { Accordion, GU, SyncIndicator, textStyle, useTheme } from '@aragon/ui'
 import { useWallet } from 'use-wallet'
-
+import useEvidences from '../../hooks/useEvidences'
+import { addressesEqual } from '../../lib/web3-utils'
 import ErrorLoadingEvidence from './ErrorLoadingEvidence'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import Markdown from '../Markdown'
-import useEvidences from '../../hooks/useEvidences'
-import { addressesEqual } from '../../lib/web3-utils'
 import { dateFormat } from '../../utils/date-utils'
 
 import folderIcon from '../../assets/folderIcon.svg'

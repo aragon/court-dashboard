@@ -1,7 +1,7 @@
 import { useCallback, useState, useMemo } from 'react'
 import useTasks from './useTasks'
 import { addressesEqual } from '../lib/web3-utils'
-import dayjs from '../lib/dayjs'
+import { dayjs } from '../utils/date-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 
 const ALL_FILTER = 0

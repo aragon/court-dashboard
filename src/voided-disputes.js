@@ -1,5 +1,5 @@
 import { networks, RINKEBY_COURT, RINKEBY_USABILITY_COURT } from './networks'
-import { getNetworkName } from './lib/web3-utils'
+import { getNetworkType } from './lib/web3-utils'
 import env from './environment'
 
 // TODO: Add text and link when available
@@ -16,9 +16,9 @@ const VOIDED_DISPUTES = {
     [RINKEBY_COURT, new Map([])],
     [RINKEBY_USABILITY_COURT, new Map([])],
   ]),
-  mainnet: new Map([
+  main: new Map([
     [
-      networks.mainnet.court,
+      networks.main.court,
       new Map(
         [
           {
@@ -38,8 +38,8 @@ export function getVoidedDisputesByCourt() {
     return new Map([])
   }
 
-  const networkName = getNetworkName(env('CHAIN_ID'))
-  const courtAddress = networks[networkName].court
+  const networkType = getNetworkType()
+  const courtAddress = networks[networkType].court
 
-  return VOIDED_DISPUTES[networkName].get(courtAddress)
+  return VOIDED_DISPUTES[networkType].get(courtAddress)
 }

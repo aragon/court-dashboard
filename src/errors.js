@@ -7,7 +7,7 @@ export class DisputeNotFound extends Error {
     super(
       `It looks like there’s no dispute associated with the “DisputeID #${disputeId}” on the Ethereum ${getNetworkName(
         env('CHAIN_ID')
-      )}.`
+      )} network.`
     )
     this.disputeId = disputeId
   }

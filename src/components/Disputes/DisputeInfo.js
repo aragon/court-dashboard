@@ -4,13 +4,12 @@ import {
   Box,
   GU,
   Link,
-  textStyle,
   TransactionBadge,
-  useTheme,
   isAddress,
+  textStyle,
+  useTheme,
 } from '@aragon/ui'
 import styled from 'styled-components'
-
 import DisputeActions from './DisputeActions'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeOutcomeText from './DisputeOutcomeText'
@@ -21,11 +20,10 @@ import ErrorLoading from '../Errors/ErrorLoading'
 import Loading from './Loading'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { useWallet } from '../../providers/Wallet'
-import useNetwork from '../../hooks/useNetwork'
-
 import { Phase as DisputePhase, Status } from '../../types/dispute-status-types'
+import { addressesEqual, getNetworkType } from '../../lib/web3-utils'
+
 import iconCourt from '../../assets/courtIcon.svg'
-import { addressesEqual } from '../../lib/web3-utils'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -185,7 +183,6 @@ const DisputeInfo = React.memo(function({
 function DisputeHeader({ id, dispute }) {
   const theme = useTheme()
   const transaction = dispute && dispute.txHash
-  const network = useNetwork()
 
   return (
     <div
@@ -240,7 +237,7 @@ function DisputeHeader({ id, dispute }) {
           {Boolean(dispute?.status !== Status.Voided && transaction) && (
             <TransactionBadge
               transaction={transaction}
-              networkType={network.type}
+              networkType={getNetworkType()}
             />
           )}
         </div>

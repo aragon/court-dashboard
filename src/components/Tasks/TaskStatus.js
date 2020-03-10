@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { textStyle, GU } from '@aragon/ui'
-import dayjs from '../../lib/dayjs'
+import { dayjs } from '../../utils/date-utils'
 
 function getDueDayText(dueDate) {
   const diff = dayjs(dueDate).diff(dayjs(), 'day')

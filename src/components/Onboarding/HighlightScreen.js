@@ -194,21 +194,21 @@ HighlightScreen.propTypes = {
   compactMode: PropTypes.bool,
   defaultVisualColor: PropTypes.string,
   description: PropTypes.shape({
-    small: PropTypes.string,
-    large: PropTypes.string.isRequired,
+    small: PropTypes.node,
+    large: PropTypes.node.isRequired,
   }),
   enterProgress: PropTypes.object,
   heading: PropTypes.node,
   onDone: PropTypes.func.isRequired,
   showProgress: PropTypes.object,
   start: PropTypes.shape({
-    small: PropTypes.string,
-    large: PropTypes.string.isRequired,
+    small: PropTypes.node,
+    large: PropTypes.node.isRequired,
   }),
   state: ReactSpringStateType.isRequired,
   title: PropTypes.shape({
-    small: PropTypes.string,
-    large: PropTypes.string.isRequired,
+    small: PropTypes.node,
+    large: PropTypes.node.isRequired,
   }),
   verticalMode: PropTypes.bool,
   visual: PropTypes.shape({

@@ -16,7 +16,7 @@ import * as Sentry from '@sentry/browser'
 import App from './App'
 import endpoints from './endpoints'
 import env from './environment'
-import { getNetworkName } from './lib/web3-utils'
+import { getNetworkType } from './lib/web3-utils'
 
 const [GRAPH_API_ENDPOINT_HTTP] = endpoints()
 
@@ -31,12 +31,12 @@ const client = createClient({
   ],
 })
 
-const sentryEnabled = !!(env('SENTRY_DSN') && env('ENABLE_SENTRY'))
+const sentryEnabled = Boolean(env('SENTRY_DSN') && env('ENABLE_SENTRY'))
 
 if (sentryEnabled) {
   Sentry.init({
     dsn: env('SENTRY_DSN'),
-    environment: getNetworkName(env('CHAIN_ID')),
+    environment: getNetworkType(env('CHAIN_ID')),
     release: 'court-dashboard@' + env('BUILD'),
   })
 }
