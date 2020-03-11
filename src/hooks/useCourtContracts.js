@@ -46,7 +46,7 @@ function useFeeTokenContract() {
 
 // Court contracts
 function useCourtContract(moduleType, abi) {
-  const { id, modules } = useCourtConfig()
+  const { id, modules } = useCourtConfig() || {}
 
   let contractAddress
   if (moduleType === CourtModuleType.AragonCourt) {
@@ -264,6 +264,25 @@ export function useDisputeActions() {
     confirmAppeal,
     executeRuling,
   }
+}
+
+export function useHeartbeat() {
+  const { addActivity } = useActivity()
+  const aragonCourtContract = useCourtContract(
+    CourtModuleType.AragonCourt,
+    aragonCourtAbi
+  )
+
+  return useCallback(
+    transitions => {
+      return addActivity(
+        aragonCourtContract.heartbeat(transitions),
+        'heartbeat',
+        { transitions }
+      )
+    },
+    [addActivity, aragonCourtContract]
+  )
 }
 
 export function useRewardActions() {

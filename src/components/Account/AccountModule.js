@@ -4,7 +4,7 @@ import { Button, GU, IconConnect, springs, useViewport } from '@aragon/ui'
 import { Transition, animated } from 'react-spring/renderprops'
 import { shortenAddress, getUseWalletProviders } from '../../lib/web3-utils'
 import AccountButton from './AccountButton'
-import AccountPopover from './AccountPopover'
+import HeaderPopover from '../Header/HeaderPopover'
 import ScreenConnected from './ScreenConnected'
 import ScreenConnecting from './ScreenConnecting'
 import ScreenError from './ScreenError'
@@ -36,7 +36,7 @@ const SCREENS = [
   },
 ]
 
-function Account() {
+function AccountModule() {
   const buttonRef = useRef()
   const wallet = useWallet()
   const [opened, setOpened] = useState(false)
@@ -52,7 +52,6 @@ function Account() {
 
   const clearError = useCallback(() => setActivationError(null), [])
 
-  const open = useCallback(() => setOpened(true), [])
   const toggle = useCallback(() => setOpened(opened => !opened), [])
 
   const handleCancelConnection = useCallback(() => {
@@ -150,7 +149,8 @@ function Account() {
       css={`
         display: flex;
         align-items: center;
-        height: 100%;
+        justify-content: space-around;
+        width: ${compactMode ? 'auto' : `${24.5 * GU}px`};
         outline: 0;
       `}
     >
@@ -167,14 +167,14 @@ function Account() {
           display={compactMode ? 'icon' : 'all'}
         />
       )}
-      <AccountPopover
+
+      <HeaderPopover
         animateHeight={animate}
         heading={screen.title}
         height={screen.height}
+        width={51 * GU}
         onClose={handlePopoverClose}
-        onOpen={open}
         opener={buttonRef.current}
-        screenId={screenId}
         visible={opened}
       >
         <div ref={popoverFocusElement} tabIndex="0" css="outline: 0">
@@ -239,9 +239,9 @@ function Account() {
             )}
           </Transition>
         </div>
-      </AccountPopover>
+      </HeaderPopover>
     </div>
   )
 }
 
-export default Account
+export default AccountModule

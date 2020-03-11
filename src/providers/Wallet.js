@@ -15,6 +15,8 @@ function WalletAugmented({ children }) {
   const wallet = useWallet()
   const { ethereum } = wallet
 
+  console.log('wallet', wallet)
+
   const ethers = useMemo(
     () => (ethereum ? new EthersProviders.Web3Provider(ethereum) : null),
     [ethereum]
