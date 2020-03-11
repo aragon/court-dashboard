@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export const ANJBalance = gql`
-  subscription ANJBalance($id: ID!) {
+  subscription ANJWalletBalance($id: ID!) {
     anjbalance(id: $id) {
       amount
     }
@@ -9,7 +9,7 @@ export const ANJBalance = gql`
 `
 
 export const Juror = gql`
-  subscription Juror($id: ID!, $from: BigInt!) {
+  subscription Balances($id: ID!, $from: BigInt!) {
     juror(id: $id) {
       activeBalance
       lockedBalance

@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 
 // All juror drafts by `id` not yet rewarded
 export const JurorDraftsNotRewarded = gql`
-  subscription JurorDraft($id: ID!) {
+  subscription JurorDraftsNotRewarded($id: ID!) {
     juror(id: $id) {
       id
       drafts(where: { rewarded: false }) {

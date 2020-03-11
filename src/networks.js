@@ -1,4 +1,5 @@
 import environment from './environment'
+import { getNetworkType } from './lib/web3-utils'
 
 const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
@@ -15,4 +16,8 @@ export const networks = {
       SUBGRAPH_NAME === 'usability' ? RINKEBY_USABILITY_COURT : RINKEBY_COURT,
   },
   main: { court: '0xee4650cBe7a2B23701D416f58b41D8B76b617797' },
+}
+
+export const getCourtAddress = () => {
+  return networks[getNetworkType()].court
 }
