@@ -104,7 +104,7 @@ const ACTIVITY_TYPES = new Map(
     },
     heartbeat({ transitions }) {
       return {
-        title: 'Heartbeat',
+        title: 'Update term',
         icon: iconCourtLogo,
         description: `
           Transition ${transitions} court term${transitions > 1 ? 's' : ''}
