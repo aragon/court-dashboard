@@ -13,7 +13,7 @@ export function getTermStartTime(term, courtConfig) {
   return getFirstTermDate(courtConfig) + termMs
 }
 
-export function getCurrentTermId(now, terms, termDuration) {
+export function getExpectedCurrentTermId(now, terms, termDuration) {
   let currentTermId = 0
 
   if (terms.length > 0) {
