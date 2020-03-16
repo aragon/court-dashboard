@@ -25,7 +25,7 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
           display: flex;
           align-items: center;
           height: 100%;
-          padding-left: ${2 * GU}px;
+          padding-left: ${3 * GU}px;
         `}
       >
         {compactMode ? (
