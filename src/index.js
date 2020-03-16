@@ -6,10 +6,11 @@ import {
   cacheExchange,
   debugExchange,
 } from 'urql'
-import fetchExchange from './mock/exchanges/customFetchExchange'
-import subscriptionExchange, {
+import {
+  getFetchExchange,
+  getSubscriptionExchange,
   subscriptionClient,
-} from './mock/exchanges/customSubscriptionExchange'
+} from './exchanges'
 
 import { devtoolsExchange } from '@urql/devtools'
 import * as Sentry from '@sentry/browser'
@@ -26,8 +27,8 @@ const client = createClient({
     debugExchange,
     devtoolsExchange,
     cacheExchange,
-    fetchExchange,
-    subscriptionExchange,
+    getFetchExchange(),
+    getSubscriptionExchange(),
   ],
 })
 

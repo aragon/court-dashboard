@@ -4,27 +4,16 @@ export const AllDisputes = gql`
   subscription AllDisputes($limit: Int) {
     disputes(first: $limit, orderBy: createdAt, orderDirection: desc) {
       id
-      txHash
-      createTermId
-      possibleRulings
       finalRuling
       lastRoundId
       state
       metadata
-      createdAt
       rounds {
         id
         state
         number
         draftTermId
-        jurorsNumber
-        settledPenalties
-        jurorFees
         delayedTerms
-        selectedJurors
-        coherentJurors
-        collectedTokens
-        createdAt
         jurors {
           juror {
             id
@@ -32,18 +21,9 @@ export const AllDisputes = gql`
           commitment
           outcome
         }
-        vote {
-          id
-          winningOutcome
-        }
+
         appeal {
           id
-          maker
-          appealedRuling
-          taker
-          opposedRuling
-          settled
-          createdAt
         }
       }
     }
@@ -51,7 +31,7 @@ export const AllDisputes = gql`
 `
 
 export const SingleDispute = gql`
-  subscription Dispute($id: ID!) {
+  subscription SingleDispute($id: ID!) {
     dispute(id: $id) {
       id
       txHash

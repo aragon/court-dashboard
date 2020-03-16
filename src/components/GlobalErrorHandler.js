@@ -1,13 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import * as Sentry from '@sentry/browser'
-import GenericError from './components/Errors/GenericError'
-import GlobalErrorScreen from './components/Errors/GlobalErrorScreen'
-import DisputeNotFoundError from './components/Disputes/DisputeNotFoundError'
+import GenericError from './Errors/GenericError'
+import GlobalErrorScreen from './Errors/GlobalErrorScreen'
+import DisputeNotFoundError from './Disputes/DisputeNotFoundError'
 
-import env from './environment'
-import { DisputeNotFound } from './errors'
-import { getNetworkType } from './lib/web3-utils'
+import env from '../environment'
+import { DisputeNotFound } from '../errors'
+import { getNetworkType } from '../lib/web3-utils'
 
 const SENTRY_DSN = env('SENTRY_DNS')
 

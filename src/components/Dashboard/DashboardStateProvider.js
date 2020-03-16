@@ -38,6 +38,8 @@ function WithSubscription({ Provider, connectedAccount, children }) {
     errors: balanceErrors,
   } = useJurorBalancesSubscription(connectedAccount)
 
+  console.log('balances', balances?.activeBalance.toString())
+
   // Appeals
   const {
     appeals,

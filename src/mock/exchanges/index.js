@@ -1,27 +1,30 @@
-import { fetchExchange, makeResult } from 'urql'
+import { makeResult } from 'urql'
 import { filter, make, merge, mergeMap, pipe, share, takeUntil } from 'wonka'
-import env from '../../environment'
-import mockedData from '../mock-data'
+import mockData from '../data'
 
 const OPERATION_DEFINITION = 'OperationDefinition'
 
-export default function customFetchExchange(ref) {
-  if (!env('MOCK_TEST')) {
-    return fetchExchange(ref)
-  }
+// Fetch exchange
+export const mockFetchExchange = ({ forward }) => {
+  return handleOperation('query', forward)
+}
 
-  const { forward } = ref
+// Subscription exchange
+export const mockSubscriptionExchange = ({ forward }) => {
+  return handleOperation('subscription', forward)
+}
 
-  const isOperationQuery = operation => {
+function handleOperation(operationType, forward) {
+  const isDesiredOperation = operation => {
     const { operationName } = operation
-    return operationName === 'query'
+    return operationName === operationType
   }
 
   return ops$ => {
     const sharedOps$ = share(ops$)
-    const fetchResults$ = pipe(
+    const subscriptionResults$ = pipe(
       sharedOps$,
-      filter(isOperationQuery),
+      filter(isDesiredOperation),
       mergeMap(operation => {
         const { key } = operation
         const teardown$ = pipe(
@@ -29,21 +32,21 @@ export default function customFetchExchange(ref) {
           filter(op => op.operationName === 'teardown' && op.key === key)
         )
 
-        return pipe(mockData(operation), takeUntil(teardown$))
+        return pipe(convertMockedData(operation), takeUntil(teardown$))
       })
     )
 
     const forward$ = pipe(
       sharedOps$,
-      filter(op => !isOperationQuery(op)),
+      filter(op => !isDesiredOperation(op)),
       forward
     )
 
-    return merge([fetchResults$, forward$])
+    return merge([subscriptionResults$, forward$])
   }
 }
 
-const mockData = operation => {
+const convertMockedData = operation => {
   return make(({ next, complete }) => {
     const { name: queryName } = operation.query.definitions.find(
       node => node.kind === OPERATION_DEFINITION && node.name
@@ -51,7 +54,8 @@ const mockData = operation => {
 
     const abortController =
       typeof AbortController !== 'undefined' ? new AbortController() : undefined
-    const convertedData = mockedData[queryName.value]
+
+    const convertedData = mockData[queryName.value](operation.variables)
 
     Promise.resolve()
       .then(() =>
