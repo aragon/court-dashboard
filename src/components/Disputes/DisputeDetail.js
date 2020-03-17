@@ -158,13 +158,13 @@ const PanelTitle = ({ requestMode, disputeId }) => {
 }
 
 const PanelComponent = ({
+  appeal,
+  approveFeeDeposit,
+  commit,
+  confirmAppeal,
   dispute,
   requestMode,
-  commit,
   reveal,
-  appeal,
-  confirmAppeal,
-  approveFeeDeposit,
   ...props
 }) => {
   const { mode, data } = requestMode

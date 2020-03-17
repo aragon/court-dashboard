@@ -16,10 +16,10 @@ import { useCourtConfig } from '../../../providers/CourtConfig'
 import { useWallet } from '../../../providers/Wallet'
 
 const AppealPanel = React.memo(function AppealPanel({
-  dispute,
-  onApproveFeeDeposit,
-  onAppeal,
   confirm,
+  dispute,
+  onAppeal,
+  onApproveFeeDeposit,
   onDone,
 }) {
   const { feeToken } = useCourtConfig()

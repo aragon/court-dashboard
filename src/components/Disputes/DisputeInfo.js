@@ -32,21 +32,21 @@ const DisputeInfo = React.memo(function({
   dispute,
   loading,
   onDraft,
+  onLeak,
+  onExecuteRuling,
+  onRequestAppeal,
   onRequestCommit,
   onRequestReveal,
-  onLeak,
-  onRequestAppeal,
-  onExecuteRuling,
 }) {
   const {
-    phase,
-    status,
-    description,
-    plaintiff,
-    defendant,
     agreementText,
     agreementUrl,
+    defendant,
+    description,
     error,
+    phase,
+    plaintiff,
+    status,
   } = dispute || {}
 
   const creator = plaintiff || dispute?.subject?.id
@@ -183,7 +183,7 @@ const DisputeInfo = React.memo(function({
   )
 })
 
-function DisputeHeader({ id, dispute }) {
+function DisputeHeader({ dispute, id }) {
   const theme = useTheme()
   const transaction = dispute && dispute.txHash
   const network = useNetwork()

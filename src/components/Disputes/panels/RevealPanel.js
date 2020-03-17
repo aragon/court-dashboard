@@ -10,8 +10,8 @@ import {
 
 const RevealPanel = React.memo(function RevealPanel({
   dispute,
-  onReveal,
   onDone,
+  onReveal,
 }) {
   const wallet = useWallet()
   const [password, setPassword] = useState('')
