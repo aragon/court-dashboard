@@ -340,7 +340,7 @@ export function getAdjudicationPhase(dispute, round, now, courtConfig) {
  *            Final round => max possible round for a dispute (when the max appeals for a given dispute is reached)
  * @param {Object} courtConfig The court configuration
  * @param {Object} round The round to get the phases from
- * @param {Object} currentPhase The dispute current phase
+ * @param {Object} currentPhase The dispute's current phase
  * @returns {Array} Array of all `round` phases.
  */
 function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
