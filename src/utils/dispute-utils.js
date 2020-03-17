@@ -479,7 +479,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
 
 /**
  *
- * @param {Object} dispute The dispute in cuestion
+ * @param {Object} dispute The dispute in question
  * @param {Object} courtConfig The court configuration
  * @returns {Number} The end time of the evidence submission phase in ms
  */
