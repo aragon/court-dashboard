@@ -273,6 +273,8 @@ export function useAppealDeposits(disputeId, roundId) {
   )
 
   useEffect(() => {
+    let cancelled = false
+
     const fetchNextRoundDetails = async () => {
       if (!disputeManagerContract) {
         return
@@ -284,7 +286,10 @@ export function useAppealDeposits(disputeId, roundId) {
           .then(nextRound => {
             const appealDeposit = nextRound[6]
             const confirmAppealDeposit = nextRound[7]
-            setAppealDeposits([appealDeposit, confirmAppealDeposit])
+
+            if (!cancelled) {
+              setAppealDeposits([appealDeposit, confirmAppealDeposit])
+            }
           })
           .catch(err => {
             console.error(`Error fetching appeal deposits: ${err}`)
@@ -293,6 +298,10 @@ export function useAppealDeposits(disputeId, roundId) {
     }
 
     fetchNextRoundDetails()
+
+    return () => {
+      cancelled = true
+    }
   }, [disputeId, disputeManagerContract, roundId])
 
   return appealDeposits
@@ -304,12 +313,16 @@ export function useFeeBalanceOf(account) {
   const feeTokenContract = useFeeTokenContract()
 
   useEffect(() => {
+    let cancelled = false
+
     const getFeeBalance = async () => {
       if (!feeTokenContract) return
 
       retryMax(() => feeTokenContract.balanceOf(account))
         .then(balance => {
-          setBalance(balance)
+          if (!cancelled) {
+            setBalance(balance)
+          }
         })
         .catch(err => {
           console.error(`Error fetching account's fee balance : ${err}`)
@@ -317,6 +330,10 @@ export function useFeeBalanceOf(account) {
     }
 
     getFeeBalance()
+
+    return () => {
+      cancelled = true
+    }
   }, [account, feeTokenContract])
 
   return balance
@@ -333,12 +350,16 @@ export function useAppealFeeAllowance(owner) {
   const feeTokenContract = useFeeTokenContract()
 
   useEffect(() => {
+    let cancelled = false
+
     const getFeeAllowance = async () => {
       if (!feeTokenContract) return
 
       retryMax(() => feeTokenContract.allowance(owner, disputeManagerAddress))
         .then(allowance => {
-          setAllowance(allowance)
+          if (!cancelled) {
+            setAllowance(allowance)
+          }
         })
         .catch(err => {
           console.error(`Error fetching fee allowance : ${err}`)
@@ -346,6 +367,10 @@ export function useAppealFeeAllowance(owner) {
     }
 
     getFeeAllowance()
+
+    return () => {
+      cancelled = true
+    }
   }, [disputeManagerAddress, feeTokenContract, owner])
 
   return allowance
@@ -359,12 +384,16 @@ export function useActiveBalanceOfAt(juror, termId) {
   const [activeBalance, setActiveBalance] = useState(bigNum(-1))
 
   useEffect(() => {
+    let cancelled = false
+
     const getActiveBalanceOfAt = async () => {
       if (!jurorRegistryContract) return
 
       retryMax(() => jurorRegistryContract.activeBalanceOfAt(juror, termId))
         .then(balance => {
-          setActiveBalance(balance)
+          if (!cancelled) {
+            setActiveBalance(balance)
+          }
         })
         .catch(err => {
           console.error(`Error fetching active balance for juror : ${err}`)
@@ -372,6 +401,10 @@ export function useActiveBalanceOfAt(juror, termId) {
     }
 
     getActiveBalanceOfAt()
+
+    return () => {
+      cancelled = true
+    }
   }, [juror, jurorRegistryContract, termId])
 
   return activeBalance
@@ -386,27 +419,34 @@ export function useTotalActiveBalancePolling(termId) {
 
   const timeoutId = useRef(null)
 
-  const fetchTotalActiveBalance = useCallback(() => {
-    timeoutId.current = setTimeout(() => {
-      return jurorRegistryContract
-        .totalActiveBalanceAt(termId)
-        .then(balance => {
-          setTotalActiveBalance(balance)
-          clearTimeout(timeoutId.current)
-          fetchTotalActiveBalance()
-        })
-        .catch(err => {
-          console.log(`Error fetching balance: ${err} retrying...`)
-          fetchTotalActiveBalance()
-        })
-    }, 1000)
-  }, [jurorRegistryContract, termId])
-
   useEffect(() => {
+    let cancelled = false
+
+    const fetchTotalActiveBalance = () => {
+      timeoutId.current = setTimeout(() => {
+        return jurorRegistryContract
+          .totalActiveBalanceAt(termId)
+          .then(balance => {
+            if (!cancelled) {
+              setTotalActiveBalance(balance)
+              clearTimeout(timeoutId.current)
+              fetchTotalActiveBalance()
+            }
+          })
+          .catch(err => {
+            console.error(`Error fetching balance: ${err} retrying...`)
+            fetchTotalActiveBalance()
+          })
+      }, 1000)
+    }
+
     fetchTotalActiveBalance()
 
-    return () => clearTimeout(timeoutId.current)
-  }, [fetchTotalActiveBalance])
+    return () => {
+      cancelled = true
+      clearTimeout(timeoutId.current)
+    }
+  }, [jurorRegistryContract, termId])
 
   return totalActiveBalance
 }

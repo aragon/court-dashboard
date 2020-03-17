@@ -2,12 +2,13 @@ import React from 'react'
 import styled from 'styled-components'
 import { Button, GU, Info } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
-import useCanJurorVoteFinalRound from '../../../hooks/useCanJurorVoteFinalRound'
 import {
   VOTE_OPTION_REFUSE,
   VOTE_OPTION_IN_FAVOR,
   VOTE_OPTION_AGAINST,
 } from '../../../utils/crvoting-utils'
+import { useActiveBalanceOfAt } from '../../../hooks/useCourtContracts'
+import { useCourtConfig } from '../../../providers/CourtConfig'
 
 function DisputeVoting({
   draftTermId,
@@ -34,12 +35,13 @@ function DisputeVoting({
 
 function VotingFinalRound({ draftTermId, onRequestCommit }) {
   const wallet = useWallet()
-  // If it's the final round then we will check if the connected account had the minimum active balance at `draftTermId` to be able to vote
+  const { minActiveBalance } = useCourtConfig()
+
+  // On a final round we must check if the connected account had the minimum active balance at term `disputeDraftTermId` to be able to vote
   // Note that in a final round, every juror can vote (there's no drafting phase).
-  const canJurorVoteFinalRound = useCanJurorVoteFinalRound(
-    wallet.account,
-    draftTermId
-  )
+  const activeBalance = useActiveBalanceOfAt(wallet.account, draftTermId)
+
+  const canJurorVoteFinalRound = activeBalance.gte(minActiveBalance)
 
   return (
     <VotingActions

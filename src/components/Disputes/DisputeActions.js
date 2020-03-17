@@ -30,10 +30,10 @@ import IconRewardsGreen from '../../assets/IconRewardsGreen.svg'
 function DisputeActions({
   dispute,
   onDraft,
+  onExecuteRuling,
   onRequestCommit,
   onRequestReveal,
   onRequestAppeal,
-  onExecuteRuling,
 }) {
   const { phase, status } = dispute
   const lastRound = getDisputeLastRound(dispute)
@@ -117,11 +117,11 @@ function DisputeActions({
 }
 
 function InformationSection({
+  hasJurorVoted,
+  jurorDraft,
+  lastRound,
   phase,
   status,
-  jurorDraft,
-  hasJurorVoted,
-  lastRound,
 }) {
   const theme = useTheme()
 
@@ -202,10 +202,10 @@ const useInfoAttributes = (
   return useMemo(() => {
     if (!jurorDraft) return {}
 
-    // If the dispute is in the execute ruling phase it means that the final
-    // ruling can already be ensured regarding if the ruling was computed or not
+    // If the dispute is in the execute ruling phase it means that the final ruling can already be ensured.
+    // If the dispute is closed it means that the final ruling was already ensured.
     const finalRulingConfirmed =
-      phase === DisputePhase.ExecuteRuling || status === DisputeStatus.Closed
+      status === DisputeStatus.Closed || phase === DisputePhase.ExecuteRuling
 
     // Note that we can assume that the evidence submission and drafting phases have already passed since we do an early return above
     const votingPeriodEnded =
