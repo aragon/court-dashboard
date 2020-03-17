@@ -227,7 +227,7 @@ export function getPhaseAndTransition(dispute, courtConfig, nowDate) {
 
 /**
  * Tells the adjudication state of a dispute's round at a certain time.
- * @param {Object} dispute Dispute querying the adjudication round of
+ * @param {Object} dispute Dispute to query the adjudication round of
  * @param {Object} round The round that is being queried
  * @param {Number} now Current time in ms
  * @param {Object} courtConfig The court configuration
