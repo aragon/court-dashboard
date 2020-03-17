@@ -1,14 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Button, GU, Info } from '@aragon/ui'
+import { useActiveBalanceOfAt } from '../../../hooks/useCourtContracts'
+import { useCourtConfig } from '../../../providers/CourtConfig'
 import { useWallet } from '../../../providers/Wallet'
 import {
   VOTE_OPTION_REFUSE,
   VOTE_OPTION_IN_FAVOR,
   VOTE_OPTION_AGAINST,
 } from '../../../utils/crvoting-utils'
-import { useActiveBalanceOfAt } from '../../../hooks/useCourtContracts'
-import { useCourtConfig } from '../../../providers/CourtConfig'
 
 function DisputeVoting({
   draftTermId,
