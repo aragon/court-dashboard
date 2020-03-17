@@ -35,9 +35,9 @@ const CommitPanel = React.memo(function CommitPanel({
 
   const handleCommit = useCallback(
     async event => {
-      try {
-        event.preventDefault()
+      event.preventDefault()
 
+      try {
         const tx = await onCommit(
           dispute.id,
           dispute.lastRoundId,

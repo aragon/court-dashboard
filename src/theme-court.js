@@ -14,5 +14,8 @@ export default {
   tagIndicator: '#FFF5F1',
   tagIndicatorContent: '#CD625C',
 
+  tagActivity: '#FF9780',
+  tagActivityContent: '#FFFFFF',
+
   surfaceOpened: '#FF8D86',
 }

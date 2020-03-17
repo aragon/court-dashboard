@@ -1,19 +1,16 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-
 import environment from '../environment'
-
 import { useCourtConfigSubscription } from '../hooks/subscription-hooks'
-import { getNetworkName } from '../lib/web3-utils'
+import { getNetworkType } from '../lib/web3-utils'
 import { networks } from '../networks'
-
 import { bigNum } from '../lib/math-utils'
 
 const CHAIN_ID = environment('CHAIN_ID')
 const CourtConfigContext = React.createContext()
 
 function CourtConfigProvider({ children }) {
-  const courtAddress = networks[getNetworkName(CHAIN_ID)].court
+  const courtAddress = networks[getNetworkType(CHAIN_ID)].court
   const courtConfig = useCourtConfigSubscription(courtAddress)
 
   const convertedCourtConfig = courtConfig
@@ -28,6 +25,7 @@ function CourtConfigProvider({ children }) {
           10
         ),
         termDuration: parseInt(courtConfig.termDuration, 10) * 1000,
+        currentTerm: parseInt(courtConfig.currentTerm, 10),
         evidenceTerms: parseInt(courtConfig.evidenceTerms, 10),
         commitTerms: parseInt(courtConfig.commitTerms, 10),
         revealTerms: parseInt(courtConfig.revealTerms, 10),

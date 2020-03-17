@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Layout, Root, ScrollView, useViewport } from '@aragon/ui'
 import MenuPanel, { MENU_PANEL_WIDTH } from './MenuPanel'
-import Header from './Header'
+import Header from './Header/Header'
 
 function MainView({ children }) {
   const { width: vw, below } = useViewport()

@@ -125,13 +125,13 @@ function InformationSection({
 }) {
   const theme = useTheme()
 
-  const { title, paragraph, background, icon, hint } = useInfoAttributes(
+  const { title, paragraph, background, icon, hint } = useInfoAttributes({
+    hasJurorVoted,
+    jurorDraft,
+    lastRound,
     phase,
     status,
-    jurorDraft,
-    hasJurorVoted,
-    lastRound
-  )
+  })
 
   if (!jurorDraft) return null
 
@@ -187,13 +187,13 @@ function InformationSection({
 }
 
 // Helper function that returns main attributes for the YourVoteInfo component
-const useInfoAttributes = (
+const useInfoAttributes = ({
   hasJurorVoted,
   jurorDraft,
   lastRound,
   phase,
-  status
-) => {
+  status,
+}) => {
   const theme = useTheme()
   const positiveBackground = theme.positive.alpha(0.1)
   const negativeBackground = theme.accent.alpha(0.2)

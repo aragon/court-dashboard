@@ -1,5 +1,4 @@
-import dayjs from '../lib/dayjs'
-
+import { dayjs } from '../utils/date-utils'
 import { getTermStartTime } from './court-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { getOutcomeNumber } from './crvoting-utils'

@@ -8,6 +8,8 @@ export function useContract(address, abi, signer = true) {
   return useMemo(() => {
     // Apparently .getSigner() returns a new object every time, so we use the
     // connected account as memo dependency.
+
+    console.log('ethers', ethers)
     if (!address || !ethers || !account) {
       return null
     }
