@@ -147,7 +147,7 @@ export function getDisputeTimeLine(dispute, courtConfig) {
 }
 
 /**
- * @param {Object} dispute The dispute querying current phase and transition of
+ * @param {Object} dispute The dispute to query the current phase and next transition of
  * @param {Object} courtConfig The court configuration
  * @param {Date} nowDate Current date
  * @returns {Object} Current phase and next phase transition for the given dispute
