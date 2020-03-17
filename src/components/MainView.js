@@ -9,27 +9,31 @@ import GlobalPreferences from './GlobalPreferences/GlobalPreferences'
 const GLOBAL_PREFERENCES_QUERY_PARAM = '?preferences=/'
 
 function MainView({ children }) {
+  const { width: vw, below } = useViewport()
+  const compactMode = below('medium')
+  const [menuPanelOpen, setMenuPanelOpen] = useState(!compactMode)
   const history = useHistory()
-  const sea = useLocation().search
+  const search = useLocation().search
+  const locator = useLocation()
 
   function parsePreferences(search = '') {
     const [, path = ''] = search.split(GLOBAL_PREFERENCES_QUERY_PARAM)
-    // const params = new Map()
 
     return { path }
   }
 
-  const pref = parsePreferences(sea)
+  const preferenceOption = parsePreferences(search)
   const openPreferences = useCallback(
     screen => {
       history.push('/' + getPreferencesSearch(screen))
     },
     [history]
   )
-  const { width: vw, below } = useViewport()
-  const compactMode = below('medium')
 
-  const [menuPanelOpen, setMenuPanelOpen] = useState(!compactMode)
+  const closePreferences = useCallback(() => {
+    history.push(locator.pathname)
+  }, [history, locator])
+
   const toggleMenuPanel = useCallback(
     () => setMenuPanelOpen(opened => !opened),
     []
@@ -47,12 +51,12 @@ function MainView({ children }) {
     setMenuPanelOpen(!compactMode)
   }, [compactMode])
 
-  if (pref.path) {
+  if (preferenceOption.path) {
     return (
       <GlobalPreferences
-        path={pref.path}
+        path={preferenceOption.path}
         onScreenChange={() => {}}
-        onClose={() => {}}
+        onClose={closePreferences}
         compact={false}
       />
     )

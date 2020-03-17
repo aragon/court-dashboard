@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import PropTypes from 'prop-types'
 import {
   Bar,
   ButtonIcon,
@@ -82,13 +81,6 @@ function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
   )
 }
 
-GlobalPreferences.propTypes = {
-  compact: PropTypes.bool,
-  onClose: PropTypes.func.isRequired,
-  onNavigation: PropTypes.func.isRequired,
-  sectionIndex: PropTypes.number,
-}
-
 function useGlobalPreferences({ path = {}, onScreenChange }) {
   const [sectionIndex, setSectionIndex] = useState(null)
   const [subsection, setSubsection] = useState(null)
@@ -147,11 +139,6 @@ function Close({ compact, onClick }) {
       </ButtonIcon>
     </div>
   )
-}
-
-Close.propTypes = {
-  compact: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
 }
 
 function AnimatedGlobalPreferences(props) {
@@ -216,10 +203,6 @@ function AnimatedGlobalPreferences(props) {
       }
     </Transition>
   )
-}
-
-AnimatedGlobalPreferences.propTypes = {
-  onScreenChange: PropTypes.func.isRequired,
 }
 
 export default React.memo(AnimatedGlobalPreferences)
