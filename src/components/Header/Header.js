@@ -3,9 +3,14 @@ import { ButtonIcon, GU, IconMenu } from '@aragon/ui'
 import AccountModule from '../Account/AccountModule'
 import ClockModule from '../ClockModule'
 import ActivityButton from '../Activity/ActivityButton'
+import GlobalPreferencesButton from '../GlobalPreferences/GlobalPreferencesButton'
 import HeaderLogo from './HeaderLogo'
 
-const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
+const Header = React.memo(function Header({
+  compactMode,
+  toggleMenuPanel,
+  onOpenPreferences,
+}) {
   return (
     <header
       css={`
@@ -45,7 +50,15 @@ const Header = React.memo(function Header({ compactMode, toggleMenuPanel }) {
         >
           <AccountModule />
         </div>
-
+        <div
+          css={`
+            display: flex;
+            height: 100%;
+            margin-left: ${2 * GU}px;
+          `}
+        >
+          <GlobalPreferencesButton onOpen={onOpenPreferences} />
+        </div>
         <div
           css={`
             display: flex;

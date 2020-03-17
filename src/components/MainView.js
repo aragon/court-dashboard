@@ -1,9 +1,31 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
 import { Layout, Root, ScrollView, useViewport } from '@aragon/ui'
 import MenuPanel, { MENU_PANEL_WIDTH } from './MenuPanel'
 import Header from './Header/Header'
+import { getPreferencesSearch } from '../Routes'
+import GlobalPreferences from './GlobalPreferences/GlobalPreferences'
+
+const GLOBAL_PREFERENCES_QUERY_PARAM = '?preferences=/'
 
 function MainView({ children }) {
+  const history = useHistory()
+  const sea = useLocation().search
+
+  function parsePreferences(search = '') {
+    const [, path = ''] = search.split(GLOBAL_PREFERENCES_QUERY_PARAM)
+    // const params = new Map()
+
+    return { path }
+  }
+
+  const pref = parsePreferences(sea)
+  const openPreferences = useCallback(
+    screen => {
+      history.push('/' + getPreferencesSearch(screen))
+    },
+    [history]
+  )
   const { width: vw, below } = useViewport()
   const compactMode = below('medium')
 
@@ -25,6 +47,16 @@ function MainView({ children }) {
     setMenuPanelOpen(!compactMode)
   }, [compactMode])
 
+  if (pref.path) {
+    return (
+      <GlobalPreferences
+        path={pref.path}
+        onScreenChange={() => {}}
+        onClose={() => {}}
+        compact={false}
+      />
+    )
+  }
   return (
     <div
       css={`
@@ -38,7 +70,11 @@ function MainView({ children }) {
           flex-shrink: 0;
         `}
       >
-        <Header compactMode={compactMode} toggleMenuPanel={toggleMenuPanel} />
+        <Header
+          compactMode={compactMode}
+          toggleMenuPanel={toggleMenuPanel}
+          onOpenPreferences={openPreferences}
+        />
       </div>
       <div
         css={`

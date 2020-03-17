@@ -28,6 +28,12 @@ const ENV_VARS = {
   ENABLE_SENTRY() {
     return process.env.REACT_APP_ENABLE_SENTRY === '1'
   },
+  DEFAULT_ETH_NODE() {
+    return process.env.REACT_APP_DEFAULT_ETH_NODE || ''
+  },
+  IPFS_GATEWAY() {
+    return process.env.REACT_APP_IPFS_GATEWAY || ''
+  },
 }
 
 export default function env(name) {

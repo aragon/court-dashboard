@@ -1,4 +1,6 @@
 import environment from './environment'
+import { getNetworkType } from './lib/web3-utils'
+import { getDefaultEthNode, getIpfsGateway } from './local-settings'
 
 const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
@@ -23,7 +25,7 @@ export const networkConfigs = {
       defaultEth: 'http://localhost:8545',
     },
   },
-  mainnet: {
+  main: {
     nodes: {
       defaultEth: 'wss://mainnet.eth.aragon.network/ws',
     },
@@ -33,3 +35,9 @@ export const networkConfigs = {
 export function getNetworkConfig(chainId) {
   return networkConfigs[chainId]
 }
+
+export const defaultEthNode =
+  getDefaultEthNode() ||
+  networkConfigs[getNetworkType(environment('CHAIN_ID'))].nodes.defaultEth
+
+export const defaultIpfsGateway = getIpfsGateway()

@@ -1,5 +1,7 @@
 import env from '../environment'
+import { providers as Providers } from 'ethers'
 import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
+import { InvalidURI, InvalidNetworkType, NoConnection } from '../errors'
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
 export const DEFAULT_LOCAL_CHAIN = 'rpc'
@@ -7,6 +9,7 @@ export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
 const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
+const websocketRegex = /^wss?:\/\/.+/
 
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
@@ -122,6 +125,15 @@ export function getNetworkName(chainId = env('CHAIN_ID')) {
   return 'unknown'
 }
 
+export function sanitizeNetworkType(networkType) {
+  if (networkType === 'rpc') {
+    return 'localhost'
+  } else if (networkType === 'main') {
+    return 'mainnet'
+  }
+  return networkType
+}
+
 export function isLocalOrUnknownNetwork(chainId) {
   return getNetworkType(chainId) === DEFAULT_LOCAL_CHAIN
 }
@@ -146,4 +158,42 @@ export function transformAddresses(str, callback) {
     .map((part, index) =>
       callback(part, ETH_ADDRESS_TEST_REGEX.test(part), index)
     )
+}
+
+/**
+ * Check if the ETH node at the given URI is compatible for the current environment
+ * @param {string} uri URI of the ETH node.
+ * @param {string} expectedNetworkType The expected network type of the ETH node.
+ * @returns {Promise} Resolves if the ETH node is compatible, otherwise throws:
+ *    - InvalidURI: URI given is not compatible (e.g. must be WebSockets)
+ *    - InvalidNetworkType: ETH node connected to wrong network
+ *    - NoConnection: Couldn't connect to URI
+ */
+export async function checkValidEthNode(uri) {
+  // Must be websocket connection
+  const isLocalOrUnknown = isLocalOrUnknownNetwork(env('CHAIN_ID'))
+  if (!isLocalOrUnknown) {
+    if (!websocketRegex.test(uri)) {
+      throw new InvalidURI('The URI must use the WebSocket protocol')
+    }
+  }
+
+  try {
+    const expectedNetworkType = getNetworkType()
+    const provider = await new Providers.JsonRpcProvider(uri)
+    const networkType = await provider.getNetwork()
+
+    if (!isLocalOrUnknown) {
+      if (networkType.name !== expectedNetworkType) {
+        throw new InvalidNetworkType()
+      }
+    }
+  } catch (err) {
+    if (err instanceof InvalidNetworkType) {
+      throw err
+    }
+    throw new NoConnection()
+  }
+
+  return true
 }
