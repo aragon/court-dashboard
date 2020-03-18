@@ -170,7 +170,7 @@ const RewardsModule = React.memo(function RewardsModule({
                   totalFees={totalFeeRewards}
                   requiresMultipleTxs={
                     totalDisputesFees.gt(0) ||
-                    (subscriptionFees.lenght > 0 && treasuryBalance.gt(0))
+                    (subscriptionFees.length > 0 && treasuryBalance.gt(0))
                   }
                 />
               </form>
