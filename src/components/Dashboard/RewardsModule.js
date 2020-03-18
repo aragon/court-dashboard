@@ -38,7 +38,7 @@ const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
   }, [appealFees, arbitrableFees, subscriptionFees])
 }
 
-// anjRewards => ANJ => Settled onSettleReward
+// anjRewards => ANJ => First settle with `onSettleReward()`, then withdraw
 // feeRewards => DAI => settled onSettleRewards and onSettleAppealDeposit
 // subscriptions fees => DAI => claimed directly from the CourtSubscription contract
 // Once rewards are settled, we must withdraw them from the treasury (onWithdraw)
