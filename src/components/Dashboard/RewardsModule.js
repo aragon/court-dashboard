@@ -76,7 +76,7 @@ const RewardsModule = React.memo(function RewardsModule({
   )
   const treasuryBalance = treasuryToken ? treasuryToken.balance : bigNum(0)
 
-  // Total dispute fees are conformed by appeal fees and arbitrable fees (fees paid by the creator of the dispute for the first round
+  // Total dispute fees include appeal fees and arbitrable fees (fees paid by the creator of the dispute for the first round
   // and fees paid by appealers for subsequent rounds)
   const totalDisputesFees = totalArbitrableFees.add(totalAppealFees)
 
