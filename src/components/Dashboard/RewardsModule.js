@@ -42,7 +42,7 @@ const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
 // feeRewards => DAI =>  First settle with `onSettleReward()` or `onSettleAppealDeposit()`, then withdraw
 // subscriptions fees => DAI => Can be withdrawn directly from the CourtSubscription contract
 // Only after the rewards are settled can a juror withdraw them from the treasury (`onWithdraw()`)
-// As opposed to fee rewards, subscription fees are directly sent to the juror's wallet after claimed
+// As opposed to fee rewards, subscription fees are directly withdrawn to the juror's wallet when claimed
 const RewardsModule = React.memo(function RewardsModule({
   rewards,
   treasury,
