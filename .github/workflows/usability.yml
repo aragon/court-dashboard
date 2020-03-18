@@ -1,5 +1,5 @@
 
-name: Staging deployment
+name: Usability deployment
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
     - name: now
       run: >
         now
-        -A now-staging.json
+        -A now-usability.json
         --confirm
         --prod
         --token=${{ secrets.ZEIT_TOKEN }}
