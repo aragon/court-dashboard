@@ -3,8 +3,9 @@ const {
   addressBadge,
   asset,
   base,
-  table,
+  stripWhitespace,
   style,
+  table,
 } = require('../template-utils')
 const { accountData } = require('../mock-utils')
 
@@ -71,7 +72,7 @@ module.exports = function() {
     mockData: {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
       title: 'You have been drafted in a void dispute (Dispute #0)',
-      content: `
+      content: stripWhitespace(`
         Juror, you are receiving this email because you were drafted in Dispute
         #0, which was recently voided with all related content being removed
         from the Juror Dashboard.
@@ -85,7 +86,7 @@ module.exports = function() {
 
         However, all slashed tokens will be automatically reimbursed to your
         account once Dispute #0 has reached a final ruling.
-      `,
+      `),
       contentHtml: `
         <p>
           Juror, you are receiving this email because you were drafted in

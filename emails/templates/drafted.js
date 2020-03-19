@@ -1,8 +1,8 @@
 const {
-  addressBadge,
   action,
-  infobox,
+  addressBadge,
   base,
+  infobox,
   link,
 } = require('../template-utils')
 const { accountData } = require('../mock-utils')

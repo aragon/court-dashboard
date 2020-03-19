@@ -1,4 +1,10 @@
-const { asset, banner, base2, button } = require('../template-utils')
+const {
+  asset,
+  banner,
+  base2,
+  button,
+  stripWhitespace,
+} = require('../template-utils')
 
 module.exports = function() {
   return {
@@ -8,12 +14,12 @@ module.exports = function() {
         preheader: '',
         banner: '{{{bannerHtml}}}',
         warningTitle: 'IMPORTANT NOTICE',
-        warningContent: '{{{notice}}}',
+        warningContent: '{{{noticeHtml}}}',
       },
       `
         <h1>{{title}}</h1>
         <div style="color: #8A96A0">
-          {{{content}}}
+          {{{contentHtml}}}
         </div>
         <div style="padding: 20px 0 10px">
           ${button('{{actionLabel}}', '{{actionUrl}}')}
@@ -24,9 +30,10 @@ module.exports = function() {
       {{title}}
 
       Important notice:
-      {{noticeText}}
 
-      {{contentText}}
+      {{notice}}
+
+      {{content}}
 
       {{actionLabel}}: {{actionUrl}}
 
@@ -46,7 +53,7 @@ module.exports = function() {
         color: '#ffffff',
         tag: { label: 'TEST NETWORK', bg: '#7C80F2', fg: '#ffffff' },
       }),
-      content: `
+      contentHtml: `
         <p>
           The Juror Playground is a separate instance of the Juror Dashboard and
           Aragon Court on the Rinkeby testnet.
@@ -77,7 +84,7 @@ module.exports = function() {
           Have fun, and break things!
         </p>
       `,
-      contentText: `
+      content: stripWhitespace(`
         The Juror Playground is a separate instance of the Juror Dashboard and
         Aragon Court on the Rinkeby testnet.
 
@@ -95,19 +102,19 @@ module.exports = function() {
         To get started, fill out the form linked below.
 
         Have fun, and break things!
-      `,
-      notice: `
+      `),
+      noticeHtml: `
         This is an email from <strong>Aragon Court’s Rinkeby test environment</strong>. This
         environment has been configured so jurors can have a playground to try
         out the new dashboard and ensure that the system is working
         correctly.
       `,
-      noticeText: `
+      notice: stripWhitespace(`
         This is an email from Aragon Court’s Rinkeby test environment. This
         environment has been configured so jurors can have a playground to try
         out the new dashboard and ensure that the system is working
         correctly.
-      `,
+      `),
     },
   }
 }

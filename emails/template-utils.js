@@ -36,6 +36,11 @@ function asset(path) {
   return `${assetBasePath}/${path}`
 }
 
+function stripWhitespace(str) {
+  // Remove extra whitespace from multi-line strings
+  return str.replace(/\n +/gm, '\n').trim()
+}
+
 function table(attributes, content) {
   return `
     <table ${attrs({
@@ -1075,6 +1080,7 @@ module.exports = {
   dataTable,
   infobox,
   link,
+  stripWhitespace,
   style,
   table,
   vspace,

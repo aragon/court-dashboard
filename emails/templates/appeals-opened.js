@@ -1,9 +1,10 @@
 const {
-  addressBadge,
   action,
-  infobox,
+  addressBadge,
   base,
+  infobox,
   link,
+  stripWhitespace,
 } = require('../template-utils')
 const { accountData } = require('../mock-utils')
 
@@ -54,13 +55,13 @@ module.exports = function() {
       disputeUrl: 'https://example.org/',
       actionLabel: 'Appeal Ruling',
       actionUrl: 'https://example.org/',
-      secondary: `
+      secondary: stripWhitespace(`
         Now that Voting has ended, Preliminary Rulings can be appealed by
         anyone, including you. If you disagree with the ruling made by your
         fellow jurors and believe it will be overturned by a larger set of
         jurors, you can appeal the dispute and earn a reward if your appeal
         is successful.
-      `,
+      `),
     },
   }
 }

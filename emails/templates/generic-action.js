@@ -1,9 +1,10 @@
 const {
-  addressBadge,
   action,
-  infobox,
+  addressBadge,
   base,
+  infobox,
   link,
+  stripWhitespace,
 } = require('../template-utils')
 const { accountData } = require('../mock-utils')
 
@@ -46,19 +47,19 @@ module.exports = function() {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
       date: 'Thursday, 17 Dec. 2019',
       title: 'Dispute #0 has been settled and fees reimbursements completed.',
-      actionText: `
+      actionText: stripWhitespace(`
         You are recieving this notification because you have been reimbursed for
         losses incurred from your involvement in Dispute #0.
 
         Jurors drafted and slashed in Dispute #0 have been sent reimbursement for
         their slashed amount. If you are an active juror, the ANJ has been added
-        to your Active Balance and if you are an inacitve juror ANJ has been
+        to your Active Balance and if you are an inactive juror ANJ has been
         added to your Inactive Balance.
 
         Appealers can claim their collateral through the Dashboard now that the
         dispute settlement has executed. Appeal fees have been reimbursed
         directly to your account.
-      `,
+      `),
       titleHtml: `
         ${link('Dispute #0', 'https://court.aragon.org/disputes/0', {
           nowrap: true,
@@ -74,7 +75,7 @@ module.exports = function() {
           <strong>Jurors</strong> drafted and slashed in Dispute #0 have been
           sent reimbursement for their slashed amount. If you are an active
           juror, the ANJ has been added to your Active Balance and if you are
-          an inacitve juror ANJ has been added to your Inactive Balance.
+          an inactive juror ANJ has been added to your Inactive Balance.
         </p>
 
         <p>
