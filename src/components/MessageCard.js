@@ -62,6 +62,7 @@ export default function MessageCard({
             <span
               css={`
                 ${textStyle(isCompactMode ? 'title4' : 'title2')}
+                text-align:center;
               `}
             >
               {title}

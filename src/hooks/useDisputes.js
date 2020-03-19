@@ -11,6 +11,7 @@ import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { convertToString, Status } from '../types/dispute-status-types'
 import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
 
+const IPFS_ERROR_MSG = 'Error loading content from ipfs'
 const DISPUTE_PROCESSED_DEFAULT = {
   description: '',
   agreementText: '',
@@ -19,6 +20,7 @@ const DISPUTE_PROCESSED_DEFAULT = {
   error: false,
   fetching: true,
 }
+
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
   const { disputes, fetching, error } = useDisputesSubscription()
@@ -64,22 +66,27 @@ export default function useDisputes() {
 export function useDispute(disputeId) {
   const courtConfig = useCourtConfig()
   const now = useNow() // TODO: use court clock
-  const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
+  const { dispute, fetching, error: graphError } = useSingleDisputeSubscription(
+    disputeId
+  )
+  const graphErrorMessage = graphError ? graphError.message : ''
   const disputeProcessed = useProcessedDispute(dispute, fetching)
-
+  const error = graphErrorMessage || disputeProcessed.error
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
   const disputePhaseKey = disputePhase
     ? convertToString(Object.values(disputePhase)[0])
     : ''
 
   return useMemo(() => {
-    return {
-      dispute: {
+    return [
+      {
         ...disputeProcessed,
         ...disputePhase,
       },
-    }
-  }, [disputeProcessed, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
+      error,
+      !!graphErrorMessage,
+    ]
+  }, [disputeProcessed, disputePhaseKey, error]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function useProcessedDispute(dispute, fetching) {
@@ -100,7 +107,11 @@ function useProcessedDispute(dispute, fetching) {
       )
 
       if (!uriOrData) {
-        return setDisputeProcessed({ ...dispute, fetching: false, error: true })
+        return setDisputeProcessed({
+          ...dispute,
+          fetching: false,
+          error: IPFS_ERROR_MSG,
+        })
       }
 
       const ipfsPath = getIpfsCidFromUri(uriOrData)
@@ -111,7 +122,7 @@ function useProcessedDispute(dispute, fetching) {
           return setDisputeProcessed({
             ...dispute,
             fetching: false,
-            error: true,
+            error: IPFS_ERROR_MSG,
           })
         }
         try {
@@ -131,7 +142,7 @@ function useProcessedDispute(dispute, fetching) {
             agreementUrl: agreementUrl || '',
             defendant: parsedDisputeData.defendant || '',
             plaintiff: parsedDisputeData.plaintiff || '',
-            error: false,
+            error: '',
             fetching: false,
           })
         } catch (err) {
@@ -142,7 +153,11 @@ function useProcessedDispute(dispute, fetching) {
           })
         }
       }
-      return setDisputeProcessed({ ...dispute, fetching: false, error: true })
+      return setDisputeProcessed({
+        ...dispute,
+        fetching: false,
+        error: IPFS_ERROR_MSG,
+      })
     }
 
     fetchDataFromIpfs()

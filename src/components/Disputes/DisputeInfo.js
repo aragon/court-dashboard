@@ -27,6 +27,7 @@ import iconCourt from '../../assets/courtIcon.svg'
 
 const DisputeInfo = React.memo(function({
   id,
+  error,
   dispute,
   loading,
   onDraft,
@@ -44,7 +45,6 @@ const DisputeInfo = React.memo(function({
     defendant,
     agreementText,
     agreementUrl,
-    error,
   } = dispute || {}
 
   const creator = plaintiff || dispute?.subject?.id
@@ -70,6 +70,12 @@ const DisputeInfo = React.memo(function({
       >
         <DisputeHeader id={id} dispute={dispute} />
         {(() => {
+          if (error) {
+            return (
+              <ErrorLoading subject="dispute" errors={[error]} border={false} />
+            )
+          }
+
           if (loading) {
             return <Loading border={false} />
           }
@@ -83,17 +89,6 @@ const DisputeInfo = React.memo(function({
               />
             )
           }
-
-          if (error) {
-            return (
-              <ErrorLoading
-                subject="dispute"
-                errors={['Error loading content from ipfs']}
-                border={false}
-              />
-            )
-          }
-
           return (
             <>
               <Row>
