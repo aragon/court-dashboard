@@ -1,5 +1,4 @@
-import dayjs from 'dayjs'
-
+import { dayjs } from '../utils/date-utils'
 import { useWallet } from '../providers/Wallet'
 import { useCourtClock } from '../providers/CourtClock'
 import { useCurrentTermJurorDraftsSubscription } from './subscription-hooks'

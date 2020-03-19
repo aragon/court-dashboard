@@ -6,7 +6,7 @@ import Loading from './Loading'
 import ANJLockedDistribution from './ANJLockedDistribution'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
-import useBalanceToUsd from '../../hooks/useTokenBalanceToUsd'
+import { useANJBalanceToUsd } from '../../hooks/useTokenBalanceToUsd'
 
 import { PCT_BASE } from '../../utils/dispute-utils'
 import { bigNum, formatTokenAmount, formatUnits } from '../../lib/math-utils'
@@ -52,7 +52,7 @@ const Balance = React.memo(function Balance({
     anjToken: { symbol, decimals },
   } = useCourtConfig()
 
-  const convertedAmount = useBalanceToUsd(symbol, decimals, amount)
+  const convertedAmount = useANJBalanceToUsd(amount)
 
   const springProps = useSpring({
     to: { opacity: 1 },
@@ -153,31 +153,29 @@ const Balance = React.memo(function Balance({
               <span>No activity in the last 24h</span>
             )}
           </div>
-
-          {amount.gt(0) && (
-            <div
-              css={`
-                display: grid;
-                grid-template-columns: repeat(
-                  auto-fit,
-                  minmax(calc(50% - 8px), 1fr)
-                );
-                grid-column-gap: 8px;
-              `}
-            >
-              {actions.map((action, index) => {
-                return (
-                  <Button
-                    key={index}
-                    label={action.label}
-                    mode={action.mode}
-                    onClick={action.onClick}
-                    wide
-                  />
-                )
-              })}
-            </div>
-          )}
+          <div
+            css={`
+              display: grid;
+              grid-template-columns: repeat(
+                auto-fit,
+                minmax(calc(50% - 8px), 1fr)
+              );
+              grid-column-gap: 8px;
+            `}
+          >
+            {actions.map((action, index) => {
+              return (
+                <Button
+                  key={index}
+                  label={action.label}
+                  mode={action.mode}
+                  onClick={action.onClick}
+                  wide
+                  disabled={amount.eq(0)}
+                />
+              )
+            })}
+          </div>
         </animated.div>
       )}
     </div>

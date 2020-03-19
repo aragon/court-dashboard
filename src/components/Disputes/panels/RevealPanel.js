@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, Field, GU, TextInput } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
@@ -28,24 +28,36 @@ const RevealPanel = React.memo(function RevealPanel({
 
   const handlePasswordChange = event => setPassword(event.target.value)
 
-  const handleReveal = async event => {
-    event.preventDefault()
+  const handleReveal = useCallback(
+    async event => {
+      event.preventDefault()
 
-    try {
-      const tx = await onReveal(
-        dispute.id,
-        dispute.lastRoundId,
-        wallet.account,
-        jurorDraft.commitment,
-        password
-      )
-      await tx.wait()
-      removeCodeFromLocalStorage(wallet.account, dispute.id)
-      onDone()
-    } catch (err) {
-      console.log('Error submitting tx: ', err)
-    }
-  }
+      try {
+        const tx = await onReveal(
+          dispute.id,
+          dispute.lastRoundId,
+          wallet.account,
+          jurorDraft.commitment,
+          password
+        )
+
+        onDone()
+        await tx.wait()
+        removeCodeFromLocalStorage(wallet.account, dispute.id)
+      } catch (err) {
+        console.error('Error submitting tx: ', err)
+      }
+    },
+    [
+      dispute.id,
+      dispute.lastRoundId,
+      jurorDraft.commitment,
+      onDone,
+      onReveal,
+      password,
+      wallet.account,
+    ]
+  )
 
   return (
     <form onSubmit={handleReveal}>

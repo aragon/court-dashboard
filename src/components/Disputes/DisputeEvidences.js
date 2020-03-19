@@ -1,27 +1,21 @@
 import React from 'react'
 import { Accordion, GU, SyncIndicator, textStyle, useTheme } from '@aragon/ui'
 import { useWallet } from 'use-wallet'
-
+import useEvidences from '../../hooks/useEvidences'
+import { addressesEqual } from '../../lib/web3-utils'
 import ErrorLoadingEvidence from './ErrorLoadingEvidence'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import Markdown from '../Markdown'
-import useEvidences from '../../hooks/useEvidences'
-import { addressesEqual } from '../../lib/web3-utils'
-import dayjs from '../../lib/dayjs'
+import { dateFormat } from '../../utils/date-utils'
 
 import folderIcon from '../../assets/folderIcon.svg'
 
-const DisputeEvidences = React.memo(function DisputeEvidences({
-  evidences,
-  plaintiff,
-  defendant,
-}) {
-  const evidenceProcessed = useEvidences(evidences)
-  const evidencesFetching = evidenceProcessed.length < evidences.length
+const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
+  const [evidenceProcessed, fetchingEvidences] = useEvidences(evidences)
 
   return (
     <React.Fragment>
-      <SyncIndicator visible={evidencesFetching} label="Loading evidences..." />
+      <SyncIndicator visible={fetchingEvidences} label="Loading evidences..." />
       {evidenceProcessed &&
         evidenceProcessed.map((evidence, index) => {
           const { createdAt, submitter, metadata, error } = evidence
@@ -46,8 +40,6 @@ const DisputeEvidences = React.memo(function DisputeEvidences({
                     </span>
                   </div>,
                   <EvidenceContent
-                    plaintiff={plaintiff}
-                    defendant={defendant}
                     metadata={metadata}
                     submitter={submitter}
                     createdAt={createdAt}
@@ -63,8 +55,6 @@ const DisputeEvidences = React.memo(function DisputeEvidences({
 })
 
 const EvidenceContent = React.memo(function EvidenceContent({
-  plaintiff,
-  defendant,
   metadata,
   submitter,
   createdAt,
@@ -80,15 +70,13 @@ const EvidenceContent = React.memo(function EvidenceContent({
     <div
       css={`
         margin-bottom: ${2 * GU}px;
-        padding: ${3 * GU}px ${8 * GU}px;
+        padding: ${3 * GU}px ${8 * GU - 3}px;
       `}
     >
       <div
         css={`
           display: grid;
-          grid-template-columns:
-            minmax(180px, auto) minmax(180px, auto)
-            minmax(180px, auto);
+          grid-template-columns: 150px minmax(180px, auto);
           grid-gap: ${5 * GU}px;
           margin-bottom: ${5 * GU}px;
         `}
@@ -130,33 +118,7 @@ const EvidenceContent = React.memo(function EvidenceContent({
               ${textStyle('body2')};
             `}
           >
-            {dayjs(createdAt).format('DD/MM/YY')}
-          </span>
-        </div>
-        <div>
-          <h2
-            css={`
-              ${textStyle('label2')};
-              color: ${theme.surfaceContentSecondary};
-              margin-bottom: ${2 * GU}px;
-            `}
-          >
-            Argument
-          </h2>
-          <span
-            css={`
-              ${textStyle('body2')};
-            `}
-          >
-            {(() => {
-              if (addressesEqual(plaintiff, submitter)) {
-                return 'In favor'
-              }
-              if (addressesEqual(defendant, submitter)) {
-                return 'Against'
-              }
-              return 'Neutral'
-            })()}
+            {dateFormat(createdAt, 'onlyDate')}
           </span>
         </div>
       </div>

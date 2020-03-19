@@ -1,1 +1,4 @@
-["function executeRuling(uint256 _disputeId) external"]
+[
+  "function executeRuling(uint256 _disputeId) external",
+  "function heartbeat(uint64 _maxRequestedTransitions) external returns (uint64)"
+]

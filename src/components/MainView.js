@@ -1,12 +1,30 @@
-import React from 'react'
-import { GU, Layout, Root, ScrollView, useViewport } from '@aragon/ui'
-import NavBar from './NavBar'
-import Header from './Header'
-
-const NAV_BAR_WIDTH = 25 * GU
+import React, { useCallback, useEffect, useState } from 'react'
+import { Layout, Root, ScrollView, useViewport } from '@aragon/ui'
+import MenuPanel, { MENU_PANEL_WIDTH } from './MenuPanel'
+import Header from './Header/Header'
 
 function MainView({ children }) {
-  const { width: vw } = useViewport()
+  const { width: vw, below } = useViewport()
+  const compactMode = below('medium')
+
+  const [menuPanelOpen, setMenuPanelOpen] = useState(!compactMode)
+  const toggleMenuPanel = useCallback(
+    () => setMenuPanelOpen(opened => !opened),
+    []
+  )
+
+  const handleCloseMenuPanel = useCallback(() => setMenuPanelOpen(false), [])
+
+  const handleOpenPage = useCallback(() => {
+    if (compactMode) {
+      handleCloseMenuPanel()
+    }
+  }, [compactMode, handleCloseMenuPanel])
+
+  useEffect(() => {
+    setMenuPanelOpen(!compactMode)
+  }, [compactMode])
+
   return (
     <div
       css={`
@@ -20,11 +38,10 @@ function MainView({ children }) {
           flex-shrink: 0;
         `}
       >
-        <Header />
+        <Header compactMode={compactMode} toggleMenuPanel={toggleMenuPanel} />
       </div>
       <div
         css={`
-          position: relative;
           flex-grow: 1;
           flex-shrink: 1;
           height: 0;
@@ -35,19 +52,28 @@ function MainView({ children }) {
           css={`
             flex-shrink: 0;
             z-index: 3;
-            width: ${NAV_BAR_WIDTH}px;
+            height: 100%;
           `}
         >
-          <NavBar />
+          <MenuPanel
+            autoClosing={compactMode}
+            opened={menuPanelOpen}
+            onMenuPanelClose={handleCloseMenuPanel}
+            onOpenPage={handleOpenPage}
+          />
         </div>
         <Root.Provider
           css={`
             flex-grow: 1;
             height: 100%;
+            position: relative;
           `}
         >
           <ScrollView>
-            <Layout parentWidth={vw - NAV_BAR_WIDTH} paddingBottom={0}>
+            <Layout
+              parentWidth={vw - (compactMode ? 0 : MENU_PANEL_WIDTH)}
+              paddingBottom={0}
+            >
               {children}
             </Layout>
           </ScrollView>
