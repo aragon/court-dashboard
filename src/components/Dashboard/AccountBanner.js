@@ -210,31 +210,26 @@ const BannerWithProbability = ({ activeBalance }) => {
       <Help hint="How is the probability calculated?">
         <p>
           This is a numerical estimate of your likelihood of being selected for
-          arbitration. It’s calculated dividing your active ANJ balance by the
-          total Court active ANJ balance, during the current term.
+          arbitration. It’s calculated by dividing your active ANJ balance
+          against the Court's total active ANJ balance during the current term.
         </p>
-        {(() => {
-          if (probablilityTooLow) {
-            return (
-              <p
-                css={`
-                  margin-top: ${1 * GU}px;
-                `}
-              >
-                You currently have &lt;1% of all activated ANJ, hence are
-                unlikely to be drafted unless a dispute goes to the final round
-                or many disputes are created. Activate more ANJ to increase your
-                chances of being selected as a juror.
-              </p>
-            )
-          }
-          return (
-            <p>
-              You can always activate more ANJ to increase your chances of being
-              selected as a juror.
-            </p>
-          )
-        })()}
+        <p
+          css={`
+            margin-top: ${1 * GU}px;
+          `}
+        >
+          {probablilityTooLow
+            ? `
+                You currently have <1% of all activated ANJ, hence are unlikely
+                to be drafted unless a dispute goes to the final round or many
+                disputes are created. Activate more ANJ to increase your chances
+                of being selected as a juror.
+              `
+            : `
+                You can always activate more ANJ to increase your chances of
+                being selected as a juror.
+              `}
+        </p>
       </Help>
     </div>
   )
