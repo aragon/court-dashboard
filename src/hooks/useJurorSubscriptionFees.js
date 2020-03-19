@@ -7,7 +7,11 @@ export default function useJurorSubscriptionFees() {
   const wallet = useWallet()
   const { getters } = useCourtSubscriptionActions()
 
+  // TODO: We should use the subscription entities data from the subgraph once available and
+  // bypass `getCurrentPeriodId` and `hasJurorClaimed` calls
   useEffect(() => {
+    let cancelled = false
+
     const fetchSubscriptionFees = async () => {
       if (!getters) {
         return
@@ -18,6 +22,10 @@ export default function useJurorSubscriptionFees() {
 
         const jurorSubscriptionsFees = []
         for (let periodId = 0; periodId < currentPeriodId; periodId++) {
+          if (cancelled) {
+            break
+          }
+
           const jurorShare = await getters.getJurorShare(
             wallet.account,
             periodId
@@ -32,13 +40,19 @@ export default function useJurorSubscriptionFees() {
           }
         }
 
-        setSubscriptionFees(jurorSubscriptionsFees)
+        if (!cancelled) {
+          setSubscriptionFees(jurorSubscriptionsFees)
+        }
       } catch (err) {
-        console.error(`Error fethcing juror subscription fees: ${err}`)
+        console.error(`Error fetching juror subscription fees: ${err}`)
       }
     }
 
     fetchSubscriptionFees()
+
+    return () => {
+      cancelled = true
+    }
   }, [getters, wallet.account])
 
   return [subscriptionFees, setSubscriptionFees]

@@ -435,5 +435,3 @@ export function useTotalActiveBalancePolling(termId) {
 
   return totalActiveBalance
 }
-
-export function useJurorSubscriptionShare(juror, periodId) {}

@@ -9,6 +9,8 @@ import {
   textStyle,
   useTheme,
 } from '@aragon/ui'
+import * as Sentry from '@sentry/browser'
+
 import Loading from './Loading'
 import NoRewards from './NoRewards'
 
@@ -22,15 +24,15 @@ import { addressesEqual } from '../../lib/web3-utils'
 
 const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
   return useMemo(() => {
-    const totalArbitrableFees = arbitrableFees
+    const totalArbitrableFees = Array.isArray(arbitrableFees)
       ? arbitrableFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
       : bigNum(0)
 
-    const totalAppealFees = appealFees
+    const totalAppealFees = Array.isArray(appealFees)
       ? appealFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
       : bigNum(0)
 
-    const totalSubscriptionFees = subscriptionFees
+    const totalSubscriptionFees = Array.isArray(subscriptionFees)
       ? subscriptionFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
       : bigNum(0)
 
@@ -130,7 +132,8 @@ const RewardsModule = React.memo(function RewardsModule({
 
       setSubscriptionFees([])
     } catch (err) {
-      console.log(`Error claiming rewards: ${err}`)
+      console.error(`Error claiming rewards: ${err}`)
+      Sentry.captureException(err)
     }
   }
 
