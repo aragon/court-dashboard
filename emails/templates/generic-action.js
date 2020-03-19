@@ -17,7 +17,6 @@ module.exports = function() {
       },
       `
         ${infobox({
-          mode: 'positive',
           primary: '{{{titleHtml}}}',
           secondary: '{{{actionTextHtml}}}',
         })}
