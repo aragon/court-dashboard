@@ -83,13 +83,12 @@ export default function useJurorRewards() {
       }, new Map())
 
     return {
-      rulingFees,
-      arbitrableFees: feeMapToArray(arbitrableFees),
-      appealFees: feeMapToArray(appealFees),
-      disputesFeesDistribution: getDisputesFeesDistribution(
-        arbitrableFees,
-        appealFees
-      ),
+      anjRewards: rulingFees,
+      feeRewards: {
+        arbitrableFees: feeMapToArray(arbitrableFees),
+        appealFees: feeMapToArray(appealFees),
+        distribution: getDisputesFeesDistribution(arbitrableFees, appealFees),
+      },
     }
   }, [appeals, wallet, courtConfig, jurorDrafts])
 }
