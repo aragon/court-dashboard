@@ -40,11 +40,11 @@ const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
   }, [appealFees, arbitrableFees, subscriptionFees])
 }
 
-// anjRewards => ANJ => Settled onSettleReward
-// feeRewards => DAI => settled onSettleRewards and onSettleAppealDeposit
-// subscriptions fees => DAI => claimed directly from the CourtSubscription contract
-// Once rewards are settled, we must withdraw them from the treasury (onWithdraw)
-// As opposed to fee rewards, subscription fees are directly sent to the juror's wallet after claimed
+// anjRewards => ANJ => First settle with `onSettleReward()`, then withdraw
+// feeRewards => DAI =>  First settle with `onSettleReward()` or `onSettleAppealDeposit()`, then withdraw
+// subscriptions fees => DAI => Can be withdrawn directly from the CourtSubscription contract
+// Only after the rewards are settled can a juror withdraw them from the treasury (`onWithdraw()`)
+// As opposed to fee rewards, subscription fees are directly withdrawn to the juror's wallet when claimed
 const RewardsModule = React.memo(function RewardsModule({
   rewards,
   treasury,
@@ -78,7 +78,7 @@ const RewardsModule = React.memo(function RewardsModule({
   )
   const treasuryBalance = treasuryToken ? treasuryToken.balance : bigNum(0)
 
-  // Total dispute fees are conformed by appeal fees and arbitrable fees (fees paid by the creator of the dispute for the first round
+  // Total dispute fees include appeal fees and arbitrable fees (fees paid by the creator of the dispute for the first round
   // and fees paid by appealers for subsequent rounds)
   const totalDisputesFees = totalArbitrableFees.add(totalAppealFees)
 
@@ -173,7 +173,7 @@ const RewardsModule = React.memo(function RewardsModule({
                   totalFees={totalFeeRewards}
                   requiresMultipleTxs={
                     totalDisputesFees.gt(0) ||
-                    (subscriptionFees.lenght > 0 && treasuryBalance.gt(0))
+                    (subscriptionFees.length > 0 && treasuryBalance.gt(0))
                   }
                 />
               </form>
