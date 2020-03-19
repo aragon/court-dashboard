@@ -68,7 +68,7 @@ const DisputeInfo = React.memo(function({
           align-items: center;
         `}
       >
-        <DisputeHeader id={id} dispute={dispute} />
+        <DisputeHeader id={id} dispute={dispute} error={error} />
         {(() => {
           if (error) {
             return (
@@ -175,7 +175,7 @@ const DisputeInfo = React.memo(function({
   )
 })
 
-function DisputeHeader({ id, dispute }) {
+function DisputeHeader({ id, dispute, error }) {
   const theme = useTheme()
   const transaction = dispute && dispute.txHash
 
@@ -220,7 +220,7 @@ function DisputeHeader({ id, dispute }) {
             `}
           >
             <span>Dispute #{id}</span>
-            {dispute && (
+            {!error && dispute && (
               <DisputeStatus
                 dispute={dispute}
                 css={`
