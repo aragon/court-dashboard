@@ -45,19 +45,19 @@ module.exports = function() {
     mockData: {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
       date: 'Thursday, 17 Dec. 2019',
-      title: 'Dispute #0 has been settled and fees reimbursements completed.',
+      title: 'Dispute #0 has been settled and fee reimbursements completed.',
       actionText: stripWhitespace(`
         You are recieving this notification because you have been reimbursed for
         losses incurred from your involvement in Dispute #0.
 
-        Jurors drafted and slashed in Dispute #0 have been sent reimbursement for
+        Jurors drafted and slashed in Dispute #0 have been sent reimbursements for
         their slashed amount. If you are an active juror, the ANJ has been added
         to your Active Balance and if you are an inactive juror ANJ has been
         added to your Inactive Balance.
 
         Appealers can claim their collateral through the Dashboard now that the
-        dispute settlement has executed. Appeal fees have been reimbursed
-        directly to your account.
+        dispute has been settled. Appeal fees have been reimbursed directly to
+        your account.
       `),
       titleHtml: `
         ${link('Dispute #0', 'https://court.aragon.org/disputes/0', {
@@ -72,15 +72,15 @@ module.exports = function() {
 
         <p>
           <strong>Jurors</strong> drafted and slashed in Dispute #0 have been
-          sent reimbursement for their slashed amount. If you are an active
+          sent reimbursements for their slashed amount. If you are an active
           juror, the ANJ has been added to your Active Balance and if you are
           an inactive juror ANJ has been added to your Inactive Balance.
         </p>
 
         <p>
           <strong>Appealers</strong> can claim their collateral through the
-          Dashboard now that the dispute settlement has executed. Appeal fees
-          have been reimbursed directly to your account.
+          Dashboard now that the dispute has been settled. Appeal fees have
+          been reimbursed directly to your account.
         </p>
       `,
     },
