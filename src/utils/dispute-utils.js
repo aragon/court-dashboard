@@ -546,7 +546,7 @@ export function getRoundFees(round, courtConfig) {
 /**
  *
  * @param {BigNum} minActiveBalance The minimum active balance required to become an active juror
- * @param {BigNum} penaltyPct Percentage of min active tokens balance to be locked to each drafted juror
+ * @param {BigNum} penaltyPct Percentage (against PCT_BASE) of min active tokens balance to be locked to each drafted juror
  * @param {BigNum} weight Weight computed for a juror on a round
  * @returns {BigNum} The amount that will be locked each time a juror is drafted
  */
