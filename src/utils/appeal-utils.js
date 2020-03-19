@@ -21,7 +21,6 @@ export function transformAppealDataAttributes(appeal) {
         rounds: round.dispute.rounds.map(round => ({
           ...round,
           number: parseInt(round.number, 10),
-          jurorsNumber: bigNum(round.jurorsNumber),
         })),
       },
     },
