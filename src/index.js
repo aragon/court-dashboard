@@ -9,12 +9,13 @@ import {
   subscriptionExchange,
 } from 'urql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
-import { devtoolsExchange } from '@urql/devtools'
 import * as Sentry from '@sentry/browser'
+import { devtoolsExchange } from '@urql/devtools'
 import App from './App'
 import endpoints from './endpoints'
-import env from './environment'
-import { getNetworkType } from './lib/web3-utils'
+import initializeSentry from './sentry'
+
+initializeSentry()
 
 const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
 
@@ -36,16 +37,6 @@ const client = createClient({
   ],
 })
 
-const sentryEnabled = Boolean(env('SENTRY_DSN') && env('ENABLE_SENTRY'))
-
-if (sentryEnabled) {
-  Sentry.init({
-    dsn: env('SENTRY_DSN'),
-    environment: getNetworkType(env('CHAIN_ID')),
-    release: 'court-dashboard@' + env('BUILD'),
-  })
-}
-
 let connectionAttempts = 0
 subscriptionClient.onConnected(() => (connectionAttempts = 0))
 
@@ -53,7 +44,7 @@ subscriptionClient.onConnected(() => (connectionAttempts = 0))
 subscriptionClient.onError(err => {
   const maxReconnectionAttempts = subscriptionClient.reconnectionAttempts
 
-  if (sentryEnabled && maxReconnectionAttempts === ++connectionAttempts) {
+  if (maxReconnectionAttempts === ++connectionAttempts) {
     Sentry.captureMessage(
       `Connection error, could not connect to ${err.target.url}`
     )
