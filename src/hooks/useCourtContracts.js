@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import * as Sentry from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
@@ -375,10 +376,13 @@ export function useAppealDeposits(disputeId, roundId) {
             }
           })
           .catch(err => {
-            setAppealDeposits(appealDeposits => ({
-              ...appealDeposits,
-              error: `Error fetching appeal deposits: ${err}`,
-            }))
+            Sentry.captureException(err)
+            if (!cancelled) {
+              setAppealDeposits(appealDeposits => ({
+                ...appealDeposits,
+                error: `Error fetching appeal deposits`,
+              }))
+            }
           })
       )
     }
@@ -414,10 +418,13 @@ export function useFeeBalanceOf(account) {
           }
         })
         .catch(err => {
-          setFeeBalance(feeBalance => ({
-            ...feeBalance,
-            error: `Error fetching account's fee balance : ${err}`,
-          }))
+          Sentry.captureException(err)
+          if (!cancelled) {
+            setFeeBalance(feeBalance => ({
+              ...feeBalance,
+              error: `Error fetching account's fee balance`,
+            }))
+          }
         })
     }
 
@@ -454,10 +461,13 @@ export function useAppealFeeAllowance(owner) {
           }
         })
         .catch(err => {
-          setAllowance(allowance => ({
-            ...allowance,
-            error: `Error fetching fee allowance : ${err}`,
-          }))
+          Sentry.captureException(err)
+          if (!cancelled) {
+            setAllowance(allowance => ({
+              ...allowance,
+              error: `Error fetching fee allowance : ${err}`,
+            }))
+          }
         })
     }
 
@@ -494,6 +504,7 @@ export function useActiveBalanceOfAt(juror, termId) {
           }
         })
         .catch(err => {
+          Sentry.captureException(err)
           if (!cancelled) {
             setActiveBalance(balance => ({
               ...balance,
