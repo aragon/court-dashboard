@@ -16,10 +16,10 @@ import { useCourtConfig } from '../../../providers/CourtConfig'
 import { useWallet } from '../../../providers/Wallet'
 
 function AppealPanel({
-  dispute,
-  onApproveFeeDeposit,
-  onAppeal,
   confirm,
+  dispute,
+  onAppeal,
+  onApproveFeeDeposit,
   onDone,
 }) {
   const { feeToken } = useCourtConfig()
@@ -30,11 +30,11 @@ function AppealPanel({
   })
 
   // get connected account fee balance and  allowance
-  const feeBalance = useFeeBalanceOf(connectedAccount)
-  const feeAllowance = useAppealFeeAllowance(connectedAccount)
+  const [feeBalance] = useFeeBalanceOf(connectedAccount)
+  const [feeAllowance] = useAppealFeeAllowance(connectedAccount)
 
   // get required appeal desposits (appeal and confirm appeal)
-  const [appealDeposit, confirmAppealDeposit] = useAppealDeposits(
+  const [[appealDeposit, confirmAppealDeposit]] = useAppealDeposits(
     dispute.id,
     dispute.lastRoundId
   )

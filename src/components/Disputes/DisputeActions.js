@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react'
 import { GU, Help, textStyle, useTheme } from '@aragon/ui'
-import { Phase as DisputePhase } from '../../types/dispute-status-types'
+import {
+  Phase as DisputePhase,
+  Status as DisputeStatus,
+} from '../../types/dispute-status-types'
 import DisputeVoting from './actions/DisputeVoting'
 import DisputeDraft from './actions/DisputeDraft'
 import DisputeReveal from './actions/DisputeReveal'
@@ -27,12 +30,12 @@ import IconRewardsGreen from '../../assets/IconRewardsGreen.svg'
 function DisputeActions({
   dispute,
   onDraft,
+  onExecuteRuling,
   onRequestCommit,
   onRequestReveal,
   onRequestAppeal,
-  onExecuteRuling,
 }) {
-  const { phase } = dispute
+  const { phase, status } = dispute
   const lastRound = getDisputeLastRound(dispute)
 
   const wallet = useWallet()
@@ -53,6 +56,8 @@ function DisputeActions({
   if (phase === DisputePhase.VotingPeriod && !jurorHasVoted) {
     return (
       <DisputeVoting
+        draftTermId={lastRound.draftTermId}
+        isFinalRound={dispute.maxAppealReached}
         isJurorDrafted={isJurorDrafted}
         onRequestCommit={onRequestCommit}
       />
@@ -63,6 +68,7 @@ function DisputeActions({
     <React.Fragment>
       <InformationSection
         phase={phase}
+        status={status}
         jurorDraft={jurorDraft}
         hasJurorVoted={jurorHasVoted}
         lastRound={lastRound}
@@ -110,16 +116,22 @@ function DisputeActions({
   )
 }
 
-function InformationSection({ phase, jurorDraft, hasJurorVoted, lastRound }) {
+function InformationSection({
+  hasJurorVoted,
+  jurorDraft,
+  lastRound,
+  phase,
+  status,
+}) {
   const theme = useTheme()
 
-  const { title, paragraph, background, icon, hint } = useInfoAttributes(
-    phase,
-    jurorDraft,
+  const { title, paragraph, background, icon, hint } = useInfoAttributes({
     hasJurorVoted,
+    jurorDraft,
     lastRound,
-    theme
-  )
+    phase,
+    status,
+  })
 
   if (!jurorDraft) return null
 
@@ -175,22 +187,24 @@ function InformationSection({ phase, jurorDraft, hasJurorVoted, lastRound }) {
 }
 
 // Helper function that returns main attributes for the YourVoteInfo component
-const useInfoAttributes = (
-  phase,
-  jurorDraft,
+const useInfoAttributes = ({
   hasJurorVoted,
+  jurorDraft,
   lastRound,
-  theme
-) => {
+  phase,
+  status,
+}) => {
+  const theme = useTheme()
   const positiveBackground = theme.positive.alpha(0.1)
   const negativeBackground = theme.accent.alpha(0.2)
 
   return useMemo(() => {
     if (!jurorDraft) return {}
 
-    // If the dispute is in the execute ruling phase it means that the final
-    // ruling can already be ensured regarding if the ruling was computed or not
-    const finalRulingConfirmed = phase === DisputePhase.ExecuteRuling
+    // If the dispute is in the execute ruling phase it means that the final ruling can already be ensured.
+    // If the dispute is closed it means that the final ruling was already ensured.
+    const finalRulingConfirmed =
+      status === DisputeStatus.Closed || phase === DisputePhase.ExecuteRuling
 
     // Note that we can assume that the evidence submission and drafting phases have already passed since we do an early return above
     const votingPeriodEnded =
@@ -286,6 +300,7 @@ const useInfoAttributes = (
     negativeBackground,
     phase,
     positiveBackground,
+    status,
     theme.accent,
   ])
 }

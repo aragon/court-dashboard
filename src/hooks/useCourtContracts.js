@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
@@ -393,7 +394,10 @@ export function useCourtSubscriptionActions() {
  * @returns {Object} appeal deposit and confirm appeal deposit amounts
  */
 export function useAppealDeposits(disputeId, roundId) {
-  const [appealDeposits, setAppealDeposits] = useState([bigNum(0), bigNum(0)])
+  const [appealDeposits, setAppealDeposits] = useState({
+    amounts: [bigNum(0), bigNum(0)],
+    error: false,
+  })
 
   const disputeManagerContract = useCourtContract(
     CourtModuleType.DisputeManager,
@@ -401,6 +405,8 @@ export function useAppealDeposits(disputeId, roundId) {
   )
 
   useEffect(() => {
+    let cancelled = false
+
     const fetchNextRoundDetails = async () => {
       if (!disputeManagerContract) {
         return
@@ -412,46 +418,82 @@ export function useAppealDeposits(disputeId, roundId) {
           .then(nextRound => {
             const appealDeposit = nextRound[6]
             const confirmAppealDeposit = nextRound[7]
-            setAppealDeposits([appealDeposit, confirmAppealDeposit])
+
+            if (!cancelled) {
+              setAppealDeposits({
+                amounts: [appealDeposit, confirmAppealDeposit],
+                error: false,
+              })
+            }
           })
           .catch(err => {
-            console.error(`Error fetching appeal deposits: ${err}`)
+            captureException(err)
+            if (!cancelled) {
+              setAppealDeposits(appealDeposits => ({
+                ...appealDeposits,
+                error: true,
+              }))
+            }
           })
       )
     }
 
     fetchNextRoundDetails()
+
+    return () => {
+      cancelled = true
+    }
   }, [disputeId, disputeManagerContract, roundId])
 
-  return appealDeposits
+  return [appealDeposits.amounts, appealDeposits.error]
 }
 
 export function useFeeBalanceOf(account) {
-  const [balance, setBalance] = useState(bigNum(0))
+  const [feeBalance, setFeeBalance] = useState({
+    amount: bigNum(0),
+    error: false,
+  })
 
   const feeTokenContract = useFeeTokenContract()
 
   useEffect(() => {
+    let cancelled = false
+
     const getFeeBalance = async () => {
       if (!feeTokenContract) return
 
       retryMax(() => feeTokenContract.balanceOf(account))
         .then(balance => {
-          setBalance(balance)
+          if (!cancelled) {
+            setFeeBalance({ amount: balance, error: false })
+          }
         })
         .catch(err => {
-          console.error(`Error fetching account's fee balance : ${err}`)
+          captureException(err)
+          if (!cancelled) {
+            setFeeBalance(feeBalance => ({
+              ...feeBalance,
+              error: true,
+            }))
+          }
         })
     }
 
     getFeeBalance()
+
+    return () => {
+      cancelled = true
+    }
   }, [account, feeTokenContract])
 
-  return balance
+  return [feeBalance.amount, feeBalance.error]
 }
 
 export function useAppealFeeAllowance(owner) {
-  const [allowance, setAllowance] = useState(bigNum(0))
+  const [allowance, setAllowance] = useState({
+    amount: bigNum(0),
+    error: false,
+  })
 
   const courtConfig = useCourtConfig()
   const disputeManagerAddress = getModuleAddress(
@@ -461,22 +503,79 @@ export function useAppealFeeAllowance(owner) {
   const feeTokenContract = useFeeTokenContract()
 
   useEffect(() => {
+    let cancelled = false
+
     const getFeeAllowance = async () => {
       if (!feeTokenContract) return
 
       retryMax(() => feeTokenContract.allowance(owner, disputeManagerAddress))
         .then(allowance => {
-          setAllowance(allowance)
+          if (!cancelled) {
+            setAllowance({ amount: allowance, error: false })
+          }
         })
         .catch(err => {
-          console.error(`Error fetching fee allowance : ${err}`)
+          captureException(err)
+          if (!cancelled) {
+            setAllowance(allowance => ({
+              ...allowance,
+              error: true,
+            }))
+          }
         })
     }
 
     getFeeAllowance()
+
+    return () => {
+      cancelled = true
+    }
   }, [disputeManagerAddress, feeTokenContract, owner])
 
-  return allowance
+  return [allowance.amount, allowance.error]
+}
+
+export function useActiveBalanceOfAt(juror, termId) {
+  const jurorRegistryContract = useCourtContract(
+    CourtModuleType.JurorsRegistry,
+    jurorRegistryAbi
+  )
+  const [activeBalance, setActiveBalance] = useState({
+    amount: bigNum(-1),
+    error: false,
+  })
+
+  useEffect(() => {
+    let cancelled = false
+
+    const getActiveBalanceOfAt = async () => {
+      if (!jurorRegistryContract) return
+
+      retryMax(() => jurorRegistryContract.activeBalanceOfAt(juror, termId))
+        .then(balance => {
+          if (!cancelled) {
+            setActiveBalance({ amount: balance, error: false })
+          }
+        })
+        .catch(err => {
+          captureException(err)
+          if (!cancelled) {
+            setActiveBalance(balance => ({
+              ...balance,
+              error: true,
+            }))
+          }
+        })
+    }
+
+    getActiveBalanceOfAt()
+
+    return () => {
+      cancelled = true
+    }
+  }, [juror, jurorRegistryContract, termId])
+
+  return [activeBalance.amount, activeBalance.error]
 }
 
 export function useTotalActiveBalancePolling(termId) {
@@ -486,29 +585,37 @@ export function useTotalActiveBalancePolling(termId) {
   )
   const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
 
-  const timeoutId = useRef(null)
-
-  const fetchTotalActiveBalance = useCallback(() => {
-    timeoutId.current = setTimeout(() => {
-      return jurorRegistryContract
-        .totalActiveBalanceAt(termId)
-        .then(balance => {
-          setTotalActiveBalance(balance)
-          clearTimeout(timeoutId.current)
-          fetchTotalActiveBalance()
-        })
-        .catch(err => {
-          console.log(`Error fetching balance: ${err} retrying...`)
-          fetchTotalActiveBalance()
-        })
-    }, 1000)
-  }, [jurorRegistryContract, termId])
-
   useEffect(() => {
+    let cancelled = false
+    let timeoutId
+
+    const fetchTotalActiveBalance = () => {
+      timeoutId = setTimeout(() => {
+        return jurorRegistryContract
+          .totalActiveBalanceAt(termId)
+          .then(balance => {
+            if (!cancelled) {
+              setTotalActiveBalance(balance)
+            }
+          })
+          .catch(err => {
+            console.error(`Error fetching balance: ${err} retrying...`)
+          })
+          .finally(() => {
+            if (!cancelled) {
+              fetchTotalActiveBalance()
+            }
+          })
+      }, 1000)
+    }
+
     fetchTotalActiveBalance()
 
-    return () => clearTimeout(timeoutId.current)
-  }, [fetchTotalActiveBalance])
+    return () => {
+      cancelled = true
+      clearTimeout(timeoutId)
+    }
+  }, [jurorRegistryContract, termId])
 
   return totalActiveBalance
 }
