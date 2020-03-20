@@ -9,7 +9,7 @@ import {
   subscriptionExchange,
 } from 'urql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
-import * as Sentry from '@sentry/browser'
+import { captureMessage } from '@sentry/browser'
 import { devtoolsExchange } from '@urql/devtools'
 import App from './App'
 import endpoints from './endpoints'
@@ -45,9 +45,7 @@ subscriptionClient.onError(err => {
   const maxReconnectionAttempts = subscriptionClient.reconnectionAttempts
 
   if (maxReconnectionAttempts === ++connectionAttempts) {
-    Sentry.captureMessage(
-      `Connection error, could not connect to ${err.target.url}`
-    )
+    captureMessage(`Connection error, could not connect to ${err.target.url}`)
   }
   console.log('Retrying connection...')
 })

@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/browser'
+import { init as initSentry } from '@sentry/browser'
 import env from './environment'
 import { getNetworkType } from './lib/web3-utils'
 
@@ -7,7 +7,7 @@ export const sentryEnabled = Boolean(SENTRY_DSN && env('ENABLE_SENTRY'))
 
 export default function initializeSentry() {
   if (sentryEnabled) {
-    Sentry.init({
+    initSentry({
       dsn: env('SENTRY_DSN'),
       environment: getNetworkType(env('CHAIN_ID')),
       release: 'court-dashboard@' + env('BUILD'),

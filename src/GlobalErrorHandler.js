@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import * as Sentry from '@sentry/browser'
+import { captureException, showReportDialog } from '@sentry/browser'
 import GenericError from './components/Errors/GenericError'
 import GlobalErrorScreen from './components/Errors/GlobalErrorScreen'
 import DisputeNotFoundError from './components/Disputes/DisputeNotFoundError'
@@ -37,8 +37,8 @@ class GlobalErrorHandler extends React.Component {
 
   handleReportClick = () => {
     if (sentryEnabled) {
-      const eventId = Sentry.captureException(this.state.error)
-      Sentry.showReportDialog({ eventId })
+      const eventId = captureException(this.state.error)
+      showReportDialog({ eventId })
     }
   }
 
