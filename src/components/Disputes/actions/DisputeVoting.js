@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Button, GU, Info } from '@aragon/ui'
+import { Button, GU, Help, Info } from '@aragon/ui'
 import { useActiveBalanceOfAt } from '../../../hooks/useCourtContracts'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 import { useWallet } from '../../../providers/Wallet'
@@ -85,7 +85,27 @@ function VotingActions({ canJurorVote, onRequestCommit }) {
           disabled={!canJurorVote}
           onClick={() => onRequestCommit(VOTE_OPTION_REFUSE)}
         >
-          Refuse to vote
+          <span
+            css={`
+              margin-right: ${1 * GU}px;
+            `}
+          >
+            Refuse to vote
+          </span>
+          <div
+            onClick={event => {
+              event.stopPropagation()
+            }}
+          >
+            <Help hint="Why would I refuse to vote?">
+              You can refuse to vote for many reasons, for example if you
+              consider that the evidence was not conclusive enough or the
+              description was incoherent. In any case, you won’t be penalized at
+              this stage for selecting any of these options. Remember that you
+              should vote the way that you think a majority of jurors will vote,
+              since you will be penalized if your vote is in the minority.
+            </Help>
+          </div>
         </VotingButton>
       </div>
       <Info mode={canJurorVote ? 'description' : 'warning'}>
