@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
@@ -16,6 +16,7 @@ import { retryMax } from '../utils/retry-max'
 import { useActivity } from '../components/Activity/ActivityProvider'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
+import courtSubscriptionsAbi from '../abi/CourtSubscriptions.json'
 import courtTreasuryAbi from '../abi/CourtTreasury.json'
 import disputeManagerAbi from '../abi/DisputeManager.json'
 import jurorRegistryAbi from '../abi/JurorRegistry.json'
@@ -334,6 +335,56 @@ export function useRewardActions() {
   )
 
   return { settleReward, settleAppealDeposit, withdraw }
+}
+
+export function useCourtSubscriptionActions() {
+  const courtSubscriptionsContract = useCourtContract(
+    CourtModuleType.Subscriptions,
+    courtSubscriptionsAbi
+  )
+
+  const claimFees = useCallback(
+    periodId => {
+      return courtSubscriptionsContract.claimFees(periodId)
+    },
+    [courtSubscriptionsContract]
+  )
+
+  const getCurrentPeriodId = useCallback(() => {
+    return courtSubscriptionsContract.getCurrentPeriodId()
+  }, [courtSubscriptionsContract])
+
+  const getJurorShare = useCallback(
+    (juror, periodId) => {
+      return courtSubscriptionsContract.getJurorShare(juror, periodId)
+    },
+    [courtSubscriptionsContract]
+  )
+
+  const hasJurorClaimed = useCallback(
+    (juror, periodId) => {
+      return courtSubscriptionsContract.hasJurorClaimed(juror, periodId)
+    },
+    [courtSubscriptionsContract]
+  )
+
+  const getters = useMemo(
+    () =>
+      courtSubscriptionsContract
+        ? { getCurrentPeriodId, getJurorShare, hasJurorClaimed }
+        : null,
+    [
+      courtSubscriptionsContract,
+      getCurrentPeriodId,
+      getJurorShare,
+      hasJurorClaimed,
+    ]
+  )
+
+  return {
+    claimFees,
+    getters,
+  }
 }
 
 /**
