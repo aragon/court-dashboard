@@ -68,7 +68,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   return (
     <React.Fragment>
-      <Banner disputeId={disputeId} />
+      {dispute.marksPrecedent && <Banner disputeId={disputeId} />}
       <TitleHeader title="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />

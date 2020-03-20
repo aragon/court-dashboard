@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react'
-import { Button, ButtonBase, GU, IconCross, useTheme } from '@aragon/ui'
+import { Button, ButtonIcon, GU, IconCross, useTheme } from '@aragon/ui'
 import Modal from './PCModal'
 
-const KEY_PREFIX = 'PCDisputeBannerRead'
+const KEY_PREFIX = 'PC_DISPUTE_BANNER_READ'
 
 function PCBanner({ disputeId }) {
   const theme = useTheme()
@@ -64,13 +64,13 @@ function PCBanner({ disputeId }) {
               </span>
               <Button label="Read now" onClick={openModal} />
             </div>
-            <ButtonBase onClick={closeBanner}>
+            <ButtonIcon onClick={closeBanner}>
               <IconCross
                 css={`
                   color: ${theme.accentContent};
                 `}
               />
-            </ButtonBase>
+            </ButtonIcon>
           </div>
         </div>
       </div>
