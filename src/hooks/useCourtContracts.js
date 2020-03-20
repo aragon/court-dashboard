@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import * as Sentry from '@sentry/browser'
+import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
@@ -345,7 +345,7 @@ export function useRewardActions() {
 export function useAppealDeposits(disputeId, roundId) {
   const [appealDeposits, setAppealDeposits] = useState({
     amounts: [bigNum(0), bigNum(0)],
-    error: null,
+    error: false,
   })
 
   const disputeManagerContract = useCourtContract(
@@ -371,16 +371,16 @@ export function useAppealDeposits(disputeId, roundId) {
             if (!cancelled) {
               setAppealDeposits({
                 amounts: [appealDeposit, confirmAppealDeposit],
-                error: null,
+                error: false,
               })
             }
           })
           .catch(err => {
-            Sentry.captureException(err)
+            captureException(err)
             if (!cancelled) {
               setAppealDeposits(appealDeposits => ({
                 ...appealDeposits,
-                error: `Error fetching appeal deposits`,
+                error: true,
               }))
             }
           })
@@ -400,7 +400,7 @@ export function useAppealDeposits(disputeId, roundId) {
 export function useFeeBalanceOf(account) {
   const [feeBalance, setFeeBalance] = useState({
     amount: bigNum(0),
-    error: null,
+    error: false,
   })
 
   const feeTokenContract = useFeeTokenContract()
@@ -414,15 +414,15 @@ export function useFeeBalanceOf(account) {
       retryMax(() => feeTokenContract.balanceOf(account))
         .then(balance => {
           if (!cancelled) {
-            setFeeBalance({ amount: balance, error: null })
+            setFeeBalance({ amount: balance, error: false })
           }
         })
         .catch(err => {
-          Sentry.captureException(err)
+          captureException(err)
           if (!cancelled) {
             setFeeBalance(feeBalance => ({
               ...feeBalance,
-              error: `Error fetching account's fee balance`,
+              error: true,
             }))
           }
         })
@@ -439,7 +439,10 @@ export function useFeeBalanceOf(account) {
 }
 
 export function useAppealFeeAllowance(owner) {
-  const [allowance, setAllowance] = useState({ amount: bigNum(0), error: null })
+  const [allowance, setAllowance] = useState({
+    amount: bigNum(0),
+    error: false,
+  })
 
   const courtConfig = useCourtConfig()
   const disputeManagerAddress = getModuleAddress(
@@ -457,15 +460,15 @@ export function useAppealFeeAllowance(owner) {
       retryMax(() => feeTokenContract.allowance(owner, disputeManagerAddress))
         .then(allowance => {
           if (!cancelled) {
-            setAllowance({ amount: allowance, error: null })
+            setAllowance({ amount: allowance, error: false })
           }
         })
         .catch(err => {
-          Sentry.captureException(err)
+          captureException(err)
           if (!cancelled) {
             setAllowance(allowance => ({
               ...allowance,
-              error: `Error fetching fee allowance : ${err}`,
+              error: true,
             }))
           }
         })
@@ -488,7 +491,7 @@ export function useActiveBalanceOfAt(juror, termId) {
   )
   const [activeBalance, setActiveBalance] = useState({
     amount: bigNum(-1),
-    error: null,
+    error: false,
   })
 
   useEffect(() => {
@@ -500,15 +503,15 @@ export function useActiveBalanceOfAt(juror, termId) {
       retryMax(() => jurorRegistryContract.activeBalanceOfAt(juror, termId))
         .then(balance => {
           if (!cancelled) {
-            setActiveBalance({ amount: balance, error: null })
+            setActiveBalance({ amount: balance, error: false })
           }
         })
         .catch(err => {
-          Sentry.captureException(err)
+          captureException(err)
           if (!cancelled) {
             setActiveBalance(balance => ({
               ...balance,
-              error: `Error fetching active balance for juror : ${err}`,
+              error: true,
             }))
           }
         })
@@ -549,7 +552,6 @@ export function useTotalActiveBalancePolling(termId) {
           })
           .finally(() => {
             if (!cancelled) {
-              clearTimeout(timeoutId)
               fetchTotalActiveBalance()
             }
           })
