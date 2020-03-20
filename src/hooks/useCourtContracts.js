@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useContract, useContractReadOnly } from '../web3-contracts'
 import { CourtModuleType } from '../types/court-module-types'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { getFunctionSignature } from '../lib/web3-utils'
+import { getFunctionSignature, getNetworkType } from '../lib/web3-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import {
   hashVote,
@@ -13,6 +13,9 @@ import {
 import { getModuleAddress } from '../utils/court-utils'
 import { retryMax } from '../utils/retry-max'
 import { useActivity } from '../components/Activity/ActivityProvider'
+import { networkAgentAddress, networkReserveAddress } from '../networks'
+import { getKnownToken } from '../utils/known-tokens'
+import { STAT_NOT_AVAILABLE } from '../hooks/useCourtStats'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
 import courtTreasuryAbi from '../abi/CourtTreasury.json'
@@ -452,29 +455,53 @@ export function useTotalActiveBalancePolling(termId) {
   return totalActiveBalance
 }
 
-export function useTotalANTStaked() {
+export function useTotalANTStakedPolling(timeout = 1000) {
   const [totalANTStaked, setTotalANTStaked] = useState(bigNum(-1))
+  const { address: antAddress } = getKnownToken('ANT')
+  const antContract = useContractReadOnly(antAddress, tokenAbi)
 
-  const jurorRegistryContract = useCourtContractReadOnly(
-    CourtModuleType.JurorsRegistry,
-    jurorRegistryAbi
-  )
   useEffect(() => {
-    if (!jurorRegistryContract) {
+    let cancelled = false
+    let timeoutId
+
+    // Ask facu if he wants to mantain the ropsten network for the dashboard and remove ropsten from the networks if not
+    if (getNetworkType() === 'local' || getNetworkType() === 'ropsten') {
+      setTotalANTStaked(STAT_NOT_AVAILABLE)
       return
     }
-    const getTotalANTStaked = async () => {
-      retryMax(() => jurorRegistryContract.totalStaked())
-        .then(totalStaked => {
-          setTotalANTStaked(totalStaked)
-        })
-        .catch(err => {
-          console.error(`Error fetching ANT staked: ${err}`)
-        })
+    if (!antContract) {
+      return
     }
 
-    getTotalANTStaked()
-  }, [jurorRegistryContract])
+    const fetchTotalANTBalance = () => {
+      timeoutId = setTimeout(() => {
+        const agentBalancePromise = antContract.balanceOf(networkAgentAddress)
+        const vaultBalancePromise = antContract.balanceOf(networkReserveAddress)
+        return Promise.all([agentBalancePromise, vaultBalancePromise])
+          .then(([antInAgent, antInVault]) => {
+            if (!cancelled) {
+              setTotalANTStaked(antInAgent.add(antInVault))
+            }
+          })
+          .catch(err => {
+            console.error(`Error fetching balance: ${err} retrying...`)
+          })
+          .finally(() => {
+            if (!cancelled) {
+              clearTimeout(timeoutId)
+              fetchTotalANTBalance()
+            }
+          })
+      }, timeout)
+    }
+
+    fetchTotalANTBalance()
+
+    return () => {
+      cancelled = true
+      clearTimeout(timeoutId)
+    }
+  }, [antContract, timeout])
 
   return totalANTStaked
 }

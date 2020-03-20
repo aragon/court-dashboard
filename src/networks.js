@@ -1,4 +1,5 @@
 import environment from './environment'
+import { getNetworkType } from './lib/web3-utils'
 
 const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
@@ -14,7 +15,11 @@ export const networks = {
     court:
       SUBGRAPH_NAME === 'usability' ? RINKEBY_USABILITY_COURT : RINKEBY_COURT,
   },
-  main: { court: '0xee4650cBe7a2B23701D416f58b41D8B76b617797' },
+  main: {
+    court: '0xee4650cBe7a2B23701D416f58b41D8B76b617797',
+    network_agent: '0x5e8c17a6065c35b172b10e80493d2266e2947df4',
+    network_reserve: '0xec0dd1579551964703246becfbf199c27cb84485',
+  },
 }
 
 export const networkConfigs = {
@@ -38,3 +43,9 @@ export const networkConfigs = {
 export function getNetworkConfig(chainId) {
   return networkConfigs[chainId]
 }
+
+export const networkAgentAddress =
+  networks[getNetworkType(environment('CHAIN_ID'))].network_agent
+
+export const networkReserveAddress =
+  networks[getNetworkType(environment('CHAIN_ID'))].network_reserve

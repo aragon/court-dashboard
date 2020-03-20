@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, GU, textStyle, useTheme } from '@aragon/ui'
 import { formatUnits } from '../../lib/math-utils'
-import useCourtStats from '../../hooks/useCourtStats'
+import useCourtStats, { STAT_NOT_AVAILABLE } from '../../hooks/useCourtStats'
 import {
   useANJBalanceToUsd,
   useTokenBalanceToUsd,
@@ -63,7 +63,7 @@ function CourtStats() {
 function TokenStats({ stat, theme }) {
   const { value, token } = stat
   const { decimals, icon, symbol } = token
-
+  const statAvailable = !value.eq(STAT_NOT_AVAILABLE)
   return (
     <>
       <div
@@ -77,22 +77,28 @@ function TokenStats({ stat, theme }) {
             font-weight: 300;
           `}
         >
-          <SplitAmount amount={formatUnits(value, { digits: decimals })} />
+          {statAvailable ? (
+            <SplitAmount amount={formatUnits(value, { digits: decimals })} />
+          ) : (
+            '-'
+          )}
         </span>
-        <div
-          css={`
-            display: inline-flex;
-          `}
-        >
-          <img
+        {statAvailable && (
+          <div
             css={`
-              margin-right: 5px;
+              display: inline-flex;
             `}
-            height="20"
-            width="18"
-            src={icon}
-          />
-        </div>
+          >
+            <img
+              css={`
+                margin-right: 5px;
+              `}
+              height="20"
+              width="18"
+              src={icon}
+            />
+          </div>
+        )}
       </div>
       <span
         css={`
@@ -100,7 +106,12 @@ function TokenStats({ stat, theme }) {
           color: ${theme.positive};
         `}
       >
-        ${symbol === 'ANJ' ? AnjUsdValue(value) : TokenUsdValue(token, value)}
+        $
+        {statAvailable
+          ? symbol === 'ANJ'
+            ? AnjUsdValue(value)
+            : TokenUsdValue(token, value)
+          : '-'}
       </span>
     </>
   )

@@ -1,5 +1,8 @@
 import { useMemo } from 'react'
-import { useTotalActiveBalance, useTotalANTStaked } from './useCourtContracts'
+import {
+  useTotalActiveBalance,
+  useTotalANTStakedPolling,
+} from './useCourtContracts'
 import { useActiveJurorsNumber } from '../hooks/query-hooks'
 import { getKnownToken } from '../utils/known-tokens'
 import { bigNum } from '../lib/math-utils'
@@ -17,13 +20,15 @@ const COURT_STATS = [
   },
   { label: 'Total Active Jurors' },
 ]
+export const STAT_NOT_AVAILABLE = bigNum(-2)
 /**
  * Hook to get the dashboard stats ANJ active balance, ANT total stake and the active jurors number
  * @returns {Array} First item an array with the stats and the second one a loading state
  */
 function useCourtStats() {
-  const ANJActiveBalance = useTotalActiveBalance()
-  const ANTTotalStake = useTotalANTStaked()
+  const timeout = 5000
+  const ANJActiveBalance = useTotalActiveBalance(timeout)
+  const ANTTotalStake = useTotalANTStakedPolling(timeout)
   const activeJurors = useActiveJurorsNumber()
 
   return useMemo(() => {
