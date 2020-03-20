@@ -145,6 +145,7 @@ const RewardsModule = React.memo(function RewardsModule({
       onSettleReward,
       onWithdraw,
       rewards,
+      setSubscriptionFees,
       subscriptionFees,
       totalTreasuryFees,
       wallet.account,
