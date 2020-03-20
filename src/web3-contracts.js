@@ -25,8 +25,12 @@ export function useContract(address, abi, signer = true) {
 export function useContractReadOnly(address, abi) {
   const ethEndpoint = networkConfigs[getNetworkType()].nodes.defaultEth
 
+  const ethProvider = useMemo(
+    () => (ethEndpoint ? new Providers.JsonRpcProvider(ethEndpoint) : null),
+    [ethEndpoint]
+  )
+
   return useMemo(() => {
-    const provider = new Providers.JsonRpcProvider(ethEndpoint)
-    return new EthersContract(address, abi, provider)
-  }, [abi, address, ethEndpoint])
+    return new EthersContract(address, abi, ethProvider)
+  }, [abi, address, ethProvider])
 }

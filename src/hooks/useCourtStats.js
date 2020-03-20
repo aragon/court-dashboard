@@ -17,7 +17,10 @@ const COURT_STATS = [
   },
   { label: 'Total Active Jurors' },
 ]
-
+/**
+ * Hook to get the dashboard stats ANJ active balance, ANT total stake and the active jurors number
+ * @returns {Array} First item an array with the stats and the second one a loading state
+ */
 function useCourtStats() {
   const ANJActiveBalance = useTotalActiveBalance()
   const ANTTotalStake = useTotalANTStaked()

@@ -10,7 +10,7 @@ const DEFAULT_VOID_DESCRIPTION =
   'Dispute #0 is void and all related content has been removed from the Dashboard. Aragon One has made the decision to void the dispute and consider it non-existent when considering precedence for future Aragon Court cases.'
 
 const VOIDED_DISPUTES = {
-  rpc: new Map([[networks.rpc.court, new Map([])]]),
+  local: new Map([[networks.local.court, new Map([])]]),
   ropsten: new Map([[networks.ropsten.court, new Map([])]]),
   rinkeby: new Map([
     [RINKEBY_COURT, new Map([])],

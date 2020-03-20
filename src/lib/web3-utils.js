@@ -1,8 +1,9 @@
 import env from '../environment'
 import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
+
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
-export const DEFAULT_LOCAL_CHAIN = 'rpc'
+export const DEFAULT_LOCAL_CHAIN = 'local'
 export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
 const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g

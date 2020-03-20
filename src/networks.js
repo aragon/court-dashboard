@@ -7,7 +7,7 @@ export const RINKEBY_USABILITY_COURT =
   '0x44f788370206696b20B94BC77c4f73Ca264aa05E'
 
 export const networks = {
-  rpc: { court: '0xC89Ce4735882C9F0f0FE26686c53074E09B0D550' },
+  local: { court: '0xC89Ce4735882C9F0f0FE26686c53074E09B0D550' },
   ropsten: { court: '0x3b26bc496aebaed5b3E0E81cDE6B582CDe71396e' },
   rinkeby: {
     // Use the 'usability' Court address if declared
@@ -18,14 +18,19 @@ export const networks = {
 }
 
 export const networkConfigs = {
-  rpc: {
+  local: {
     nodes: {
       defaultEth: 'http://localhost:8545',
     },
   },
   main: {
     nodes: {
-      defaultEth: 'wss://mainnet.eth.aragon.network/ws',
+      defaultEth: 'https://mainnet.eth.aragon.network/',
+    },
+  },
+  rinkeby: {
+    nodes: {
+      defaultEth: 'https://rinkeby.eth.aragon.network/',
     },
   },
 }

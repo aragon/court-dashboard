@@ -479,7 +479,7 @@ export function useTotalANTStaked() {
   return totalANTStaked
 }
 
-export function useTotalActiveBalance() {
+export function useTotalActiveBalance(timeout = 1000) {
   const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
   const jurorRegistryContract = useCourtContractReadOnly(
     CourtModuleType.JurorsRegistry,
@@ -487,21 +487,41 @@ export function useTotalActiveBalance() {
   )
 
   useEffect(() => {
+    let cancelled = false
+    let timeoutId
+
     if (!jurorRegistryContract) {
       return
     }
-    const getTotalActiveBalance = async () => {
-      retryMax(() => jurorRegistryContract.totalActiveBalance())
-        .then(totalActive => {
-          setTotalActiveBalance(totalActive)
-        })
-        .catch(err => {
-          console.error(`Error fetching ANT staked: ${err}`)
-        })
+
+    const fetchTotalActiveBalance = () => {
+      timeoutId = setTimeout(() => {
+        return jurorRegistryContract
+          .totalActiveBalance()
+          .then(balance => {
+            if (!cancelled) {
+              setTotalActiveBalance(balance)
+            }
+          })
+          .catch(err => {
+            console.error(`Error fetching balance: ${err} retrying...`)
+          })
+          .finally(() => {
+            if (!cancelled) {
+              clearTimeout(timeoutId)
+              fetchTotalActiveBalance()
+            }
+          })
+      }, timeout)
     }
 
-    getTotalActiveBalance()
-  }, [jurorRegistryContract])
+    fetchTotalActiveBalance()
+
+    return () => {
+      cancelled = true
+      clearTimeout(timeoutId)
+    }
+  }, [jurorRegistryContract, timeout])
 
   return totalActiveBalance
 }

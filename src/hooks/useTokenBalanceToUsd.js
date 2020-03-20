@@ -4,7 +4,11 @@ import env from '../environment'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { getKnownToken } from '../utils/known-tokens'
 import { formatUnits, bigNum } from '../lib/math-utils'
-import { addressesEqual, ETH_FAKE_ADDRESS } from '../lib/web3-utils'
+import {
+  addressesEqual,
+  ETH_FAKE_ADDRESS,
+  getNetworkType,
+} from '../lib/web3-utils'
 
 const UNISWAP_PRECISION = 18
 const UNISWAP_MARKET_RETRY_EVERY = 1000
@@ -43,7 +47,7 @@ export function useANJBalanceToUsd(amount) {
   const dai = getKnownToken('DAI')
   const { address: daiAddress } = dai || {}
 
-  const [convertedAmount, setConvertedAmount] = useState('0')
+  const [convertedAmount, setConvertedAmount] = useState('-')
 
   useEffect(() => {
     let cancelled = false
@@ -107,23 +111,27 @@ export function useTokenBalanceToUsd(symbol, decimals, balance) {
   useEffect(() => {
     let cancelled = false
 
-    fetch(`${API_BASE}/price?fsym=${symbol}&tsyms=USD`)
-      .then(res => res.json())
-      .then(price => {
-        if (cancelled || !balance || !(parseFloat(price.USD) > 0)) {
-          return
-        }
+    if (getNetworkType() === 'main') {
+      fetch(`${API_BASE}/price?fsym=${symbol}&tsyms=USD`)
+        .then(res => res.json())
+        .then(price => {
+          if (cancelled || !balance || !(parseFloat(price.USD) > 0)) {
+            return
+          }
 
-        const usdDigits = 2
-        const precision = 6
+          const usdDigits = 2
+          const precision = 6
 
-        const usdBalance = balance
-          .mul(bigNum(parseInt(price.USD * 10 ** (precision + usdDigits), 10)))
-          .div(10 ** precision)
-          .div(bigNum(10).pow(decimals))
+          const usdBalance = balance
+            .mul(
+              bigNum(parseInt(price.USD * 10 ** (precision + usdDigits), 10))
+            )
+            .div(10 ** precision)
+            .div(bigNum(10).pow(decimals))
 
-        setUsd(formatUnits(usdBalance, { digits: usdDigits }))
-      })
+          setUsd(formatUnits(usdBalance, { digits: usdDigits }))
+        })
+    }
 
     return () => {
       cancelled = true
