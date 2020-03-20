@@ -103,7 +103,7 @@ export function getOutcomeFromCommitment(commitment, salt) {
  * @param {Number} currentOutcome current round outcome
  * @returns {Array} Array of appeal ruling options
  */
-export function getAppealRulingOptions(currentOutcome) {
+export function getAppealRulingOptions(currentOutcome = OUTCOMES.Refused) {
   return VALID_OUTCOMES.filter(
     outcome => outcome !== currentOutcome
   ).map(outcome => ({ outcome, description: appealOptionToString(outcome) }))
