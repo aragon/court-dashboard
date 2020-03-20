@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { BackButton, Bar, Box, GU, Header, SidePanel, Split } from '@aragon/ui'
+import { BackButton, Bar, Box, GU, SidePanel, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
 import { utils as EthersUtils } from 'ethers'
 
@@ -10,6 +10,8 @@ import NoEvidence from './NoEvidence'
 import CommitPanel from './panels/CommitPanel'
 import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
+import TitleHeader from '../TitleHeader'
+import Banner from './PrecedenceCampaign/PCBanner'
 
 import { Status as DisputeStatus } from '../../types/dispute-status-types'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
@@ -66,7 +68,8 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   return (
     <React.Fragment>
-      <Header primary="Disputes" />
+      <Banner disputeId={disputeId} />
+      <TitleHeader title="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
