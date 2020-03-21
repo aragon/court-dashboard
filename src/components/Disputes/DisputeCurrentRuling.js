@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Distribution, GU, Tag, textStyle, useTheme } from '@aragon/ui'
+import { Distribution, GU, Help, Tag, textStyle, useTheme } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import {
   isValidOutcome,
@@ -55,42 +55,80 @@ function DisputeCurrentRuling({ dispute }) {
           item: juryOutcomeToString(outcome),
           percentage: weight,
         }))}
-        renderFullLegendItem={({ color, item, index, percentage }) => (
-          <div
-            css={`
-              display: flex;
-              align-items: center;
-            `}
-          >
+        renderFullLegendItem={({ color, item, index, percentage }) => {
+          // We'll show the juror voting weight hint only if the juror participated in the  current ruling
+          const showMyVotingWeight = myDistributionIndex >= 0 && index === 0
+
+          return (
             <div
               css={`
-                background: ${color};
-                width: 8px;
-                height: 8px;
-                margin-right: 8px;
-                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
               `}
-            />
+            >
+              <div
+                css={`
+                  display: flex;
+                  align-items: center;
+                `}
+              >
+                <div
+                  css={`
+                    background: ${color};
+                    width: 8px;
+                    height: 8px;
+                    margin-right: 8px;
+                    border-radius: 50%;
+                  `}
+                />
 
-            <span
-              key={index}
-              css={`
-                color: ${theme.contentSecondary};
-                width: 220px;
-              `}
-            >
-              {item}
-            </span>
-            <span
-              css={`
-                margin-right: ${1 * GU}px;
-              `}
-            >
-              {percentage}%
-            </span>
-            {myDistributionIndex === index && <Tag>You</Tag>}
-          </div>
-        )}
+                <span
+                  key={index}
+                  css={`
+                    color: ${theme.contentSecondary};
+                    width: 220px;
+                  `}
+                >
+                  {item}
+                </span>
+                <span
+                  css={`
+                    margin-right: ${1 * GU}px;
+                  `}
+                >
+                  {percentage}%
+                </span>
+                {myDistributionIndex === index && <Tag>You</Tag>}
+              </div>
+              {showMyVotingWeight && (
+                <div
+                  css={`
+                    display: flex;
+                    align-items: center;
+                  `}
+                >
+                  <span
+                    css={`
+                      color: ${theme.help};
+                      margin-right: ${0.5 * GU}px;
+                    `}
+                  >
+                    Your voting weight
+                  </span>
+                  <Help>
+                    The same juror can be drafted multiple times to arbitrate
+                    the same dispute for the same round. When that happens,
+                    their voting weight will be proportional to the number of
+                    times is drafted, as well as the % of ANJ locked in the
+                    Active balance.{' '}
+                  </Help>
+                </div>
+              )}
+            </div>
+          )
+        }}
         colors={colors}
       />
     </div>
