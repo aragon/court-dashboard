@@ -123,7 +123,7 @@ function DisputeCurrentRuling({ dispute }) {
                     the same dispute for the same round. When that happens,
                     their voting weight will be proportional to the number of
                     times is drafted, as well as the % of ANJ locked in the
-                    Active balance.{' '}
+                    Active balance.
                   </Help>
                 </div>
               )}
