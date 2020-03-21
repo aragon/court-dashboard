@@ -26,7 +26,7 @@ function DisputeCurrentRuling({ dispute }) {
   const lastRound = getDisputeLastRound(dispute)
   const jurorDraft = getJurorDraft(lastRound, wallet.account)
 
-  const { outcome: myOutcome = 0 } = jurorDraft || {}
+  const { outcome: myOutcome = 0, weight: myWeight = 0 } = jurorDraft || {}
   const distribution = useOutcomeDistribution(lastRound)
 
   // distribution is sorted by weight so we can return colors in corresponding order
@@ -57,7 +57,8 @@ function DisputeCurrentRuling({ dispute }) {
         }))}
         renderFullLegendItem={({ color, item, index, percentage }) => {
           // We'll show the juror voting weight hint only if the juror participated in the  current ruling
-          const showMyVotingWeight = myDistributionIndex >= 0 && index === 0
+          // and has been drafted more than once
+          const showMyVotingWeight = myWeight > 1 && index === 0
 
           return (
             <div
