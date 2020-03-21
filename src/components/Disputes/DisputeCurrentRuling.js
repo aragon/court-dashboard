@@ -58,7 +58,7 @@ function DisputeCurrentRuling({ dispute }) {
         renderFullLegendItem={({ color, item, index, percentage }) => {
           // We'll show the juror voting weight hint only if the juror participated in the  current ruling
           // and has been drafted more than once
-          const showMyVotingWeight = myWeight > 1 && index === 0
+          const showMyVotingWeight = index === 0 && myWeight > 1
 
           return (
             <div
