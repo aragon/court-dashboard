@@ -22,7 +22,7 @@ function DashboardStateProvider({ children }) {
     )
 
   return (
-    <Provider value={{ balances: {}, movements: [], nonSettledAppeals: [] }}>
+    <Provider value={{ balances: {}, anjMovements: [], nonSettledAppeals: [] }}>
       {children}
     </Provider>
   )
@@ -32,7 +32,7 @@ function WithSubscription({ Provider, connectedAccount, children }) {
   // Juror balances
   const {
     balances,
-    movements,
+    anjMovements,
     treasury,
     fetching: balancesFetching,
     errors: balanceErrors,
@@ -67,7 +67,7 @@ function WithSubscription({ Provider, connectedAccount, children }) {
         errors,
         fetching,
         jurorDrafts,
-        movements,
+        anjMovements,
         treasury,
       }}
     >

@@ -20,7 +20,7 @@ import { getDraftLockAmount } from '../utils/dispute-utils'
 import { ANJBalance, ANJMovement } from '../types/anj-types'
 
 export function useANJBalances() {
-  const { balances, movements } = useDashboardState()
+  const { balances, anjMovements } = useDashboardState()
 
   const {
     walletBalance,
@@ -30,7 +30,7 @@ export function useANJBalances() {
     deactivationBalance,
   } = balances || {}
 
-  const convertedMovements = useConvertedMovements(movements)
+  const convertedMovements = useConvertedMovements(anjMovements)
 
   const convertedWalletBalance = useBalanceWithMovements(
     walletBalance,
