@@ -40,11 +40,6 @@ export const KNOWN_TOKEN_BY_ENV = {
       decimals: 18,
       symbol: 'ANT',
     },
-    local: {
-      address: '0x960b236A07cf122663c4303350609A66A7B288C0',
-      decimals: 18,
-      symbol: 'ANT',
-    },
   },
   DAI: {
     main: {
