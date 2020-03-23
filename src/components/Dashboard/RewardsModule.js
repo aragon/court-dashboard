@@ -76,7 +76,7 @@ const RewardsModule = React.memo(function RewardsModule({
   const treasuryToken = treasury?.find(({ token }) =>
     addressesEqual(token.id, feeToken.id)
   )
-  const treasuryBalance = treasuryToken ? treasuryToken.balance : bigNum(0)
+  const treasuryBalance = treasuryToken ? treasuryToken.amount : bigNum(0)
 
   // Total dispute fees include appeal fees and arbitrable fees (fees paid by the creator of the dispute for the first round
   // and fees paid by appealers for subsequent rounds)

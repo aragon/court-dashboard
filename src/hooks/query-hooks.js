@@ -53,5 +53,5 @@ export function useFirstANJActivationQuery(jurorId, { pause = false }) {
 
   const { juror } = result.data || {}
 
-  return juror ? juror.movements[0] : null
+  return juror ? juror.anjMovements[0] : null
 }
