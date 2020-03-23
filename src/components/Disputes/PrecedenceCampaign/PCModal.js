@@ -15,9 +15,9 @@ function PCModal({ opened, onClose }) {
   return (
     <div>
       <Modal
+        closeButton={false}
         padding={0}
         visible={opened}
-        onClose={onClose}
         width={Math.min(1055, width - 40)}
         css={`
           z-index: 4;
