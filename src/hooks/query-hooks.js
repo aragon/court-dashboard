@@ -1,7 +1,7 @@
 import { useQuery } from 'urql'
 
-import { JurorDrafts, JurorDraftRewarded } from '../queries/jurorDrafts'
-import { FirstANJActivationMovement } from '../queries/balances'
+import { JurorFirstANJActivationMovement } from '../queries/balances'
+import { JurorDrafts, JurorDraftsRewarded } from '../queries/jurorDrafts'
 
 export function useJurorDraftQuery(jurorId) {
   const [result] = useQuery({
@@ -27,7 +27,7 @@ export function useJurorDraftQuery(jurorId) {
  */
 export function useJurorDraftRewardedQuery(jurorId) {
   const [{ data }] = useQuery({
-    query: JurorDraftRewarded,
+    query: JurorDraftsRewarded,
     variables: { id: jurorId.toLowerCase() },
   })
 
@@ -40,7 +40,7 @@ export function useJurorDraftRewardedQuery(jurorId) {
 
 export function useFirstANJActivationQuery(jurorId, { pause = false }) {
   const [result] = useQuery({
-    query: FirstANJActivationMovement,
+    query: JurorFirstANJActivationMovement,
     variables: { id: jurorId.toLowerCase() },
     pause,
   })

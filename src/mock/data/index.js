@@ -1,31 +1,79 @@
 import { bigExp } from '../helper'
-import courtConfig from './CourtConfig'
-import disputes from './Disputes'
-import { jurorMovements, jurorBalances, jurorWalletBalance } from './Balances'
+import Court from '../models/Court'
+import { ANJMovementType } from '../types'
 
+const court = new Court()
+
+// Each key of this Object is the name of the respective query that we have declared (see all query names at ./queries folder)
+// And the value is the function that resolves said query (by resolving we mean returns the respective mocked data)
 export default {
-  // Court configuration
+  /** **** COURT CONFIG *****/
+
   CourtConfig: () => ({
-    courtConfig,
+    courtConfig: court.config,
   }),
-  // Dashboard state
-  JurorFirstANJActivationMovement: () => ({
-    juror: {
-      movements: jurorMovements[0],
-    },
-  }),
-  Balances: ({ id }) => ({
-    juror: jurorBalances,
-  }),
-  ANJWalletBalance: ({ id }) => ({ anjbalance: jurorWalletBalance }),
-  CurrentTermJurorDrafts: ({ id }) => ({
-    drafts: [],
-  }),
+
+  /** **** DASHBOARD STATE *****/
+
+  // Get first activation movements for juror with id `id`
+  JurorFirstANJActivationMovement: ({ id }) => {
+    const { movements } = court.getJuror(id) || {}
+    const firstActivationMovement = movements?.find(
+      movement => movement.type === ANJMovementType.Activation
+    )
+
+    return {
+      juror: {
+        movements: firstActivationMovement ? [firstActivationMovement] : [],
+      },
+    }
+  },
+
+  // Get active, inactive, locked and deactivation balances along with movements for juror with id `id`
+  JurorANJBalances: ({ id }) => {
+    const juror = court.getJuror(id)
+    const {
+      activeBalance,
+      lockedBalance,
+      availableBalance,
+      deactivationBalance,
+      treasuryTokens,
+      movements,
+    } = juror || {}
+
+    return {
+      juror: juror
+        ? {
+            activeBalance,
+            lockedBalance,
+            availableBalance,
+            deactivationBalance,
+            treasuryTokens,
+            movements,
+          }
+        : null,
+    }
+  },
+
+  // Get wallet balance for juror with id `id`
+  JurorANJWalletBalance: ({ id }) => {
+    const { walletBalance } = court.getJuror(id) || {}
+    return { anjbalance: walletBalance }
+  },
   AppealsByMaker: ({ maker }) => ({
     appeals: [],
   }),
   AppealsByTaker: ({ taker }) => ({
     appeals: [],
+  }),
+  JurorDraftsFrom: ({ id, from }) => ({
+    drafts: [],
+  }),
+  JurorDraftsRewarded: ({ id }) => ({
+    juror: {
+      id: '',
+      drafts: [],
+    },
   }),
   JurorDraftsNotRewarded: ({ id }) => ({
     juror: {
@@ -49,29 +97,31 @@ export default {
       ],
     },
   }),
-  JurorDraftRewarded: ({ id }) => ({
-    juror: {
-      id: '',
-      drafts: [],
-    },
-  }),
-  // Disputes
+
+  /** **** DASHBOARD STATE *****/
+
+  // Get all disputes
   AllDisputes: () => ({
-    disputes,
+    disputes: court.disputes,
   }),
+
+  // Get dispute with id `id`
   SingleDispute: ({ id }) => {
-    const dispute = disputes.find(d => d.id === id)
+    const dispute = court.getDispute(id)
     return {
       dispute,
     }
   },
+
+  // Get all juror drafts for juror with id `id`
   JurorDrafts: ({ id }) => ({
     juror: {
       id: '',
       drafts: [],
     },
   }),
-  // Tasks
+
+  // Get all open tasks
   OpenTasks: () => ({
     adjudicationRounds: [],
   }),

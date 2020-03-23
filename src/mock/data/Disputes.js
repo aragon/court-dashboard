@@ -1,14 +1,10 @@
-import { hash256 } from '../../lib/web3-utils'
-import { DisputeState, AdjudicationState } from '../types'
 import courtConfig from './CourtConfig'
-import dayjs from 'dayjs'
-import { accounts } from '../helper'
-import { PCT_BASE } from '../../utils/dispute-utils'
-import { bigNum } from '../../lib/math-utils'
 
-const NUMBER_OF_DISPUTES = 5
+import { hash256 } from '../../lib/web3-utils'
+import { dayjs } from '../../utils/date-utils'
+import { DisputeState, AdjudicationState } from '../types'
+
 const CREATE_TERM_ID = courtConfig.currentTerm
-
 const PAST_DRAFT_TERM_ID = courtConfig.currentTerm - 4
 const DRAFT_TERM_ID = CREATE_TERM_ID + 4
 
@@ -42,50 +38,45 @@ const ROUNDS = {
     coherentJurors: 0,
     collectedTokens: 0,
     createdAt: 0,
-    jurors: accounts.slice(0, 3).map(account => ({
-      juror: { id: account, vote: { commitment: '', outcome: 0 } },
-      weight: 1,
-      locked: bigNum(courtConfig.minActiveBalance)
-        .mul(courtConfig.penaltyPct)
-        .div(PCT_BASE),
-    })),
     vote: null,
     appeal: null,
   },
 }
 
-const DISPUTES_SPECIFIC_DATA = [
+const DISPUTES_DATA = [
   {
     state: DisputeState.Ruled,
     metadata: 'Dispute finished',
-    rounds: [ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL],
+    rounds: [{ ...ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL }],
   },
   {
     state: DisputeState.Adjudicating,
     metadata: 'Dispute appealed',
-    rounds: [ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL],
+    rounds: [{ ...ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL }],
   },
   {
     state: DisputeState.Adjudicating,
     metadata: 'Dispute in last round',
-    rounds: [ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL],
+    rounds: [{ ...ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL }],
   },
   {
     state: DisputeState.Adjudicating,
     metadata: 'Dispute in first adjudication round (jurors already drafted)',
-    rounds: [ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL],
+    rounds: [{ ...ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL }],
   },
   {
     state: DisputeState.Evidence,
     metadata: 'Dispute in evidence submission',
-    rounds: [ROUNDS.FIRST_NOT_DRAFTED],
+    rounds: [{ ...ROUNDS.FIRST_NOT_DRAFTED }],
   },
 ]
 
 function generateDisputes() {
   const disputes = []
-  for (let i = 0; i < NUMBER_OF_DISPUTES; i++) {
-    const { state, metadata, rounds } = DISPUTES_SPECIFIC_DATA[i]
+
+  for (let i = 0; i < DISPUTES_DATA.length; i++) {
+    const { state, metadata, rounds } = DISPUTES_DATA[i]
+
     const dispute = {
       id: String(i),
       txHash: hash256(i),
@@ -98,10 +89,10 @@ function generateDisputes() {
       lastRoundId: rounds.length - 1,
     }
 
-    disputes.push(dispute)
+    disputes.unshift(dispute)
   }
 
-  return disputes.reverse()
+  return disputes
 }
 
 // lastRoundId

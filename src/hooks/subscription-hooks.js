@@ -1,28 +1,29 @@
 import { useMemo } from 'react'
 import { useSubscription } from 'urql'
-import { dayjs } from '../utils/date-utils'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { ANJBalance, Juror } from '../queries/balances'
-import { CourtConfig } from '../queries/court'
-import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
-import {
-  JurorDraftsNotRewarded,
-  CurrentTermJurorDrafts,
-} from '../queries/jurorDrafts'
-import { SingleDispute, AllDisputes } from '../queries/disputes'
+
+// queries
 import { OpenTasks } from '../queries/tasks'
-import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
+import { CourtConfig } from '../queries/court'
+import { AllDisputes, SingleDispute } from '../queries/disputes'
+import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
+import { JurorANJBalances, JurorANJWalletBalance } from '../queries/balances'
+import { JurorDraftsFrom, JurorDraftsNotRewarded } from '../queries/jurorDrafts'
+
+// utils
 import { bigNum } from '../lib/math-utils'
-import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
-import { transformAppealDataAttributes } from '../utils/appeal-utils'
+import { dayjs } from '../utils/date-utils'
 import { groupMovements } from '../utils/anj-movement-utils'
+import { transformAppealDataAttributes } from '../utils/appeal-utils'
+import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
+import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
 
 const NO_AMOUNT = bigNum(0)
 
 // Subscription to get juror's wallet balance
 function useANJBalance(jurorId) {
   const [{ data, error }] = useSubscription({
-    query: ANJBalance,
+    query: JurorANJWalletBalance,
     variables: { id: jurorId.toLowerCase() },
   })
 
@@ -38,7 +39,7 @@ function useJuror(jurorId) {
     .unix()
 
   const [{ data, error }] = useSubscription({
-    query: Juror,
+    query: JurorANJBalances,
     variables: { id: jurorId.toLowerCase(), from: yesterday },
   })
 
@@ -184,7 +185,7 @@ export function useCurrentTermJurorDraftsSubscription(
   pause
 ) {
   const [result] = useSubscription({
-    query: CurrentTermJurorDrafts,
+    query: JurorDraftsFrom,
     variables: { id: jurorId.toLowerCase(), from: termStartTime },
     pause,
   })
