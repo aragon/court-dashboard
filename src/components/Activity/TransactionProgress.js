@@ -31,7 +31,7 @@ const TransactionProgress = React.memo(function TransactionProgress({
   minedAtEstimate,
   status,
 }) {
-  const now = useNow().getTime()
+  const now = useNow().valueOf()
 
   // Only animate things if the panel is ready (opened).
   const estimate = createdAt + TX_DURATION_AVERAGE

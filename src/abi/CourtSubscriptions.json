@@ -1,0 +1,6 @@
+[
+  "function claimFees(uint256 _periodId) external",
+  "function getCurrentPeriodId() external view returns (uint256)",
+  "function getJurorShare(address _juror, uint256 _periodId) external view returns (address feeToken, uint256 jurorShare)",
+  "function hasJurorClaimed(address _juror, uint256 _periodId) external view returns (bool)"
+]

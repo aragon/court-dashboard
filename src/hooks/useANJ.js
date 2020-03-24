@@ -20,7 +20,7 @@ import { getDraftLockAmount } from '../utils/dispute-utils'
 import { ANJBalance, ANJMovement } from '../types/anj-types'
 
 export function useANJBalances() {
-  const { balances, movements } = useDashboardState()
+  const { balances, anjMovements } = useDashboardState()
 
   const {
     walletBalance,
@@ -30,7 +30,7 @@ export function useANJBalances() {
     deactivationBalance,
   } = balances || {}
 
-  const convertedMovements = useConvertedMovements(movements)
+  const convertedMovements = useConvertedMovements(anjMovements)
 
   const convertedWalletBalance = useBalanceWithMovements(
     walletBalance,
@@ -221,15 +221,24 @@ export function useJurorFirstTimeANJActivation(options) {
 }
 
 export function useJurorLockedANJDistribution() {
-  const { minActiveBalance, penaltyPct } = useCourtConfig()
+  const {
+    maxRegularAppealRounds,
+    minActiveBalance,
+    penaltyPct,
+  } = useCourtConfig()
   const { jurorDrafts, balances } = useDashboardState()
   const { lockedBalance } = balances || {}
 
   return useMemo(() => {
     if (!lockedBalance || lockedBalance.eq(0) || !jurorDrafts) return null
 
+    // For final rounds the ANJ at stake is pre-slashed for all jurors when they commit their vote
     return jurorDrafts
-      .filter(jurorDraft => !jurorDraft.round.settledPenalties)
+      .filter(
+        jurorDraft =>
+          !jurorDraft.round.settledPenalties &&
+          jurorDraft.round.number < maxRegularAppealRounds
+      )
       .reduce((lockDistribution, { weight, round }) => {
         const { dispute } = round
 
@@ -264,5 +273,11 @@ export function useJurorLockedANJDistribution() {
 
         return lockDistribution
       }, [])
-  }, [jurorDrafts, lockedBalance, minActiveBalance, penaltyPct])
+  }, [
+    jurorDrafts,
+    lockedBalance,
+    maxRegularAppealRounds,
+    minActiveBalance,
+    penaltyPct,
+  ])
 }
