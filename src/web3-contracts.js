@@ -10,6 +10,7 @@ export function useContract(address, abi, signer = true) {
   return useMemo(() => {
     // Apparently .getSigner() returns a new object every time, so we use the
     // connected account as memo dependency.
+
     if (!address || !ethers || !account) {
       return null
     }
@@ -31,6 +32,9 @@ export function useContractReadOnly(address, abi) {
   )
 
   return useMemo(() => {
+    if (!address) {
+      return null
+    }
     return new EthersContract(address, abi, ethProvider)
   }, [abi, address, ethProvider])
 }

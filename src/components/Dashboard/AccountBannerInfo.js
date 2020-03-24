@@ -23,9 +23,9 @@ function AccountBannerInfo({ title, titleColor = '', paragraph, showTimer }) {
       >
         <span
           css={`
-    ${textStyle('title4')}
-    color: ${titleColor};
-  `}
+            ${textStyle('title4')}
+            color: ${titleColor};
+          `}
         >
           {title}
         </span>

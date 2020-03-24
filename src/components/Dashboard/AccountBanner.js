@@ -1,10 +1,10 @@
 import React from 'react'
-import { CircleGraph, GU, Help, LoadingRing, useTheme } from '@aragon/ui'
+import { GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 
 import AccountBannerInfo from './AccountBannerInfo'
-import { useCourtClock } from '../../providers/CourtClock'
+import CircleGraph from '../CircleGraph'
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
+import { useTotalActiveBalance } from '../../hooks/useCourtContracts'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
@@ -154,18 +154,19 @@ const Wrapper = ({ mainIcon, information }) => {
 
 const BannerWithProbability = ({ activeBalance }) => {
   const theme = useTheme()
-  const { currentTermId } = useCourtClock()
+  const totalActiveBalanceCurrentTerm = useTotalActiveBalance()
+
+  const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
+  if (fetchingTotalBalance) {
+    return <BannerLoadingRing />
+  }
+
   // Calculate juror's active balance and total active balance for current term
   const {
     amount: activeAmount,
     amountNotEffective: activeAmountNotEffective,
   } = activeBalance
   const activeBalanceCurrentTerm = activeAmount.sub(activeAmountNotEffective)
-  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
-    currentTermId
-  )
-  const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
-
   const totalPercentage = getPercentageBN(
     activeBalanceCurrentTerm,
     totalActiveBalanceCurrentTerm
@@ -174,9 +175,11 @@ const BannerWithProbability = ({ activeBalance }) => {
   // Calculate probability (since the total active balance is asynchronous
   // it can happen that it has not been updated yet when the juror active balance has)
   const draftingProbability = Math.min(1, totalPercentage / 100)
-
   const probablilityTooLow = totalPercentage < 1
-  const chances = totalPercentage > 0 && Math.floor(100 / totalPercentage)
+
+  const chances = probablilityTooLow
+    ? '100+'
+    : totalPercentage > 0 && Math.floor(100 / totalPercentage)
 
   const title = (
     <div
@@ -185,61 +188,53 @@ const BannerWithProbability = ({ activeBalance }) => {
         align-items: center;
       `}
     >
-      {(() => {
-        if (probablilityTooLow) {
-          return (
-            <span css="margin-right: 8px">
-              Activate more ANJ to increase your chances of being selected as a
-              juror
-            </span>
-          )
-        }
-        return (
-          <>
-            <span css="margin-right: 8px">
-              On average, you will be drafted
-              <span
-                css={`
-                  color: ${theme.accent};
-                `}
-              >
-                {` 1 on every ${chances} times `}
-              </span>
-            </span>
-            <Help hint="How is the probability calculated?">
-              Probability of being drafted is calculated dividing your active
-              ANJ balance by the total Court active ANJ, during the current
-              term.
-            </Help>
-          </>
-        )
-      })()}
+      <span
+        css={`
+          margin-right: ${1 * GU}px;
+        `}
+      >
+        {'On average, you will be drafted into a jury '}
+        <span
+          css={`
+            color: ${theme.accent};
+          `}
+        >
+          1 in {chances} times
+        </span>
+      </span>
+      <Help hint="How is the probability calculated?">
+        <p>
+          This is a numerical estimate of your likelihood of being selected for
+          arbitration. It’s calculated by dividing your active ANJ balance
+          against the Court's total active ANJ balance during the current term.
+        </p>
+        <p
+          css={`
+            margin-top: ${1 * GU}px;
+          `}
+        >
+          {probablilityTooLow
+            ? `
+                You currently have <1% of all activated ANJ, hence are unlikely
+                to be drafted unless a dispute goes to the final round or many
+                disputes are created. Activate more ANJ to increase your chances
+                of being selected as a juror.
+              `
+            : `
+                You can always activate more ANJ to increase your chances of
+                being selected as a juror.
+              `}
+        </p>
+      </Help>
     </div>
   )
 
   const paragraph =
-    'The more ANJ you activate, more chances you have to be drafted to arbitrate a dispute'
+    'The more ANJ you activate, the more likely you will be drafted to arbitrate a dispute'
 
-  // TODO - change this for the loading indicator once ready
-  return fetchingTotalBalance ? (
-    <BannerLoadingRing />
-  ) : (
+  return (
     <Wrapper
-      mainIcon={
-        probablilityTooLow ? (
-          <img
-            css={`
-              display: block;
-              margin: 0 auto;
-            `}
-            height={6 * GU}
-            src={anjSpringIcon}
-            alt=""
-          />
-        ) : (
-          <CircleGraph value={draftingProbability} size={6 * GU} />
-        )
-      }
+      mainIcon={<CircleGraph value={draftingProbability} size={7 * GU} />}
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
     />
   )
@@ -251,7 +246,7 @@ function BannerLoadingRing() {
       css={`
         display: flex;
         align-items: center;
-        height: ${6 * GU}px;
+        height: ${7 * GU}px;
       `}
     >
       <LoadingRing />

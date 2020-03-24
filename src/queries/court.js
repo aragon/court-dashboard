@@ -50,3 +50,12 @@ export const CourtConfig = gql`
     }
   }
 `
+export const JurorsRegistryModule = gql`
+  subscription JurorsRegistryModule($id: ID!) {
+    jurorsRegistryModule(id: $id) {
+      id
+      totalStaked
+      totalActive
+    }
+  }
+`

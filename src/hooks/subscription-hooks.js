@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import { useSubscription } from 'urql'
 import { dayjs } from '../utils/date-utils'
+import { CourtModuleType } from '../types/court-module-types'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { ANJBalance, Juror } from '../queries/balances'
-import { CourtConfig } from '../queries/court'
+import { CourtConfig, JurorsRegistryModule } from '../queries/court'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
 import {
   JurorDraftsNotRewarded,
@@ -16,6 +17,7 @@ import { bigNum } from '../lib/math-utils'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
 import { groupMovements } from '../utils/anj-movement-utils'
+import { getModuleAddress } from '../utils/court-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -62,7 +64,7 @@ export function useJurorBalancesSubscription(jurorId) {
 
   const errors = [anjBalanceError, jurorError].filter(err => err)
 
-  const { balances, movements, treasury } = useMemo(() => {
+  const { balances, anjMovements, treasury } = useMemo(() => {
     // Means it's still fetching
     if (!jurorData || !anjBalanceData) {
       return {}
@@ -79,8 +81,8 @@ export function useJurorBalancesSubscription(jurorId) {
       availableBalance = NO_AMOUNT,
       deactivationBalance = NO_AMOUNT,
       lockedBalance = NO_AMOUNT,
-      movements = [],
-      treasuryTokens = [],
+      anjMovements = [],
+      treasuryBalances = [],
     } = jurorData.juror || {}
 
     return {
@@ -91,17 +93,17 @@ export function useJurorBalancesSubscription(jurorId) {
         inactiveBalance: bigNum(availableBalance),
         deactivationBalance: bigNum(deactivationBalance),
       },
-      movements: groupMovements(movements),
-      treasury: treasuryTokens.map(treasuryToken => ({
-        ...treasuryToken,
-        balance: bigNum(treasuryToken.balance),
+      anjMovements: groupMovements(anjMovements),
+      treasury: treasuryBalances.map(treasuryBalance => ({
+        ...treasuryBalance,
+        amount: bigNum(treasuryBalance.amount),
       })),
     }
   }, [anjBalanceData, jurorData])
 
   return {
     balances,
-    movements,
+    anjMovements,
     treasury,
     fetching: !balances && errors.length === 0,
     errors,
@@ -283,4 +285,21 @@ export function useTasksSubscription() {
   const tasks = data?.adjudicationRounds || null
 
   return { tasks, fetching: !data && !error, error }
+}
+
+export function useJurorRegistrySubscription() {
+  const { modules } = useCourtConfig()
+  const jurorRegistryAddress = getModuleAddress(
+    modules,
+    CourtModuleType.JurorsRegistry
+  )
+
+  const [{ data, error }] = useSubscription({
+    query: JurorsRegistryModule,
+    variables: { id: jurorRegistryAddress },
+  })
+
+  const juroRegistryStats = data?.jurorsRegistryModule || null
+
+  return { data: juroRegistryStats, error }
 }

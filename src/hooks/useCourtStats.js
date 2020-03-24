@@ -27,7 +27,7 @@ export const STAT_NOT_AVAILABLE = bigNum(-2)
  */
 function useCourtStats() {
   const timeout = 5000
-  const ANJActiveBalance = useTotalActiveBalance(timeout)
+  const ANJActiveBalance = useTotalActiveBalance()
   const ANTTotalStake = useTotalANTStakedPolling(timeout)
   const activeJurors = useActiveJurorsNumber()
 

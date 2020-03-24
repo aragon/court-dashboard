@@ -58,31 +58,35 @@ export function useANJBalanceToUsd(amount) {
     }
 
     const updateConvertedAmount = async () => {
-      try {
-        const { marketRate } = await getANJMarketDetails(
-          daiAddress,
-          anjToken.id,
-          amount
-        )
-
-        const precision = bigNum(10).pow(UNISWAP_PRECISION)
-
-        const rate = bigNum(marketRate.rateInverted.times(precision).toFixed(0))
-
-        const convertedAmount = formatUnits(amount.mul(rate).div(precision), {
-          digits: anjToken.decimals,
-        })
-
-        if (!cancelled) {
-          setConvertedAmount(convertedAmount)
-        }
-      } catch (err) {
-        console.error('Could not fetch Uniswap price for ANJ', err)
-        if (!cancelled) {
-          retryTimer = setTimeout(
-            updateConvertedAmount,
-            UNISWAP_MARKET_RETRY_EVERY
+      if (getNetworkType() === 'main') {
+        try {
+          const { marketRate } = await getANJMarketDetails(
+            daiAddress,
+            anjToken.id,
+            amount
           )
+
+          const precision = bigNum(10).pow(UNISWAP_PRECISION)
+
+          const rate = bigNum(
+            marketRate.rateInverted.times(precision).toFixed(0)
+          )
+
+          const convertedAmount = formatUnits(amount.mul(rate).div(precision), {
+            digits: anjToken.decimals,
+          })
+
+          if (!cancelled) {
+            setConvertedAmount(convertedAmount)
+          }
+        } catch (err) {
+          console.error('Could not fetch Uniswap price for ANJ', err)
+          if (!cancelled) {
+            retryTimer = setTimeout(
+              updateConvertedAmount,
+              UNISWAP_MARKET_RETRY_EVERY
+            )
+          }
         }
       }
     }

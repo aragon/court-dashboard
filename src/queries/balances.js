@@ -16,16 +16,16 @@ export const Juror = gql`
       availableBalance
       deactivationBalance
       withdrawalsLockTermId
-      treasuryTokens {
+      treasuryBalances {
         token {
           id
           name
           symbol
           decimals
         }
-        balance
+        amount
       }
-      movements(
+      anjMovements(
         orderBy: createdAt
         orderDirection: desc
         where: { createdAt_gt: $from }
@@ -42,7 +42,7 @@ export const Juror = gql`
 export const FirstANJActivationMovement = gql`
   query Juror($id: ID!) {
     juror(id: $id) {
-      movements(
+      anjMovements(
         where: { type: "Activation" }
         orderBy: createdAt
         orderDirection: asc

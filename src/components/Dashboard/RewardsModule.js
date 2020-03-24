@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import {
   Box,
   Button,
@@ -9,66 +9,94 @@ import {
   textStyle,
   useTheme,
 } from '@aragon/ui'
+import * as Sentry from '@sentry/browser'
+
 import Loading from './Loading'
 import NoRewards from './NoRewards'
 
 import { useWallet } from '../../providers/Wallet'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
+import useJurorSubscriptionFees from '../../hooks/useJurorSubscriptionFees'
+
 import { bigNum, formatTokenAmount } from '../../lib/math-utils'
 import { addressesEqual } from '../../lib/web3-utils'
 
-const useTotalDisputesFees = (arbitrableFees, appealFees) => {
-  const totalArbitrableFees = arbitrableFees
-    ? arbitrableFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
-    : bigNum(0)
+const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
+  return useMemo(() => {
+    const totalArbitrableFees = Array.isArray(arbitrableFees)
+      ? arbitrableFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
+      : bigNum(0)
 
-  const totalAppealFees = appealFees
-    ? appealFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
-    : bigNum(0)
+    const totalAppealFees = Array.isArray(appealFees)
+      ? appealFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
+      : bigNum(0)
 
-  return { totalArbitrableFees, totalAppealFees }
+    const totalSubscriptionFees = Array.isArray(subscriptionFees)
+      ? subscriptionFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
+      : bigNum(0)
+
+    return { totalArbitrableFees, totalAppealFees, totalSubscriptionFees }
+  }, [appealFees, arbitrableFees, subscriptionFees])
 }
 
-// Ruling Fees => ANJ fees
-// Dispute fees + Appeal Fees => DAI fees
+// anjRewards => ANJ => First settle with `onSettleReward()`, then withdraw
+// feeRewards => DAI =>  First settle with `onSettleReward()` or `onSettleAppealDeposit()`, then withdraw
+// subscriptions fees => DAI => Can be withdrawn directly from the CourtSubscription contract
+// Only after the rewards are settled can a juror withdraw them from the treasury (`onWithdraw()`)
+// As opposed to fee rewards, subscription fees are directly withdrawn to the juror's wallet when claimed
 const RewardsModule = React.memo(function RewardsModule({
   rewards,
   treasury,
   loading,
-  onWithdraw,
-  onSettleReward,
+  onClaimSubscriptionFees,
   onSettleAppealDeposit,
+  onSettleReward,
+  onWithdraw,
 }) {
   const wallet = useWallet()
   const { feeToken } = useCourtConfig()
 
-  const { totalArbitrableFees, totalAppealFees } = useTotalDisputesFees(
-    rewards?.arbitrableFees,
-    rewards?.appealFees
+  // Subscriptions are fetched directly from the subscriptions contract
+  const [subscriptionFees, setSubscriptionFees] = useJurorSubscriptionFees()
+  const { anjRewards, feeRewards } = rewards || {}
+
+  const {
+    totalArbitrableFees,
+    totalAppealFees,
+    totalSubscriptionFees,
+  } = useTotalFeeRewards(
+    feeRewards?.arbitrableFees,
+    feeRewards?.appealFees,
+    subscriptionFees
   )
 
+  // We'll get the total juror's balance held in the treasury
   // TODO: Handle possible multiple tokens (fee token can change)
   const treasuryToken = treasury?.find(({ token }) =>
     addressesEqual(token.id, feeToken.id)
   )
-  const treasuryBalance = treasuryToken ? treasuryToken.balance : bigNum(0)
+  const treasuryBalance = treasuryToken ? treasuryToken.amount : bigNum(0)
+
+  // Total dispute fees include appeal fees and arbitrable fees (fees paid by the creator of the dispute for the first round
+  // and fees paid by appealers for subsequent rounds)
   const totalDisputesFees = totalArbitrableFees.add(totalAppealFees)
-  const totalFees = totalDisputesFees.add(treasuryBalance)
+
+  // All dispute fees are sent to the treasury after being settled
+  const totalTreasuryFees = totalDisputesFees.add(treasuryBalance)
+  const totalFeeRewards = totalTreasuryFees.add(totalSubscriptionFees)
 
   // Form submission
   const handleFormSubmit = useCallback(
     async event => {
       event.preventDefault()
 
-      if (!rewards) {
-        return
-      }
+      if (!rewards) return
 
       const rewardTransactionQueue = []
       try {
         // Claim all arbitrable fee rewards
-        for (const arbitrableFee of rewards.arbitrableFees) {
+        for (const arbitrableFee of feeRewards.arbitrableFees) {
           const { disputeId, rounds } = arbitrableFee
           for (const roundId of rounds) {
             rewardTransactionQueue.push(
@@ -78,7 +106,7 @@ const RewardsModule = React.memo(function RewardsModule({
         }
 
         // Claim all appeal fee rewards
-        for (const appealFee of rewards.appealFees) {
+        for (const appealFee of feeRewards.appealFees) {
           const { disputeId, rounds } = appealFee
           for (const roundId of rounds) {
             rewardTransactionQueue.push(
@@ -88,28 +116,43 @@ const RewardsModule = React.memo(function RewardsModule({
         }
 
         // Withdraw funds from treasury
-        rewardTransactionQueue.push(
-          await onWithdraw(feeToken.id, wallet.account, totalFees)
-        )
+        if (totalTreasuryFees.gt(0)) {
+          rewardTransactionQueue.push(
+            await onWithdraw(feeToken.id, wallet.account, totalTreasuryFees)
+          )
+        }
+
+        // Claim subscription fees
+        for (const subscriptionFee of subscriptionFees) {
+          rewardTransactionQueue.push(
+            await onClaimSubscriptionFees(subscriptionFee.periodId)
+          )
+        }
 
         await Promise.all(rewardTransactionQueue.map(tx => tx.wait()))
+
+        setSubscriptionFees([])
       } catch (err) {
         console.error(`Error claiming rewards: ${err}`)
+        Sentry.captureException(err)
       }
     },
     [
-      feeToken.id,
+      feeRewards,
+      feeToken,
+      onClaimSubscriptionFees,
       onSettleAppealDeposit,
       onSettleReward,
       onWithdraw,
       rewards,
-      totalFees,
+      setSubscriptionFees,
+      subscriptionFees,
+      totalTreasuryFees,
       wallet.account,
     ]
   )
 
-  const hasRewardsToClaim = rewards?.rulingFees.gt(0) || totalFees.gt(0)
-
+  const hasRewardsToClaim = anjRewards?.gt(0) || totalFeeRewards.gt(0)
   const showHeading = !loading && hasRewardsToClaim
 
   return (
@@ -118,36 +161,46 @@ const RewardsModule = React.memo(function RewardsModule({
       padding={hasRewardsToClaim ? 0 : 3 * GU}
     >
       {(() => {
-        if (loading) return <Loading height={150} />
+        if (loading) {
+          return <Loading height={150} />
+        }
 
-        if (!hasRewardsToClaim) return <NoRewards />
-        return null
-      })()}
-      <div>
-        {rewards && rewards.rulingFees.gt(0) && (
-          <RulingFees amount={rewards.rulingFees} />
-        )}
-        {totalFees.gt(0) && (
-          <form onSubmit={handleFormSubmit}>
-            {totalDisputesFees.gt(0) && (
-              <DisputesFees
-                totalAppealFees={totalAppealFees}
-                totalArbitrableFees={totalArbitrableFees}
-                distribution={rewards.disputesFeesDistribution}
-              />
+        if (!hasRewardsToClaim) {
+          return <NoRewards />
+        }
+
+        return (
+          <div>
+            {rewards && anjRewards.gt(0) && <ANJRewards amount={anjRewards} />}
+            {totalFeeRewards.gt(0) && (
+              <form onSubmit={handleFormSubmit}>
+                {totalDisputesFees.gt(0) && (
+                  <DisputesFeeRewards
+                    totalAppealFees={totalAppealFees}
+                    totalArbitrableFees={totalArbitrableFees}
+                    distribution={feeRewards.distribution}
+                  />
+                )}
+                {totalSubscriptionFees.gt(0) && (
+                  <SubscriptionFeeRewards totalFees={totalSubscriptionFees} />
+                )}
+                <TotalFees
+                  totalFees={totalFeeRewards}
+                  requiresMultipleTxs={
+                    totalDisputesFees.gt(0) ||
+                    (subscriptionFees.length > 0 && treasuryBalance.gt(0))
+                  }
+                />
+              </form>
             )}
-            <TotalFees
-              totalFees={totalFees}
-              treasuryBalance={treasuryBalance}
-            />
-          </form>
-        )}
-      </div>
+          </div>
+        )
+      })()}
     </Box>
   )
 })
 
-const RulingFees = ({ amount }) => {
+const ANJRewards = ({ amount }) => {
   const { anjToken } = useCourtConfig()
 
   const formattedAmount = formatTokenAmount(
@@ -173,7 +226,7 @@ const RulingFees = ({ amount }) => {
   )
 }
 
-const DisputesFees = ({
+const DisputesFeeRewards = ({
   distribution,
   totalAppealFees,
   totalArbitrableFees,
@@ -251,7 +304,31 @@ const DisputesFees = ({
   )
 }
 
-function TotalFees({ totalFees, treasuryBalance }) {
+function SubscriptionFeeRewards({ totalFees }) {
+  const { feeToken } = useCourtConfig()
+  const formattedAmount = formatTokenAmount(
+    totalFees,
+    true,
+    feeToken.decimals,
+    true
+  )
+
+  return (
+    <FeeSection>
+      <RowFee
+        label="Subscriptions"
+        amount={formattedAmount}
+        symbol={feeToken.symbol}
+        showPositive
+        css={`
+          margin-bottom: ${2 * GU}px;
+        `}
+      />
+    </FeeSection>
+  )
+}
+
+function TotalFees({ totalFees, requiresMultipleTxs }) {
   const theme = useTheme()
   const { activated } = useWallet()
   const { feeToken } = useCourtConfig()
@@ -259,9 +336,6 @@ function TotalFees({ totalFees, treasuryBalance }) {
 
   const { symbol, decimals } = feeToken
   const totalFeesFormatted = formatTokenAmount(totalFees, true, decimals, true)
-
-  // We'll show the info section in the case that the account has settlements to do
-  const showInfoSection = !totalFees.eq(treasuryBalance)
 
   return (
     <FeeSection>
@@ -287,15 +361,14 @@ function TotalFees({ totalFees, treasuryBalance }) {
         <Button mode="positive" type="submit" wide>
           Claim rewards
         </Button>
-        {showInfoSection && (
+        {requiresMultipleTxs && (
           <Info
             css={`
               margin-top: ${2 * GU}px;
             `}
           >
             This action requires multiple transactions to be signed in{' '}
-            {provider.name}. Potentially, one transaction per round of rewards.
-            Please confirm them one after another.
+            {provider.name}. Please confirm them one after another.
           </Info>
         )}
       </div>

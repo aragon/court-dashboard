@@ -13,6 +13,7 @@ export const AppealsByMaker = gql`
           lastRoundId
           rounds {
             jurorsNumber
+            number
           }
         }
       }
@@ -38,6 +39,7 @@ export const AppealsByTaker = gql`
           lastRoundId
           rounds {
             jurorsNumber
+            number
           }
         }
       }
