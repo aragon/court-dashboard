@@ -79,6 +79,13 @@ function base({ title, subtitle }, content) {
           #outlook a {
             padding: 0;
           }
+          h1 {
+            margin-top: 0;
+            color: #242424;
+            font-size: 32px;
+            font-weight: 300;
+            text-align: left;
+          }
           body {
             width: 100% !important;
             height: 100%;
