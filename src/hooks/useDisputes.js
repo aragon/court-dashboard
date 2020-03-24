@@ -63,30 +63,46 @@ export default function useDisputes() {
   }, [disputesPhases, disputes, disputesPhasesKey, error]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
+/**
+ * Hook for single dispute
+ * @param {String} disputeId Id of the dispute
+ * @returns {Array} First element the dispute, second is the fetching indicator,
+ * third might be the error from the graph or an ipfs error,
+ * third a boolean that indicates if the error is from the graph since we need to handle in a different way
+ * in the dispute detail, the timeline can not be displayed if is a graph error but can if the error is from ipfs
+ */
 export function useDispute(disputeId) {
   const courtConfig = useCourtConfig()
   const now = useNow() // TODO: use court clock
-  const { dispute, fetching, error: graphError } = useSingleDisputeSubscription(
-    disputeId
-  )
+  const {
+    dispute,
+    fetching: graphFetching,
+    error: graphError,
+  } = useSingleDisputeSubscription(disputeId)
+
   const graphErrorMessage = graphError ? graphError.message : ''
-  const disputeProcessed = useProcessedDispute(dispute, fetching)
+  const disputeProcessed = useProcessedDispute(dispute, graphFetching)
   const error = graphErrorMessage || disputeProcessed.error
+
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
   const disputePhaseKey = disputePhase
     ? convertToString(Object.values(disputePhase)[0])
     : ''
 
   return useMemo(() => {
+    const fetching = graphFetching || disputeProcessed.fetching
     return [
-      {
-        ...disputeProcessed,
-        ...disputePhase,
-      },
+      dispute
+        ? {
+            ...disputeProcessed,
+            ...disputePhase,
+          }
+        : null,
+      fetching,
       error,
       !!graphErrorMessage,
     ]
-  }, [disputeProcessed, disputePhaseKey, error]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [disputeProcessed, disputePhaseKey, error, graphFetching]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function useProcessedDispute(dispute, fetching) {
@@ -97,7 +113,10 @@ function useProcessedDispute(dispute, fetching) {
   useEffect(() => {
     const fetchDataFromIpfs = async () => {
       if (!dispute) {
-        return setDisputeProcessed({ ...disputeProcessed, fetching })
+        return setDisputeProcessed({
+          ...disputeProcessed,
+          fetching,
+        })
       }
       if (dispute.status === Status.Voided) {
         return setDisputeProcessed({ ...dispute, fetching: false })
@@ -161,7 +180,7 @@ function useProcessedDispute(dispute, fetching) {
     }
 
     fetchDataFromIpfs()
-  }, [dispute]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispute, fetching]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return disputeProcessed
 }
