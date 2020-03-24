@@ -64,14 +64,6 @@ function useCourtContract(moduleType, abi) {
   return useContract(contractAddress, abi)
 }
 
-// function useCourtContractReadOnly(moduleType, abi) {
-//   const { modules } = useCourtConfig()
-
-//   const contractAddress = getModuleAddress(modules, moduleType)
-
-//   return useContractReadOnly(contractAddress, abi)
-// }
-
 /**
  * All ANJ interactions
  * @returns {Object} all available functions around ANJ balances
