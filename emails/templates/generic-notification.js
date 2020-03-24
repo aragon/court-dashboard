@@ -73,18 +73,18 @@ module.exports = function() {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
       title: 'Claim your subscription rewards',
       content: trimMultiline(`
-        Congratulations! You have monthly Subscription rewards available for
-        activating your ANJ for a full Court period. Claim them in the
-        ‘Rewards’ section of the Dashboard.
+        Congratulations! You have been rewarded a portion of this month's
+        Subscription rewards because your ANJ was activated for a full Court
+        period. Claim them in the ‘Rewards’ section of the Dashboard.
       `),
       contentHtml: `
         <h1>
           Claim your subscription rewards
         </h1>
         <p>
-          Congratulations! You have monthly Subscription rewards available for
-          activating your ANJ for a full Court period. Claim them in the
-          ‘Rewards’ section of the Dashboard.
+          Congratulations! You have been rewarded a portion of this month's
+          Subscription rewards because your ANJ was activated for a full Court
+          period. Claim them in the ‘Rewards’ section of the Dashboard.
         </p>
       `,
       headerUrl: asset('header-anj.png'),
