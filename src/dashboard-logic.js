@@ -74,7 +74,7 @@ export function useDashboardLogic() {
   } = useANJActions()
 
   const rewards = useJurorRewards()
-  const balances = useANJBalances()
+  const anjBalances = useANJBalances()
   const panelState = useSidePanel()
 
   const appealCollaterals = useJurorAppealCollaterals()
@@ -102,8 +102,8 @@ export function useDashboardLogic() {
 
   return {
     actions,
+    anjBalances,
     appealCollaterals,
-    balances,
     errorsFetching,
     fetchingData,
     mode,
