@@ -28,8 +28,8 @@ function Dashboard() {
   const wallet = useWallet()
   const {
     actions,
+    anjBalances,
     appealCollaterals,
-    balances,
     errorsFetching,
     fetchingData,
     mode,
@@ -54,7 +54,7 @@ function Dashboard() {
         <>
           {wallet.account ? (
             <BalanceModule
-              balances={balances}
+              balances={anjBalances}
               loading={fetchingData}
               onRequestActivate={requests.activateANJ}
               onRequestDeactivate={requests.deactivateANJ}
@@ -106,7 +106,7 @@ function Dashboard() {
         <PanelComponent
           mode={mode}
           actions={actions}
-          balances={balances}
+          balances={anjBalances}
           onDone={panelState.requestClose}
         />
       </SidePanel>

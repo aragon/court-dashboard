@@ -58,7 +58,7 @@ const RewardsModule = React.memo(function RewardsModule({
   const { feeToken } = useCourtConfig()
 
   // Subscriptions are fetched directly from the subscriptions contract
-  const [subscriptionFees, setSubscriptionFees] = useJurorSubscriptionFees()
+  const subscriptionFees = useJurorSubscriptionFees()
   const { anjRewards, feeRewards } = rewards || {}
 
   const {
@@ -130,8 +130,6 @@ const RewardsModule = React.memo(function RewardsModule({
         }
 
         await Promise.all(rewardTransactionQueue.map(tx => tx.wait()))
-
-        setSubscriptionFees([])
       } catch (err) {
         console.error(`Error claiming rewards: ${err}`)
         Sentry.captureException(err)
@@ -145,7 +143,6 @@ const RewardsModule = React.memo(function RewardsModule({
       onSettleReward,
       onWithdraw,
       rewards,
-      setSubscriptionFees,
       subscriptionFees,
       totalTreasuryFees,
       wallet.account,
