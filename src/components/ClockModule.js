@@ -21,7 +21,11 @@ import { useCourtConfig } from '../providers/CourtConfig'
 import { useHeartbeat } from '../hooks/useCourtContracts'
 
 import { formatDuration } from '../utils/date-utils'
-import { shortenAddress, getNetworkType } from '../lib/web3-utils'
+import {
+  getNetworkType,
+  isLocalOrUnknownNetwork,
+  shortenAddress,
+} from '../lib/web3-utils'
 
 import logoSvg from '../assets/LogoAccent.svg'
 
@@ -206,7 +210,9 @@ function ClockModule() {
               <ButtonBase
                 disabled={!courtConfig}
                 href={blockExplorerUrl('address', courtConfig?.id, {
-                  networkType: getNetworkType(),
+                  networkType: isLocalOrUnknownNetwork()
+                    ? 'private'
+                    : getNetworkType(),
                 })}
               >
                 <IconExternal
