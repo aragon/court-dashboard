@@ -39,6 +39,16 @@ export const CourtConfig = gql`
       appealConfirmCollateralFactor
       minActiveBalance
       penaltyPct
+      subscriptions {
+        id
+        currentPeriod
+        feeAmount
+        periodDuration
+        periods {
+          id
+          collectedFees
+        }
+      }
       modules {
         type
         address

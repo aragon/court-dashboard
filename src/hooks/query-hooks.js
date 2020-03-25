@@ -21,7 +21,8 @@ export function useJurorDraftQuery(jurorId) {
 }
 
 /**
- * Queries if juror has ever claimed any rewards
+ * Queries if the juror  by id `jurorId` has already claimed rewards
+ * Rewards can be claimed from two places: Subscriptions fees or Dispute fees (the later includes appeal and juror fees)
  *
  * @param {String} jurorId Address of the juror
  * @returns {Boolean} True if juror has already claimed rewards
@@ -29,19 +30,14 @@ export function useJurorDraftQuery(jurorId) {
 export function useJurorRewardsClaimedQuery(jurorId) {
   const [{ data }] = useQuery({
     query: JurorFeesClaimed,
-    variables: { id: jurorId.toLowerCase() },
+    variables: { owner: jurorId.toLowerCase() },
   })
 
-  if (!data || !data.juror) {
+  if (!data) {
     return false
   }
 
-  const {
-    drafts: rewardedDrafts,
-    feeMovements: claimedSubscriptionFeeMovements,
-  } = data.juror
-
-  return rewardedDrafts.length > 0 || claimedSubscriptionFeeMovements.length > 0
+  return data.feeMovements.length > 0
 }
 
 export function useFirstANJActivationQuery(jurorId, { pause = false }) {
