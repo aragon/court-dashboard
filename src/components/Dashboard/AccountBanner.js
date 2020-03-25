@@ -154,7 +154,7 @@ const Wrapper = ({ mainIcon, information }) => {
 
 const BannerWithProbability = ({ activeBalance }) => {
   const theme = useTheme()
-  const totalActiveBalanceCurrentTerm = useTotalActiveBalance()
+  const [totalActiveBalanceCurrentTerm] = useTotalActiveBalance()
 
   const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
   if (fetchingTotalBalance) {
