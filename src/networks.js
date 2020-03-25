@@ -7,10 +7,10 @@ export const RINKEBY_USABILITY_COURT =
   '0x44f788370206696b20B94BC77c4f73Ca264aa05E'
 
 export const RINKEBY_STAGING_COURT =
-  '0xd0dcfc6b5b36f7e77f3daa2d9031b241651a6916'
+  '0x52180Af656A1923024D1ACcF1D827AB85cE48878'
 
 export const networks = {
-  rpc: { court: '0xC89Ce4735882C9F0f0FE26686c53074E09B0D550' },
+  rpc: { court: '0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb' },
   ropsten: { court: '0x3b26bc496aebaed5b3E0E81cDE6B582CDe71396e' },
   rinkeby: {
     // Use the 'usability' Court address if declared
