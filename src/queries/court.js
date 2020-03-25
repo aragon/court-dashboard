@@ -46,8 +46,6 @@ export const CourtConfig = gql`
         periodDuration
         periods {
           id
-          balanceCheckpoint
-          totalActiveBalance
           collectedFees
         }
       }
