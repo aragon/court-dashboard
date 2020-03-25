@@ -51,7 +51,7 @@ export default function MessageCard({
             <span
               css={`
                 margin-left: ${1 * GU}px;
-                ${textStyle('title2')}
+                ${textStyle('title2')};
               `}
             >
               Loading…
@@ -61,20 +61,20 @@ export default function MessageCard({
           <>
             <span
               css={`
-                ${textStyle(isCompactMode ? 'title4' : 'title2')}
-                text-align:center;
+                ${textStyle(isCompactMode ? 'title4' : 'title2')};
+                text-align: center;
               `}
             >
               {title}
             </span>
             <div
               css={`
-                ${textStyle('body2')}
+                ${textStyle('body2')};
                 color: ${theme.surfaceContentSecondary};
                 margin-top: ${1.5 * GU}px;
                 width: ${(isCompactMode ? 25 : 55) * GU}px;
                 display: flex;
-                text-align: center; 
+                text-align: center;
               `}
             >
               {paragraph}

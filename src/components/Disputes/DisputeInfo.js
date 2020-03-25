@@ -151,7 +151,7 @@ const DisputeInfo = React.memo(function({
             </>
           )
         })()}
-        {!isDisputeVoided && (
+        {!isDisputeVoided && !error && (
           <>
             {(phase === DisputePhase.AppealRuling ||
               phase === DisputePhase.ConfirmAppeal ||

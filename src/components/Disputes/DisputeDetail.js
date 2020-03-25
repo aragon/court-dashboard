@@ -25,7 +25,6 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const {
     actions,
     error,
-    errorFromGraph,
     dispute,
     disputeFetching,
     requestMode,
@@ -51,14 +50,14 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   const noDispute = !dispute && !disputeFetching
 
-  if (noDispute) {
+  if (noDispute && !error) {
     throw new DisputeNotFound(disputeId)
   }
 
   const DisputeInfoComponent = (
     <DisputeInfo
       id={disputeId}
-      error={error}
+      error={error?.message}
       dispute={dispute}
       loading={disputeFetching}
       onDraft={actions.draft}
@@ -84,7 +83,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
             <React.Fragment>
               {DisputeInfoComponent}
               {(() => {
-                if (disputeFetching) {
+                if (disputeFetching || error?.fromGraph) {
                   return null
                 }
                 if (evidences.length === 0) {
@@ -98,10 +97,10 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
             <React.Fragment>
               <Box
                 heading="Dispute timeline"
-                padding={errorFromGraph ? 3 * GU : 0}
+                padding={error?.fromGraph ? 3 * GU : 0}
               >
                 {(() => {
-                  if (errorFromGraph) {
+                  if (error?.fromGraph) {
                     return (
                       <MessageCard
                         title="We couldn’t load the dispute timeline"
