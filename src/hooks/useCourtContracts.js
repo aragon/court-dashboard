@@ -16,7 +16,6 @@ import { retryMax } from '../utils/retry-max'
 import { useActivity } from '../components/Activity/ActivityProvider'
 import { networkAgentAddress, networkReserveAddress } from '../networks'
 import { getKnownToken } from '../utils/known-tokens'
-import { STAT_NOT_AVAILABLE } from '../hooks/useCourtStats'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
 import courtSubscriptionsAbi from '../abi/CourtSubscriptions.json'
@@ -583,6 +582,7 @@ export function useActiveBalanceOfAt(juror, termId) {
 
 export function useTotalANTStakedPolling(timeout = 1000) {
   const [totalANTStaked, setTotalANTStaked] = useState(bigNum(-1))
+  const [error, setError] = useState(false)
   const [controlledTimeout, setControlledTimeout] = useState(0)
   const { address: antAddress } = getKnownToken('ANT') || {}
   const antContract = useContractReadOnly(antAddress, tokenAbi)
@@ -592,7 +592,7 @@ export function useTotalANTStakedPolling(timeout = 1000) {
     let timeoutId
 
     if (getNetworkType() === 'local') {
-      setTotalANTStaked(STAT_NOT_AVAILABLE)
+      setError(true)
       return
     }
     if (!antContract) {
@@ -611,6 +611,7 @@ export function useTotalANTStakedPolling(timeout = 1000) {
           })
           .catch(err => {
             console.error(`Error fetching balance: ${err} retrying...`)
+            setError(true)
           })
           .finally(() => {
             if (!cancelled) {
@@ -630,5 +631,5 @@ export function useTotalANTStakedPolling(timeout = 1000) {
     }
   }, [antContract, controlledTimeout, timeout])
 
-  return totalANTStaked
+  return [totalANTStaked, error]
 }

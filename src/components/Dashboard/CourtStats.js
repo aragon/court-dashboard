@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, GU, textStyle, useTheme } from '@aragon/ui'
 import { formatUnits } from '../../lib/math-utils'
-import useCourtStats, { STAT_NOT_AVAILABLE } from '../../hooks/useCourtStats'
+import useCourtStats from '../../hooks/useCourtStats'
 import {
   useANJBalanceToUsd,
   useTokenBalanceToUsd,
@@ -49,7 +49,7 @@ function CourtStats() {
                     font-weight: 300;
                   `}
                 >
-                  {stat.value}
+                  {!stat.error ? stat.value : '-'}
                 </span>
               )}
             </div>
@@ -61,9 +61,8 @@ function CourtStats() {
 }
 
 function TokenStats({ stat, theme }) {
-  const { value, token } = stat
+  const { value, token, error } = stat
   const { decimals, icon, symbol } = token
-  const statAvailable = !value.eq(STAT_NOT_AVAILABLE)
   return (
     <>
       <div
@@ -77,13 +76,13 @@ function TokenStats({ stat, theme }) {
             font-weight: 300;
           `}
         >
-          {statAvailable ? (
+          {!error ? (
             <SplitAmount amount={formatUnits(value, { digits: decimals })} />
           ) : (
             '-'
           )}
         </span>
-        {statAvailable && (
+        {!error && (
           <div
             css={`
               display: inline-flex;
@@ -107,7 +106,7 @@ function TokenStats({ stat, theme }) {
         `}
       >
         $
-        {statAvailable
+        {!error
           ? symbol === 'ANJ'
             ? AnjUsdValue(value)
             : TokenUsdValue(token, value)

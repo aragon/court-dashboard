@@ -57,11 +57,11 @@ export function useFirstANJActivationQuery(jurorId, { pause = false }) {
 }
 
 export function useActiveJurorsNumber() {
-  const [result] = useQuery({
+  const [{ data, error }] = useQuery({
     query: ActiveJurors,
   })
 
-  const { jurors } = result.data || {}
+  const { jurors } = data || {}
 
-  return jurors?.length
+  return [jurors?.length, error]
 }
