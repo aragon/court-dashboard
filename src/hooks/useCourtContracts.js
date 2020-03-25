@@ -17,7 +17,6 @@ import { useActivity } from '../components/Activity/ActivityProvider'
 import { networkAgentAddress, networkReserveAddress } from '../networks'
 import { getKnownToken } from '../utils/known-tokens'
 import { STAT_NOT_AVAILABLE } from '../hooks/useCourtStats'
-import { useJurorRegistrySubscription } from '../hooks/subscription-hooks'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
 import courtSubscriptionsAbi from '../abi/CourtSubscriptions.json'
@@ -632,15 +631,4 @@ export function useTotalANTStakedPolling(timeout = 1000) {
   }, [antContract, controlledTimeout, timeout])
 
   return totalANTStaked
-}
-
-export function useTotalActiveBalance() {
-  const { data: jurorRegistryStats } = useJurorRegistrySubscription()
-
-  return useMemo(() => {
-    if (!jurorRegistryStats) {
-      return bigNum(-1)
-    }
-    return bigNum(jurorRegistryStats?.totalActive) || null
-  }, [jurorRegistryStats])
 }

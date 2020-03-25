@@ -4,7 +4,11 @@ import { dayjs } from '../utils/date-utils'
 import { CourtModuleType } from '../types/court-module-types'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { ANJBalance, Juror } from '../queries/balances'
-import { CourtConfig, JurorsRegistryModule } from '../queries/court'
+import {
+  CourtConfig,
+  JurorsRegistryModule,
+  FeeMovements,
+} from '../queries/court'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
 import {
   JurorDraftsNotRewarded,
@@ -302,4 +306,14 @@ export function useJurorRegistrySubscription() {
   const juroRegistryStats = data?.jurorsRegistryModule || null
 
   return { data: juroRegistryStats, error }
+}
+
+export function useTotalRewardsSubscription() {
+  const [{ data, error }] = useSubscription({
+    query: FeeMovements,
+  })
+
+  const rewards = data?.feeMovements || null
+
+  return { data: rewards, error }
 }

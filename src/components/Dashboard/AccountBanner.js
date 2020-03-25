@@ -4,7 +4,7 @@ import { GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 import AccountBannerInfo from './AccountBannerInfo'
 import CircleGraph from '../CircleGraph'
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useTotalActiveBalance } from '../../hooks/useCourtContracts'
+import { useTotalActiveBalance } from '../../hooks/useCourtStats'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'

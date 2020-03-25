@@ -59,3 +59,14 @@ export const JurorsRegistryModule = gql`
     }
   }
 `
+
+export const FeeMovements = gql`
+  subscription FeeMovements {
+    feeMovements(where: { type_not: Withdraw }) {
+      id
+      type
+      amount
+      createdAt
+    }
+  }
+`
