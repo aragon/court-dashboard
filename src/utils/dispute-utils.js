@@ -3,7 +3,8 @@ import { getTermStartTime } from './court-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { getOutcomeNumber } from './crvoting-utils'
 import { bigNum } from '../lib/math-utils'
-import { getVoidedDisputesByCourt } from '../voided-disputes'
+import { getVoidedDisputesByCourt } from '../flagged-disputes/voided-disputes'
+import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/precedence-campaign-disputes'
 
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
@@ -52,6 +53,13 @@ export const transformDisputeDataAttributes = dispute => {
       }
     }),
   }
+
+  // If the dispute is part of the precedence campaign we will flag it as such
+  const precedenceCamapignDisputes = getPrecedenceCampaignDisputesByCourt()
+  const isPartOfPrecedenceCampaign = precedenceCamapignDisputes.some(
+    disputeId => disputeId === dispute.id
+  )
+  transformedDispute.marksPrecedent = isPartOfPrecedenceCampaign
 
   // If the dispute is voided we will override certain data
   const voidedDisputes = getVoidedDisputesByCourt()

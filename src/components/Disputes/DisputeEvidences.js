@@ -36,7 +36,7 @@ const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
                         margin-left: ${1.5 * GU}px;
                       `}
                     >
-                      Evidence #{index + 1}
+                      Argument #{index + 1}
                     </span>
                   </div>,
                   <EvidenceContent

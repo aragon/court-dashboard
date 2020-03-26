@@ -1,18 +1,11 @@
 import {
   networks,
   RINKEBY_COURT,
-  RINKEBY_USABILITY_COURT,
   RINKEBY_STAGING_COURT,
-} from './networks'
-import { getNetworkType } from './lib/web3-utils'
-import env from './environment'
-
-// TODO: Add text and link when available
-const DEFAULT_VOID_LINK =
-  'https://blog.aragon.one/update-on-aragon-courts-first-mock-dispute/'
-const DEFAULT_VOID_TEXT = 'This dispute has been voided and discontinued'
-const DEFAULT_VOID_DESCRIPTION =
-  'Dispute #0 is void and all related content has been removed from the Dashboard. Aragon One has made the decision to void the dispute and consider it non-existent when considering precedence for future Aragon Court cases.'
+  RINKEBY_USABILITY_COURT,
+} from '../networks'
+import { getNetworkType } from '../lib/web3-utils'
+import env from '../environment'
 
 const VOIDED_DISPUTES = {
   local: new Map([[networks.local.court, new Map([])]]),
@@ -29,9 +22,11 @@ const VOIDED_DISPUTES = {
         [
           {
             id: '0',
-            link: DEFAULT_VOID_LINK,
-            description: DEFAULT_VOID_DESCRIPTION,
-            text: DEFAULT_VOID_TEXT,
+            link:
+              'https://blog.aragon.one/update-on-aragon-courts-first-mock-dispute/',
+            description:
+              'Dispute #0 is void and all related content has been removed from the Dashboard. Aragon One has made the decision to void the dispute and consider it non-existent when considering precedence for future Aragon Court cases.',
+            text: 'This dispute has been voided and discontinued',
           },
         ].map(dispute => [dispute.id, dispute])
       ),
