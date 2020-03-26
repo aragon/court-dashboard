@@ -11,8 +11,6 @@ import IconANJ from '../assets/IconANJ.svg'
 import IconANT from '../assets/IconANT.svg'
 import IconDAI from '../assets/IconDAI.svg'
 
-export const STAT_NOT_AVAILABLE = bigNum(-2)
-
 const COURT_STATS = [
   {
     label: 'Total Active ANJ',
@@ -36,7 +34,7 @@ export function useTotalActiveBalance() {
     if (!jurorRegistryStats || error) {
       return [bigNum(-1), error]
     }
-    return [bigNum(jurorRegistryStats?.totalActive) || bigNum(-1), error]
+    return [bigNum(jurorRegistryStats.totalActive), error]
   }, [error, jurorRegistryStats])
 }
 
@@ -63,49 +61,66 @@ function useTotalRewards() {
 function useCourtStats() {
   const timeout = 5000
   const [anjActiveBalance, anjActiveBalanceError] = useTotalActiveBalance()
-  const [antTotalStake, antError] = useTotalANTStakedPolling(timeout)
+  const [antTotalStake, antTotalStakeError] = useTotalANTStakedPolling(timeout)
   const [activeJurors, activeJurorsError] = useActiveJurorsNumber()
   const [totalRewards, totalRewardsError] = useTotalRewards()
 
   // Loading states
   const anjFetching = anjActiveBalance.eq(bigNum(-1)) && !anjActiveBalanceError
-  const antFetching = antTotalStake.eq(bigNum(-1)) && !antError
+  const antFetching = antTotalStake.eq(bigNum(-1)) && !antTotalStakeError
   const activeJurorsFetching = activeJurors === null && !activeJurorsError
   const totalRewardsFetching = totalRewards.eq(bigNum(-1)) && !totalRewardsError
 
-  return useMemo(() => {
-    if (
-      anjFetching ||
-      antFetching ||
-      activeJurorsFetching ||
-      totalRewardsFetching
-    ) {
-      return [null, true]
-    }
+  return useMemo(
+    () => {
+      if (
+        anjFetching ||
+        antFetching ||
+        activeJurorsFetching ||
+        totalRewardsFetching
+      ) {
+        return [null, true]
+      }
 
-    const statsData = [
-      anjActiveBalance,
-      antTotalStake,
+      const statsData = [
+        anjActiveBalance,
+        antTotalStake,
+        activeJurors,
+        totalRewards,
+      ]
+      const statsError = [
+        anjActiveBalanceError,
+        antTotalStakeError,
+        activeJurorsError,
+        totalRewardsError,
+      ]
+      return [
+        COURT_STATS.map((stat, index) => {
+          return {
+            ...stat,
+            value: statsData[index],
+            error: statsError[index],
+          }
+        }),
+        false,
+      ]
+    } /* eslint-disable react-hooks/exhaustive-deps */,
+    [
       activeJurors,
-      totalRewards,
-    ]
-    const statsError = [
-      anjActiveBalanceError,
-      antError,
       activeJurorsError,
+      activeJurorsFetching,
+      anjActiveBalance.toString(),
+      anjActiveBalanceError,
+      anjFetching,
+      antFetching,
+      antTotalStake.toString(),
+      antTotalStakeError,
+      totalRewards.toString(),
       totalRewardsError,
+      totalRewardsFetching,
     ]
-    return [
-      COURT_STATS.map((stat, index) => {
-        return {
-          ...stat,
-          value: statsData[index],
-          error: statsError[index],
-        }
-      }),
-      false,
-    ]
-  }, [antTotalStake.toString(), anjActiveBalance.toString(), activeJurors]) // eslint-disable-line react-hooks/exhaustive-deps
+    /* eslint-disable-line react-hooks/exhaustive-deps */
+  )
 }
 
 export default useCourtStats

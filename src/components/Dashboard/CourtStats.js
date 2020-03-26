@@ -31,12 +31,12 @@ function CourtStats() {
               `}
             >
               <span
-                css={`      
-               ${textStyle('body2')}
-               color: ${theme.surfaceContentSecondary};
-               display:block;
-               margin-bottom:${1 * GU}px;
-             `}
+                css={`
+                  ${textStyle('body2')};
+                  color: ${theme.surfaceContentSecondary};
+                  display: block;
+                  margin-bottom: ${1 * GU}px;
+                `}
               >
                 {stat.label}
               </span>
@@ -45,7 +45,7 @@ function CourtStats() {
               ) : (
                 <span
                   css={`
-                    ${textStyle('title2')}
+                    ${textStyle('title2')};
                     font-weight: 300;
                   `}
                 >
@@ -72,7 +72,7 @@ function TokenStats({ stat, theme }) {
       >
         <span
           css={`
-            ${textStyle('title2')}
+            ${textStyle('title2')};
             font-weight: 300;
           `}
         >
@@ -101,7 +101,7 @@ function TokenStats({ stat, theme }) {
       </div>
       <span
         css={`
-          ${textStyle('body2')}
+          ${textStyle('body2')};
           color: ${theme.positive};
         `}
       >

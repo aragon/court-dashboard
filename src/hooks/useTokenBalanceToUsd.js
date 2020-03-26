@@ -115,27 +115,27 @@ export function useTokenBalanceToUsd(symbol, decimals, balance) {
   useEffect(() => {
     let cancelled = false
 
-    if (getNetworkType() === 'main') {
-      fetch(`${API_BASE}/price?fsym=${symbol}&tsyms=USD`)
-        .then(res => res.json())
-        .then(price => {
-          if (cancelled || !balance || !(parseFloat(price.USD) > 0)) {
-            return
-          }
-
-          const usdDigits = 2
-          const precision = 6
-
-          const usdBalance = balance
-            .mul(
-              bigNum(parseInt(price.USD * 10 ** (precision + usdDigits), 10))
-            )
-            .div(10 ** precision)
-            .div(bigNum(10).pow(decimals))
-
-          setUsd(formatUnits(usdBalance, { digits: usdDigits }))
-        })
+    if (getNetworkType() !== 'main') {
+      return
     }
+
+    fetch(`${API_BASE}/price?fsym=${symbol}&tsyms=USD`)
+      .then(res => res.json())
+      .then(price => {
+        if (cancelled || !balance || !(parseFloat(price.USD) > 0)) {
+          return
+        }
+
+        const usdDigits = 2
+        const precision = 6
+
+        const usdBalance = balance
+          .mul(bigNum(parseInt(price.USD * 10 ** (precision + usdDigits), 10)))
+          .div(10 ** precision)
+          .div(bigNum(10).pow(decimals))
+
+        setUsd(formatUnits(usdBalance, { digits: usdDigits }))
+      })
 
     return () => {
       cancelled = true

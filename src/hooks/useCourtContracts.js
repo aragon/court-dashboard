@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract, useContractReadOnly } from '../web3-contracts'
@@ -569,9 +569,10 @@ export function useActiveBalanceOfAt(juror, termId) {
 export function useTotalANTStakedPolling(timeout = 1000) {
   const [totalANTStaked, setTotalANTStaked] = useState(bigNum(-1))
   const [error, setError] = useState(false)
-  const [controlledTimeout, setControlledTimeout] = useState(0)
   const { address: antAddress } = getKnownToken('ANT') || {}
   const antContract = useContractReadOnly(antAddress, tokenAbi)
+
+  const controlledTimeout = useRef(0)
 
   useEffect(() => {
     let cancelled = false
@@ -602,11 +603,11 @@ export function useTotalANTStakedPolling(timeout = 1000) {
           .finally(() => {
             if (!cancelled) {
               clearTimeout(timeoutId)
-              setControlledTimeout(timeout)
+              controlledTimeout.current = timeout
               fetchTotalANTBalance()
             }
           })
-      }, controlledTimeout)
+      }, controlledTimeout.current)
     }
 
     fetchTotalANTBalance()

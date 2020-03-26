@@ -42,8 +42,8 @@ export const networkConfigs = {
   },
 }
 
-export function getNetworkConfig(chainId) {
-  return networkConfigs[chainId]
+export function getNetworkConfig(networkType) {
+  return networkConfigs[networkType]
 }
 
 export const networkAgentAddress =

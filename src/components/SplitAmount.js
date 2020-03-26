@@ -9,7 +9,7 @@ export default function SplitAmount({ amount }) {
         margin-right: ${0.5 * GU}px;
       `}
     >
-      <span className="integer">{integer}</span>
+      <span>{integer}</span>
       {fractional && (
         <span
           css={`
