@@ -18,7 +18,7 @@ function AccountBannerInfo({ title, titleColor = '', paragraph, showTimer }) {
           display: flex;
           flex-direction: column;
           justify-content: space-around;
-          height: ${6 * GU}px;
+          height: ${7 * GU}px;
         `}
       >
         <span
