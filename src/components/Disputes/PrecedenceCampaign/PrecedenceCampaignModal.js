@@ -3,7 +3,7 @@ import { Button, GU, Modal, textStyle, useTheme, useViewport } from '@aragon/ui'
 
 import pcModalSvg from './assets/PCModal.svg'
 
-function PCModal({ opened, onClose }) {
+function PrecedenceCampaignModal({ opened, onClose }) {
   const { width, height } = useViewport()
   const theme = useTheme()
 
@@ -116,4 +116,4 @@ function PCModal({ opened, onClose }) {
   )
 }
 
-export default PCModal
+export default PrecedenceCampaignModal

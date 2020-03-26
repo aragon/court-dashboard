@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import { utils as EthersUtils } from 'ethers'
 
 import AppealPanel from './panels/AppealPanel'
-import Banner from './PrecedenceCampaign/PCBanner'
+import Banner from './PrecedenceCampaign/PrecedenceCampaignBanner'
 import CommitPanel from './panels/CommitPanel'
 import DisputeEvidences from './DisputeEvidences'
 import DisputeInfo from './DisputeInfo'

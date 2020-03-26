@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react'
 import { Button, GU, useTheme } from '@aragon/ui'
-import Modal from './PCModal'
+import Modal from './PrecedenceCampaignModal'
 
 const KEY_PREFIX = 'PC_DISPUTE_BANNER_READ'
 
-function PCBanner({ disputeId }) {
+function PrecedenceCampaignBanner({ disputeId }) {
   const theme = useTheme()
   const [bannerVisible, setBannerVisible] = useState(
     localStorage.getItem(`${KEY_PREFIX}${disputeId}`) === null
@@ -71,4 +71,4 @@ function PCBanner({ disputeId }) {
   )
 }
 
-export default PCBanner
+export default PrecedenceCampaignBanner
