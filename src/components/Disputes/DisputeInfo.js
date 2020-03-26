@@ -4,17 +4,15 @@ import resolvePathname from 'resolve-pathname'
 import {
   Box,
   GU,
-  IconCheck,
-  IconCross,
   Link,
   TransactionBadge,
-  // isAddress,
   textStyle,
   useTheme,
 } from '@aragon/ui'
 import styled from 'styled-components'
 import DisputeActions from './DisputeActions'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
+import DisputeOutcomeText from './DisputeOutcomeText'
 import DisputeStatus from './DisputeStatus'
 import DisputeVoided from './DisputeVoided'
 import ErrorLoading from '../Errors/ErrorLoading'
@@ -60,10 +58,6 @@ const DisputeInfo = React.memo(function({
 
   const isFinalRulingEnsured =
     phase === DisputePhase.ExecuteRuling || status === Status.Closed
-
-  // const lastRound = dispute?.rounds?.[dispute.lastRoundId]
-  // const appealedRuling = lastRound?.appeal?.appealedRuling
-  // const voteWinningOutcome = lastRound?.vote?.winningOutcome
 
   const isDisputeVoided = dispute?.status === Status.Voided
 
@@ -170,8 +164,7 @@ const DisputeInfo = React.memo(function({
 
 function DisputeHeader({ dispute, error }) {
   const theme = useTheme()
-  const { id, description } = dispute || {}
-  const transaction = dispute && dispute.txHash
+  const { id, description, transaction } = dispute || {}
 
   return (
     <div
@@ -207,7 +200,7 @@ function DisputeHeader({ dispute, error }) {
             width: 100%;
           `}
         >
-          <div
+          <h1
             css={`
               display: flex;
               align-items: center;
@@ -228,7 +221,7 @@ function DisputeHeader({ dispute, error }) {
                 `}
               />
             )}
-          </div>
+          </h1>
           {Boolean(dispute?.status !== Status.Voided && transaction) && (
             <TransactionBadge
               transaction={transaction}
@@ -263,7 +256,6 @@ function Field({ label, value }) {
             {transformAddresses(line, (part, isAddress, index) =>
               isAddress ? (
                 <span title={part} key={index}>
-                  {' '}
                   <LocalIdentityBadge
                     connectedAccount={addressesEqual(part, wallet.account)}
                     entity={part}
@@ -279,7 +271,7 @@ function Field({ label, value }) {
                       )
                       return (
                         <Link href={ipfsUrl} key={i}>
-                          {word}{' '}
+                          {word}
                         </Link>
                       )
                     }
@@ -306,10 +298,10 @@ function Field({ label, value }) {
 }
 
 function DisputeActionText({ dispute, isFinalRulingEnsured }) {
-  const theme = useTheme()
   const { disputedActionText, disputedActionURL } = dispute
   const lastRound = dispute?.rounds?.[dispute.lastRoundId]
   const voteWinningOutcome = lastRound?.vote?.winningOutcome
+  const appealedRuling = lastRound?.appeal?.appealedRuling
 
   if (!isFinalRulingEnsured) {
     return (
@@ -319,18 +311,15 @@ function DisputeActionText({ dispute, isFinalRulingEnsured }) {
     )
   }
 
-  const Icon = voteWinningOutcome ? IconCheck : IconCross
-  const prefix = voteWinningOutcome ? 'Alowed action: ' : 'Blocked action: '
   return (
-    <div
-      css={`
-        display: flex;
-        color: ${voteWinningOutcome ? theme.positive : theme.negative};
-      `}
-    >
-      <Icon />
-      {prefix + disputedActionText}
-    </div>
+    <DisputeOutcomeText
+      action={disputedActionText}
+      outcome={appealedRuling || voteWinningOutcome}
+      phase={
+        appealedRuling ? DisputePhase.AppealRuling : DisputePhase.RevealVote
+      }
+      verbose
+    />
   )
 }
 
@@ -348,28 +337,3 @@ DisputeInfo.propTypes = {
 }
 
 export default DisputeInfo
-
-/**
- * 
- *   {isAddress(value) ? (
-        <div
-          css={`
-            display: flex;
-            align-items: flex-start;
-          `}
-        >
-          <LocalIdentityBadge
-            connectedAccount={addressesEqual(value, wallet.account)}
-            entity={value}
-          />
-        </div>
-      ) : (
-        <div
-          css={`
-            ${textStyle('body2')};
-          `}
-        >
-          {value}
-        </div>
-      )}
- */

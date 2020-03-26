@@ -159,7 +159,8 @@ function useProcessedDispute(dispute) {
             description: parsedDisputeData.description || disputeDescription,
             disputedActionText: parsedDisputeData.disputedActionText || '',
             disputedActionURL: parsedDisputeData.disputedActionURL || '',
-            agreementText: agreementText || '',
+            agreementText:
+              parsedDisputeData.agreementTitle || agreementText || '',
             agreementUrl: agreementUrl || '',
             disputedActionRadspec:
               parsedDisputeData.disputedActionRadspec || '',

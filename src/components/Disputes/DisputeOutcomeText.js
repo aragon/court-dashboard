@@ -9,7 +9,13 @@ import {
   OUTCOMES,
 } from '../../utils/crvoting-utils'
 
-function DisputeOutcomeText({ isFinalRuling, outcome, phase }) {
+function DisputeOutcomeText({
+  action,
+  isFinalRuling,
+  outcome,
+  phase,
+  verbose = false,
+}) {
   const { Icon, color } = useOutcomeStyle(outcome)
 
   const outcomeText = useMemo(() => {
@@ -44,6 +50,7 @@ function DisputeOutcomeText({ isFinalRuling, outcome, phase }) {
           `}
         >
           {outcomeText}
+          {verbose && <span>: {action}</span>}
         </span>
       </div>
     </div>
