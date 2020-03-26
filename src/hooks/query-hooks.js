@@ -21,13 +21,13 @@ export function useJurorDraftQuery(jurorId) {
 }
 
 /**
- * Queries if the juror  by id `jurorId` has already claimed rewards
+ * Queries if the juror  by id `jurorId` has ever claimed rewards
  * Rewards can be claimed from two places: Subscriptions fees or Dispute fees (the later includes appeal and juror fees)
  *
  * @param {String} jurorId Address of the juror
- * @returns {Boolean} True if juror has already claimed rewards
+ * @returns {Boolean} True if juror has ever claimed rewards
  */
-export function useJurorRewardsClaimedQuery(jurorId) {
+export function useJurorRewardsEverClaimedQuery(jurorId) {
   const [{ data }] = useQuery({
     query: JurorFeesClaimed,
     variables: { owner: jurorId.toLowerCase() },
