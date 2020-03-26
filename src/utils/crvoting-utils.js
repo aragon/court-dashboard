@@ -40,8 +40,8 @@ export function appealOptionToString(outcome) {
 const outcomeStringMapping = {
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused to vote',
-  [OUTCOMES.Against]: 'Against plaintiff',
-  [OUTCOMES.InFavor]: 'In favor of plaintiff',
+  [OUTCOMES.Against]: 'Blocked action',
+  [OUTCOMES.InFavor]: 'Allowed action',
 }
 
 export function juryOutcomeToString(outcome) {

@@ -157,8 +157,13 @@ function useProcessedDispute(dispute) {
           return setDisputeProcessed({
             ...dispute,
             description: parsedDisputeData.description || disputeDescription,
+            disputedActionText: parsedDisputeData.disputedActionText || '',
+            disputedActionURL: parsedDisputeData.disputedActionURL || '',
             agreementText: agreementText || '',
             agreementUrl: agreementUrl || '',
+            disputedActionRadspec:
+              parsedDisputeData.disputedActionRadspec || '',
+            organization: parsedDisputeData.organization || '',
             defendant: parsedDisputeData.defendant || '',
             plaintiff: parsedDisputeData.plaintiff || '',
             error: '',
