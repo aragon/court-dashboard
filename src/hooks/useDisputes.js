@@ -11,14 +11,8 @@ import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { convertToString, Status } from '../types/dispute-status-types'
 import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
 
-const DISPUTE_PROCESSED_DEFAULT = {
-  description: '',
-  agreementText: '',
-  defendant: '',
-  plaintiff: '',
-  error: false,
-  fetching: true,
-}
+const IPFS_ERROR_MSG = 'Error loading content from ipfs'
+
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
   const { disputes, fetching, error } = useDisputesSubscription()
@@ -61,46 +55,82 @@ export default function useDisputes() {
   }, [disputesPhases, disputes, disputesPhasesKey, error]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
+/**
+ * Hook that processes a single dispute data
+ * @param {String} disputeId Id of the dispute
+ * @returns {Array} Array conformed by the dispute processed data, fetching indicator and an error object from the graph or an ipfs error in that order
+ * (the error also indicates if the error is from the graph since we need to handle in a different way
+ * in the dispute detail, the timeline can not be displayed if is a graph error but can if the error is from ipfs)
+ */
 export function useDispute(disputeId) {
   const courtConfig = useCourtConfig()
   const now = useNow() // TODO: use court clock
-  const { dispute, fetching } = useSingleDisputeSubscription(disputeId)
-  const disputeProcessed = useProcessedDispute(dispute, fetching)
+  const {
+    dispute,
+    fetching: graphFetching,
+    error: graphError,
+  } = useSingleDisputeSubscription(disputeId)
 
+  const disputeProcessed = useProcessedDispute(dispute)
   const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
   const disputePhaseKey = disputePhase
     ? convertToString(Object.values(disputePhase)[0])
     : ''
 
-  return useMemo(() => {
-    return {
-      dispute: {
-        ...disputeProcessed,
-        ...disputePhase,
-      },
-    }
-  }, [disputeProcessed, disputePhaseKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const graphErrorMessage = graphError?.message || ''
+  const disputeErrorMessage = disputeProcessed?.error || graphErrorMessage
+
+  return useMemo(
+    () => {
+      const fetching = graphFetching || (dispute && !disputeProcessed)
+
+      return [
+        dispute && disputeProcessed
+          ? {
+              ...disputeProcessed,
+              ...disputePhase,
+            }
+          : null,
+        fetching,
+        disputeErrorMessage
+          ? {
+              message: disputeErrorMessage,
+              fromGraph: Boolean(graphErrorMessage),
+            }
+          : null,
+      ]
+    } /* eslint-disable react-hooks/exhaustive-deps */,
+    [
+      disputeErrorMessage,
+      disputePhaseKey,
+      disputeProcessed,
+      graphErrorMessage,
+      graphFetching,
+    ]
+    /* eslint-enable react-hooks/exhaustive-deps */
+  )
 }
 
-function useProcessedDispute(dispute, fetching) {
-  const [disputeProcessed, setDisputeProcessed] = useState(
-    DISPUTE_PROCESSED_DEFAULT
-  )
+function useProcessedDispute(dispute) {
+  const [disputeProcessed, setDisputeProcessed] = useState(null)
 
   useEffect(() => {
+    let cancelled = false
+
     const fetchDataFromIpfs = async () => {
-      if (!dispute) {
-        return setDisputeProcessed({ ...disputeProcessed, fetching })
-      }
       if (dispute.status === Status.Voided) {
-        return setDisputeProcessed({ ...dispute, fetching: false })
+        return dispute
       }
+
       const [disputeDescription, uriOrData] = getDisputeInfoFromMetadata(
         dispute.metadata
       )
 
       if (!uriOrData) {
-        return setDisputeProcessed({ ...dispute, fetching: false, error: true })
+        return {
+          ...dispute,
+          error: IPFS_ERROR_MSG,
+        }
       }
 
       const ipfsPath = getIpfsCidFromUri(uriOrData)
@@ -108,11 +138,10 @@ function useProcessedDispute(dispute, fetching) {
       if (ipfsPath) {
         const { data, error } = await ipfsGet(ipfsPath)
         if (error) {
-          return setDisputeProcessed({
+          return {
             ...dispute,
-            fetching: false,
-            error: true,
-          })
+            error: IPFS_ERROR_MSG,
+          }
         }
         try {
           const parsedDisputeData = JSON.parse(data)
@@ -124,29 +153,46 @@ function useProcessedDispute(dispute, fetching) {
             agreementText &&
             resolvePathname(agreementText, `${IPFS_ENDPOINT}/${ipfsPath}`)
 
-          return setDisputeProcessed({
+          return {
             ...dispute,
             description: parsedDisputeData.description || disputeDescription,
             agreementText: agreementText || '',
             agreementUrl: agreementUrl || '',
             defendant: parsedDisputeData.defendant || '',
             plaintiff: parsedDisputeData.plaintiff || '',
-            error: false,
-            fetching: false,
-          })
+            error: '',
+          }
         } catch (err) {
-          return setDisputeProcessed({
+          return {
             ...dispute,
             description: data,
-            fetching: false,
-          })
+          }
         }
       }
-      return setDisputeProcessed({ ...dispute, fetching: false, error: true })
+
+      return {
+        ...dispute,
+        error: IPFS_ERROR_MSG,
+      }
     }
 
-    fetchDataFromIpfs()
-  }, [dispute]) // eslint-disable-line react-hooks/exhaustive-deps
+    const processDispute = async () => {
+      if (!dispute) {
+        return
+      }
+
+      const processedDispute = await fetchDataFromIpfs()
+      if (!cancelled) {
+        setDisputeProcessed(processedDispute)
+      }
+    }
+
+    processDispute()
+
+    return () => {
+      cancelled = true
+    }
+  }, [dispute])
 
   return disputeProcessed
 }

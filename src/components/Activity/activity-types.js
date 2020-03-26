@@ -56,6 +56,15 @@ const ACTIVITY_TYPES = new Map(
         `,
       }
     },
+    claimSubscriptionFees({ periodId }) {
+      return {
+        title: 'Claim Subscription rewards',
+        icon: iconClaimRewards,
+        description: `
+          Claim subscription rewards for period ${periodId}
+        `,
+      }
+    },
     commitVote({ disputeId, roundId, commitment }) {
       return {
         title: 'Commit vote',

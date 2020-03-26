@@ -16,16 +16,7 @@ export const Juror = gql`
       availableBalance
       deactivationBalance
       withdrawalsLockTermId
-      treasuryTokens {
-        token {
-          id
-          name
-          symbol
-          decimals
-        }
-        balance
-      }
-      movements(
+      anjMovements(
         orderBy: createdAt
         orderDirection: desc
         where: { createdAt_gt: $from }
@@ -35,6 +26,23 @@ export const Juror = gql`
         createdAt
         type
       }
+      claimedSubscriptionFees {
+        id
+        period {
+          id
+        }
+      }
+    }
+  }
+`
+
+export const JurorTreasuryBalances = gql`
+  subscription JurorTreasuryBalances($owner: Bytes!) {
+    treasuryBalances(where: { owner: $owner }) {
+      token {
+        id
+      }
+      amount
     }
   }
 `
@@ -42,7 +50,7 @@ export const Juror = gql`
 export const FirstANJActivationMovement = gql`
   query Juror($id: ID!) {
     juror(id: $id) {
-      movements(
+      anjMovements(
         where: { type: "Activation" }
         orderBy: createdAt
         orderDirection: asc

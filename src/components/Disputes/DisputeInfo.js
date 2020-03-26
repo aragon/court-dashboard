@@ -27,6 +27,7 @@ import iconCourt from '../../assets/courtIcon.svg'
 
 const DisputeInfo = React.memo(function({
   id,
+  error,
   dispute,
   loading,
   onDraft,
@@ -41,7 +42,6 @@ const DisputeInfo = React.memo(function({
     agreementUrl,
     defendant,
     description,
-    error,
     phase,
     plaintiff,
     status,
@@ -68,8 +68,14 @@ const DisputeInfo = React.memo(function({
           align-items: center;
         `}
       >
-        <DisputeHeader id={id} dispute={dispute} />
+        <DisputeHeader id={id} dispute={dispute} error={error} />
         {(() => {
+          if (error) {
+            return (
+              <ErrorLoading subject="dispute" errors={[error]} border={false} />
+            )
+          }
+
           if (loading) {
             return <Loading border={false} />
           }
@@ -83,17 +89,6 @@ const DisputeInfo = React.memo(function({
               />
             )
           }
-
-          if (error) {
-            return (
-              <ErrorLoading
-                subject="dispute"
-                errors={['Error loading content from ipfs']}
-                border={false}
-              />
-            )
-          }
-
           return (
             <>
               <Row>
@@ -156,7 +151,7 @@ const DisputeInfo = React.memo(function({
             </>
           )
         })()}
-        {!isDisputeVoided && (
+        {!isDisputeVoided && !error && (
           <>
             {(phase === DisputePhase.AppealRuling ||
               phase === DisputePhase.ConfirmAppeal ||
@@ -180,7 +175,7 @@ const DisputeInfo = React.memo(function({
   )
 })
 
-function DisputeHeader({ dispute, id }) {
+function DisputeHeader({ id, dispute, error }) {
   const theme = useTheme()
   const transaction = dispute && dispute.txHash
 
@@ -225,7 +220,7 @@ function DisputeHeader({ dispute, id }) {
             `}
           >
             <span>Dispute #{id}</span>
-            {dispute && (
+            {!error && dispute && (
               <DisputeStatus
                 dispute={dispute}
                 css={`

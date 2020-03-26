@@ -9,7 +9,7 @@ import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/preced
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
 
-export const transformResponseDisputeAttributes = dispute => {
+export const transformDisputeDataAttributes = dispute => {
   const transformedDispute = {
     ...dispute,
     createdAt: parseInt(dispute.createdAt, 10) * 1000,

@@ -338,6 +338,7 @@ export function useRewardActions() {
 }
 
 export function useCourtSubscriptionActions() {
+  const { addActivity } = useActivity()
   const courtSubscriptionsContract = useCourtContract(
     CourtModuleType.Subscriptions,
     courtSubscriptionsAbi
@@ -345,14 +346,14 @@ export function useCourtSubscriptionActions() {
 
   const claimFees = useCallback(
     periodId => {
-      return courtSubscriptionsContract.claimFees(periodId)
+      return addActivity(
+        courtSubscriptionsContract.claimFees(periodId),
+        'claimSubscriptionFees',
+        { periodId }
+      )
     },
-    [courtSubscriptionsContract]
+    [addActivity, courtSubscriptionsContract]
   )
-
-  const getCurrentPeriodId = useCallback(() => {
-    return courtSubscriptionsContract.getCurrentPeriodId()
-  }, [courtSubscriptionsContract])
 
   const getJurorShare = useCallback(
     (juror, periodId) => {
@@ -361,24 +362,9 @@ export function useCourtSubscriptionActions() {
     [courtSubscriptionsContract]
   )
 
-  const hasJurorClaimed = useCallback(
-    (juror, periodId) => {
-      return courtSubscriptionsContract.hasJurorClaimed(juror, periodId)
-    },
-    [courtSubscriptionsContract]
-  )
-
   const getters = useMemo(
-    () =>
-      courtSubscriptionsContract
-        ? { getCurrentPeriodId, getJurorShare, hasJurorClaimed }
-        : null,
-    [
-      courtSubscriptionsContract,
-      getCurrentPeriodId,
-      getJurorShare,
-      hasJurorClaimed,
-    ]
+    () => (courtSubscriptionsContract ? { getJurorShare } : null),
+    [courtSubscriptionsContract, getJurorShare]
   )
 
   return {
