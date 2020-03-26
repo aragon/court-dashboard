@@ -1,4 +1,10 @@
-const { asset, banner, base2, button } = require('../template-utils')
+const {
+  asset,
+  banner,
+  base2,
+  button,
+  trimMultiline,
+} = require('../template-utils')
 
 module.exports = function() {
   return {
@@ -11,7 +17,7 @@ module.exports = function() {
       `
         <h1>{{title}}</h1>
         <div style="color: #8A96A0">
-          {{{content}}}
+          {{{contentHtml}}}
         </div>
         <div style="padding: 20px 0 10px">
           ${button('{{actionLabel}}', '{{actionUrl}}')}
@@ -21,7 +27,7 @@ module.exports = function() {
     templateText: `
       {{title}}
 
-      {{contentText}}
+      {{content}}
 
       {{actionLabel}}: {{actionUrl}}
 
@@ -41,7 +47,7 @@ module.exports = function() {
         url: asset('banner-dispute0.png'),
         color: '#171717',
       }),
-      content: `
+      contentHtml: `
         <p>
           Jurors, be advised, Dispute #0 has been voided and discontinued due
           to unforeseen and exceptional circumstances. Your tokens are safe:
@@ -50,13 +56,13 @@ module.exports = function() {
           situation from the blog post linked below.
         </p>
       `,
-      contentText: `
+      content: trimMultiline(`
         Jurors, be advised, Dispute #0 has been voided and discontinued due
         to unforeseen and exceptional circumstances. Your tokens are safe:
         we will resolve this dispute as the protocol allows us to, and we
         are sorry for any inconvenience. You can read more about this unique
         situation from the blog post linked below.
-      `,
+      `),
     },
   }
 }
