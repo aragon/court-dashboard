@@ -164,7 +164,7 @@ const DisputeInfo = React.memo(function({
 
 function DisputeHeader({ dispute, error }) {
   const theme = useTheme()
-  const { id, description, transaction } = dispute || {}
+  const { id, description, txHash } = dispute || {}
 
   return (
     <div
@@ -222,9 +222,9 @@ function DisputeHeader({ dispute, error }) {
               />
             )}
           </h1>
-          {Boolean(dispute?.status !== Status.Voided && transaction) && (
+          {Boolean(dispute?.status !== Status.Voided && txHash) && (
             <TransactionBadge
-              transaction={transaction}
+              transaction={txHash}
               networkType={getNetworkType()}
             />
           )}
