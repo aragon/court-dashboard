@@ -38,30 +38,39 @@ module.exports = function() {
       [1] https://aragon.one/
     `,
     mockData: {
-      actionLabel: 'Dispute #0 has been voided',
-      actionUrl:
-        'https://blog.aragon.one/update-on-aragon-courts-first-mock-dispute/',
-      title: 'Dispute #0 has been voided',
+      actionLabel: 'New Campaign Details >>',
+      actionUrl: 'https://blog.aragon.org/juror-dispute-guide-app-mining/',
+      title: 'New disputes coming soon',
       bannerHtml: banner({
         height: 388,
-        url: asset('banner-dispute0.png'),
+        url: asset('banner-precedence-restart.jpg'),
         color: '#171717',
       }),
       contentHtml: `
         <p>
-          Jurors, be advised, Dispute #0 has been voided and discontinued due
-          to unforeseen and exceptional circumstances. Your tokens are safe:
-          we will resolve this dispute as the protocol allows us to, and we
-          are sorry for any inconvenience. You can read more about this unique
-          situation from the blog post linked below.
+          The precedence campaign is restarting soon and there are important
+          changes in expectations for the upcoming disputes than were announced
+          previously.
+          <strong>
+            The coming “mock” disputes will feature real parties and
+            binding outcomes, rather than fictitious scenarios.
+          </strong>
+          For example, jurors will be tasked with deciding whether various
+          Aragon apps should be eligible for App Mining rewards. For more
+          information about App Mining and how jurors can best prepare for the
+          upcoming disputes check out what’s next for the Precedence campaign
+          below.
         </p>
       `,
       content: trimMultiline(`
-        Jurors, be advised, Dispute #0 has been voided and discontinued due
-        to unforeseen and exceptional circumstances. Your tokens are safe:
-        we will resolve this dispute as the protocol allows us to, and we
-        are sorry for any inconvenience. You can read more about this unique
-        situation from the blog post linked below.
+        The precedence campaign is restarting soon and there are important
+        changes in expectations for the upcoming disputes than were announced
+        previously. The coming “mock” disputes will feature real parties and
+        binding outcomes, rather than fictitious scenarios. For example, jurors
+        will be tasked with deciding whether various Aragon apps should be
+        eligible for App Mining rewards. For more information about App Mining
+        and how jurors can best prepare for the upcoming disputes check out
+        what’s next for the Precedence campaign below.
       `),
     },
   }
