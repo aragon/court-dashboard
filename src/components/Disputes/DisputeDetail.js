@@ -1,16 +1,18 @@
 import React, { useCallback, useMemo } from 'react'
-import { BackButton, Bar, Box, GU, Header, SidePanel, Split } from '@aragon/ui'
+import { BackButton, Bar, Box, GU, SidePanel, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
 import { utils as EthersUtils } from 'ethers'
 
-import DisputeInfo from './DisputeInfo'
-import DisputeEvidences from './DisputeEvidences'
-import MessageCard from '../MessageCard'
-import DisputeTimeline from './DisputeTimeline'
-import NoEvidence from './NoEvidence'
-import CommitPanel from './panels/CommitPanel'
-import RevealPanel from './panels/RevealPanel'
 import AppealPanel from './panels/AppealPanel'
+import Banner from './PrecedenceCampaign/PrecedenceCampaignBanner'
+import CommitPanel from './panels/CommitPanel'
+import DisputeEvidences from './DisputeEvidences'
+import DisputeInfo from './DisputeInfo'
+import DisputeTimeline from './DisputeTimeline'
+import MessageCard from '../MessageCard'
+import NoEvidence from './NoEvidence'
+import RevealPanel from './panels/RevealPanel'
+import TitleHeader from '../TitleHeader'
 
 import { Status as DisputeStatus } from '../../types/dispute-status-types'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
@@ -71,7 +73,8 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 
   return (
     <React.Fragment>
-      <Header primary="Disputes" />
+      {dispute?.marksPrecedent && <Banner disputeId={disputeId} />}
+      <TitleHeader title="Disputes" />
       <Bar>
         <BackButton onClick={handleBack} />
       </Bar>
