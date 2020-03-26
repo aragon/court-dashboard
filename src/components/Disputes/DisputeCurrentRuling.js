@@ -56,9 +56,10 @@ function DisputeCurrentRuling({ dispute }) {
           percentage: weight,
         }))}
         renderFullLegendItem={({ color, item, index, percentage }) => {
-          // We'll show the juror voting weight hint only if the juror participated in the  current ruling
-          // and has been drafted more than once
-          const showMyVotingWeight = index === 0 && myWeight > 1
+          // We'll show the juror voting weight hint if any juror has been drafted more than once for this last round
+          const showVotingWeightHint =
+            index === 0 && lastRound.jurorsNumber !== lastRound.jurors.length
+          const showMyWeight = myWeight > 1
 
           return (
             <div
@@ -80,7 +81,7 @@ function DisputeCurrentRuling({ dispute }) {
                     background: ${color};
                     width: 8px;
                     height: 8px;
-                    margin-right: 8px;
+                    margin-right: ${1 * GU}px;
                     border-radius: 50%;
                   `}
                 />
@@ -103,7 +104,7 @@ function DisputeCurrentRuling({ dispute }) {
                 </span>
                 {myDistributionIndex === index && <Tag>You</Tag>}
               </div>
-              {showMyVotingWeight && (
+              {showVotingWeightHint && (
                 <div
                   css={`
                     display: flex;
@@ -116,14 +117,15 @@ function DisputeCurrentRuling({ dispute }) {
                       margin-right: ${0.5 * GU}px;
                     `}
                   >
-                    Your voting weight
+                    {showMyWeight ? 'Your v' : 'V'}oting weight
                   </span>
-                  <Help>
-                    The same juror can be drafted multiple times to arbitrate
-                    the same dispute for the same round. When that happens,
-                    their voting weight will be proportional to the number of
-                    times is drafted, as well as the % of ANJ locked in the
-                    Active balance.
+                  <Help hint="What's the voting weight?">
+                    {showMyWeight ? 'You have been' : 'The same juror can be'}{' '}
+                    drafted multiple times to arbitrate the same dispute for the
+                    same round. When that happens,{' '}
+                    {showMyWeight ? 'your' : 'their'} voting weight{' '}
+                    {showMyWeight ? 'is' : 'will be'} proportional to the number
+                    of times {showMyWeight ? 'you are' : 'is'} drafted.
                   </Help>
                 </div>
               )}
