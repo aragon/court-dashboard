@@ -32,8 +32,8 @@ module.exports = function() {
           `
             <tr>
               <td style="${style(`
-                font-size: 20px;
-                line-height: 30px;
+                font-size: 18px;
+                line-height: 27px;
                 color: #8A96A0;
               `)}">
                 {{{contentHtml}}}
@@ -71,51 +71,25 @@ module.exports = function() {
     `,
     mockData: {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
-      title: 'You have been drafted in a void dispute (Dispute #0)',
+      title: 'Claim your subscription rewards',
       content: trimMultiline(`
-        Juror, you are receiving this email because you were drafted in Dispute
-        #0, which was recently voided with all related content being removed
-        from the Juror Dashboard.
-
-        Since you were drafted, the protocol has locked some of your tokens, and
-        these will remain locked until the dispute reaches a final ruling.
-
-        Given the circumstances of the dispute becoming void, we recommend all
-        drafted jurors abstain from casting votes and allow their locked
-        tokens be slashed by the protocol at the end of the dispute.
-
-        However, all slashed tokens will be automatically reimbursed to your
-        account once Dispute #0 has reached a final ruling.
+        Congratulations! You have been rewarded a portion of this month's
+        Subscription rewards because your ANJ was activated for a full Court
+        period. Claim them in the ‘Rewards’ section of the Dashboard.
       `),
       contentHtml: `
+        <h1>
+          Claim your subscription rewards
+        </h1>
         <p>
-          Juror, you are receiving this email because you were drafted in
-          Dispute #0, which was recently voided with all related content being
-          removed from the Juror Dashboard.
-        </p>
-
-        <p>
-          Since you were drafted, the protocol has locked some of your tokens,
-          and these will remain locked until the dispute reaches a final ruling.
-        </p>
-
-        <p>
-          Given the circumstances of the dispute becoming void, we recommend
-          all drafted jurors <strong>abstain</strong> from casting votes and
-          allow their locked tokens be slashed by the protocol at the end of
-          the dispute.
-        </p>
-
-        <p>
-          <strong>
-            However, all slashed tokens will be automatically reimbursed to
-            your account once Dispute #0 has reached a final ruling.
-          </strong>
+          Congratulations! You have been rewarded a portion of this month's
+          Subscription rewards because your ANJ was activated for a full Court
+          period. Claim them in the ‘Rewards’ section of the Dashboard.
         </p>
       `,
-      headerUrl: asset('header-dispute0.png'),
+      headerUrl: asset('header-anj.png'),
       date: 'Thursday, 17 Dec. 2019',
-      actionLabel: 'Read more',
+      actionLabel: 'Claim rewards',
       actionUrl: '',
     },
   }
