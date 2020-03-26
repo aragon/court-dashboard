@@ -1,4 +1,5 @@
 import React from 'react'
+import { animated, useSpring } from 'react-spring'
 import { GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 
 import AccountBannerInfo from './AccountBannerInfo'
@@ -107,8 +108,8 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
             display: flex;
             align-items: center;
             background: ${iconBackground};
-            height: ${6 * GU}px;
-            width: ${iconBackground ? 6 * GU + 'px' : 'auto'};
+            height: ${7 * GU}px;
+            width: ${iconBackground ? 7 * GU + 'px' : 'auto'};
             border-radius: 50%;
           `}
         >
@@ -136,8 +137,15 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
 }
 
 const Wrapper = ({ mainIcon, information }) => {
+  const springProps = useSpring({
+    to: { opacity: 1 },
+    from: { opacity: 0 },
+    delay: 200,
+  })
+
   return (
-    <div
+    <animated.div
+      style={springProps}
       css={`
         display: flex;
       `}
@@ -150,7 +158,7 @@ const Wrapper = ({ mainIcon, information }) => {
         {mainIcon}
       </div>
       {information}
-    </div>
+    </animated.div>
   )
 }
 
