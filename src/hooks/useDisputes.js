@@ -115,12 +115,11 @@ function useProcessedDispute(dispute) {
   const [disputeProcessed, setDisputeProcessed] = useState(null)
 
   useEffect(() => {
+    let cancelled = false
+
     const fetchDataFromIpfs = async () => {
-      if (!dispute) {
-        return
-      }
       if (dispute.status === Status.Voided) {
-        return setDisputeProcessed(dispute)
+        return dispute
       }
 
       const [disputeDescription, uriOrData] = getDisputeInfoFromMetadata(
@@ -128,10 +127,10 @@ function useProcessedDispute(dispute) {
       )
 
       if (!uriOrData) {
-        return setDisputeProcessed({
+        return {
           ...dispute,
           error: IPFS_ERROR_MSG,
-        })
+        }
       }
 
       const ipfsPath = getIpfsCidFromUri(uriOrData)
@@ -139,10 +138,10 @@ function useProcessedDispute(dispute) {
       if (ipfsPath) {
         const { data, error } = await ipfsGet(ipfsPath)
         if (error) {
-          return setDisputeProcessed({
+          return {
             ...dispute,
             error: IPFS_ERROR_MSG,
-          })
+          }
         }
         try {
           const parsedDisputeData = JSON.parse(data)
@@ -154,7 +153,7 @@ function useProcessedDispute(dispute) {
             agreementText &&
             resolvePathname(agreementText, `${IPFS_ENDPOINT}/${ipfsPath}`)
 
-          return setDisputeProcessed({
+          return {
             ...dispute,
             description: parsedDisputeData.description || disputeDescription,
             agreementText: agreementText || '',
@@ -162,21 +161,37 @@ function useProcessedDispute(dispute) {
             defendant: parsedDisputeData.defendant || '',
             plaintiff: parsedDisputeData.plaintiff || '',
             error: '',
-          })
+          }
         } catch (err) {
-          return setDisputeProcessed({
+          return {
             ...dispute,
             description: data,
-          })
+          }
         }
       }
-      return setDisputeProcessed({
+
+      return {
         ...dispute,
         error: IPFS_ERROR_MSG,
-      })
+      }
     }
 
-    fetchDataFromIpfs()
+    const processDispute = async () => {
+      if (!dispute) {
+        return
+      }
+
+      const processedDispute = await fetchDataFromIpfs()
+      if (!cancelled) {
+        setDisputeProcessed(processedDispute)
+      }
+    }
+
+    processDispute()
+
+    return () => {
+      cancelled = true
+    }
   }, [dispute])
 
   return disputeProcessed
