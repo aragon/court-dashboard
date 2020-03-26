@@ -3,9 +3,9 @@ const {
   addressBadge,
   asset,
   base,
-  stripWhitespace,
   style,
   table,
+  trimMultiline,
 } = require('../template-utils')
 const { accountData } = require('../mock-utils')
 
@@ -72,7 +72,7 @@ module.exports = function() {
     mockData: {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
       title: 'You have been drafted in a void dispute (Dispute #0)',
-      content: stripWhitespace(`
+      content: trimMultiline(`
         Juror, you are receiving this email because you were drafted in Dispute
         #0, which was recently voided with all related content being removed
         from the Juror Dashboard.

@@ -36,9 +36,9 @@ function asset(path) {
   return `${assetBasePath}/${path}`
 }
 
-function stripWhitespace(str) {
+function trimMultiline(str) {
   // Remove extra whitespace from multi-line strings
-  return str.replace(/\n +/gm, '\n').trim()
+  return str.replace(/ *\n */gm, '\n').trim()
 }
 
 function table(attributes, content) {
@@ -1080,8 +1080,8 @@ module.exports = {
   dataTable,
   infobox,
   link,
-  stripWhitespace,
   style,
   table,
+  trimMultiline,
   vspace,
 }

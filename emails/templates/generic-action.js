@@ -4,7 +4,7 @@ const {
   base,
   infobox,
   link,
-  stripWhitespace,
+  trimMultiline,
 } = require('../template-utils')
 const { accountData } = require('../mock-utils')
 
@@ -46,7 +46,7 @@ module.exports = function() {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
       date: 'Thursday, 17 Dec. 2019',
       title: 'Dispute #0 has been settled and fee reimbursements completed.',
-      actionText: stripWhitespace(`
+      actionText: trimMultiline(`
         You are recieving this notification because you have been reimbursed for
         losses incurred from your involvement in Dispute #0.
 

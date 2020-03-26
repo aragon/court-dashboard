@@ -3,7 +3,7 @@ const {
   banner,
   base2,
   button,
-  stripWhitespace,
+  trimMultiline,
 } = require('../template-utils')
 
 module.exports = function() {
@@ -56,7 +56,7 @@ module.exports = function() {
           situation from the blog post linked below.
         </p>
       `,
-      content: stripWhitespace(`
+      content: trimMultiline(`
         Jurors, be advised, Dispute #0 has been voided and discontinued due
         to unforeseen and exceptional circumstances. Your tokens are safe:
         we will resolve this dispute as the protocol allows us to, and we

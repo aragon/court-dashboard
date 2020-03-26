@@ -3,7 +3,7 @@ const {
   banner,
   base2,
   button,
-  stripWhitespace,
+  trimMultiline,
 } = require('../template-utils')
 
 module.exports = function() {
@@ -84,7 +84,7 @@ module.exports = function() {
           Have fun, and break things!
         </p>
       `,
-      content: stripWhitespace(`
+      content: trimMultiline(`
         The Juror Playground is a separate instance of the Juror Dashboard and
         Aragon Court on the Rinkeby testnet.
 
@@ -109,7 +109,7 @@ module.exports = function() {
         out the new dashboard and ensure that the system is working
         correctly.
       `,
-      notice: stripWhitespace(`
+      notice: trimMultiline(`
         This is an email from Aragon Court’s Rinkeby test environment. This
         environment has been configured so jurors can have a playground to try
         out the new dashboard and ensure that the system is working
