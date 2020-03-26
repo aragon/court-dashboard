@@ -4,10 +4,12 @@ import { Button, GU, Modal, textStyle, useTheme, useViewport } from '@aragon/ui'
 import pcModalSvg from './assets/PCModal.svg'
 
 function PrecedenceCampaignModal({ opened, onClose }) {
-  const { width, height } = useViewport()
   const theme = useTheme()
+  const { below, height, width } = useViewport()
 
   const verticalMode = width < 1000
+  const compactMode = below('medium')
+
   const modalHeight = verticalMode
     ? height - 40
     : Math.max(700, Math.min(620, height - 40))
@@ -19,14 +21,14 @@ function PrecedenceCampaignModal({ opened, onClose }) {
         padding={0}
         visible={opened}
         width={Math.min(1055, width - 40)}
-        css={`
-          z-index: 4;
-        `}
+        css="z-index: 4"
       >
         <div
           css={`
             display: grid;
-            grid-template-${verticalMode ? 'rows' : 'columns'}: 1fr 1fr;
+            grid-template-${
+              verticalMode ? 'rows :  1fr 2fr' : 'columns : 1fr 1fr'
+            };
             height: ${modalHeight}px;
           `}
         >
@@ -68,7 +70,7 @@ function PrecedenceCampaignModal({ opened, onClose }) {
             <div
               css={`
                 text-align: ${verticalMode ? 'center' : 'left'};
-                padding: 0px ${7 * GU}px;
+                padding: 0px ${(compactMode ? 3 : 7) * GU}px;
               `}
             >
               <p
@@ -82,7 +84,7 @@ function PrecedenceCampaignModal({ opened, onClose }) {
               </p>
               <h1
                 css={`
-                  font-size: ${verticalMode ? 36 : 42}px;
+                  font-size: ${compactMode ? 28 : 42}px;
                   margin: ${1.5 * GU}px 0;
                 `}
               >
@@ -90,14 +92,14 @@ function PrecedenceCampaignModal({ opened, onClose }) {
               </h1>
               <span
                 css={`
-                  ${textStyle(verticalMode ? 'body2' : 'body1')}
+                  ${textStyle(compactMode ? 'body2' : 'body1')}
                   line-height: 2;
                   display: block;
                 `}
               >
                 All information, arguments, and evidence presented in disputes
-                related to precedence campaign portray scenarios constructed by
-                Aragon One and do not reflect the views, opinions, or
+                related to the precedence campaign portray scenarios constructed
+                by Aragon One and do not reflect the views, opinions, or
                 associations of any person or entity.
               </span>
               <Button

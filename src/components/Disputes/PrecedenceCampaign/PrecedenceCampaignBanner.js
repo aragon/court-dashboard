@@ -7,7 +7,7 @@ const KEY_PREFIX = 'PC_DISPUTE_BANNER_READ'
 function PrecedenceCampaignBanner({ disputeId }) {
   const theme = useTheme()
   const [bannerVisible, setBannerVisible] = useState(
-    localStorage.getItem(`${KEY_PREFIX}${disputeId}`) === null
+    localStorage.getItem(`${KEY_PREFIX}_${disputeId}`) === null
   )
   const [modalOpened, setModalOpened] = useState(false)
 
@@ -20,7 +20,7 @@ function PrecedenceCampaignBanner({ disputeId }) {
   const markRead = useCallback(() => {
     closeBanner()
     setModalOpened(false)
-  }, [closeBanner, setModalOpened])
+  }, [closeBanner])
 
   if (!bannerVisible) return null
 

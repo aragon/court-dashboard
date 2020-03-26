@@ -7,14 +7,14 @@ import {
 import { getNetworkType } from '../lib/web3-utils'
 
 const PRECEDENCE_CAMPAIGN_DISPUTES = {
-  rpc: new Map([[networks.rpc.court, ['0']]]),
-  ropsten: new Map([[networks.ropsten.court, []]]),
+  rpc: new Map([[networks.rpc.court, new Map([])]]),
+  ropsten: new Map([[networks.ropsten.court, new Map([])]]),
   rinkeby: new Map([
-    [RINKEBY_COURT, []],
-    [RINKEBY_STAGING_COURT, []],
-    [RINKEBY_USABILITY_COURT, []],
+    [RINKEBY_COURT, new Map([])],
+    [RINKEBY_STAGING_COURT, new Map([['0']])],
+    [RINKEBY_USABILITY_COURT, new Map([])],
   ]),
-  main: new Map([[networks.main.court, []]]),
+  main: new Map([[networks.main.court, new Map([])]]),
 }
 
 export function getPrecedenceCampaignDisputesByCourt() {
