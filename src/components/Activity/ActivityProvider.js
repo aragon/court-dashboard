@@ -190,17 +190,19 @@ function ActivityProvider({ children }) {
       return
     }
 
-    const activitiesFromStorage = storedList.current
-      .getItems()
-      .filter(({ transactionHash }) => {
-        return (
+    const activitiesFromStorage = storedList.current.getItems()
+
+    // We will diff activities from storage and activites from state to prevent loops in the useEffect below
+    const activitiesChanged =
+      activities.length !== activitiesFromStorage.length ||
+      activitiesFromStorage.filter(
+        ({ transactionHash }) =>
           activities.findIndex(
             activity => activity.transactionHash === transactionHash
           ) === -1
-        )
-      })
+      ) > 0
 
-    if (activitiesFromStorage.length > 0) {
+    if (activitiesChanged) {
       setActivities(activitiesFromStorage)
     }
   }, [activities])
