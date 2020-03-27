@@ -1,22 +1,36 @@
 import { useMemo } from 'react'
 import { useSubscription } from 'urql'
-import { useCourtConfig } from '../providers/CourtConfig'
 
 // queries
 import { OpenTasks } from '../queries/tasks'
-import { CourtConfig } from '../queries/court'
+import { useCourtConfig } from '../providers/CourtConfig'
 import { AllDisputes, SingleDispute } from '../queries/disputes'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
-import { JurorANJBalances, JurorANJWalletBalance } from '../queries/balances'
 import { JurorDraftsFrom, JurorDraftsNotRewarded } from '../queries/jurorDrafts'
+import {
+  CourtConfig,
+  FeeMovements,
+  JurorsRegistryModule,
+} from '../queries/court'
+import {
+  JurorANJBalances,
+  JurorANJWalletBalance,
+  JurorTreasuryBalances,
+} from '../queries/balances'
 
 // utils
 import { bigNum } from '../lib/math-utils'
 import { dayjs } from '../utils/date-utils'
 import { groupMovements } from '../utils/anj-movement-utils'
+import { CourtModuleType } from '../types/court-module-types'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
+import { transformDisputeDataAttributes } from '../utils/dispute-utils'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
-import { transformResponseDisputeAttributes } from '../utils/dispute-utils'
+import { transformClaimedFeesDataAttributes } from '../utils/subscription-utils'
+import {
+  getModuleAddress,
+  transformCourtConfigDataAttributes,
+} from '../utils/court-utils'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -46,26 +60,47 @@ function useJuror(jurorId) {
   return { data, error }
 }
 
+// Subscription to get all treasury balances of juror with id `jurorId`
+function useJurorTreasuryBalances(jurorId) {
+  const [{ data, error }] = useSubscription({
+    query: JurorTreasuryBalances,
+    variables: { owner: jurorId.toLowerCase() },
+  })
+
+  return { data, error }
+}
+
 /**
- * Subscribes to all juror balances as well as to the latest 24h movements
+ * Subscribes to all juror balances as well as to the latest 24h movements and all subscription fees claimed by the juror
  * @param {String} jurorId Address of the juror
- * @returns {Object} Object containing al juror balances (Wallet, Inactive, Active, Locked, Deactivation Process)
- * and latest 24h movements
+ * @returns {Object} Object containing al juror balances (Wallet, Inactive, Active, Locked, Deactivation Process, Treasury),
+ * latest 24h movements and all subscription fees claimed by the juror
  */
 export function useJurorBalancesSubscription(jurorId) {
-  // My wallet balance
+  // Juror wallet balance
   const { data: anjBalanceData, error: anjBalanceError } = useANJBalance(
     jurorId
   )
 
-  // Active, inactive, locked balance
+  // Juror ANJ balances, 24h movements and subscritpion claimed fees
   const { data: jurorData, error: jurorError } = useJuror(jurorId)
+  const {
+    data: treasuryBalancesData,
+    error: treasuryBalancesError,
+  } = useJurorTreasuryBalances(jurorId)
 
-  const errors = [anjBalanceError, jurorError].filter(err => err)
+  const errors = [anjBalanceError, jurorError, treasuryBalancesError].filter(
+    err => err
+  )
 
-  const { balances, movements, treasury } = useMemo(() => {
+  const {
+    anjBalances,
+    anjMovements,
+    claimedSubscriptionFees,
+    treasury,
+  } = useMemo(() => {
     // Means it's still fetching
-    if (!jurorData || !anjBalanceData) {
+    if (!jurorData || !anjBalanceData || !treasuryBalancesData) {
       return {}
     }
 
@@ -77,34 +112,40 @@ export function useJurorBalancesSubscription(jurorId) {
     // We set 0 as default values
     const {
       activeBalance = NO_AMOUNT,
+      anjMovements = [],
       availableBalance = NO_AMOUNT,
+      claimedSubscriptionFees = [],
       deactivationBalance = NO_AMOUNT,
       lockedBalance = NO_AMOUNT,
-      movements = [],
-      treasuryTokens = [],
     } = jurorData.juror || {}
 
+    const { treasuryBalances = [] } = treasuryBalancesData || {}
+
     return {
-      balances: {
-        walletBalance: bigNum(walletBalance),
+      anjBalances: {
         activeBalance: bigNum(activeBalance),
-        lockedBalance: bigNum(lockedBalance),
-        inactiveBalance: bigNum(availableBalance),
         deactivationBalance: bigNum(deactivationBalance),
+        inactiveBalance: bigNum(availableBalance),
+        lockedBalance: bigNum(lockedBalance),
+        walletBalance: bigNum(walletBalance),
       },
-      movements: groupMovements(movements),
-      treasury: treasuryTokens.map(treasuryToken => ({
-        ...treasuryToken,
-        balance: bigNum(treasuryToken.balance),
+      anjMovements: groupMovements(anjMovements),
+      claimedSubscriptionFees: claimedSubscriptionFees.map(
+        transformClaimedFeesDataAttributes
+      ),
+      treasury: treasuryBalances.map(balance => ({
+        ...balance,
+        amount: bigNum(balance.amount),
       })),
     }
-  }, [anjBalanceData, jurorData])
+  }, [anjBalanceData, jurorData, treasuryBalancesData])
 
   return {
-    balances,
-    movements,
+    anjBalances,
+    anjMovements,
+    claimedSubscriptionFees,
     treasury,
-    fetching: !balances && errors.length === 0,
+    fetching: !anjBalances && errors.length === 0,
     errors,
   }
 }
@@ -115,13 +156,19 @@ export function useJurorBalancesSubscription(jurorId) {
  * @returns {Object} Court configuration data
  */
 export function useCourtConfigSubscription(courtAddress) {
-  const [result] = useSubscription({
+  const [{ data }] = useSubscription({
     query: CourtConfig,
     variables: { id: courtAddress.toLowerCase() },
   })
 
   // TODO: handle possible errors
-  const { courtConfig } = result.data || {}
+  const courtConfig = useMemo(
+    () =>
+      data?.courtConfig
+        ? transformCourtConfigDataAttributes(data.courtConfig)
+        : null,
+    [data]
+  )
 
   return courtConfig
 }
@@ -140,7 +187,7 @@ export function useSingleDisputeSubscription(id) {
   const dispute = useMemo(
     () =>
       data && data.dispute
-        ? transformResponseDisputeAttributes(data.dispute)
+        ? transformDisputeDataAttributes(data.dispute)
         : null,
     [data]
   )
@@ -163,7 +210,7 @@ export function useDisputesSubscription() {
     () =>
       data && data.disputes
         ? data.disputes.map(dispute =>
-            transformResponseDisputeAttributes(dispute, courtConfig)
+            transformDisputeDataAttributes(dispute, courtConfig)
           )
         : null,
     [courtConfig, data]
@@ -284,4 +331,31 @@ export function useTasksSubscription() {
   const tasks = data?.adjudicationRounds || null
 
   return { tasks, fetching: !data && !error, error }
+}
+
+export function useJurorRegistrySubscription() {
+  const { modules } = useCourtConfig()
+  const jurorRegistryAddress = getModuleAddress(
+    modules,
+    CourtModuleType.JurorsRegistry
+  )
+
+  const [{ data, error }] = useSubscription({
+    query: JurorsRegistryModule,
+    variables: { id: jurorRegistryAddress },
+  })
+
+  const jurorRegistryStats = data?.jurorsRegistryModule || null
+
+  return { data: jurorRegistryStats, error }
+}
+
+export function useTotalRewardsSubscription() {
+  const [{ data, error }] = useSubscription({
+    query: FeeMovements,
+  })
+
+  const rewards = data?.feeMovements || null
+
+  return { data: rewards, error }
 }

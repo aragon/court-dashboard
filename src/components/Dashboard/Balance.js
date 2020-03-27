@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react'
 import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
-import { useSpring, animated } from 'react-spring'
+import { animated, useSpring } from 'react-spring'
 
 import Loading from './Loading'
 import ANJLockedDistribution from './ANJLockedDistribution'
+import SplitAmount from '../SplitAmount'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
 import { useANJBalanceToUsd } from '../../hooks/useTokenBalanceToUsd'
@@ -14,28 +15,6 @@ import { movementDirection, convertToString } from '../../types/anj-types'
 
 import ANJIcon from '../../assets/IconANJ.svg'
 import lockIcon from '../../assets/IconLock.svg'
-
-const splitAmount = amount => {
-  const [integer, fractional] = amount.split('.')
-  return (
-    <span
-      css={`
-        margin-right: 5px;
-      `}
-    >
-      <span className="integer">{integer}</span>
-      {fractional && (
-        <span
-          css={`
-            font-size: 16px;
-          `}
-        >
-          .{fractional}
-        </span>
-      )}
-    </span>
-  )
-}
 
 const Balance = React.memo(function Balance({
   label,
@@ -113,7 +92,9 @@ const Balance = React.memo(function Balance({
                   align-items: center;
                 `}
               >
-                {splitAmount(formatUnits(amount, { digits: decimals }))}
+                <SplitAmount
+                  amount={formatUnits(amount, { digits: decimals })}
+                />
                 <img height="20" width="18" src={ANJIcon} alt="ANJ" />
               </div>
               <span

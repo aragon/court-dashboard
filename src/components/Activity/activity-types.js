@@ -2,6 +2,7 @@ import iconAnj from './assets/activity-icon-anj.svg'
 import iconAppealRuling from './assets/activity-icon-appeal-ruling.svg'
 import iconClaimRewards from './assets/activity-icon-claim-rewards.svg'
 import iconCommitVote from './assets/activity-icon-commit-vote.svg'
+import iconCourtLogo from './assets/activity-icon-court-logo.svg'
 import iconDraftJury from './assets/activity-icon-draft-jury.svg'
 import iconExecuteRuling from './assets/activity-icon-execute-ruling.svg'
 
@@ -55,6 +56,15 @@ const ACTIVITY_TYPES = new Map(
         `,
       }
     },
+    claimSubscriptionFees({ periodId }) {
+      return {
+        title: 'Claim Subscription rewards',
+        icon: iconClaimRewards,
+        description: `
+          Claim subscription rewards for period ${periodId}
+        `,
+      }
+    },
     commitVote({ disputeId, roundId, commitment }) {
       return {
         title: 'Commit vote',
@@ -101,12 +111,12 @@ const ACTIVITY_TYPES = new Map(
         `,
       }
     },
-    revealVote({ roundId, disputeId }) {
+    heartbeat({ transitions }) {
       return {
-        title: 'Reveal vote',
-        icon: iconAnj,
+        title: 'Update term',
+        icon: iconCourtLogo,
         description: `
-          Reveal vote on round ${roundId} for dispute #${disputeId}
+          Transition ${transitions} court term${transitions > 1 ? 's' : ''}
         `,
       }
     },
@@ -116,6 +126,15 @@ const ACTIVITY_TYPES = new Map(
         icon: iconCommitVote,
         description: `
           Leak vote of ${voter} for vote #${voteId}
+        `,
+      }
+    },
+    revealVote({ roundId, disputeId }) {
+      return {
+        title: 'Reveal vote',
+        icon: iconAnj,
+        description: `
+          Reveal vote on round ${roundId} for dispute #${disputeId}
         `,
       }
     },

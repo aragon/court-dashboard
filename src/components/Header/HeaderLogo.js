@@ -1,6 +1,6 @@
 import React from 'react'
 import { GU, textStyle } from '@aragon/ui'
-import headerLogoSvg from '../assets/HeaderLogo.svg'
+import headerLogoSvg from '../../assets/HeaderLogo.svg'
 
 function HeaderLogo() {
   return (

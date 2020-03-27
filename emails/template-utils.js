@@ -36,6 +36,11 @@ function asset(path) {
   return `${assetBasePath}/${path}`
 }
 
+function trimMultiline(str) {
+  // Remove extra whitespace from multi-line strings
+  return str.replace(/ *\n */gm, '\n').trim()
+}
+
 function table(attributes, content) {
   return `
     <table ${attrs({
@@ -73,6 +78,13 @@ function base({ title, subtitle }, content) {
         <style type="text/css">
           #outlook a {
             padding: 0;
+          }
+          h1 {
+            margin-top: 0;
+            color: #242424;
+            font-size: 32px;
+            font-weight: 300;
+            text-align: left;
           }
           body {
             width: 100% !important;
@@ -885,7 +897,8 @@ function infobox({ mode, primary, secondary }) {
   const icon = (() => {
     if (mode === 'negative') return 'icon-negative.png'
     if (mode === 'appeals-opened') return 'icon-appeals-opened.png'
-    return 'icon-positive.png'
+    if (mode === 'positive') return 'icon-positive.png'
+    return 'icon-generic.png'
   })()
   const primaryColor = mode === 'negative' ? '#30404F' : '#26C395'
   const secondaryColor = mode === 'negative' ? '#637381' : '#9096B6'
@@ -901,7 +914,7 @@ function infobox({ mode, primary, secondary }) {
       `),
     },
     `<tr>
-      <td align="center" valign="center" width="83" class="infobox-col">
+      <td align="center" valign="top" width="83" class="infobox-col">
         ${table(
           { width: '100%' },
           `<tr>
@@ -944,8 +957,8 @@ function infobox({ mode, primary, secondary }) {
                 text-align: left;
                 font-size: 16px;
                 color: #9096B6;
-              `)}
-            ">
+              `)}"
+            >
               ${table(
                 {
                   align: 'center',
@@ -1076,5 +1089,6 @@ module.exports = {
   link,
   style,
   table,
+  trimMultiline,
   vspace,
 }

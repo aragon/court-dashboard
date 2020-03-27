@@ -1,4 +1,4 @@
-import { getCourtAddress } from '../../networks'
+import { getNetwork } from '../../networks'
 import { bigExp } from '../helper'
 import dayjs from 'dayjs'
 
@@ -23,7 +23,7 @@ const feeToken = {
 }
 
 const courtConfig = {
-  id: getCourtAddress(),
+  id: getNetwork().court,
   currentTerm: CURRENT_TERM,
   termDuration: TERM_DURATION, // 4 minutes
   anjToken,

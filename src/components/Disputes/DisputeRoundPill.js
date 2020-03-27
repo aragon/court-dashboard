@@ -1,14 +1,18 @@
 import React from 'react'
 import { GU, textStyle, useTheme } from '@aragon/ui'
+import { useCourtConfig } from '../../providers/CourtConfig'
 
 import { numberToWord } from '../../lib/math-utils'
 
 function DisputeRoundPill({ roundId }) {
   const theme = useTheme()
+  const { maxRegularAppealRounds } = useCourtConfig()
 
   if (roundId === undefined) return null
 
-  const label = `Round ${numberToWord(roundId)}`
+  const isFinal = roundId >= maxRegularAppealRounds
+
+  const label = isFinal ? 'Final round' : `Round ${numberToWord(roundId)}`
   return (
     <div
       css={`

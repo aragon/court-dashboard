@@ -4,7 +4,7 @@ import { useTasksSubscription } from './subscription-hooks'
 import { getAdjudicationPhase } from '../utils/dispute-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { getVoidedDisputesByCourt } from '../voided-disputes'
+import { getVoidedDisputesByCourt } from '../flagged-disputes/voided-disputes'
 
 export default function useTasks() {
   const courtConfig = useCourtConfig()

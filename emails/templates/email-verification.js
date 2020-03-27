@@ -1,4 +1,4 @@
-const { action, base, vspace, link } = require('../template-utils')
+const { action, base, link, vspace } = require('../template-utils')
 
 module.exports = function() {
   return {

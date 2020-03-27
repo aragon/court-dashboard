@@ -1,15 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import * as Sentry from '@sentry/browser'
+import { captureException, showReportDialog } from '@sentry/browser'
 import GenericError from './Errors/GenericError'
 import GlobalErrorScreen from './Errors/GlobalErrorScreen'
 import DisputeNotFoundError from './Disputes/DisputeNotFoundError'
 
-import env from '../environment'
 import { DisputeNotFound } from '../errors'
-import { getNetworkType } from '../lib/web3-utils'
-
-const SENTRY_DSN = env('SENTRY_DNS')
+import { sentryEnabled } from '../sentry'
 
 class GlobalErrorHandler extends React.Component {
   static propTypes = {
@@ -39,12 +36,10 @@ class GlobalErrorHandler extends React.Component {
   }
 
   handleReportClick = () => {
-    Sentry.init({
-      dsn: SENTRY_DSN,
-      environment: getNetworkType(env('CHAIN_ID')),
-    })
-    const eventId = Sentry.captureException(this.state.error)
-    Sentry.showReportDialog({ eventId })
+    if (sentryEnabled) {
+      const eventId = captureException(this.state.error)
+      showReportDialog({ eventId })
+    }
   }
 
   handleHashchange = () => {
@@ -63,7 +58,7 @@ class GlobalErrorHandler extends React.Component {
           <GenericError
             detailsTitle={error.message}
             detailsContent={errorStack}
-            reportCallback={SENTRY_DSN ? this.handleReportClick : null}
+            reportCallback={this.handleReportClick}
           />
         )}
       </GlobalErrorScreen>
