@@ -26,8 +26,9 @@ function getAPIBase() {
 
 export default function endpoints() {
   const [API_BASE_HTTP, API_BASE_WS] = getAPIBase()
-  const networkType =
-    getNetworkType(CHAIN_ID) === 'private' ? 'rpc' : getNetworkType(CHAIN_ID)
+  const networkType = isLocalOrUnknownNetwork()
+    ? 'rpc'
+    : getNetworkType(CHAIN_ID)
 
   const API_PATH =
     networkType === 'main'

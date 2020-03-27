@@ -3,7 +3,10 @@ import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract, useContractReadOnly } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { getFunctionSignature } from '../lib/web3-utils'
+import {
+  getFunctionSignature,
+  isLocalOrUnknownNetwork,
+} from '../lib/web3-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import {
   hashVote,
@@ -14,11 +17,7 @@ import {
 import { getModuleAddress } from '../utils/court-utils'
 import { retryMax } from '../utils/retry-max'
 import { useActivity } from '../components/Activity/ActivityProvider'
-import {
-  networkAgentAddress,
-  networkReserveAddress,
-  getInternalNetworkName,
-} from '../networks'
+import { networkAgentAddress, networkReserveAddress } from '../networks'
 import { getKnownToken } from '../utils/known-tokens'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
@@ -584,7 +583,7 @@ export function useTotalANTStakedPolling(timeout = 1000) {
     let timeoutId
 
     // Since we don't have the ANT contract address on the local environment we are skipping the stat
-    if (getInternalNetworkName() === 'local') {
+    if (isLocalOrUnknownNetwork()) {
       setError(true)
       return
     }
