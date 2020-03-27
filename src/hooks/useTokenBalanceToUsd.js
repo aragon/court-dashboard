@@ -4,7 +4,11 @@ import env from '../environment'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { getKnownToken } from '../utils/known-tokens'
 import { formatUnits, bigNum } from '../lib/math-utils'
-import { addressesEqual, ETH_FAKE_ADDRESS } from '../lib/web3-utils'
+import {
+  addressesEqual,
+  ETH_FAKE_ADDRESS,
+  getNetworkType,
+} from '../lib/web3-utils'
 
 const UNISWAP_PRECISION = 18
 const UNISWAP_MARKET_RETRY_EVERY = 1000
@@ -43,7 +47,7 @@ export function useANJBalanceToUsd(amount) {
   const dai = getKnownToken('DAI')
   const { address: daiAddress } = dai || {}
 
-  const [convertedAmount, setConvertedAmount] = useState('0')
+  const [convertedAmount, setConvertedAmount] = useState('-')
 
   useEffect(() => {
     let cancelled = false
@@ -54,31 +58,35 @@ export function useANJBalanceToUsd(amount) {
     }
 
     const updateConvertedAmount = async () => {
-      try {
-        const { marketRate } = await getANJMarketDetails(
-          daiAddress,
-          anjToken.id,
-          amount
-        )
-
-        const precision = bigNum(10).pow(UNISWAP_PRECISION)
-
-        const rate = bigNum(marketRate.rateInverted.times(precision).toFixed(0))
-
-        const convertedAmount = formatUnits(amount.mul(rate).div(precision), {
-          digits: anjToken.decimals,
-        })
-
-        if (!cancelled) {
-          setConvertedAmount(convertedAmount)
-        }
-      } catch (err) {
-        console.error('Could not fetch Uniswap price for ANJ', err)
-        if (!cancelled) {
-          retryTimer = setTimeout(
-            updateConvertedAmount,
-            UNISWAP_MARKET_RETRY_EVERY
+      if (getNetworkType() === 'main') {
+        try {
+          const { marketRate } = await getANJMarketDetails(
+            daiAddress,
+            anjToken.id,
+            amount
           )
+
+          const precision = bigNum(10).pow(UNISWAP_PRECISION)
+
+          const rate = bigNum(
+            marketRate.rateInverted.times(precision).toFixed(0)
+          )
+
+          const convertedAmount = formatUnits(amount.mul(rate).div(precision), {
+            digits: anjToken.decimals,
+          })
+
+          if (!cancelled) {
+            setConvertedAmount(convertedAmount)
+          }
+        } catch (err) {
+          console.error('Could not fetch Uniswap price for ANJ', err)
+          if (!cancelled) {
+            retryTimer = setTimeout(
+              updateConvertedAmount,
+              UNISWAP_MARKET_RETRY_EVERY
+            )
+          }
         }
       }
     }
@@ -102,10 +110,14 @@ export function useANJBalanceToUsd(amount) {
  * @param {BigNumber} balance The balance to convert into USD.
  * @returns { Number } The balance value in USD
  */
-export default function useTokenBalanceToUsd(symbol, decimals, balance) {
+export function useTokenBalanceToUsd(symbol, decimals, balance) {
   const [usd, setUsd] = useState('-')
   useEffect(() => {
     let cancelled = false
+
+    if (getNetworkType() !== 'main') {
+      return
+    }
 
     fetch(`${API_BASE}/price?fsym=${symbol}&tsyms=USD`)
       .then(res => res.json())

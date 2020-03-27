@@ -1,7 +1,11 @@
 import { useMemo } from 'react'
 import { useSubscription } from 'urql'
 import { OpenTasks } from '../queries/tasks'
-import { CourtConfig } from '../queries/court'
+import {
+  CourtConfig,
+  FeeMovements,
+  JurorsRegistryModule,
+} from '../queries/court'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { SingleDispute, AllDisputes } from '../queries/disputes'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
@@ -10,14 +14,17 @@ import {
   JurorDraftsNotRewarded,
   CurrentTermJurorDrafts,
 } from '../queries/jurorDrafts'
-
+import { CourtModuleType } from '../types/court-module-types'
 import { bigNum } from '../lib/math-utils'
 import { dayjs } from '../utils/date-utils'
 import { groupMovements } from '../utils/anj-movement-utils'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
 import { transformDisputeDataAttributes } from '../utils/dispute-utils'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
-import { transformCourtConfigDataAttributes } from '../utils/court-utils'
+import {
+  getModuleAddress,
+  transformCourtConfigDataAttributes,
+} from '../utils/court-utils'
 import { transformClaimedFeesDataAttributes } from '../utils/subscription-utils'
 
 const NO_AMOUNT = bigNum(0)
@@ -319,4 +326,31 @@ export function useTasksSubscription() {
   const tasks = data?.adjudicationRounds || null
 
   return { tasks, fetching: !data && !error, error }
+}
+
+export function useJurorRegistrySubscription() {
+  const { modules } = useCourtConfig()
+  const jurorRegistryAddress = getModuleAddress(
+    modules,
+    CourtModuleType.JurorsRegistry
+  )
+
+  const [{ data, error }] = useSubscription({
+    query: JurorsRegistryModule,
+    variables: { id: jurorRegistryAddress },
+  })
+
+  const jurorRegistryStats = data?.jurorsRegistryModule || null
+
+  return { data: jurorRegistryStats, error }
+}
+
+export function useTotalRewardsSubscription() {
+  const [{ data, error }] = useSubscription({
+    query: FeeMovements,
+  })
+
+  const rewards = data?.feeMovements || null
+
+  return { data: rewards, error }
 }

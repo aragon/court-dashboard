@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
-import { useContract } from '../web3-contracts'
+import { useContract, useContractReadOnly } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
-import { getFunctionSignature } from '../lib/web3-utils'
+import {
+  getFunctionSignature,
+  isLocalOrUnknownNetwork,
+} from '../lib/web3-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import {
   hashVote,
@@ -14,6 +17,8 @@ import {
 import { getModuleAddress } from '../utils/court-utils'
 import { retryMax } from '../utils/retry-max'
 import { useActivity } from '../components/Activity/ActivityProvider'
+import { networkAgentAddress, networkReserveAddress } from '../networks'
+import { getKnownToken } from '../utils/known-tokens'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
 import courtSubscriptionsAbi from '../abi/CourtSubscriptions.json'
@@ -564,44 +569,59 @@ export function useActiveBalanceOfAt(juror, termId) {
   return [activeBalance.amount, activeBalance.error]
 }
 
-export function useTotalActiveBalancePolling(termId) {
-  const jurorRegistryContract = useCourtContract(
-    CourtModuleType.JurorsRegistry,
-    jurorRegistryAbi
-  )
-  const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
+export function useTotalANTStakedPolling(timeout = 1000) {
+  const [totalANTStaked, setTotalANTStaked] = useState(bigNum(-1))
+  const [error, setError] = useState(false)
+  const { address: antAddress } = getKnownToken('ANT') || {}
+  const antContract = useContractReadOnly(antAddress, tokenAbi)
+
+  // We are starting in 0 in order to immediately make the fetch call
+  const controlledTimeout = useRef(0)
 
   useEffect(() => {
     let cancelled = false
     let timeoutId
 
-    const fetchTotalActiveBalance = () => {
+    // Since we don't have the ANT contract address on the local environment we are skipping the stat
+    if (isLocalOrUnknownNetwork()) {
+      setError(true)
+      return
+    }
+    if (!antContract) {
+      return
+    }
+
+    const fetchTotalANTBalance = () => {
       timeoutId = setTimeout(() => {
-        return jurorRegistryContract
-          .totalActiveBalanceAt(termId)
-          .then(balance => {
+        const agentBalancePromise = antContract.balanceOf(networkAgentAddress)
+        const vaultBalancePromise = antContract.balanceOf(networkReserveAddress)
+        return Promise.all([agentBalancePromise, vaultBalancePromise])
+          .then(([antInAgent, antInVault]) => {
             if (!cancelled) {
-              setTotalActiveBalance(balance)
+              setTotalANTStaked(antInAgent.add(antInVault))
             }
           })
           .catch(err => {
             console.error(`Error fetching balance: ${err} retrying...`)
+            setError(true)
           })
           .finally(() => {
             if (!cancelled) {
-              fetchTotalActiveBalance()
+              clearTimeout(timeoutId)
+              controlledTimeout.current = timeout
+              fetchTotalANTBalance()
             }
           })
-      }, 1000)
+      }, controlledTimeout.current)
     }
 
-    fetchTotalActiveBalance()
+    fetchTotalANTBalance()
 
     return () => {
       cancelled = true
       clearTimeout(timeoutId)
     }
-  }, [jurorRegistryContract, termId])
+  }, [antContract, controlledTimeout, timeout])
 
-  return totalActiveBalance
+  return [totalANTStaked, error]
 }

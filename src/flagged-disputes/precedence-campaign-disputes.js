@@ -1,25 +1,27 @@
 import {
   networks,
+  getNetwork,
+  getInternalNetworkName,
   RINKEBY_COURT,
   RINKEBY_STAGING_COURT,
   RINKEBY_USABILITY_COURT,
 } from '../networks'
-import { getNetworkType } from '../lib/web3-utils'
 
 const PRECEDENCE_CAMPAIGN_DISPUTES = {
-  rpc: new Map([[networks.rpc.court, ['0']]]),
-  ropsten: new Map([[networks.ropsten.court, []]]),
+  main: new Map([[networks.main.court, []]]),
   rinkeby: new Map([
     [RINKEBY_COURT, []],
     [RINKEBY_STAGING_COURT, []],
     [RINKEBY_USABILITY_COURT, []],
   ]),
-  main: new Map([[networks.main.court, []]]),
+  ropsten: new Map([[networks.ropsten.court, []]]),
+  local: new Map([[networks.local.court, ['0']]]),
 }
 
 export function getPrecedenceCampaignDisputesByCourt() {
-  const networkType = getNetworkType()
-  const courtAddress = networks[networkType].court
+  const courtAddress = getNetwork().court
 
-  return PRECEDENCE_CAMPAIGN_DISPUTES[networkType].get(courtAddress)
+  return PRECEDENCE_CAMPAIGN_DISPUTES[getInternalNetworkName()].get(
+    courtAddress
+  )
 }
