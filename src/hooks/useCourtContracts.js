@@ -576,7 +576,7 @@ export function useTotalANTStakedPolling(timeout = 1000) {
   const { address: antAddress } = getKnownToken('ANT') || {}
   const antContract = useContractReadOnly(antAddress, tokenAbi)
 
-  // We are starting in 0 in order to inmediately make the fetch call
+  // We are starting in 0 in order to immediately make the fetch call
   const controlledTimeout = useRef(0)
 
   useEffect(() => {
