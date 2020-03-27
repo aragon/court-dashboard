@@ -1,11 +1,8 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-// import environment from '../environment'
 import { useCourtConfigSubscription } from '../hooks/subscription-hooks'
-// import { getNetworkType } from '../lib/web3-utils'
 import { getNetwork } from '../networks'
 
-// const CHAIN_ID = environment('CHAIN_ID')
 const CourtConfigContext = React.createContext()
 
 function CourtConfigProvider({ children }) {
