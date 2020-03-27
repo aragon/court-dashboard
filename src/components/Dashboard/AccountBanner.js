@@ -4,11 +4,9 @@ import { GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 
 import AccountBannerInfo from './AccountBannerInfo'
 import CircleGraph from '../CircleGraph'
-
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
+import { useTotalActiveBalance } from '../../hooks/useCourtStats'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
-import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits, getPercentageBN, bigNum } from '../../lib/math-utils'
@@ -164,10 +162,7 @@ const Wrapper = ({ mainIcon, information }) => {
 
 const BannerWithProbability = ({ activeBalance }) => {
   const theme = useTheme()
-  const { currentTermId } = useCourtClock()
-  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
-    currentTermId
-  )
+  const [totalActiveBalanceCurrentTerm] = useTotalActiveBalance()
 
   const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
   if (fetchingTotalBalance) {

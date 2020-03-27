@@ -1,20 +1,14 @@
 import {
   networks,
+  getInternalNetworkName,
+  getNetwork,
   RINKEBY_COURT,
   RINKEBY_STAGING_COURT,
   RINKEBY_USABILITY_COURT,
 } from '../networks'
-import { getNetworkType } from '../lib/web3-utils'
 import env from '../environment'
 
 const VOIDED_DISPUTES = {
-  rpc: new Map([[networks.rpc.court, new Map([])]]),
-  ropsten: new Map([[networks.ropsten.court, new Map([])]]),
-  rinkeby: new Map([
-    [RINKEBY_COURT, new Map([])],
-    [RINKEBY_USABILITY_COURT, new Map([])],
-    [RINKEBY_STAGING_COURT, new Map([])],
-  ]),
   main: new Map([
     [
       networks.main.court,
@@ -32,15 +26,20 @@ const VOIDED_DISPUTES = {
       ),
     ],
   ]),
+  rinkeby: new Map([
+    [RINKEBY_COURT, new Map([])],
+    [RINKEBY_USABILITY_COURT, new Map([])],
+    [RINKEBY_STAGING_COURT, new Map([])],
+  ]),
+  ropsten: new Map([[networks.ropsten.court, new Map([])]]),
+  local: new Map([[networks.local.court, new Map([])]]),
 }
 
 export function getVoidedDisputesByCourt() {
   if (env('SKIP_VOIDING')) {
     return new Map([])
   }
+  const courtAddress = getNetwork().court
 
-  const networkType = getNetworkType()
-  const courtAddress = networks[networkType].court
-
-  return VOIDED_DISPUTES[networkType].get(courtAddress)
+  return VOIDED_DISPUTES[getInternalNetworkName()].get(courtAddress)
 }

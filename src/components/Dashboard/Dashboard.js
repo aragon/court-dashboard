@@ -11,6 +11,7 @@ import ActivateANJ from './panels/ActivateANJ'
 import WithdrawANJ from './panels/WithdrawANJ'
 import DeactivateANJ from './panels/DeactivateANJ'
 import AppealColateralModule from './AppealColateralModule'
+import CourtStats from './CourtStats'
 
 import { useWallet } from '../../providers/Wallet'
 import { DashboardStateProvider } from './DashboardStateProvider'
@@ -66,7 +67,11 @@ function Dashboard() {
           )}
 
           {!wallet.account ? (
-            <Tasks onlyTable />
+            <Split
+              primary={<Tasks onlyTable />}
+              secondary={<CourtStats />}
+              invert="horizontal"
+            />
           ) : (
             <Split
               primary={<Tasks onlyTable />}

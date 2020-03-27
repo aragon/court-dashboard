@@ -64,3 +64,10 @@ export const FirstANJActivationMovement = gql`
     }
   }
 `
+export const ActiveJurors = gql`
+  query Jurors {
+    jurors(first: 1000, where: { activeBalance_gt: 0 }) {
+      id
+    }
+  }
+`
