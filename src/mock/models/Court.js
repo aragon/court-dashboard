@@ -1,6 +1,7 @@
 import Jurors from '../data/Jurors'
 import Disputes from '../data/Disputes'
 import courtConfig from '../data/CourtConfig'
+import { JurorRegistry } from '../data/Modules'
 
 import { bigNum } from '../../lib/math-utils'
 import { PCT_BASE } from '../../utils/dispute-utils'
@@ -9,6 +10,7 @@ import { accounts, getRandomNumber } from '../helper'
 export default class {
   constructor() {
     this.config = courtConfig
+    this.jurorRegistryModule = JurorRegistry
 
     this.disputes = Disputes
     this.jurors = Jurors

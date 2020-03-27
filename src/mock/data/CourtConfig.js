@@ -53,6 +53,12 @@ const courtConfig = {
     // type
     // address
   ],
+  subscriptions: {
+    currentPeriod: '0',
+    feeAmount: bigExp('10'),
+    periodDuration: '600',
+    periods: [],
+  },
 }
 
 export default courtConfig

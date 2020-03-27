@@ -15,6 +15,11 @@ export default {
 
   /** **** DASHBOARD STATE *****/
 
+  // Get Court JurorRegistry module
+  JurorsRegistryModule: ({ id }) => ({
+    jurorsRegistryModule: court.jurorsRegistryModule,
+  }),
+
   // Get first activation movements for juror with id `id`
   JurorFirstANJActivationMovement: ({ id }) => {
     const { movements } = court.getJuror(id) || {}
