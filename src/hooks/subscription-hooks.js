@@ -340,9 +340,9 @@ export function useJurorRegistrySubscription() {
     variables: { id: jurorRegistryAddress },
   })
 
-  const juroRegistryStats = data?.jurorsRegistryModule || null
+  const jurorRegistryStats = data?.jurorsRegistryModule || null
 
-  return { data: juroRegistryStats, error }
+  return { data: jurorRegistryStats, error }
 }
 
 export function useTotalRewardsSubscription() {

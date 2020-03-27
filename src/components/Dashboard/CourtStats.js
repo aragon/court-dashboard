@@ -90,7 +90,7 @@ function TokenStats({ stat, theme }) {
           >
             <img
               css={`
-                margin-right: 5px;
+                margin-right: ${0.5 * GU}px;
               `}
               height="20"
               width="18"

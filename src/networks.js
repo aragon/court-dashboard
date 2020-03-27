@@ -17,7 +17,7 @@ export const networks = {
     network_reserve: '0xec0dd1579551964703246becfbf199c27cb84485',
   },
   rinkeby: {
-    // Use the 'usability' Court address if declared
+    // Use the 'usability' or 'staging' Court address if declared
     court: getRinkebyCourtAddress(SUBGRAPH_NAME),
   },
   ropsten: { court: '0x3b26bc496aebaed5b3E0E81cDE6B582CDe71396e' },

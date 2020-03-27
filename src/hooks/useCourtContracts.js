@@ -576,12 +576,14 @@ export function useTotalANTStakedPolling(timeout = 1000) {
   const { address: antAddress } = getKnownToken('ANT') || {}
   const antContract = useContractReadOnly(antAddress, tokenAbi)
 
+  // We are starting in 0 in order to inmediately make the fetch call
   const controlledTimeout = useRef(0)
 
   useEffect(() => {
     let cancelled = false
     let timeoutId
 
+    // Since we don't have the ANT contract address on the local environment we are skipping the stat
     if (getInternalNetworkName() === 'local') {
       setError(true)
       return

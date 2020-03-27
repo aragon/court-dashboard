@@ -57,7 +57,5 @@ export function useActiveJurorsNumber() {
     query: ActiveJurors,
   })
 
-  const { jurors } = data || {}
-
-  return [jurors?.length, error]
+  return [data?.jurors?.length, error]
 }

@@ -11,6 +11,8 @@ import IconANJ from '../assets/IconANJ.svg'
 import IconANT from '../assets/IconANT.svg'
 import IconDAI from '../assets/IconDAI.svg'
 
+const STATS_FETCHING_TIMEOUT = 15000
+
 const COURT_STATS = [
   {
     label: 'Total Active ANJ',
@@ -59,9 +61,10 @@ function useTotalRewards() {
  * @returns {Array} First item an array with the stats and the second one a loading state
  */
 function useCourtStats() {
-  const timeout = 5000
   const [anjActiveBalance, anjActiveBalanceError] = useTotalActiveBalance()
-  const [antTotalStake, antTotalStakeError] = useTotalANTStakedPolling(timeout)
+  const [antTotalStake, antTotalStakeError] = useTotalANTStakedPolling(
+    STATS_FETCHING_TIMEOUT
+  )
   const [activeJurors, activeJurorsError] = useActiveJurorsNumber()
   const [totalRewards, totalRewardsError] = useTotalRewards()
 
