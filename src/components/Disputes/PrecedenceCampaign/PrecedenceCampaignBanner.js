@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, GU, useTheme } from '@aragon/ui'
 
 import Modal from './PrecedenceCampaignModal'
@@ -7,18 +7,15 @@ import { getNetworkType } from '../../../lib/web3-utils'
 
 const KEY_PREFIX = 'PCDisputeBannerRead'
 
-function getStoredList() {
-  return new StoredList(`${KEY_PREFIX}:${getNetworkType()}`)
-}
+const storedList = new StoredList(`${KEY_PREFIX}:${getNetworkType()}`)
 
 function PrecedenceCampaignBanner({ disputeId }) {
   const theme = useTheme()
   const [bannerVisible, setBannerVisible] = useState(false)
   const [modalOpened, setModalOpened] = useState(false)
-  const storedList = useRef(null)
 
   const closeBanner = useCallback(() => {
-    storedList.current.add(disputeId)
+    storedList.add(disputeId)
     setBannerVisible(false)
   }, [disputeId])
 
@@ -29,9 +26,7 @@ function PrecedenceCampaignBanner({ disputeId }) {
   }, [closeBanner])
 
   useEffect(() => {
-    storedList.current = getStoredList()
-
-    if (!storedList.current.has(pcDisputeId => pcDisputeId === disputeId)) {
+    if (!storedList.has(pcDisputeId => pcDisputeId === disputeId)) {
       setBannerVisible(true)
     }
   }, [disputeId])
