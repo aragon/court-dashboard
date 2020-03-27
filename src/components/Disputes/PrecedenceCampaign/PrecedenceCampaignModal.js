@@ -7,12 +7,14 @@ function PrecedenceCampaignModal({ opened, onClose }) {
   const theme = useTheme()
   const { below, height, width } = useViewport()
 
-  const verticalMode = width < 1000
+  const verticalMode = width < 125 * GU
   const compactMode = below('medium')
 
+  const spacing = 5 * GU
+  const modalWidth = Math.min(130 * GU, width - spacing)
   const modalHeight = verticalMode
-    ? height - 40
-    : Math.max(700, Math.min(620, height - 40))
+    ? height - spacing
+    : Math.max(90 * GU, Math.min(80 * GU, height - spacing))
 
   return (
     <div>
@@ -20,7 +22,7 @@ function PrecedenceCampaignModal({ opened, onClose }) {
         closeButton={false}
         padding={0}
         visible={opened}
-        width={Math.min(1055, width - 40)}
+        width={modalWidth}
         css="z-index: 4"
       >
         <div
@@ -84,7 +86,7 @@ function PrecedenceCampaignModal({ opened, onClose }) {
               </p>
               <h1
                 css={`
-                  font-size: ${compactMode ? 28 : 42}px;
+                  font-size: ${compactMode ? 24 : 40}px;
                   margin: ${1.5 * GU}px 0;
                 `}
               >
@@ -92,7 +94,7 @@ function PrecedenceCampaignModal({ opened, onClose }) {
               </h1>
               <span
                 css={`
-                  ${textStyle(compactMode ? 'body2' : 'body1')}
+                  ${textStyle(compactMode ? 'body3' : 'body1')}
                   line-height: 2;
                   display: block;
                 `}
