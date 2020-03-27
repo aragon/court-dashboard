@@ -11,6 +11,7 @@ import {
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { captureMessage } from '@sentry/browser'
 import { devtoolsExchange } from '@urql/devtools'
+import { createGlobalStyle } from 'styled-components'
 import App from './App'
 import endpoints from './endpoints'
 import initializeSentry from './sentry'
@@ -50,8 +51,15 @@ subscriptionClient.onError(err => {
   console.log('Retrying connection...')
 })
 
+const GlobalStyle = createGlobalStyle`
+  body img {
+    user-select:none;
+  }
+`
+
 ReactDOM.render(
   <UrqlProvider value={client}>
+    <GlobalStyle />
     <App />
   </UrqlProvider>,
   document.getElementById('root')
