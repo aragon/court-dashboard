@@ -12,12 +12,13 @@ import {
 import App from './App'
 
 import endpoints from './endpoints'
-import initializeSentry from './sentry'
+import env from './environment'
 import {
   getFetchExchange,
   getSubscriptionExchange,
   subscriptionClient,
 } from './exchanges'
+import initializeSentry from './sentry'
 
 initializeSentry()
 
@@ -39,6 +40,10 @@ subscriptionClient.onConnected(() => (connectionAttempts = 0))
 
 // Check for connection errors and if reaches max attempts send error log to Sentry
 subscriptionClient.onError(err => {
+  if (env('MOCK_DATA')) {
+    return
+  }
+
   const maxReconnectionAttempts = subscriptionClient.reconnectionAttempts
 
   if (maxReconnectionAttempts === ++connectionAttempts) {

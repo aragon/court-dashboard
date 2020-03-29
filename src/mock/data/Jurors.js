@@ -6,7 +6,6 @@ const ACTIVE_BASE_BALANCE = '10000'
 function generateJurors() {
   return accounts.map((account, index) => {
     const activeBalance = bigExp(`${ACTIVE_BASE_BALANCE * (index + 1)}`)
-    console.log('activeBalance', activeBalance)
 
     return {
       id: account,

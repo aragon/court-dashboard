@@ -28,8 +28,8 @@ const ENV_VARS = {
   ENABLE_SENTRY() {
     return process.env.REACT_APP_ENABLE_SENTRY === '1'
   },
-  MOCK_TEST() {
-    return process.env.REACT_APP_MOCK_TEST === '1'
+  MOCK_DATA() {
+    return process.env.REACT_APP_MOCK_DATA === '1'
   },
 }
 

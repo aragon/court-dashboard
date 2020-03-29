@@ -46,27 +46,43 @@ const ROUNDS = {
 const DISPUTES_DATA = [
   {
     state: DisputeState.Ruled,
-    metadata: 'Dispute finished',
+    metadata: JSON.stringify({
+      description: 'Dispute finished',
+      metadata: 'QmPWJBAvLqdv5oNv7WvEFaghiMkWtcThDRJGFKu6kennpF/metadata.json',
+    }),
     rounds: [{ ...ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL }],
   },
   {
     state: DisputeState.Adjudicating,
-    metadata: 'Dispute appealed',
+    metadata: JSON.stringify({
+      description: 'Dispute appealed',
+      metadata: 'QmPWJBAvLqdv5oNv7WvEFaghiMkWtcThDRJGFKu6kennpF/metadata.json',
+    }),
     rounds: [{ ...ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL }],
   },
   {
     state: DisputeState.Adjudicating,
-    metadata: 'Dispute in last round',
+    metadata: JSON.stringify({
+      description: 'Dispute in last round',
+      metadata: 'QmPWJBAvLqdv5oNv7WvEFaghiMkWtcThDRJGFKu6kennpF/metadata.json',
+    }),
     rounds: [{ ...ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL }],
   },
   {
     state: DisputeState.Adjudicating,
-    metadata: 'Dispute in first adjudication round (jurors already drafted)',
+    metadata: JSON.stringify({
+      description:
+        'Dispute in first adjudication round (jurors already drafted)',
+      metadata: 'QmPWJBAvLqdv5oNv7WvEFaghiMkWtcThDRJGFKu6kennpF/metadata.json',
+    }),
     rounds: [{ ...ROUNDS.FIRST_DRAFTED_COMITTING_NO_VOTES_NO_APPEAL }],
   },
   {
     state: DisputeState.Evidence,
-    metadata: 'Dispute in evidence submission',
+    metadata: JSON.stringify({
+      description: 'Dispute in evidence submission',
+      metadata: 'QmPWJBAvLqdv5oNv7WvEFaghiMkWtcThDRJGFKu6kennpF/metadata.json',
+    }),
     rounds: [{ ...ROUNDS.FIRST_NOT_DRAFTED }],
   },
 ]

@@ -20,6 +20,11 @@ export default {
     jurorsRegistryModule: court.jurorsRegistryModule,
   }),
 
+  FeeMovements: () => ({ feeMovements: [] }),
+
+  JurorFeesClaimed: ({ owner }) => ({}),
+
+  ActiveJurors: () => ({ jurors: [] }),
   // Get first activation movements for juror with id `id`
   JurorFirstANJActivationMovement: ({ id }) => {
     const { movements } = court.getJuror(id) || {}
@@ -29,7 +34,7 @@ export default {
 
     return {
       juror: {
-        movements: firstActivationMovement ? [firstActivationMovement] : [],
+        anjMovements: firstActivationMovement ? [firstActivationMovement] : [],
       },
     }
   },
@@ -65,6 +70,9 @@ export default {
     const { walletBalance } = court.getJuror(id) || {}
     return { anjbalance: walletBalance }
   },
+
+  JurorTreasuryBalances: ({ owner }) => [],
+
   AppealsByMaker: ({ maker }) => ({
     appeals: [],
   }),
@@ -103,7 +111,7 @@ export default {
     },
   }),
 
-  /** **** DASHBOARD STATE *****/
+  /** **** DISPUTES *****/
 
   // Get all disputes
   AllDisputes: () => ({

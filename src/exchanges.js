@@ -20,11 +20,11 @@ export const subscriptionClient = new SubscriptionClient(
 )
 
 export function getFetchExchange() {
-  return env('MOCK_TEST') ? mockFetchExchange : DEFAULT_FETCH_EXCHANGE
+  return env('MOCK_DATA') ? mockFetchExchange : DEFAULT_FETCH_EXCHANGE
 }
 
 export function getSubscriptionExchange() {
-  return env('MOCK_TEST')
+  return env('MOCK_DATA')
     ? mockSubscriptionExchange
     : DEFAULT_SUBSCRIPTION_EXCHANGE
 }

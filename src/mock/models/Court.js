@@ -10,14 +10,12 @@ import { accounts, getRandomNumber } from '../helper'
 export default class {
   constructor() {
     this.config = courtConfig
-    this.jurorRegistryModule = JurorRegistry
+    this.jurorsRegistryModule = JurorRegistry
 
     this.disputes = Disputes
     this.jurors = Jurors
 
     this.draftJurors()
-
-    console.log('disputes', this.disputes)
   }
 
   getDispute(id) {
@@ -31,7 +29,6 @@ export default class {
   draftJurors() {
     for (let i = 0; i < this.disputes.length; i++) {
       const dispute = this.disputes[i]
-      console.log('Drafting for dispute', dispute, i)
       // We will only "draft" jurors for last round since we don't really care for previos rounds data
       const lastRoundId = dispute.rounds.length - 1
       const lastRound = dispute.rounds[lastRoundId]
@@ -40,7 +37,6 @@ export default class {
       let selectedJurors = 0
       const jurorsNumber = lastRound.jurorsNumber
       while (selectedJurors < jurorsNumber) {
-        console.log('entered while selectedJurors', selectedJurors)
         // We select a juror betwwen the 5 available accounts
         const selectedAccountIndex = getRandomNumber(0, accounts.length - 1)
         const selectedAccount = accounts[selectedAccountIndex]
