@@ -63,6 +63,10 @@ class StoredList {
       ...this.items.slice(index + 1),
     ])
   }
+
+  has(cond) {
+    return this.items.some(cond)
+  }
 }
 
 export default StoredList
