@@ -25,13 +25,22 @@ const Header = React.memo(function Header({
         padding: 0;
       `}
     >
-      {compactMode ? (
-        <ButtonIcon label="Open menu" onClick={toggleMenuPanel}>
-          <IconMenu />
-        </ButtonIcon>
-      ) : (
-        <HeaderLogo />
-      )}
+      <div
+        css={`
+          display: flex;
+          align-items: center;
+          height: 100%;
+          padding-left: ${3 * GU}px;
+        `}
+      >
+        {compactMode ? (
+          <ButtonIcon label="Open menu" onClick={toggleMenuPanel}>
+            <IconMenu />
+          </ButtonIcon>
+        ) : (
+          <HeaderLogo />
+        )}
+      </div>
 
       <div
         css={`

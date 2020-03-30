@@ -1,7 +1,8 @@
 import { useQuery } from 'urql'
 
-import { JurorDrafts, JurorDraftRewarded } from '../queries/jurorDrafts'
-import { FirstANJActivationMovement, ActiveJurors } from '../queries/balances'
+import { JurorDrafts } from '../queries/jurorDrafts'
+import { JurorFeesClaimed } from '../queries/juror'
+import { ActiveJurors, FirstANJActivationMovement } from '../queries/balances'
 
 export function useJurorDraftQuery(jurorId) {
   const [result] = useQuery({
@@ -20,22 +21,23 @@ export function useJurorDraftQuery(jurorId) {
 }
 
 /**
- * Queries if the juror has ever claimed rewards
+ * Queries if the juror  by id `jurorId` has ever claimed rewards
+ * Rewards can be claimed from two places: Subscriptions fees or Dispute fees (the later includes appeal and juror fees)
  *
  * @param {String} jurorId Address of the juror
- * @returns {Boolean} True if the juror has ever claimed rewards
+ * @returns {Boolean} True if juror has ever claimed rewards
  */
-export function useJurorDraftRewardedQuery(jurorId) {
+export function useJurorRewardsEverClaimedQuery(jurorId) {
   const [{ data }] = useQuery({
-    query: JurorDraftRewarded,
-    variables: { id: jurorId.toLowerCase() },
+    query: JurorFeesClaimed,
+    variables: { owner: jurorId.toLowerCase() },
   })
 
-  if (!data || !data.juror) {
+  if (!data) {
     return false
   }
 
-  return data.juror.drafts.length > 0
+  return data.feeMovements.length > 0
 }
 
 export function useFirstANJActivationQuery(jurorId, { pause = false }) {
@@ -47,15 +49,13 @@ export function useFirstANJActivationQuery(jurorId, { pause = false }) {
 
   const { juror } = result.data || {}
 
-  return juror ? juror.movements[0] : null
+  return juror ? juror.anjMovements[0] : null
 }
 
 export function useActiveJurorsNumber() {
-  const [result] = useQuery({
+  const [{ data, error }] = useQuery({
     query: ActiveJurors,
   })
 
-  const { jurors } = result.data || {}
-
-  return jurors ? jurors.length : null
+  return [data?.jurors?.length, error]
 }

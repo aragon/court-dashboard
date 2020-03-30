@@ -39,9 +39,7 @@ const OnboardingModal = React.memo(function OnboardingModal({
             width={Math.min(1055, width - 40)}
             visible={visible}
             onClose={onClose}
-            css={`
-              z-index: 4;
-            `}
+            css="z-index: 4"
           >
             <div
               css="position: relative"

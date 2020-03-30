@@ -19,8 +19,8 @@ export const NOBODY_CONFIRMED = 'No confirmation'
 
 const voteOptionStringMapping = {
   [VOTE_OPTION_REFUSE]: 'REFUSE TO VOTE',
-  [VOTE_OPTION_AGAINST]: 'AGAINST',
-  [VOTE_OPTION_IN_FAVOR]: 'IN FAVOR',
+  [VOTE_OPTION_AGAINST]: 'BLOCK ACTION',
+  [VOTE_OPTION_IN_FAVOR]: 'ALLOW ACTION',
 }
 
 export function voteOptionToString(outcome) {
@@ -29,8 +29,8 @@ export function voteOptionToString(outcome) {
 
 const appealOptionStringMapping = {
   [VOTE_OPTION_REFUSE]: 'Refuse',
-  [VOTE_OPTION_AGAINST]: 'Against the plaintiff',
-  [VOTE_OPTION_IN_FAVOR]: 'In favor of the plaintiff',
+  [VOTE_OPTION_AGAINST]: 'Block action',
+  [VOTE_OPTION_IN_FAVOR]: 'Allow action',
 }
 
 export function appealOptionToString(outcome) {
@@ -40,8 +40,8 @@ export function appealOptionToString(outcome) {
 const outcomeStringMapping = {
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused to vote',
-  [OUTCOMES.Against]: 'Against plaintiff',
-  [OUTCOMES.InFavor]: 'In favor of plaintiff',
+  [OUTCOMES.Against]: 'Blocked action',
+  [OUTCOMES.InFavor]: 'Allowed action',
 }
 
 export function juryOutcomeToString(outcome) {
@@ -54,8 +54,8 @@ export function juryOutcomeToString(outcome) {
 const appealRulingStringMapping = {
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused',
-  [OUTCOMES.Against]: 'Ruled against',
-  [OUTCOMES.InFavor]: 'Ruled in favor',
+  [OUTCOMES.Against]: 'Blocked action',
+  [OUTCOMES.InFavor]: 'Allowed action',
 }
 
 export function appealRulingToString(outcome, confirm) {
@@ -68,8 +68,8 @@ export function appealRulingToString(outcome, confirm) {
 const finalRulingStringMapping = {
   [OUTCOMES.Leaked]: 'Invalid ruling',
   [OUTCOMES.Refused]: 'Refused',
-  [OUTCOMES.Against]: 'Ruling against',
-  [OUTCOMES.InFavor]: 'Ruling in favor',
+  [OUTCOMES.Against]: 'Blocked action',
+  [OUTCOMES.InFavor]: 'Allowed action',
 }
 
 export function finalRulingToString(outcome) {
@@ -103,7 +103,7 @@ export function getOutcomeFromCommitment(commitment, salt) {
  * @param {Number} currentOutcome current round outcome
  * @returns {Array} Array of appeal ruling options
  */
-export function getAppealRulingOptions(currentOutcome) {
+export function getAppealRulingOptions(currentOutcome = OUTCOMES.Refused) {
   return VALID_OUTCOMES.filter(
     outcome => outcome !== currentOutcome
   ).map(outcome => ({ outcome, description: appealOptionToString(outcome) }))

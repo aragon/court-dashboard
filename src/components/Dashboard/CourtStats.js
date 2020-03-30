@@ -1,34 +1,13 @@
 import React from 'react'
 import { Box, GU, textStyle, useTheme } from '@aragon/ui'
-import useCourtStats from '../../hooks/useCourtStats'
 import { formatUnits } from '../../lib/math-utils'
+import useCourtStats from '../../hooks/useCourtStats'
 import {
   useANJBalanceToUsd,
   useTokenBalanceToUsd,
 } from '../../hooks/useTokenBalanceToUsd'
 import Loading from './Loading'
-
-const splitAmount = amount => {
-  const [integer, fractional] = amount.split('.')
-  return (
-    <span
-      css={`
-        margin-right: 5px;
-      `}
-    >
-      <span className="integer">{integer}</span>
-      {fractional && (
-        <span
-          css={`
-            font-size: 16px;
-          `}
-        >
-          .{fractional}
-        </span>
-      )}
-    </span>
-  )
-}
+import SplitAmount from '../SplitAmount'
 
 function CourtStats() {
   const theme = useTheme()
@@ -52,19 +31,26 @@ function CourtStats() {
               `}
             >
               <span
-                css={`      
-               ${textStyle('body2')}
-               color: ${theme.surfaceContentSecondary};
-               display:block;
-               margin-bottom:${1 * GU}px;
-             `}
+                css={`
+                  ${textStyle('body2')};
+                  color: ${theme.surfaceContentSecondary};
+                  display: block;
+                  margin-bottom: ${1 * GU}px;
+                `}
               >
                 {stat.label}
               </span>
               {stat.token ? (
                 <TokenStats stat={stat} theme={theme} />
               ) : (
-                <Stat value={stat.value} />
+                <span
+                  css={`
+                    ${textStyle('title2')};
+                    font-weight: 300;
+                  `}
+                >
+                  {!stat.error ? stat.value : '-'}
+                </span>
               )}
             </div>
           )
@@ -74,21 +60,8 @@ function CourtStats() {
   )
 }
 
-function Stat({ value }) {
-  return (
-    <span
-      css={`
-        ${textStyle('title2')}
-        font-weight: 300;
-      `}
-    >
-      {value}
-    </span>
-  )
-}
-
 function TokenStats({ stat, theme }) {
-  const { value, token } = stat
+  const { value, token, error } = stat
   const { decimals, icon, symbol } = token
   return (
     <>
@@ -99,40 +72,45 @@ function TokenStats({ stat, theme }) {
       >
         <span
           css={`
-            ${textStyle('title2')}
+            ${textStyle('title2')};
             font-weight: 300;
           `}
         >
-          {splitAmount(formatUnits(value, { digits: decimals }))}
+          {!error ? (
+            <SplitAmount amount={formatUnits(value, { digits: decimals })} />
+          ) : (
+            '-'
+          )}
         </span>
-        <div
-          css={`
-            display: inline-flex;
-          `}
-        >
-          <img
+        {!error && (
+          <div
             css={`
-              margin-right: 5px;
+              display: inline-flex;
             `}
-            height="20"
-            width="18"
-            src={icon}
-          />
-          <span
-            css={` ${textStyle('body2')}
-          color: ${theme.surfaceContentSecondary};`}
           >
-            {symbol}
-          </span>
-        </div>
+            <img
+              css={`
+                margin-right: ${0.5 * GU}px;
+              `}
+              height="20"
+              width="18"
+              src={icon}
+            />
+          </div>
+        )}
       </div>
       <span
         css={`
-          ${textStyle('body2')}
+          ${textStyle('body2')};
           color: ${theme.positive};
         `}
       >
-        ${symbol === 'ANJ' ? AnjUsdValue(value) : TokenUsdValue(token, value)}
+        $
+        {!error
+          ? symbol === 'ANJ'
+            ? AnjUsdValue(value)
+            : TokenUsdValue(token, value)
+          : '-'}
       </span>
     </>
   )
