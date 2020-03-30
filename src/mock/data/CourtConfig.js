@@ -2,9 +2,9 @@ import { getNetwork } from '../../networks'
 import { bigExp } from '../helper'
 import dayjs from 'dayjs'
 
-const TERM_DURATION = 240 // 4 minutes
-const CURRENT_TERM = 10
-const COURT_START = dayjs() // Court started 10 terms ago
+const TERM_DURATION = 60 // 1 minutes
+const CURRENT_TERM = 100
+const COURT_START = dayjs() // Court started 100 terms ago
   .subtract(TERM_DURATION * CURRENT_TERM, 'second')
   .unix()
 
@@ -44,7 +44,7 @@ const courtConfig = {
   finalRoundReduction: '5000',
   firstRoundJurorsNumber: '3',
   appealStepFactor: '3',
-  maxRegularAppealRounds: '3',
+  maxRegularAppealRounds: '2',
   appealCollateralFactor: '30000',
   appealConfirmCollateralFactor: '20000',
   minActiveBalance: bigExp('100'),

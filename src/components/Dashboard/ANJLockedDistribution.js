@@ -95,7 +95,7 @@ function Row({ label, isLabelLink, amount, symbol, weight }) {
       )}
 
       <span>
-        {weight?.gt(1) && `${weight.toNumber()}x `} {amount} {symbol}
+        {weight > 1 && `${weight}x `} {amount} {symbol}
       </span>
     </div>
   )

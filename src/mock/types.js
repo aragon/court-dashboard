@@ -24,3 +24,23 @@ export const AdjudicationState = {
   ConfirmingAppeal: 'ConfirmingAppeal',
   Ended: 'Ended',
 }
+
+export const getAdjudicationStateNumber = state => {
+  return Object.values(AdjudicationState).findIndex(
+    adjudicationState => adjudicationState === state
+  )
+}
+
+export const RulingOptions = {
+  Missing: 'Missing',
+  Leaked: 'Leaked',
+  Refused: 'Refused',
+  Against: 'Against',
+  InFavor: 'InFavor',
+}
+
+export const getRulingOptionNumber = option => {
+  return Object.values(RulingOptions).findIndex(
+    rulingPption => rulingPption === option
+  )
+}

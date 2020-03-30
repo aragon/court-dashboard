@@ -279,8 +279,8 @@ function useHelpAttributes(distribution) {
     const { lockedPerDispute } = distribution
 
     const onlyOneDispute = lockedPerDispute.length === 1
-    const isJurorDraftedMultipleTimesSameDispute = lockedPerDispute.some(lock =>
-      lock.weight.gt(1)
+    const isJurorDraftedMultipleTimesSameDispute = lockedPerDispute.some(
+      lock => lock.weight > 1
     )
 
     let text

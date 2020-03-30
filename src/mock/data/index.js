@@ -1,6 +1,9 @@
-import { bigExp } from '../helper'
 import Court from '../models/Court'
 import { ANJMovementType } from '../types'
+import {
+  removeRoundCircularReferences,
+  removeJurorCircularReferences,
+} from '../helper'
 
 const court = new Court()
 
@@ -22,13 +25,13 @@ export default {
 
   FeeMovements: () => ({ feeMovements: [] }),
 
-  JurorFeesClaimed: ({ owner }) => ({}),
+  JurorFeesClaimed: ({ owner }) => ({ feeMovements: [] }),
 
   ActiveJurors: () => ({ jurors: [] }),
   // Get first activation movements for juror with id `id`
   JurorFirstANJActivationMovement: ({ id }) => {
-    const { movements } = court.getJuror(id) || {}
-    const firstActivationMovement = movements?.find(
+    const { anjMovements } = court.getJuror(id) || {}
+    const firstActivationMovement = anjMovements?.find(
       movement => movement.type === ANJMovementType.Activation
     )
 
@@ -48,7 +51,7 @@ export default {
       availableBalance,
       deactivationBalance,
       treasuryTokens,
-      movements,
+      anjMovements,
     } = juror || {}
 
     return {
@@ -59,7 +62,7 @@ export default {
             availableBalance,
             deactivationBalance,
             treasuryTokens,
-            movements,
+            anjMovements,
           }
         : null,
     }
@@ -73,12 +76,26 @@ export default {
 
   JurorTreasuryBalances: ({ owner }) => [],
 
-  AppealsByMaker: ({ maker }) => ({
-    appeals: [],
-  }),
-  AppealsByTaker: ({ taker }) => ({
-    appeals: [],
-  }),
+  AppealsByMaker: ({ maker }) => {
+    const appeals = court.getAppealsByMaker(maker)
+
+    return {
+      appeals: appeals.map(({ taker, ...appeal }) => ({
+        ...appeal,
+      })),
+    }
+  },
+
+  AppealsByTaker: ({ taker }) => {
+    const appeals = court.getAppealsByTaker(taker)
+
+    return {
+      appeals: appeals.map(({ maker, ...appeal }) => ({
+        ...appeal,
+      })),
+    }
+  },
+
   JurorDraftsFrom: ({ id, from }) => ({
     drafts: [],
   }),
@@ -88,54 +105,56 @@ export default {
       drafts: [],
     },
   }),
-  JurorDraftsNotRewarded: ({ id }) => ({
-    juror: {
-      id: '',
-      drafts: [
-        {
-          weight: 3,
-          outcome: 4,
-          round: {
-            number: '1',
-            coherentJurors: '1',
-            collectedTokens: bigExp('20'),
-            jurorFees: bigExp('10'),
-            settledPenalties: true,
-            dispute: {
-              id: '1',
-              finalRuling: 4,
-            },
-          },
-        },
-      ],
-    },
-  }),
+  JurorDraftsNotRewarded: ({ id }) => {
+    const juror = removeJurorCircularReferences(court.getJuror(id))
+    const { drafts = [] } = juror || {}
+
+    return {
+      juror: {
+        id,
+        drafts: drafts.filter(draft => !draft.rewarded),
+      },
+    }
+  },
 
   /** **** DISPUTES *****/
 
   // Get all disputes
   AllDisputes: () => ({
-    disputes: court.disputes,
+    disputes: court.disputes.map(dispute => ({
+      ...dispute,
+      rounds: dispute.rounds.map(removeRoundCircularReferences),
+    })),
   }),
 
   // Get dispute with id `id`
   SingleDispute: ({ id }) => {
     const dispute = court.getDispute(id)
     return {
-      dispute,
+      dispute: {
+        ...dispute,
+        rounds: dispute.rounds.map(removeRoundCircularReferences),
+      },
     }
   },
 
   // Get all juror drafts for juror with id `id`
-  JurorDrafts: ({ id }) => ({
-    juror: {
-      id: '',
-      drafts: [],
-    },
-  }),
+  JurorDrafts: ({ id }) => {
+    const juror = removeJurorCircularReferences(court.getJuror(id))
+    const { drafts = [] } = juror || {}
+
+    return {
+      juror: {
+        drafts,
+      },
+    }
+  },
 
   // Get all open tasks
-  OpenTasks: () => ({
-    adjudicationRounds: [],
-  }),
+  OpenTasks: ({ state }) => {
+    const rounds = court.getRoundsByState(state)
+    return {
+      adjudicationRounds: rounds.map(removeRoundCircularReferences),
+    }
+  },
 }

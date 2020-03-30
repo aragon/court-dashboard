@@ -21,7 +21,7 @@ function generateJurors() {
       treasuryTokens: [],
 
       // Mimicking ANJ activation from wallet
-      movements: [
+      anjMovements: [
         {
           amount: activeBalance,
           effectiveTermId: 3,

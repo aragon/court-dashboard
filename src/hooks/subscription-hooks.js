@@ -208,7 +208,7 @@ export function useDisputesSubscription() {
 
   const disputes = useMemo(
     () =>
-      data && data.disputes
+      data?.disputes
         ? data.disputes.map(dispute =>
             transformDisputeDataAttributes(dispute, courtConfig)
           )

@@ -33,7 +33,7 @@ export function transformJurorDataAttributes(jurorDraft) {
 
   return {
     ...jurorDraft,
-    weight: bigNum(weight),
+    weight,
     round: {
       ...round,
       number: parseInt(round.number, 10),
