@@ -1,128 +1,30 @@
 import courtConfig from './CourtConfig'
-
+import ROUNDS from './Rounds'
 import { hash256 } from '../../lib/web3-utils'
 import { dayjs } from '../../utils/date-utils'
-import {
-  AdjudicationState,
-  DisputeState,
-  RulingOptions,
-  getRulingOptionNumber,
-} from '../types'
+import { DisputeState } from '../types'
 
 const DEFAULT_IPFS_METADATA =
   'QmPWJBAvLqdv5oNv7WvEFaghiMkWtcThDRJGFKu6kennpF/metadata.json'
-const CREATE_TERM_ID = courtConfig.currentTerm
-const DRAFT_TERM_ID = CREATE_TERM_ID + 4
-
-const ROUNDS = {
-  // Mock round to use for multi-round disputes
-  PREVIOUS: {
-    id: '0',
-    state: AdjudicationState.Ended,
-    draftTermId: '50', // TODO: Find better calculation
-    createdAt: 0,
-    delayedTerms: 0,
-    jurors: [],
-
-    // We'll create "mock" votes and appeals for previous rounds
-    // Note that these won't be considered for appeal collaterals or other accountable data
-    vote: {
-      winningOutcome: getRulingOptionNumber(RulingOptions.Against),
-    },
-    appeal: {
-      appealedRuling: getRulingOptionNumber(RulingOptions.InFavor),
-      createdAt: dayjs().unix(),
-      opposedRuling: getRulingOptionNumber(RulingOptions.Against),
-      confirmedAt: dayjs().unix(),
-    },
-  },
-
-  // Round not drafted
-  NOT_DRAFTED: {
-    id: '0',
-    state: AdjudicationState.Invalid,
-    draftTermId: DRAFT_TERM_ID,
-    jurorsNumber: 0,
-    settledPenalties: false,
-    delayedTerms: 0,
-    selectedJurors: 0,
-    coherentJurors: 0,
-    collectedTokens: 0,
-    createdAt: 0,
-  },
-
-  // Round in comitting phase
-  COMITTING: {
-    id: '0',
-    state: AdjudicationState.Committing,
-    jurorsNumber: courtConfig.firstRoundJurorsNumber,
-    settledPenalties: false,
-    jurorFees: courtConfig.jurorFee,
-    delayedTerms: 0,
-    selectedJurors: 3,
-    coherentJurors: 0,
-    collectedTokens: 0,
-    createdAt: 0,
-  },
-
-  // Round has been appealed
-  APPEALED: {
-    id: '0',
-    state: AdjudicationState.ConfirmingAppeal,
-    jurorsNumber: courtConfig.firstRoundJurorsNumber,
-    settledPenalties: false,
-    jurorFees: courtConfig.jurorFee,
-    delayedTerms: 0,
-    selectedJurors: 3,
-    coherentJurors: 0,
-    collectedTokens: 0,
-    createdAt: 0,
-  },
-
-  // Round has been confirm appealed
-  CONFIRM_APPEALED: {
-    id: '0',
-    state: AdjudicationState.Invalid,
-    jurorsNumber:
-      courtConfig.firstRoundJurorsNumber * courtConfig.appealStepFactor,
-    settledPenalties: false,
-    jurorFees: courtConfig.jurorFee,
-    delayedTerms: 0,
-    selectedJurors: 3,
-    coherentJurors: 0,
-    collectedTokens: 0,
-    createdAt: 0,
-  },
-
-  // Round ended
-  ENDED: {
-    id: '0',
-    state: AdjudicationState.Ended,
-    jurorsNumber: courtConfig.firstRoundJurorsNumber,
-    settledPenalties: false,
-    jurorFees: courtConfig.jurorFee,
-    delayedTerms: 0,
-    selectedJurors: 3,
-    coherentJurors: 0,
-    collectedTokens: 0,
-    createdAt: 0,
-  },
-}
 
 // Data that tells the state of each dispute
 const DISPUTES_DATA = [
   {
     state: DisputeState.Ruled,
     metadata: JSON.stringify({
-      description: 'Dispute finished (First round, In favor unanimous)',
+      description: 'Dispute finished (First round, In favor)',
       metadata: DEFAULT_IPFS_METADATA,
     }),
-    rounds: [{ ...ROUNDS.ENDED }],
-    flagData: {
-      vote: {
-        winningOutcome: RulingOptions.InFavor,
-      },
-    },
+    rounds: [{ ...ROUNDS.ENDED.IN_FAVOR }],
+  },
+  {
+    state: DisputeState.Ruled,
+    metadata: JSON.stringify({
+      description:
+        'Dispute finished (First round, Refused to vote, Penalties Settled)',
+      metadata: DEFAULT_IPFS_METADATA,
+    }),
+    rounds: [{ ...ROUNDS.ENDED.REFUSED }],
   },
   {
     state: DisputeState.Ruled,
@@ -130,23 +32,26 @@ const DISPUTES_DATA = [
       description: 'Dispute finished (First round, No one voted)',
       metadata: DEFAULT_IPFS_METADATA,
     }),
-    rounds: [{ ...ROUNDS.ENDED }],
+    rounds: [{ ...ROUNDS.ENDED.NO_VOTES }],
   },
   {
     state: DisputeState.Ruled,
     metadata: JSON.stringify({
-      description: 'Dispute finished (Last round)',
+      description: 'Dispute finished (Final round, Against)',
       metadata: DEFAULT_IPFS_METADATA,
     }),
     rounds: [
       ...populatePreviousRounds(courtConfig.maxRegularAppealRounds),
-      { ...ROUNDS.ENDED },
+      { ...ROUNDS.ENDED.FINAL_ROUND },
     ],
-    flagData: {
-      vote: {
-        winningOutcome: RulingOptions.Against,
-      },
-    },
+  },
+  {
+    state: DisputeState.Adjudicating,
+    metadata: JSON.stringify({
+      description: 'Dispute finished (Execute ruling)',
+      metadata: DEFAULT_IPFS_METADATA,
+    }),
+    rounds: [{ ...ROUNDS.ENDED.IN_FAVOR }],
   },
   {
     state: DisputeState.Drafting,
@@ -163,20 +68,27 @@ const DISPUTES_DATA = [
       metadata: DEFAULT_IPFS_METADATA,
     }),
     rounds: [{ ...ROUNDS.APPEALED }],
-    flagData: {
-      vote: {
-        winningOutcome: RulingOptions.Against,
-      },
-      appeal: {
-        appealedRuling: RulingOptions.InFavor,
-      },
-    },
   },
   {
     state: DisputeState.Adjudicating,
     metadata: JSON.stringify({
-      description:
-        'Dispute in first adjudication round (jurors already drafted)',
+      description: 'Dispute appealing',
+      metadata: DEFAULT_IPFS_METADATA,
+    }),
+    rounds: [{ ...ROUNDS.APPEALING }],
+  },
+  {
+    state: DisputeState.Adjudicating,
+    metadata: JSON.stringify({
+      description: 'Dispute revealing',
+      metadata: DEFAULT_IPFS_METADATA,
+    }),
+    rounds: [{ ...ROUNDS.REVEALING }],
+  },
+  {
+    state: DisputeState.Adjudicating,
+    metadata: JSON.stringify({
+      description: 'Dispute comitting',
       metadata: DEFAULT_IPFS_METADATA,
     }),
     rounds: [{ ...ROUNDS.COMITTING }],
@@ -201,7 +113,7 @@ function generateDisputes() {
   const disputes = []
 
   for (let i = 0; i < DISPUTES_DATA.length; i++) {
-    const { flagData, metadata, rounds, state } = DISPUTES_DATA[i]
+    const { metadata, rounds, state } = DISPUTES_DATA[i]
 
     const disputeId = String(i)
     const dispute = {
@@ -212,59 +124,19 @@ function generateDisputes() {
       possibleRulings: 2,
       state,
       metadata,
-      rounds: rounds.map((round, index) => ({
-        ...round,
-        number: String(index),
-        dispute: {
-          id: disputeId,
-          rounds: rounds.map(round => ({ id: round.id })),
-        },
-      })),
       lastRoundId: rounds.length - 1,
-      flagData,
     }
+
+    dispute.rounds = rounds.map((round, index) => ({
+      ...round,
+      number: String(index),
+      dispute,
+    }))
 
     disputes.unshift(dispute)
   }
 
   return disputes
 }
-
-// lastRoundId
-// createdAt
-// rounds {
-//   id
-//   state
-//   number
-//   draftTermId
-//   jurorsNumber
-//   settledPenalties
-//   jurorFees
-//   delayedTerms
-//   selectedJurors
-//   coherentJurors
-//   collectedTokens
-//   createdAt
-//   jurors {
-//     juror {
-//       id
-//     }
-//     commitment
-//     outcome
-//   }
-//   vote {
-//     id
-//     winningOutcome
-//   }
-//   appeal {
-//     id
-//     maker
-//     appealedRuling
-//     taker
-//     opposedRuling
-//     settled
-//     createdAt
-//   }
-// }
 
 export default generateDisputes()

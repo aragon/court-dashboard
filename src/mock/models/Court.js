@@ -23,8 +23,8 @@ import {
   getRulingOptionNumber,
 } from '../types'
 
-const DEFAULT_APPEAL_MAKER = accounts[0]
-const DEFAULT_APPEAL_TAKER = accounts[1]
+const DEFAULT_APPEAL_MAKER = accounts[3]
+const DEFAULT_APPEAL_TAKER = accounts[4]
 const DEFAULT_APPEAL_DEPOSIT = bigExp('185')
 const DEFAULT_CONFIRM_APPEAL_DEPOSIT = bigExp('225')
 
@@ -42,6 +42,7 @@ export default class {
     this.draftJurors()
     this.createVotes()
     this.createAppeals()
+    this.settlePenalties()
   }
 
   getDispute(id) {
@@ -61,67 +62,74 @@ export default class {
   }
 
   getRoundsByState(state) {
-    return this.adjudicationRounds.filter(round =>
-      state.includes(getAdjudicationStateNumber(round.state))
-    )
+    return this.adjudicationRounds.filter(round => {
+      const adjudicationState = getAdjudicationStateNumber(round.state)
+      return state[0] <= adjudicationState && adjudicationState <= state[1]
+    })
   }
 
   draftJurors() {
     for (let i = 0; i < this.disputes.length; i++) {
       const dispute = this.disputes[i]
-      // We will only "draft" jurors for last round since we don't really care for previous rounds data
-      const lastRoundId = dispute.rounds.length - 1
-      const lastRound = dispute.rounds[lastRoundId]
 
-      if (lastRound.state === AdjudicationState.Invalid) {
-        continue
-      }
+      // Draft jurors for each round
+      for (let roundId = 0; roundId < dispute.rounds.length; roundId++) {
+        const round = dispute.rounds[roundId]
 
-      this.adjudicationRounds.push(lastRound)
+        round.draftTermId = getDraftTermId(round.state, this.config)
+        round.jurors = []
 
-      lastRound.jurors = []
-      lastRound.draftTermId = getDraftTermId(lastRound.state, this.config)
-      const maxRegularAppealRoundsReached =
-        this.config.maxRegularAppealRounds <= lastRoundId
+        this.adjudicationRounds.push(round)
 
-      // If we reached the last possible round, juror's weight is relative to the number of times the min active balance the juror has
-      if (maxRegularAppealRoundsReached) {
-        // final round
+        if (round.state === AdjudicationState.Invalid) {
+          continue
+        }
 
-        lastRound.jurorsNumber = getMinActiveBalanceMultiple(
-          bigNum(this.jurorsRegistryModule.totalActive),
-          bigNum(this.config.minActiveBalance)
-        )
-      } else {
-        // normal round
-        let selectedJurors = 0
-        const jurorsNumber = lastRound.jurorsNumber
-        while (selectedJurors < jurorsNumber) {
-          // We select a juror betwwen the 3 available accounts
+        const maxRegularAppealRoundsReached =
+          this.config.maxRegularAppealRounds <= roundId
 
-          const selectedAccountIndex = getRandomNumber(0, accounts.length - 1)
-          const selectedAccount = accounts[selectedAccountIndex]
+        // If we reached the last possible round, juror's weight is relative to the number of times the min active balance the juror has
+        if (maxRegularAppealRoundsReached) {
+          // final round
 
-          const selectedJuror = this.getJuror(selectedAccount)
-
-          const draftLockAmount = pct(
-            bigNum(this.config.minActiveBalance),
-            this.config.penaltyPct
+          round.jurorsNumber = getMinActiveBalanceMultiple(
+            bigNum(this.jurorsRegistryModule.totalActive),
+            bigNum(this.config.minActiveBalance)
           )
+        } else {
+          // normal round
+          let selectedJurors = 0
+          const jurorsNumber = round.jurorsNumber
+          while (selectedJurors < jurorsNumber) {
+            // Select a juror
+            const selectedJurorIndex = getRandomNumber(
+              0,
+              this.jurors.length - 1
+            )
+            const selectedJuror = this.jurors[selectedJurorIndex]
 
-          const jurorDraft = lastRound.jurors.find(jurorDraft =>
-            addressesEqual(jurorDraft.juror.id, selectedAccount)
-          )
+            const draftLockAmount = pct(
+              bigNum(this.config.minActiveBalance),
+              this.config.penaltyPct
+            )
 
-          if (!jurorDraft) {
-            this.createDraft(selectedJuror, lastRound, 1, draftLockAmount)
-          } else {
-            jurorDraft.weight += 1
+            const jurorDraft = round.jurors.find(jurorDraft =>
+              addressesEqual(jurorDraft.juror.id, selectedJuror.id)
+            )
 
-            this.lockAnjAmount(selectedJuror, draftLockAmount)
+            if (!jurorDraft) {
+              this.createDraft(selectedJuror, round, 1, draftLockAmount)
+            } else {
+              jurorDraft.weight += 1
+
+              this.lockAnjAmount(selectedJuror, draftLockAmount)
+            }
+
+            selectedJurors += 1
           }
 
-          selectedJurors += 1
+          round.jurorFees = bigNum(this.config.jurorFee).mul(selectedJurors)
+          round.selectedJurors = selectedJurors
         }
       }
     }
@@ -166,64 +174,183 @@ export default class {
     for (let i = 0; i < this.disputes.length; i++) {
       const dispute = this.disputes[i]
 
-      if (!dispute.flagData?.vote) {
-        if (dispute.state === DisputeState.Ruled) {
-          dispute.finalRuling = getRulingOptionNumber(RulingOptions.Refused)
+      if (dispute.state === DisputeState.Ruled) {
+        dispute.finalRuling = getRulingOptionNumber(RulingOptions.Refused)
+      }
+
+      // Create votes for each round
+      for (let roundId = 0; roundId < dispute.rounds.length; roundId++) {
+        const round = dispute.rounds[roundId]
+
+        // voteData tells whether we should create votes for the dispute in question
+        if (!round.voteData) {
+          continue
         }
 
-        continue
-      }
+        const maxRegularAppealRoundsReached =
+          this.config.maxRegularAppealRounds <= roundId
 
-      // We will only create votes for last round since we don't really care for previous rounds data
-      const lastRoundId = dispute.rounds.length - 1
-      const lastRound = dispute.rounds[lastRoundId]
-      const maxRegularAppealRoundsReached =
-        this.config.maxRegularAppealRounds <= lastRoundId
-
-      if (maxRegularAppealRoundsReached) {
-        const selectedJurors = this.jurors.filter(juror =>
-          bigNum(juror.activeBalance).gt(this.config.minActiveBalance)
-        )
-
-        selectedJurors.forEach(juror => {
-          const jurorWeight = getMinActiveBalanceMultiple(
-            bigNum(juror.activeBalance),
-            bigNum(this.config.minActiveBalance)
+        // If we are at the final round, we preslash jurors
+        if (maxRegularAppealRoundsReached) {
+          const selectedJurors = this.jurors.filter(juror =>
+            bigNum(juror.activeBalance).gt(this.config.minActiveBalance)
           )
 
-          this.createDraft(juror, lastRound, jurorWeight, bigNum(0))
+          selectedJurors.forEach(juror => {
+            const jurorWeight = getMinActiveBalanceMultiple(
+              bigNum(juror.activeBalance),
+              bigNum(this.config.minActiveBalance)
+            )
 
-          const weightedPenalty = pct(
-            bigNum(juror.activeBalance),
-            bigNum(this.config.penaltyPct)
+            this.createDraft(juror, round, jurorWeight, bigNum(0))
+
+            const weightedPenalty = pct(
+              bigNum(juror.activeBalance),
+              bigNum(this.config.penaltyPct)
+            )
+
+            this.collectTokens(juror, round, weightedPenalty, false)
+          })
+        }
+
+        const { voteData } = round
+
+        let processedWeight = 0
+        const jurorsNumber = round.jurorsNumber
+        for (let j = 0; j < round.jurors.length; j++) {
+          const draft = round.jurors[j]
+          draft.commitment = '0x'
+          draft.commitmentDate = dayjs().unix()
+
+          if (voteData.onlyCommit) {
+            continue
+          }
+
+          const mayorityEnsured = processedWeight > jurorsNumber / 2
+
+          // If possible we'll try to ditribute the total votes
+          // `winningOutcome` has the ruling option that should have the mayority of votes
+          // `minority` has the ruling option that should have the minority
+          // TODO: Add cases to distribute votes among the 3 ruling options
+          draft.revealDate = dayjs().unix()
+          draft.outcome = getRulingOptionNumber(
+            voteData[
+              mayorityEnsured && voteData.minority
+                ? 'minority'
+                : 'winningOutcome'
+            ]
           )
 
-          this.slashJuror(juror, weightedPenalty)
-        })
+          processedWeight += draft.weight
+        }
+
+        round.vote = {
+          winningOutcome: voteData.winningOutcome,
+        }
+
+        if (round.state === AdjudicationState.Ended) {
+          dispute.finalRuling = getRulingOptionNumber(voteData.winningOutcome)
+        }
       }
+    }
+  }
 
-      const voteMetadata = dispute.flagData.vote
-      for (let j = 0; j < lastRound.jurors.length; j++) {
-        const draft = lastRound.jurors[j]
-        draft.commitment = '0x'
-        draft.commitmentDate = 0
+  createAppeals() {
+    for (let i = 0; i < this.disputes.length; i++) {
+      const dispute = this.disputes[i]
 
-        draft.outcome = getRulingOptionNumber(voteMetadata.winningOutcome)
-        draft.revealDate = dayjs().unix()
+      for (let roundId = 0; roundId < dispute.rounds.length; roundId++) {
+        const round = dispute.rounds[roundId]
+
+        // flagData tells whether we should create appeals for the dispute in question
+        if (!round.appealData) {
+          continue
+        }
+
+        const { appealData } = round
+
+        const appeal = {
+          round,
+          appealedRuling: getRulingOptionNumber(appealData.appealedRuling),
+          maker: DEFAULT_APPEAL_MAKER,
+          appealDeposit: DEFAULT_APPEAL_DEPOSIT,
+          createdAt: dayjs().unix(),
+
+          ...(appealData.opposedRuling
+            ? {
+                opposedRuling: getRulingOptionNumber(appealData.opposedRuling),
+                taker: DEFAULT_APPEAL_TAKER,
+                confirmAppealDeposit: DEFAULT_CONFIRM_APPEAL_DEPOSIT,
+                confirmedAt: dayjs().unix(),
+              }
+            : {
+                confirmAppealDeposit: '0',
+              }),
+        }
+
+        // Save appeal round reference
+        round.appeal = appeal
+
+        // Save appeal to collection
+        this.appeals.push(appeal)
       }
+    }
+  }
 
-      lastRound.vote = {
-        winningOutcome: voteMetadata.winningOutcome,
-      }
+  settlePenalties() {
+    for (let i = 0; i < this.disputes.length; i++) {
+      const dispute = this.disputes[i]
 
-      if (lastRound.state === AdjudicationState.Ended) {
-        dispute.finalRuling = getRulingOptionNumber(voteMetadata.winningOutcome)
+      for (let roundId = 0; roundId < dispute.rounds.length; roundId++) {
+        const round = dispute.rounds[roundId]
+
+        if (!round.settlePenalties) {
+          continue
+        }
+
+        const maxRegularAppealRoundsReached =
+          this.config.maxRegularAppealRounds <= roundId
+
+        if (!maxRegularAppealRoundsReached) {
+          for (let i = 0; i < round.jurors.length; i++) {
+            const jurorDraft = round.jurors[i]
+
+            const isCoherentJuror = jurorDraft.outcome === dispute.finalRuling
+
+            const slashOrUnlockAmount = pct(
+              bigNum(this.config.minActiveBalance),
+              this.config.penaltyPct
+            )
+            const draftLockAmountTotal = slashOrUnlockAmount.mul(
+              jurorDraft.weight
+            )
+
+            if (isCoherentJuror) {
+              // unlock juror ANJ if juror is coherent
+              round.coherentJurors += jurorDraft.weight
+              this.unlockJurorANJ(jurorDraft.juror, draftLockAmountTotal)
+            } else {
+              this.collectTokens(
+                jurorDraft.juror,
+                round,
+                draftLockAmountTotal,
+                true
+              )
+            }
+          }
+        }
+
+        round.settledPenalties = true
       }
     }
   }
 
   slashJuror(juror, amount) {
     juror.activeBalance = bigNum(juror.activeBalance).sub(amount)
+
+    this.jurorsRegistryModule.totalActive = bigNum(
+      this.jurorsRegistryModule.totalActive
+    ).sub(amount)
 
     juror.anjMovements.unshift({
       amount: amount.toString(),
@@ -233,59 +360,32 @@ export default class {
     })
   }
 
-  createAppeals() {
-    for (let i = 0; i < this.disputes.length; i++) {
-      const dispute = this.disputes[i]
+  unlockJurorANJ(juror, amount) {
+    this.updateJurorLockedBalance(juror, amount)
 
-      if (!dispute.flagData?.appeal) {
-        continue
-      }
+    juror.anjMovements.unshift({
+      amount: amount.toString(),
+      effectiveTermId: null,
+      createdAt: dayjs().unix(),
+      type: ANJMovementType.Unlock,
+    })
+  }
 
-      const appealMetaData = dispute.flagData.appeal
+  collectTokens(juror, round, amount, unlockBalance) {
+    // collect tokens if juror didn't vote for the winning outcome
+    round.collectedTokens = bigNum(round.collectedTokens)
+      .add(amount)
+      .toString()
 
-      const lastRoundId = dispute.rounds.length - 1
-      const lastRound = dispute.rounds[lastRoundId]
+    this.slashJuror(juror, amount)
 
-      const appeal = {
-        id: '',
-
-        round: {
-          number: lastRound.number,
-          settledPenalties: lastRound.settledPenalties,
-          dispute: {
-            id: dispute.id,
-            finalRuling: dispute.finalRuling,
-            lastRoundId: dispute.lastRoundId,
-            rounds: dispute.rounds.map(round => ({
-              jurorsNumber: round.jurorsNumber,
-              number: round.number,
-            })),
-          },
-        },
-
-        maker: DEFAULT_APPEAL_MAKER,
-        appealedRuling: getRulingOptionNumber(appealMetaData.appealedRuling),
-        appealDeposit: DEFAULT_APPEAL_DEPOSIT,
-        createdAt: dayjs().unix(),
-
-        ...(appealMetaData.opposedRuling
-          ? {
-              opposedRuling: getRulingOptionNumber(
-                appealMetaData.opposedRuling
-              ),
-              confirmedAt: appealMetaData.opposedRuling ? dayjs().unix() : null,
-              confirmAppealDeposit: DEFAULT_CONFIRM_APPEAL_DEPOSIT,
-              taker: appealMetaData.opposedRuling ? DEFAULT_APPEAL_TAKER : null,
-            }
-          : {
-              confirmAppealDeposit: '0',
-            }),
-      }
-      lastRound.appeal = appeal
-
-      // Save appeal to collection
-      this.appeals.push(appeal)
+    if (unlockBalance) {
+      this.updateJurorLockedBalance(juror, amount)
     }
+  }
+
+  updateJurorLockedBalance(juror, amount) {
+    juror.lockedBalance = bigNum(juror.lockedBalance).sub(amount)
   }
 
   updateTotalActiveBalance() {
@@ -297,25 +397,3 @@ export default class {
     )
   }
 }
-
-/// // Juror draft not rewarded Example////
-// juror: {
-//   id: '',
-//   drafts: [
-//     {
-//       weight: 3,
-//       outcome: 4,
-//       round: {
-//         number: '1',
-//         coherentJurors: '1',
-//         collectedTokens: bigExp('20'),
-//         jurorFees: bigExp('10'),
-//         settledPenalties: true,
-//         dispute: {
-//           id: '1',
-//           finalRuling: 4,
-//         },
-//       },
-//     },
-//   ],
-// },

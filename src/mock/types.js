@@ -41,6 +41,6 @@ export const RulingOptions = {
 
 export const getRulingOptionNumber = option => {
   return Object.values(RulingOptions).findIndex(
-    rulingPption => rulingPption === option
+    rulingOption => rulingOption === option
   )
 }

@@ -32,10 +32,10 @@ const courtConfig = {
   draftFee: bigExp('18', 16),
   settleFee: bigExp('1', 17),
   evidenceTerms: 21,
-  commitTerms: '6',
-  revealTerms: '6',
-  appealTerms: '6',
-  appealConfirmationTerms: '6',
+  commitTerms: '3',
+  revealTerms: '3',
+  appealTerms: '3',
+  appealConfirmationTerms: '3',
   terms: [
     {
       startTime: COURT_START,

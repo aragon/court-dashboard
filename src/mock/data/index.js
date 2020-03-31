@@ -1,8 +1,9 @@
 import Court from '../models/Court'
 import { ANJMovementType } from '../types'
 import {
-  removeRoundCircularReferences,
+  removeAppealCircularReferences,
   removeJurorCircularReferences,
+  removeRoundCircularReferences,
 } from '../helper'
 
 const court = new Court()
@@ -80,9 +81,9 @@ export default {
     const appeals = court.getAppealsByMaker(maker)
 
     return {
-      appeals: appeals.map(({ taker, ...appeal }) => ({
-        ...appeal,
-      })),
+      appeals: appeals.map(({ taker, ...appeal }) =>
+        removeAppealCircularReferences(appeal)
+      ),
     }
   },
 
@@ -90,9 +91,9 @@ export default {
     const appeals = court.getAppealsByTaker(taker)
 
     return {
-      appeals: appeals.map(({ maker, ...appeal }) => ({
-        ...appeal,
-      })),
+      appeals: appeals.map(({ maker, ...appeal }) =>
+        removeAppealCircularReferences(appeal)
+      ),
     }
   },
 
