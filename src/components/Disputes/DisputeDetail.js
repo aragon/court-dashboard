@@ -59,7 +59,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const DisputeInfoComponent = (
     <DisputeInfo
       id={disputeId}
-      error={error?.message}
+      error={error}
       dispute={dispute}
       loading={disputeFetching}
       onDraft={actions.draft}
