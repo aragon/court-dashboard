@@ -71,11 +71,15 @@ const DisputeInfo = React.memo(function({
           align-items: center;
         `}
       >
-        <DisputeHeader dispute={dispute} error={error} />
+        <DisputeHeader dispute={dispute} error={error?.message} />
         {(() => {
           if (error) {
             return (
-              <ErrorLoading subject="dispute" errors={[error]} border={false} />
+              <ErrorLoading
+                subject="dispute"
+                errors={[error.message]}
+                border={false}
+              />
             )
           }
 
@@ -138,7 +142,7 @@ const DisputeInfo = React.memo(function({
             </>
           )
         })()}
-        {!isDisputeVoided && !error && (
+        {!isDisputeVoided && !error?.fromGraph && (
           <>
             {(phase === DisputePhase.AppealRuling ||
               phase === DisputePhase.ConfirmAppeal ||
