@@ -11,6 +11,7 @@ import ActivateANJ from './panels/ActivateANJ'
 import WithdrawANJ from './panels/WithdrawANJ'
 import DeactivateANJ from './panels/DeactivateANJ'
 import AppealColateralModule from './AppealColateralModule'
+import CourtStats from './CourtStats'
 
 import { useWallet } from '../../providers/Wallet'
 import { DashboardStateProvider } from './DashboardStateProvider'
@@ -28,8 +29,8 @@ function Dashboard() {
   const wallet = useWallet()
   const {
     actions,
+    anjBalances,
     appealCollaterals,
-    balances,
     errorsFetching,
     fetchingData,
     mode,
@@ -54,7 +55,7 @@ function Dashboard() {
         <>
           {wallet.account ? (
             <BalanceModule
-              balances={balances}
+              balances={anjBalances}
               loading={fetchingData}
               onRequestActivate={requests.activateANJ}
               onRequestDeactivate={requests.deactivateANJ}
@@ -66,7 +67,11 @@ function Dashboard() {
           )}
 
           {!wallet.account ? (
-            <Tasks onlyTable />
+            <Split
+              primary={<Tasks onlyTable />}
+              secondary={<CourtStats />}
+              invert="horizontal"
+            />
           ) : (
             <Split
               primary={<Tasks onlyTable />}
@@ -106,7 +111,7 @@ function Dashboard() {
         <PanelComponent
           mode={mode}
           actions={actions}
-          balances={balances}
+          balances={anjBalances}
           onDone={panelState.requestClose}
         />
       </SidePanel>

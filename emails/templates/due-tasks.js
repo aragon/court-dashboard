@@ -2,9 +2,9 @@ const {
   addressBadge,
   base,
   dataTable,
-  vspace,
   link,
   style,
+  vspace,
 } = require('../template-utils')
 const { accountData } = require('../mock-utils')
 

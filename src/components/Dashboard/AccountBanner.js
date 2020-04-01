@@ -1,13 +1,12 @@
 import React from 'react'
+import { animated, useSpring } from 'react-spring'
 import { GU, Help, LoadingRing, useTheme } from '@aragon/ui'
 
 import AccountBannerInfo from './AccountBannerInfo'
 import CircleGraph from '../CircleGraph'
-
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useTotalActiveBalancePolling } from '../../hooks/useCourtContracts'
+import { useTotalActiveBalance } from '../../hooks/useCourtStats'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
-import { useCourtClock } from '../../providers/CourtClock'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits, getPercentageBN, bigNum } from '../../lib/math-utils'
@@ -107,8 +106,8 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
             display: flex;
             align-items: center;
             background: ${iconBackground};
-            height: ${6 * GU}px;
-            width: ${iconBackground ? 6 * GU + 'px' : 'auto'};
+            height: ${7 * GU}px;
+            width: ${iconBackground ? 7 * GU + 'px' : 'auto'};
             border-radius: 50%;
           `}
         >
@@ -136,8 +135,15 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
 }
 
 const Wrapper = ({ mainIcon, information }) => {
+  const springProps = useSpring({
+    to: { opacity: 1 },
+    from: { opacity: 0 },
+    delay: 200,
+  })
+
   return (
-    <div
+    <animated.div
+      style={springProps}
       css={`
         display: flex;
       `}
@@ -150,16 +156,13 @@ const Wrapper = ({ mainIcon, information }) => {
         {mainIcon}
       </div>
       {information}
-    </div>
+    </animated.div>
   )
 }
 
 const BannerWithProbability = ({ activeBalance }) => {
   const theme = useTheme()
-  const { currentTermId } = useCourtClock()
-  const totalActiveBalanceCurrentTerm = useTotalActiveBalancePolling(
-    currentTermId
-  )
+  const [totalActiveBalanceCurrentTerm] = useTotalActiveBalance()
 
   const fetchingTotalBalance = totalActiveBalanceCurrentTerm.eq(bigNum(-1))
   if (fetchingTotalBalance) {

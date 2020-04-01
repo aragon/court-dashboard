@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import { useWallet } from '../../providers/Wallet'
 import {
-  useJurorBalancesSubscription,
   useAppealsByUserSubscription,
+  useJurorBalancesSubscription,
   useJurorDraftsNotRewardedSubscription,
 } from '../../hooks/subscription-hooks'
 
@@ -22,17 +22,27 @@ function DashboardStateProvider({ children }) {
     )
 
   return (
-    <Provider value={{ balances: {}, movements: [], nonSettledAppeals: [] }}>
+    <Provider
+      value={{
+        anjMovements: [],
+        anjBalances: {},
+        appeals: [],
+        claimedSubscriptionFees: [],
+        jurorDrafts: [],
+        treasury: [],
+      }}
+    >
       {children}
     </Provider>
   )
 }
 
 function WithSubscription({ Provider, connectedAccount, children }) {
-  // Juror balances
+  // Juror ANJ balances, 24h ANJ movements and claimed subscription fees
   const {
-    balances,
-    movements,
+    anjBalances,
+    anjMovements,
+    claimedSubscriptionFees,
     treasury,
     fetching: balancesFetching,
     errors: balanceErrors,
@@ -45,7 +55,7 @@ function WithSubscription({ Provider, connectedAccount, children }) {
     errors: appealErrors,
   } = useAppealsByUserSubscription(connectedAccount, false) // Non settled appeals
 
-  // juror drafts not rewarded
+  // Juror drafts not rewarded
   const {
     jurorDrafts,
     fetching: jurorDraftsFetching,
@@ -62,12 +72,13 @@ function WithSubscription({ Provider, connectedAccount, children }) {
   return (
     <Provider
       value={{
+        anjBalances,
+        anjMovements,
         appeals,
-        balances,
+        claimedSubscriptionFees,
         errors,
         fetching,
         jurorDrafts,
-        movements,
         treasury,
       }}
     >

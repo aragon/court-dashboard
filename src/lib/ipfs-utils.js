@@ -1,6 +1,9 @@
 import isIPFS from 'is-ipfs'
 import { IPFS_ENDPOINT } from '../endpoints'
 
+const SPLIT_IPFS_REGEX = /(Qm[a-zA-Z0-9]{44})/
+const TEST_IPFS_REGEX = /(Qm[a-zA-Z0-9]{44})/
+
 const REQUEST_TIMEOUT = 60000
 
 export const ipfsGet = async cid => {
@@ -23,4 +26,10 @@ export const getIpfsCidFromUri = string => {
     return ipfsCid
   }
   return ''
+}
+
+export function transformIPFSHash(str, callback) {
+  return str
+    .split(SPLIT_IPFS_REGEX)
+    .map((part, index) => callback(part, TEST_IPFS_REGEX.test(part), index))
 }

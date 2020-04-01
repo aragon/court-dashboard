@@ -39,6 +39,16 @@ export const CourtConfig = gql`
       appealConfirmCollateralFactor
       minActiveBalance
       penaltyPct
+      subscriptions {
+        id
+        currentPeriod
+        feeAmount
+        periodDuration
+        periods {
+          id
+          collectedFees
+        }
+      }
       modules {
         type
         address
@@ -47,6 +57,26 @@ export const CourtConfig = gql`
         id
         startTime
       }
+    }
+  }
+`
+export const JurorsRegistryModule = gql`
+  subscription JurorsRegistryModule($id: ID!) {
+    jurorsRegistryModule(id: $id) {
+      id
+      totalStaked
+      totalActive
+    }
+  }
+`
+
+export const FeeMovements = gql`
+  subscription FeeMovements {
+    feeMovements(where: { type_not: Withdraw }) {
+      id
+      type
+      amount
+      createdAt
     }
   }
 `
