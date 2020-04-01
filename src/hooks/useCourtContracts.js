@@ -583,7 +583,11 @@ export function useTotalANTStakedPolling(timeout = 1000) {
     let timeoutId
 
     // Since we don't have the ANT contract address on the local environment we are skipping the stat
-    if (isLocalOrUnknownNetwork()) {
+    if (
+      isLocalOrUnknownNetwork() ||
+      !networkAgentAddress ||
+      !networkReserveAddress
+    ) {
       setError(true)
       return
     }
