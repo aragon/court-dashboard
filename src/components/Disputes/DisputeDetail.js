@@ -187,7 +187,7 @@ const PanelComponent = ({
     return (
       <CommitPanel
         dispute={dispute}
-        commitment={data.commitment}
+        outcome={data.outcome}
         onCommit={commit}
         {...props}
       />

@@ -1,22 +1,22 @@
 import React, { useCallback } from 'react'
 import { Button, GU, Info } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
+import { useTransactionQueue } from '../../../providers/TransactionQueue'
 
 function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
   const wallet = useWallet()
+  const { addTransaction } = useTransactionQueue()
 
   const handleSubmit = useCallback(
     async event => {
       event.preventDefault()
 
-      try {
-        const tx = await onExecuteRuling(disputeId)
-        await tx.wait()
-      } catch (err) {
-        console.error('Error submitting tx: ', err)
-      }
+      return addTransaction({
+        intent: () => onExecuteRuling(disputeId),
+        description: `Execute ruling for dispute #${disputeId}`,
+      })
     },
-    [disputeId, onExecuteRuling]
+    [addTransaction, disputeId, onExecuteRuling]
   )
 
   return (

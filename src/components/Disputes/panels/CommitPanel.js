@@ -12,54 +12,76 @@ import {
   useToast,
   useTheme,
 } from '@aragon/ui'
-import useOneTimeCode from '../../../hooks/useOneTimeCode'
 import { useWallet } from '../../../providers/Wallet'
+import useOneTimeCode from '../../../hooks/useOneTimeCode'
+import { useTransactionQueue } from '../../../providers/TransactionQueue'
 import { saveCodeInLocalStorage } from '../../../utils/one-time-code-utils'
+import requestAutoReveal from '../../../services/requestAutoReveal'
 
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
+import { voteOptionToString } from '../../../utils/crvoting-utils'
 
 const AUTO_REVEAL_ENABLED = false // TODO: Remove when auto reveal service is running
 
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
   onCommit,
-  commitment,
+  outcome,
   onDone,
 }) {
   const [codeSaved, setCodeSaved] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
-  const [revealService, setRevealService] = useState(false)
+  const [revealService, setRevealService] = useState(true)
   const { account: connectedAccount } = useWallet()
   const { oneTimeCode, download } = useOneTimeCode()
+  const { addTransaction } = useTransactionQueue()
   const toast = useToast()
 
   const handleCommit = useCallback(
     async event => {
       event.preventDefault()
 
-      try {
-        const tx = await onCommit(
-          dispute.id,
-          dispute.lastRoundId,
-          commitment,
-          oneTimeCode
-        )
+      const disputeId = dispute.id
+      const roundId = dispute.lastRoundId
+      onDone()
 
-        onDone()
-        await tx.wait()
-        saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode)
-      } catch (err) {
-        console.error('Error submitting transaction: ', err)
-      }
+      return addTransaction({
+        intent: () => onCommit(disputeId, roundId, outcome, oneTimeCode),
+        description: `
+        Vote ${voteOptionToString(
+          outcome
+        )} on round #${roundId} of dispute #${disputeId}
+      `,
+        // If juror opted-in for the reveal service we'll send the commitment and password to the court-server
+        waitTillMined: revealService,
+        onMined: {
+          action: () => {
+            saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode)
+
+            return requestAutoReveal(
+              connectedAccount,
+              disputeId,
+              roundId,
+              outcome,
+              oneTimeCode
+            )
+          },
+          description: 'Request auto-reveal service',
+          onSuccess: 'Auto-reveal service requested succesfully!',
+          onError: 'Failed to request auto-reveal service: ',
+        },
+      })
     },
     [
-      commitment,
+      addTransaction,
       connectedAccount,
       dispute.id,
       dispute.lastRoundId,
       onCommit,
       onDone,
       oneTimeCode,
+      outcome,
+      revealService,
     ]
   )
 

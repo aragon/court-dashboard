@@ -91,11 +91,13 @@ export function getOutcomeNumber(outcome) {
 /**
  *
  * @param {bytes} commitment vote commitment
- * @param {bytes} salt password used to get the commitment
+ * @param {bytes} password password used to get the commitment
  * @returns {Number} outcome
  */
-export function getOutcomeFromCommitment(commitment, salt) {
-  return VALID_OUTCOMES.find(option => hashVote(option, salt) === commitment)
+export function getOutcomeFromCommitment(commitment, password) {
+  return VALID_OUTCOMES.find(
+    option => hashVote(option, password) === commitment
+  )
 }
 
 /**
@@ -127,12 +129,12 @@ export function getVoteId(disputeId, roundId) {
     .add(bigNum(roundId))
 }
 
-export function hashPassword(salt) {
-  return hash256(salt)
+export function hashPassword(password) {
+  return hash256(password)
 }
 
-export function hashVote(outcome, salt) {
-  return soliditySha3(['uint8', 'bytes32'], [outcome, hash256(salt)])
+export function hashVote(outcome, password) {
+  return soliditySha3(['uint8', 'bytes32'], [outcome, hashPassword(password)])
 }
 
 /**

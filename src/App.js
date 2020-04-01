@@ -2,15 +2,19 @@ import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { Main, ToastHub } from '@aragon/ui'
 import theme from './theme-court'
-import MainView from './components/MainView'
+
 import { ActivityProvider } from './components/Activity/ActivityProvider'
 import { CourtClockProvider } from './providers/CourtClock'
 import { CourtConfigProvider } from './providers/CourtConfig'
+import { TransactionQueueProvider } from './providers/TransactionQueue'
 import { WalletProvider } from './providers/Wallet'
+
 import AppLoader from './components/AppLoader'
+import GlobalErrorHandler from './GlobalErrorHandler'
+import MainView from './components/MainView'
 import OnboardingLoader from './components/OnboardingLoader'
 import Routes from './Routes'
-import GlobalErrorHandler from './GlobalErrorHandler'
+import SignerPanel from './components/SignerPanel/SignerPanel'
 
 function App() {
   return (
@@ -27,13 +31,16 @@ function App() {
               <ToastHub threshold={1} timeout={1500}>
                 <CourtConfigProvider>
                   <CourtClockProvider>
-                    <MainView>
-                      <OnboardingLoader>
-                        <AppLoader>
-                          <Routes />
-                        </AppLoader>
-                      </OnboardingLoader>
-                    </MainView>
+                    <TransactionQueueProvider>
+                      <MainView>
+                        <OnboardingLoader>
+                          <AppLoader>
+                            <Routes />
+                          </AppLoader>
+                        </OnboardingLoader>
+                        <SignerPanel />
+                      </MainView>
+                    </TransactionQueueProvider>
                   </CourtClockProvider>
                 </CourtConfigProvider>
               </ToastHub>

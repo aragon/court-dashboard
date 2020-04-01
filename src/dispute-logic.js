@@ -31,8 +31,8 @@ export function usePanelRequestMode(requestPanelOpen) {
 // Requests to set new mode and open side panel
 export function usePanelRequestActions(request) {
   const commit = useCallback(
-    commitment => {
-      request({ mode: REQUEST_MODE.COMMIT, data: { commitment } })
+    outcome => {
+      request({ mode: REQUEST_MODE.COMMIT, data: { outcome } })
     },
     [request]
   )

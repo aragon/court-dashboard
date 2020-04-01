@@ -1,3 +1,4 @@
+import { voteOptionToString } from '../../utils/crvoting-utils'
 import iconAnj from './assets/activity-icon-anj.svg'
 import iconAppealRuling from './assets/activity-icon-appeal-ruling.svg'
 import iconClaimRewards from './assets/activity-icon-claim-rewards.svg'
@@ -65,12 +66,14 @@ const ACTIVITY_TYPES = new Map(
         `,
       }
     },
-    commitVote({ disputeId, roundId, commitment }) {
+    commitVote({ disputeId, roundId, outcome }) {
       return {
         title: 'Commit vote',
         icon: iconCommitVote,
         description: `
-          Vote ${commitment} on round #${roundId} of dispute #${disputeId}
+          Vote ${voteOptionToString(
+            outcome
+          )} on round #${roundId} of dispute #${disputeId}
         `,
       }
     },

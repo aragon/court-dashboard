@@ -1,22 +1,22 @@
 import React, { useCallback } from 'react'
 import { Button, GU, Info } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
+import { useTransactionQueue } from '../../../providers/TransactionQueue'
 
 function DisputeDraft({ disputeId, onDraft }) {
   const wallet = useWallet()
+  const { addTransaction } = useTransactionQueue()
 
   const handleSubmit = useCallback(
     async event => {
       event.preventDefault()
 
-      try {
-        const tx = await onDraft(disputeId)
-        await tx.wait()
-      } catch (err) {
-        console.error('Error submitting tx: ', err)
-      }
+      addTransaction({
+        intent: () => onDraft(disputeId),
+        description: `Draft jurors for the next round of dispute #${disputeId}`,
+      })
     },
-    [disputeId, onDraft]
+    [addTransaction, disputeId, onDraft]
   )
 
   return (
