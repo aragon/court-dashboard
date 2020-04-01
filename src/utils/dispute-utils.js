@@ -56,9 +56,7 @@ export const transformDisputeDataAttributes = dispute => {
 
   // If the dispute is part of the precedence campaign we will flag it as such
   const precedenceCamapignDisputes = getPrecedenceCampaignDisputesByCourt()
-  const isPartOfPrecedenceCampaign = precedenceCamapignDisputes.some(
-    disputeId => disputeId === dispute.id
-  )
+  const isPartOfPrecedenceCampaign = precedenceCamapignDisputes.has(dispute.id)
   transformedDispute.marksPrecedent = isPartOfPrecedenceCampaign
 
   // If the dispute is voided we will override certain data

@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { captureMessage } from '@sentry/browser'
 import { devtoolsExchange } from '@urql/devtools'
+import { createGlobalStyle } from 'styled-components'
 import {
   createClient,
   Provider as UrqlProvider,
@@ -52,8 +53,15 @@ subscriptionClient.onError(err => {
   console.log('Retrying connection...')
 })
 
+const GlobalStyle = createGlobalStyle`
+  body img {
+    user-select:none;
+  }
+`
+
 ReactDOM.render(
   <UrqlProvider value={client}>
+    <GlobalStyle />
     <App />
   </UrqlProvider>,
   document.getElementById('root')
