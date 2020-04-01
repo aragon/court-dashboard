@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Button, GU, Help, Info } from '@aragon/ui'
+import { Button, GU, Help, Info, useTheme, useViewport } from '@aragon/ui'
 import { useActiveBalanceOfAt } from '../../../hooks/useCourtContracts'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 import { useWallet } from '../../../providers/Wallet'
@@ -53,6 +53,10 @@ function VotingFinalRound({ draftTermId, onRequestCommit }) {
 
 function VotingActions({ canJurorVote, onRequestCommit }) {
   const wallet = useWallet()
+  const { below } = useViewport()
+  const compactMode = below('medium')
+
+  const buttonWidth = compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  3)`
 
   return (
     <div>
@@ -60,54 +64,42 @@ function VotingActions({ canJurorVote, onRequestCommit }) {
         css={`
           display: flex;
           justify-content: space-between;
+          flex-direction: ${compactMode ? 'column' : 'row'};
           width: 100%;
           margin-bottom: ${1.5 * GU}px;
+
+          & > button {
+            width: ${buttonWidth};
+            margin-bottom: ${(compactMode ? 1 : 0) * GU}px;
+          }
         `}
       >
-        <VotingButton
+        <Button
           mode="positive"
           wide
           disabled={!canJurorVote}
           onClick={() => onRequestCommit(VOTE_OPTION_IN_FAVOR)}
         >
-          In favor of the plaintiff
-        </VotingButton>
-        <VotingButton
+          Allow action
+        </Button>
+        <Button
           mode="negative"
           wide
           disabled={!canJurorVote}
           onClick={() => onRequestCommit(VOTE_OPTION_AGAINST)}
         >
-          Against the plaintiff
-        </VotingButton>
-        <VotingButton
+          Block action
+        </Button>
+
+        <Button
           wide
           disabled={!canJurorVote}
           onClick={() => onRequestCommit(VOTE_OPTION_REFUSE)}
         >
-          <span
-            css={`
-              margin-right: ${1 * GU}px;
-            `}
-          >
-            Refuse to vote
-          </span>
-          <div
-            onClick={event => {
-              event.stopPropagation()
-            }}
-          >
-            <Help hint="Why would I refuse to vote?">
-              You can refuse to vote for many reasons, for example if you
-              consider that the evidence was not conclusive enough or the
-              description was incoherent. In any case, you won’t be penalized at
-              this stage for selecting any of these options. Remember that you
-              should vote the way that you think a majority of jurors will vote,
-              since you will be penalized if your vote is in the minority.
-            </Help>
-          </div>
-        </VotingButton>
+          Refuse to vote
+        </Button>
       </div>
+      <RefuseToVoteHint compactMode={compactMode} width={buttonWidth} />
       <Info mode={canJurorVote ? 'description' : 'warning'}>
         {(() => {
           if (!wallet.account)
@@ -122,8 +114,56 @@ function VotingActions({ canJurorVote, onRequestCommit }) {
   )
 }
 
-const VotingButton = styled(Button)`
-  width: calc((100% - ${2 * GU}px) / 3);
+const RefuseToVoteHint = ({ compactMode, width }) => {
+  const theme = useTheme()
+
+  const Container = compactMode ? Label : 'div'
+
+  return (
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+        justify-content: ${compactMode ? 'center' : 'flex-end'};
+        margin-bottom: ${1.5 * GU}px;
+      `}
+    >
+      <div
+        css={`
+          width: ${width};
+          color: ${theme.help};
+        `}
+      >
+        <Container
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <span
+            css={`
+              margin-right: ${0.5 * GU}px;
+            `}
+          >
+            Why refuse to vote?
+          </span>
+          <Help hint="">
+            You can refuse to vote for many reasons, for example if you consider
+            that the evidence was not conclusive enough or the description was
+            incoherent. In any case, you won’t be penalized at this stage for
+            selecting any of these options. Remember that you should vote the
+            way that you think a majority of jurors will vote, since you will be
+            penalized if your vote is in the minority.
+          </Help>
+        </Container>
+      </div>
+    </div>
+  )
+}
+
+const Label = styled.label`
+  cursor: pointer;
 `
 
 export default DisputeVoting
