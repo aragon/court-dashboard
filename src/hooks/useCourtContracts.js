@@ -172,13 +172,14 @@ export function useDisputeActions() {
 
   // Commit
   const commit = useCallback(
-    (disputeId, roundId, commitment, password) => {
+    (disputeId, roundId, outcome, password) => {
       const voteId = getVoteId(disputeId, roundId)
-      const hashedCommitment = hashVote(commitment, password)
+      const commitment = hashVote(outcome, password)
+
       return addActivity(
-        votingContract.commit(voteId, hashedCommitment),
+        votingContract.commit(voteId, commitment),
         'commitVote',
-        { disputeId, roundId, commitment }
+        { disputeId, roundId, outcome }
       )
     },
     [votingContract, addActivity]
@@ -186,11 +187,12 @@ export function useDisputeActions() {
 
   // Reveal
   const reveal = useCallback(
-    (disputeId, roundId, voter, commitment, salt) => {
+    (disputeId, roundId, voter, commitment, password) => {
       const voteId = getVoteId(disputeId, roundId)
-      const outcome = getOutcomeFromCommitment(commitment, salt)
+      const outcome = getOutcomeFromCommitment(commitment, password)
+
       return addActivity(
-        votingContract.reveal(voteId, voter, outcome, hashPassword(salt)),
+        votingContract.reveal(voteId, voter, outcome, hashPassword(password)),
         'revealVote',
         { roundId, disputeId }
       )
