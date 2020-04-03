@@ -19,6 +19,7 @@ import HeaderPopover from './Header/HeaderPopover'
 import { useCourtClock } from '../providers/CourtClock'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { useHeartbeat } from '../hooks/useCourtContracts'
+import { useTransactionQueue } from '../providers/TransactionQueue'
 
 import { formatDuration } from '../utils/date-utils'
 import {
@@ -37,6 +38,7 @@ function ClockModule() {
   const wallet = useWallet()
   const onHeartbeat = useHeartbeat()
   const courtConfig = useCourtConfig()
+  const { addTransaction } = useTransactionQueue()
 
   const {
     currentTermId,
@@ -52,13 +54,13 @@ function ClockModule() {
   }, [])
 
   const handleOnClick = useCallback(async () => {
-    try {
-      const tx = await onHeartbeat(neededTransitions)
-      await tx.wait()
-    } catch (err) {
-      console.error(err)
-    }
-  }, [neededTransitions, onHeartbeat])
+    return addTransaction({
+      description: `Transition ${neededTransitions} court term${
+        neededTransitions > 1 ? 's' : ''
+      }`,
+      intent: () => onHeartbeat(neededTransitions),
+    })
+  }, [addTransaction, neededTransitions, onHeartbeat])
 
   const IconSync = isSynced ? IconCheck : IconCross
 

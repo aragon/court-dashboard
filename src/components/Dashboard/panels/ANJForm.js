@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import {
-  ButtonBase,
   Button,
+  ButtonBase,
   Field,
   GU,
   Info,
@@ -10,11 +10,13 @@ import {
   useTheme,
 } from '@aragon/ui'
 
-import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
+import { useTransactionQueue } from '../../../providers/TransactionQueue'
+import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
 
 const ANJForm = React.memo(function ANJForm({
   actionLabel,
+  describe,
   maxAmount,
   onDone,
   onSubmit,
@@ -28,6 +30,7 @@ const ANJForm = React.memo(function ANJForm({
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
   const inputRef = useSidePanelFocusOnReady()
+  const { addTransaction } = useTransactionQueue()
 
   const handleEditMode = useCallback(
     editMode => {
@@ -102,14 +105,11 @@ const ANJForm = React.memo(function ANJForm({
 
     setAmount(amount => ({ ...amount, error: null }))
 
-    try {
-      const tx = await onSubmit(amount.valueBN)
-
-      onDone()
-      await tx.wait()
-    } catch (err) {
-      console.error('Error submitting tx: ', err) // TODO: How should we handle errors ?
-    }
+    onDone()
+    return addTransaction({
+      intent: () => onSubmit(amount.valueBN),
+      description: describe(amount.valueBN),
+    })
   }
 
   const errorMessage = amount.error

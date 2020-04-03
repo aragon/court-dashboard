@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react'
-
-import { useCourtConfig } from '../../../providers/CourtConfig'
 import ANJForm from './ANJForm'
 import { formatUnits } from '../../../lib/math-utils'
+import radspec from '../../../radspec'
+import { useCourtConfig } from '../../../providers/CourtConfig'
 
 const ActivateANJ = React.memo(function ActivateANJ({
   onActivateANJ,
@@ -53,6 +53,7 @@ const ActivateANJ = React.memo(function ActivateANJ({
   return (
     <ANJForm
       actionLabel="Activate"
+      describe={radspec.activateAnj}
       maxAmount={maxAmount}
       onSubmit={onActivateANJ}
       onDone={onDone}

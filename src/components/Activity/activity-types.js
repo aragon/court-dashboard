@@ -1,4 +1,4 @@
-import { voteOptionToString } from '../../utils/crvoting-utils'
+import radspec from '../../radspec'
 import iconAnj from './assets/activity-icon-anj.svg'
 import iconAppealRuling from './assets/activity-icon-appeal-ruling.svg'
 import iconClaimRewards from './assets/activity-icon-claim-rewards.svg'
@@ -14,158 +14,119 @@ const ACTIVITY_TYPES = new Map(
       return {
         icon: iconAnj,
         title: 'Approve fee deposit',
-        description: `
-          Approve fee deposit: ${amount} ANJ
-        `,
+        description: radspec.approveFeeDeposit(amount),
       }
     },
     activateAnj({ amount }) {
       return {
         icon: iconAnj,
         title: 'Activate ANJ',
-        description: `
-          Activate the total amount of ${amount} ANJ
-        `,
+        description: radspec.activateAnj(amount),
       }
     },
     appealRuling({ disputeId, roundId, ruling }) {
       return {
         title: 'Appeal ruling',
         icon: iconAppealRuling,
-        description: `
-          Appeal round #${roundId} of dispute #${disputeId} in favor of ruling
-          ${ruling}
-        `,
+        description: radspec.appealRuling(disputeId, roundId, ruling),
       }
     },
     buyActivateAnj({ amount }) {
       return {
         icon: iconAnj,
         title: 'Buy and activate ANJ',
-        description: `
-          Activate the total amount of ${amount} ANJ
-        `,
+        description: radspec.buyActivateAnj(amount),
       }
     },
     claimRewards({ disputeId, roundId, jurorAddress }) {
       return {
         title: 'Claim rewards',
         icon: iconClaimRewards,
-        description: `
-          Claim reward for round #${roundId} of dispute #${disputeId} for juror
-          ${jurorAddress}
-        `,
+        description: radspec.claimRewards(disputeId, roundId, jurorAddress),
       }
     },
     claimSubscriptionFees({ periodId }) {
       return {
         title: 'Claim Subscription rewards',
         icon: iconClaimRewards,
-        description: `
-          Claim subscription rewards for period ${periodId}
-        `,
+        description: radspec.claimRewards(periodId),
       }
     },
     commitVote({ disputeId, roundId, outcome }) {
       return {
         title: 'Commit vote',
         icon: iconCommitVote,
-        description: `
-          Vote ${voteOptionToString(
-            outcome
-          )} on round #${roundId} of dispute #${disputeId}
-        `,
+        description: radspec.commitVote(disputeId, roundId, outcome),
       }
     },
     confirmAppeal({ disputeId, roundId, ruling }) {
       return {
         title: 'Confirm appeal',
         icon: iconAppealRuling,
-        description: `
-          Confirm appeal round #${roundId} of dispute #${disputeId} in favor of
-          ruling ${ruling}
-        `,
+        description: radspec.confirmAppeal(disputeId, roundId, ruling),
       }
     },
     deactivateAnj({ amount }) {
       return {
         icon: iconAnj,
         title: 'Deactivate ANJ',
-        description: `
-          Deactivate the total amount of ${amount} ANJ
-        `,
+        description: radspec.deactivateAnj(amount),
       }
     },
     draftJury({ disputeId }) {
       return {
         title: 'Draft jury',
         icon: iconDraftJury,
-        description: `
-          Draft jurors for the next round of dispute #${disputeId}
-        `,
+        description: radspec.draftJury(disputeId),
       }
     },
     executeRuling({ disputeId }) {
       return {
         title: 'Execute ruling',
         icon: iconExecuteRuling,
-        description: `
-          Compute the final ruling for dispute #${disputeId}
-        `,
+        description: radspec.executeRuling(disputeId),
       }
     },
     heartbeat({ transitions }) {
       return {
         title: 'Update term',
         icon: iconCourtLogo,
-        description: `
-          Transition ${transitions} court term${transitions > 1 ? 's' : ''}
-        `,
+        description: radspec.heartbeat(transitions),
       }
     },
     leakVote({ voteId, voter }) {
       return {
         title: 'Leak vote',
         icon: iconCommitVote,
-        description: `
-          Leak vote of ${voter} for vote #${voteId}
-        `,
+        description: radspec.leakVote(voteId, voter),
       }
     },
     revealVote({ roundId, disputeId }) {
       return {
         title: 'Reveal vote',
         icon: iconAnj,
-        description: `
-          Reveal vote on round ${roundId} for dispute #${disputeId}
-        `,
+        description: radspec.revealVote(roundId, disputeId),
       }
     },
     settleReward({ roundId, disputeId }) {
       return {
         icon: iconAnj,
         title: 'Settle reward',
-        description: `
-          Settle reward for round #${roundId} of dispute #${disputeId}
-        `,
+        description: radspec.settleReward(roundId, disputeId),
       }
     },
     settleAppealDeposit({ roundId, disputeId }) {
       return {
         icon: iconAnj,
         title: 'Settle appeal deposit',
-        description: `
-          Settle appeal deposit for round #${roundId} of dispute #${disputeId}
-        `,
+        description: radspec.settleAppealDeposit(roundId, disputeId),
       }
     },
     stakeActivateAnj({ amount }) {
       return {
         icon: iconAnj,
         title: 'Stake and activate ANJ',
-        description: `
-          Activate the total amount of ${amount} ANJ
-        `,
+        description: radspec.stakeActivateAnj(amount),
       }
     },
     transaction({ transactionHash }) {
@@ -181,9 +142,7 @@ const ACTIVITY_TYPES = new Map(
       return {
         icon: iconAnj,
         title: 'Withdraw ANJ',
-        description: `
-          Withdraw the total amount of ${amount} ANJ
-        `,
+        description: radspec.withdrawAnj(amount),
       }
     },
   })
