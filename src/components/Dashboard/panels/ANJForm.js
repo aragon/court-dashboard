@@ -108,7 +108,7 @@ const ANJForm = React.memo(function ANJForm({
     onDone()
     return addTransaction({
       intent: () => onSubmit(amount.valueBN),
-      description: describe(amount.valueBN),
+      description: describe(formatUnits(amount.valueBN)),
     })
   }
 

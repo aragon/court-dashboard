@@ -27,6 +27,7 @@ import {
   isLocalOrUnknownNetwork,
   shortenAddress,
 } from '../lib/web3-utils'
+import radspec from '../radspec'
 
 import logoSvg from '../assets/LogoAccent.svg'
 
@@ -55,10 +56,8 @@ function ClockModule() {
 
   const handleOnClick = useCallback(async () => {
     return addTransaction({
-      description: `Transition ${neededTransitions} court term${
-        neededTransitions > 1 ? 's' : ''
-      }`,
       intent: () => onHeartbeat(neededTransitions),
+      description: radspec.heartbeat(neededTransitions),
     })
   }, [addTransaction, neededTransitions, onHeartbeat])
 

@@ -14,7 +14,7 @@ function TransactionQueueProvider({ children }) {
     [transactions]
   )
 
-  const addMultipleTxs = useCallback(
+  const addTransactions = useCallback(
     txs => {
       const newTransactions = [...transactions, ...txs]
       return setTransactions(newTransactions)
@@ -29,8 +29,8 @@ function TransactionQueueProvider({ children }) {
   return (
     <TransactionQueueContext.Provider
       value={{
-        addMultipleTxs,
         addTransaction,
+        addTransactions,
         clearTransactionQueue,
         transactions,
       }}

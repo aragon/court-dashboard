@@ -16,11 +16,12 @@ import NoRewards from './NoRewards'
 
 import { useWallet } from '../../providers/Wallet'
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { getProviderFromUseWalletId } from '../../ethereum-providers'
+import { useTransactionQueue } from '../../providers/TransactionQueue'
 import useJurorSubscriptionFees from '../../hooks/useJurorSubscriptionFees'
 
-import { bigNum, formatTokenAmount } from '../../lib/math-utils'
+import radspec from '../../radspec'
 import { addressesEqual } from '../../lib/web3-utils'
+import { bigNum, formatTokenAmount, formatUnits } from '../../lib/math-utils'
 
 const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
   return useMemo(() => {
@@ -56,6 +57,7 @@ const RewardsModule = React.memo(function RewardsModule({
 }) {
   const wallet = useWallet()
   const { feeToken } = useCourtConfig()
+  const { addTransactions } = useTransactionQueue()
 
   // Subscriptions are fetched directly from the subscriptions contract
   const subscriptionFees = useJurorSubscriptionFees()
@@ -99,43 +101,59 @@ const RewardsModule = React.memo(function RewardsModule({
         for (const arbitrableFee of feeRewards.arbitrableFees) {
           const { disputeId, rounds } = arbitrableFee
           for (const roundId of rounds) {
-            rewardTransactionQueue.push(
-              await onSettleReward(disputeId, roundId, wallet.account)
-            )
+            rewardTransactionQueue.push({
+              intent: () => onSettleReward(disputeId, roundId, wallet.account),
+              description: radspec.settleReward(roundId, disputeId),
+            })
           }
         }
+
+        console.log('settlerewad')
 
         // Claim all appeal fee rewards
         for (const appealFee of feeRewards.appealFees) {
           const { disputeId, rounds } = appealFee
           for (const roundId of rounds) {
-            rewardTransactionQueue.push(
-              await onSettleAppealDeposit(disputeId, roundId)
-            )
+            rewardTransactionQueue.push({
+              intent: () => onSettleAppealDeposit(disputeId, roundId),
+              description: radspec.settleAppealDeposit(roundId, disputeId),
+            })
           }
         }
 
+        console.log('settleappeal')
+
         // Withdraw funds from treasury
         if (totalTreasuryFees.gt(0)) {
-          rewardTransactionQueue.push(
-            await onWithdraw(feeToken.id, wallet.account, totalTreasuryFees)
-          )
+          rewardTransactionQueue.push({
+            intent: () =>
+              onWithdraw(feeToken.id, wallet.account, totalTreasuryFees),
+            description: radspec.claimRewards(formatUnits(totalTreasuryFees)),
+          })
         }
+
+        console.log('withdraw')
 
         // Claim subscription fees
         for (const subscriptionFee of subscriptionFees) {
-          rewardTransactionQueue.push(
-            await onClaimSubscriptionFees(subscriptionFee.periodId)
-          )
+          rewardTransactionQueue.push({
+            intent: () => onClaimSubscriptionFees(subscriptionFee.periodId),
+            description: radspec.claimSubscriptionFees(
+              subscriptionFee.periodId
+            ),
+          })
         }
 
-        await Promise.all(rewardTransactionQueue.map(tx => tx.wait()))
+        console.log('subscription')
+
+        return addTransactions(rewardTransactionQueue)
       } catch (err) {
         console.error(`Error claiming rewards: ${err}`)
         Sentry.captureException(err)
       }
     },
     [
+      addTransactions,
       feeRewards,
       feeToken,
       onClaimSubscriptionFees,
@@ -181,13 +199,7 @@ const RewardsModule = React.memo(function RewardsModule({
                 {totalSubscriptionFees.gt(0) && (
                   <SubscriptionFeeRewards totalFees={totalSubscriptionFees} />
                 )}
-                <TotalFees
-                  totalFees={totalFeeRewards}
-                  requiresMultipleTxs={
-                    totalDisputesFees.gt(0) ||
-                    (subscriptionFees.length > 0 && treasuryBalance.gt(0))
-                  }
-                />
+                <TotalFees totalFees={totalFeeRewards} />
               </form>
             )}
           </div>
@@ -325,11 +337,9 @@ function SubscriptionFeeRewards({ totalFees }) {
   )
 }
 
-function TotalFees({ totalFees, requiresMultipleTxs }) {
+function TotalFees({ totalFees }) {
   const theme = useTheme()
-  const { activated } = useWallet()
   const { feeToken } = useCourtConfig()
-  const provider = getProviderFromUseWalletId(activated)
 
   const { symbol, decimals } = feeToken
   const totalFeesFormatted = formatTokenAmount(totalFees, true, decimals, true)
@@ -358,16 +368,6 @@ function TotalFees({ totalFees, requiresMultipleTxs }) {
         <Button mode="positive" type="submit" wide>
           Claim rewards
         </Button>
-        {requiresMultipleTxs && (
-          <Info
-            css={`
-              margin-top: ${2 * GU}px;
-            `}
-          >
-            This action requires multiple transactions to be signed in{' '}
-            {provider.name}. Please confirm them one after another.
-          </Info>
-        )}
       </div>
     </FeeSection>
   )

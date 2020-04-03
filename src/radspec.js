@@ -18,8 +18,8 @@ export default {
   buyActivateAnj: amount => {
     return `Activate the total amount of ${amount} ANJ`
   },
-  claimRewards: (disputeId, roundId, jurorAddress) => {
-    return `Claim reward for round #${roundId} of dispute #${disputeId} for juror ${jurorAddress}`
+  claimRewards: amount => {
+    return `Claim rewards for a total amount of ${amount} DAI`
   },
   claimSubscriptionFees: periodId => {
     return `Claim subscription rewards for period ${periodId}`

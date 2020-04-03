@@ -38,18 +38,18 @@ const ACTIVITY_TYPES = new Map(
         description: radspec.buyActivateAnj(amount),
       }
     },
-    claimRewards({ disputeId, roundId, jurorAddress }) {
+    claimRewards({ amount }) {
       return {
         title: 'Claim rewards',
         icon: iconClaimRewards,
-        description: radspec.claimRewards(disputeId, roundId, jurorAddress),
+        description: radspec.claimRewards(amount),
       }
     },
     claimSubscriptionFees({ periodId }) {
       return {
         title: 'Claim Subscription rewards',
         icon: iconClaimRewards,
-        description: radspec.claimRewards(periodId),
+        description: radspec.claimSubscriptionFees(periodId),
       }
     },
     commitVote({ disputeId, roundId, outcome }) {

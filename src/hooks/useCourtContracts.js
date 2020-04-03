@@ -334,11 +334,15 @@ export function useRewardActions() {
 
   const withdraw = useCallback(
     (token, to, amount) => {
-      return treasuryContract.withdraw(token, to, amount, {
-        gasLimit: ANJ_ACTIONS_GAS_LIMIT,
-      })
+      return addActivity(
+        treasuryContract.withdraw(token, to, amount, {
+          gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+        }),
+        'claimRewards',
+        { amount: formatUnits(amount) }
+      )
     },
-    [treasuryContract]
+    [addActivity, treasuryContract]
   )
 
   return { settleReward, settleAppealDeposit, withdraw }
