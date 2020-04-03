@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import { Button, GU, Info } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 import { useTransactionQueue } from '../../../providers/TransactionQueue'
+import radspec from '../../../radspec'
 
 function DisputeDraft({ disputeId, onDraft }) {
   const wallet = useWallet()
@@ -13,7 +14,7 @@ function DisputeDraft({ disputeId, onDraft }) {
 
       addTransaction({
         intent: () => onDraft(disputeId),
-        description: `Draft jurors for the next round of dispute #${disputeId}`,
+        description: radspec.draftJury(disputeId),
       })
     },
     [addTransaction, disputeId, onDraft]

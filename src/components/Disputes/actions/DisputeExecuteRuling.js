@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import { Button, GU, Info } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 import { useTransactionQueue } from '../../../providers/TransactionQueue'
+import radspec from '../../../radspec'
 
 function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
   const wallet = useWallet()
@@ -13,7 +14,7 @@ function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
 
       return addTransaction({
         intent: () => onExecuteRuling(disputeId),
-        description: `Execute ruling for dispute #${disputeId}`,
+        description: radspec.executeRuling(disputeId),
       })
     },
     [addTransaction, disputeId, onExecuteRuling]

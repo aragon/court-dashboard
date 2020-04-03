@@ -11,20 +11,21 @@ import {
   useToast,
   useTheme,
 } from '@aragon/ui'
-import { useWallet } from '../../../providers/Wallet'
 import useOneTimeCode from '../../../hooks/useOneTimeCode'
 import { useTransactionQueue } from '../../../providers/TransactionQueue'
-import { saveCodeInLocalStorage } from '../../../utils/one-time-code-utils'
+import { useWallet } from '../../../providers/Wallet'
+
 import requestAutoReveal from '../../../services/requestAutoReveal'
+import { saveCodeInLocalStorage } from '../../../utils/one-time-code-utils'
 
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
-import { voteOptionToString } from '../../../utils/crvoting-utils'
+import radspec from '../../../radspec'
 
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
   onCommit,
-  outcome,
   onDone,
+  outcome,
 }) {
   const [codeSaved, setCodeSaved] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
@@ -42,14 +43,9 @@ const CommitPanel = React.memo(function CommitPanel({
       const roundId = dispute.lastRoundId
       onDone()
 
-      // TODO: Get description from radpsec file
       return addTransaction({
         intent: () => onCommit(disputeId, roundId, outcome, oneTimeCode),
-        description: `
-        Vote ${voteOptionToString(
-          outcome
-        )} on round #${roundId} of dispute #${disputeId}
-          `,
+        description: radspec.commitVote(disputeId, roundId, outcome),
 
         waitForConfirmation: true,
         // Callback function to run after main tx

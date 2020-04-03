@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { GU, SidePanel } from '@aragon/ui'
+import { captureException } from '@sentry/browser'
 
 import ConfirmTransaction from './ConfirmTransaction'
 import SigningStatus from './SigningStatus'
@@ -202,7 +203,11 @@ function SignerPanel() {
               }
             }
           } catch (err) {
-            console.error(err)
+            console.error(
+              `Error when executing: ${transaction.description}:`,
+              err
+            )
+            captureException(err)
 
             if (flattenedTransactions.length > 1) {
               // Cancel to stop later transactions from being signed

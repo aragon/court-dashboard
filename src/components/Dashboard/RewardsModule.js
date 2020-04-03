@@ -9,7 +9,6 @@ import {
   textStyle,
   useTheme,
 } from '@aragon/ui'
-import * as Sentry from '@sentry/browser'
 
 import Loading from './Loading'
 import NoRewards from './NoRewards'
@@ -90,69 +89,63 @@ const RewardsModule = React.memo(function RewardsModule({
 
   // Form submission
   const handleFormSubmit = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
       if (!rewards) return
 
       const rewardTransactionQueue = []
-      try {
-        // Claim all arbitrable fee rewards
-        for (const arbitrableFee of feeRewards.arbitrableFees) {
-          const { disputeId, rounds } = arbitrableFee
-          for (const roundId of rounds) {
-            rewardTransactionQueue.push({
-              intent: () => onSettleReward(disputeId, roundId, wallet.account),
-              description: radspec.settleReward(roundId, disputeId),
-            })
-          }
-        }
 
-        // Claim all appeal fee rewards
-        for (const appealFee of feeRewards.appealFees) {
-          const { disputeId, rounds } = appealFee
-          for (const roundId of rounds) {
-            rewardTransactionQueue.push({
-              intent: () => onSettleAppealDeposit(disputeId, roundId),
-              description: radspec.settleAppealDeposit(roundId, disputeId),
-            })
-          }
-        }
-
-        // If we have settlements to do, then we'll make sure that the last
-        // settlement is confirmed before withdrawing total fees from the treasury
-        if (rewardTransactionQueue.length > 0) {
-          const lastSettlement = rewardTransactionQueue.pop()
+      // Claim all arbitrable fee rewards
+      for (const arbitrableFee of feeRewards.arbitrableFees) {
+        const { disputeId, rounds } = arbitrableFee
+        for (const roundId of rounds) {
           rewardTransactionQueue.push({
-            ...lastSettlement,
-            waitForConfirmation: true,
+            intent: () => onSettleReward(disputeId, roundId, wallet.account),
+            description: radspec.settleReward(roundId, disputeId),
           })
         }
-
-        // Withdraw funds from treasury
-        if (totalTreasuryFees.gt(0)) {
-          rewardTransactionQueue.push({
-            intent: () =>
-              onWithdraw(feeToken.id, wallet.account, totalTreasuryFees),
-            description: radspec.claimRewards(formatUnits(totalTreasuryFees)),
-          })
-        }
-
-        // Claim subscription fees
-        for (const subscriptionFee of subscriptionFees) {
-          rewardTransactionQueue.push({
-            intent: () => onClaimSubscriptionFees(subscriptionFee.periodId),
-            description: radspec.claimSubscriptionFees(
-              subscriptionFee.periodId
-            ),
-          })
-        }
-
-        return addTransactions(rewardTransactionQueue)
-      } catch (err) {
-        console.error(`Error claiming rewards: ${err}`)
-        Sentry.captureException(err)
       }
+
+      // Claim all appeal fee rewards
+      for (const appealFee of feeRewards.appealFees) {
+        const { disputeId, rounds } = appealFee
+        for (const roundId of rounds) {
+          rewardTransactionQueue.push({
+            intent: () => onSettleAppealDeposit(disputeId, roundId),
+            description: radspec.settleAppealDeposit(roundId, disputeId),
+          })
+        }
+      }
+
+      // If we have settlements to do, then we'll make sure that the last
+      // settlement is confirmed before withdrawing total fees from the treasury
+      if (rewardTransactionQueue.length > 0) {
+        const lastSettlement = rewardTransactionQueue.pop()
+        rewardTransactionQueue.push({
+          ...lastSettlement,
+          waitForConfirmation: true,
+        })
+      }
+
+      // Withdraw funds from treasury
+      if (totalTreasuryFees.gt(0)) {
+        rewardTransactionQueue.push({
+          intent: () =>
+            onWithdraw(feeToken.id, wallet.account, totalTreasuryFees),
+          description: radspec.claimRewards(formatUnits(totalTreasuryFees)),
+        })
+      }
+
+      // Claim subscription fees
+      for (const subscriptionFee of subscriptionFees) {
+        rewardTransactionQueue.push({
+          intent: () => onClaimSubscriptionFees(subscriptionFee.periodId),
+          description: radspec.claimSubscriptionFees(subscriptionFee.periodId),
+        })
+      }
+
+      return addTransactions(rewardTransactionQueue)
     },
     [
       addTransactions,

@@ -15,28 +15,37 @@ function ConfirmTransaction({ descriptions, onSign }) {
         >
           Action{descriptions.length > 0 ? 's' : ''} to be triggered
         </h4>
-        <ul
+        <div
           css={`
             color: ${theme.content};
-            list-style: none;
-            padding: 0px ${1 * GU}px;
-            margin-top: ${0.5 * GU}px;
           `}
         >
-          {descriptions.map(description => (
-            <li>
-              <span
-                css={`
-                  font-weight: bold;
-                  margin-right: ${0.5 * GU}px;
-                `}
-              >
-                -
-              </span>
-              {description}
-            </li>
-          ))}
-        </ul>
+          {descriptions.length > 1 ? (
+            <ul
+              css={`
+                padding: 0px ${1 * GU}px;
+                margin-top: ${0.5 * GU}px;
+                list-style: none;
+              `}
+            >
+              {descriptions.map(description => (
+                <li>
+                  <span
+                    css={`
+                      font-weight: bold;
+                      margin-right: ${0.5 * GU}px;
+                    `}
+                  >
+                    -
+                  </span>
+                  {description}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <span>{descriptions[0]}</span>
+          )}
+        </div>
       </Info>
       <Button
         label="Create transaction"
