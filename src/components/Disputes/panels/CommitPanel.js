@@ -32,7 +32,7 @@ const CommitPanel = React.memo(function CommitPanel({
   const [revealService, setRevealService] = useState(true)
   const { account: connectedAccount } = useWallet()
   const { oneTimeCode, download } = useOneTimeCode()
-  const { addTransaction } = useTransactionQueue()
+  const { addTransactions } = useTransactionQueue()
   const toast = useToast()
 
   const handleCommit = useCallback(
@@ -41,39 +41,44 @@ const CommitPanel = React.memo(function CommitPanel({
 
       const disputeId = dispute.id
       const roundId = dispute.lastRoundId
+
+      const transactionQueue = [
+        {
+          intent: () => onCommit(disputeId, roundId, outcome, oneTimeCode),
+          description: radspec.commitVote(disputeId, roundId, outcome),
+
+          waitForConfirmation: true,
+          // Callback function to run after main tx
+          callback: () =>
+            saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode),
+        },
+      ]
+
+      // If juror opted-in for the reveal service we'll send the commitment and password to the court-server
+      if (revealService) {
+        transactionQueue.push({
+          intent: async () => {
+            return requestAutoReveal(
+              connectedAccount,
+              disputeId,
+              roundId,
+              outcome,
+              oneTimeCode
+            )
+          },
+          description: 'Request auto-reveal service',
+          onError: 'Failed to request auto-reveal service',
+          onSuccess: 'Auto-reveal service requested succesfully!',
+          skipSignature: true,
+        })
+      }
+
       onDone()
 
-      return addTransaction({
-        intent: () => onCommit(disputeId, roundId, outcome, oneTimeCode),
-        description: radspec.commitVote(disputeId, roundId, outcome),
-
-        waitForConfirmation: true,
-        // Callback function to run after main tx
-        callback: () =>
-          saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode),
-
-        // If juror opted-in for the reveal service we'll send the commitment and password to the court-server
-        onTxConfirmed: revealService
-          ? {
-              intent: async () => {
-                return requestAutoReveal(
-                  connectedAccount,
-                  disputeId,
-                  roundId,
-                  outcome,
-                  oneTimeCode
-                )
-              },
-              description: 'Request auto-reveal service',
-              onError: 'Failed to request auto-reveal service',
-              onSuccess: 'Auto-reveal service requested succesfully!',
-              skipSignature: true,
-            }
-          : null,
-      })
+      return addTransactions(transactionQueue)
     },
     [
-      addTransaction,
+      addTransactions,
       connectedAccount,
       dispute.id,
       dispute.lastRoundId,

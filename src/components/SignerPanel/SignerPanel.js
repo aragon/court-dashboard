@@ -82,9 +82,9 @@ function SignerPanel() {
 
         // Wait for tx to be mined
         await signedTx.wait()
-        return setTransactionProgress(({ confirmed, ...txProgress }) => ({
+        return setTransactionProgress(txProgress => ({
           ...txProgress,
-          confirmed: confirmed + 1,
+          confirmed: index + 1,
         }))
       } catch (err) {
         // Mark tx as failed
@@ -101,21 +101,9 @@ function SignerPanel() {
     [setTransactionProgress]
   )
 
-  // For cases where a transaction has an action to be triggered after confirmation
-  // We could have transactions that are not cast to the network but perform another action e.g. requesting the auto-reveal service
-  // We will treat this actions as regular transactions so the signer panel handles them transparently
-  // and we differentiate them from the rest by the `skipSignature` prop
-  const flattenedTransactions = useMemo(
-    () =>
-      transactions
-        .map(tx => (tx.onTxConfirmed ? [tx, tx.onTxConfirmed] : tx))
-        .flat(),
-    [transactions]
-  )
-
   // Get transaction statuses
   const transactionsStatus = useMemo(() => {
-    if (!flattenedTransactions) {
+    if (!transactions) {
       return []
     }
 
@@ -149,10 +137,8 @@ function SignerPanel() {
       return TRANSACTION_STATUS_UPCOMING
     }
 
-    return flattenedTransactions.map((transaction, index) =>
-      status(transaction, index)
-    )
-  }, [flattenedTransactions, transactionProgress])
+    return transactions.map((transaction, index) => status(transaction, index))
+  }, [transactions, transactionProgress])
 
   const maxAttemptsReached = attempts >= MAX_ATTEMPTS
 
@@ -179,11 +165,11 @@ function SignerPanel() {
       let cancelled = false
 
       const createTransactions = async () => {
-        const transactions = flattenedTransactions
+        const filteredTransactions = transactions
           .slice(transactionProgress.signed)
           .entries()
 
-        for (const [index, transaction] of transactions) {
+        for (const [index, transaction] of filteredTransactions) {
           if (cancelled) {
             break
           }
@@ -209,7 +195,7 @@ function SignerPanel() {
             )
             captureException(err)
 
-            if (flattenedTransactions.length > 1) {
+            if (transactions.length > 1) {
               // Cancel to stop later transactions from being signed
               cancelled = true
             }
@@ -226,7 +212,7 @@ function SignerPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       attempts,
-      flattenedTransactions,
+      transactions,
       signTransaction,
       transactionProgress.signing,
       waitForTxConfirmation,
@@ -244,19 +230,18 @@ function SignerPanel() {
 
     const { confirmed, erroredSigning, failed, signed } = transactionProgress
 
-    const requiredConfirmations = flattenedTransactions.filter(
+    const requiredConfirmations = transactions.filter(
       tx => tx.waitForConfirmation
     ).length
 
-    const allSigned = signed > 0 && signed === flattenedTransactions.length
+    const allSigned = signed > 0 && signed === transactions.length
     const allConfirmed = confirmed === requiredConfirmations
     const success = allSigned && allConfirmed
 
     // We only close the panel if there's only one transaction to sign and it fails to do so
     // If we have multiple transactions we'll let the user to retry the signature process
     const onlyTxFailed =
-      flattenedTransactions.length === 1 &&
-      (erroredSigning === 0 || failed === 0)
+      transactions.length === 1 && (erroredSigning === 0 || failed === 0)
 
     if (maxAttemptsReached || success || onlyTxFailed) {
       startClearing()
@@ -267,13 +252,13 @@ function SignerPanel() {
     }
   }, [
     clearTransactionQueue,
-    flattenedTransactions,
+    transactions,
     handleSignerClose,
     maxAttemptsReached,
     transactionProgress,
   ])
 
-  const blockPanel = !maxAttemptsReached && flattenedTransactions.length > 1
+  const blockPanel = !maxAttemptsReached && transactions.length > 1
 
   return (
     <SidePanel
@@ -282,7 +267,7 @@ function SignerPanel() {
       opened={transactions.length > 0}
       onClose={handleSignerClose}
     >
-      {flattenedTransactions.length > 0 && (
+      {transactions.length > 0 && (
         <div
           css={`
             margin-top: ${3 * GU}px;
@@ -292,13 +277,13 @@ function SignerPanel() {
             <SigningStatus
               maxAttemptsReached={maxAttemptsReached}
               onNextAttempt={handleNextAttempt}
-              transactions={flattenedTransactions}
+              transactions={transactions}
               transactionHashes={transactionHashes}
               transactionsStatus={transactionsStatus}
             />
           ) : (
             <ConfirmTransaction
-              descriptions={flattenedTransactions.map(tx => tx.description)}
+              descriptions={transactions.map(tx => tx.description)}
               onSign={handleSign}
             />
           )}
