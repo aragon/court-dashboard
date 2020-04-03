@@ -65,14 +65,6 @@ function useCourtContract(moduleType, abi) {
   return useContract(contractAddress, abi)
 }
 
-function useCourtContractReadOnly(moduleType, abi) {
-  const { modules } = useCourtConfig()
-
-  const contractAddress = getModuleAddress(modules, moduleType)
-
-  return useContractReadOnly(contractAddress, abi)
-}
-
 /**
  * All ANJ interactions
  * @returns {Object} all available functions around ANJ balances
@@ -632,58 +624,4 @@ export function useTotalANTStakedPolling(timeout = 1000) {
   }, [antContract, controlledTimeout, timeout])
 
   return [totalANTStaked, error]
-}
-
-export function useTotalANTStaked() {
-  const [totalANTStaked, setTotalANTStaked] = useState(bigNum(-1))
-
-  const jurorRegistryContract = useCourtContractReadOnly(
-    CourtModuleType.JurorsRegistry,
-    jurorRegistryAbi
-  )
-  useEffect(() => {
-    if (!jurorRegistryContract) {
-      return
-    }
-    const getTotalANTStaked = async () => {
-      retryMax(() => jurorRegistryContract.totalStaked())
-        .then(totalStaked => {
-          setTotalANTStaked(totalStaked)
-        })
-        .catch(err => {
-          console.error(`Error fetching ANT staked: ${err}`)
-        })
-    }
-
-    getTotalANTStaked()
-  }, [jurorRegistryContract])
-
-  return totalANTStaked
-}
-
-export function useTotalActiveBalance() {
-  const [totalActiveBalance, setTotalActiveBalance] = useState(bigNum(-1))
-  const jurorRegistryContract = useCourtContractReadOnly(
-    CourtModuleType.JurorsRegistry,
-    jurorRegistryAbi
-  )
-
-  useEffect(() => {
-    if (!jurorRegistryContract) {
-      return
-    }
-    const getTotalActiveBalance = async () => {
-      retryMax(() => jurorRegistryContract.totalActiveBalance())
-        .then(totalActive => {
-          setTotalActiveBalance(totalActive)
-        })
-        .catch(err => {
-          console.error(`Error fetching ANT staked: ${err}`)
-        })
-    }
-
-    getTotalActiveBalance()
-  }, [jurorRegistryContract])
-
-  return totalActiveBalance
 }

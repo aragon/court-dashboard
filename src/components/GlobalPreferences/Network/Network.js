@@ -64,7 +64,7 @@ function Network() {
                   )}`
                 }
                 if (networkError instanceof InvalidURI) {
-                  return 'Must provide WebSocket endpoint to node'
+                  return 'Must provide Http endpoint to node'
                 }
                 if (networkError instanceof NoConnection) {
                   return 'Could not connect to node'
