@@ -5,17 +5,6 @@ export default async (juror, disputeId, roundId, outcome, password) => {
   const voteId = getVoteId(disputeId, roundId).toString()
   const salt = hashPassword(password)
 
-  console.log('password', password)
-  console.log(
-    'requestiong auto reveal with: ',
-    juror,
-    disputeId,
-    roundId,
-    voteId,
-    outcome,
-    salt
-  )
-
   return fetch(`${COURT_SERVER_ENDPOINT}/reveals`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

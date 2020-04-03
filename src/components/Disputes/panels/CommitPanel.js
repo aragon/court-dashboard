@@ -6,7 +6,6 @@ import {
   IconDownload,
   Info,
   Switch,
-  Tag,
   TextInput,
   textStyle,
   useToast,
@@ -20,8 +19,6 @@ import requestAutoReveal from '../../../services/requestAutoReveal'
 
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
 import { voteOptionToString } from '../../../utils/crvoting-utils'
-
-const AUTO_REVEAL_ENABLED = false // TODO: Remove when auto reveal service is running
 
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
@@ -45,31 +42,38 @@ const CommitPanel = React.memo(function CommitPanel({
       const roundId = dispute.lastRoundId
       onDone()
 
+      // TODO: Get description from radpsec file
       return addTransaction({
         intent: () => onCommit(disputeId, roundId, outcome, oneTimeCode),
         description: `
         Vote ${voteOptionToString(
           outcome
         )} on round #${roundId} of dispute #${disputeId}
-      `,
-        // If juror opted-in for the reveal service we'll send the commitment and password to the court-server
-        waitTillMined: revealService,
-        onMined: {
-          action: () => {
-            saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode)
+          `,
 
-            return requestAutoReveal(
-              connectedAccount,
-              disputeId,
-              roundId,
-              outcome,
-              oneTimeCode
-            )
-          },
-          description: 'Request auto-reveal service',
-          onSuccess: 'Auto-reveal service requested succesfully!',
-          onError: 'Failed to request auto-reveal service: ',
-        },
+        waitForConfirmation: true,
+        // Callback function to run after main tx
+        callback: () =>
+          saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode),
+
+        // If juror opted-in for the reveal service we'll send the commitment and password to the court-server
+        onTxConfirmed: revealService
+          ? {
+              intent: async () => {
+                return requestAutoReveal(
+                  connectedAccount,
+                  disputeId,
+                  roundId,
+                  outcome,
+                  oneTimeCode
+                )
+              },
+              description: 'Request auto-reveal service',
+              onError: 'Failed to request auto-reveal service',
+              onSuccess: 'Auto-reveal service requested succesfully!',
+              skipSignature: true,
+            }
+          : null,
       })
     },
     [
@@ -127,7 +131,7 @@ const CommitPanel = React.memo(function CommitPanel({
         css={`
           margin-top: ${2 * GU}px;
         `}
-        disabled={!(revealService || codeSaved || codeCopied)}
+        disabled={!(codeSaved || codeCopied)}
         onClick={handleCommit}
         type="submit"
         mode="strong"
@@ -260,11 +264,7 @@ const RevealService = React.memo(function RevealService({
           align-items: center;
         `}
       >
-        <Switch
-          checked={revealService}
-          onChange={onRevealServiceChange}
-          disabled={!AUTO_REVEAL_ENABLED}
-        />
+        <Switch checked={revealService} onChange={onRevealServiceChange} />
         <span
           css={`
             margin-left: ${2 * GU}px;
@@ -273,16 +273,6 @@ const RevealService = React.memo(function RevealService({
         >
           Auto-reveal service.
         </span>
-        {!AUTO_REVEAL_ENABLED && (
-          <Tag
-            css={`
-              margin-left: ${1 * GU}px;
-            `}
-            mode="new"
-          >
-            Coming soon
-          </Tag>
-        )}
       </div>
       <div
         css={`
@@ -299,13 +289,9 @@ const RevealService = React.memo(function RevealService({
   )
 })
 
-const InfoSection = React.memo(function InfoSection({
-  commitEndTime,
-  copiedOrSaved,
-  revealService,
-}) {
+const InfoSection = React.memo(function InfoSection({ revealService }) {
   const content = revealService
-    ? 'This temporary code will be valid to commit and reveal your vote for this dispute only. You won’t be required to enter this code unless a problem occur with our services.'
+    ? 'You must copy or download this code before you can commit your vote. It will be valid to commit and reveal your vote for this dispute only. You won’t be required to enter this code unless a problem occur with our services.'
     : 'You must copy or download this code before you can commit your vote. You will be asked to confirm it in order to reveal your vote. Failure to do so will result in a monetary penalty to your account.'
 
   return (
