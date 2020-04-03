@@ -94,6 +94,22 @@ export function numberToWord(number) {
   return wordNumbers[number]
 }
 
+const ordinalNumbers = [
+  'First',
+  'Second',
+  'Third',
+  'Fourth',
+  'Fifth',
+  'Sixth',
+  'Seventh',
+  'Eighth',
+  'Ninth',
+]
+
+export function numberToOrdinal(number) {
+  return ordinalNumbers[number - 1]
+}
+
 export function getPercentage(value, totalValue) {
   if (!totalValue > 0) return 0
 

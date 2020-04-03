@@ -9,7 +9,7 @@ function TransactionQueueProvider({ children }) {
   const addTransaction = useCallback(
     tx => {
       const newTransactions = [...transactions, tx]
-      setTransactions(newTransactions)
+      return setTransactions(newTransactions)
     },
     [transactions]
   )
@@ -17,25 +17,13 @@ function TransactionQueueProvider({ children }) {
   const addMultipleTxs = useCallback(
     txs => {
       const newTransactions = [...transactions, ...txs]
-      setTransactions(newTransactions)
-    },
-    [transactions]
-  )
-
-  const updateTransaction = useCallback(
-    (index, tx) => {
-      const newTransactions = [
-        ...transactions.slice(0, index),
-        tx,
-        ...transactions.slice(index + 1),
-      ]
-      setTransactions(newTransactions)
+      return setTransactions(newTransactions)
     },
     [transactions]
   )
 
   const clearTransactionQueue = useCallback(() => {
-    setTransactions([])
+    return setTransactions([])
   }, [])
 
   return (
@@ -45,7 +33,6 @@ function TransactionQueueProvider({ children }) {
         addTransaction,
         clearTransactionQueue,
         transactions,
-        updateTransaction,
       }}
     >
       {children}
