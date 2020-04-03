@@ -2,6 +2,7 @@ import {
   voteOptionToString,
   appealOptionToString,
 } from './utils/crvoting-utils'
+import { numberToWord } from './lib/math-utils'
 
 export default {
   approveFeeDeposit: amount => {
@@ -11,7 +12,9 @@ export default {
     return `Activate the total amount of ${amount} ANJ`
   },
   appealRuling: (disputeId, roundId, ruling) => {
-    return `Appeal round #${roundId} of dispute #${disputeId} in favor of ruling ${appealOptionToString(
+    return `Appeal round ${numberToWord(
+      roundId
+    )} of dispute #${disputeId} in favor of ruling ${appealOptionToString(
       ruling
     )}`
   },
@@ -25,13 +28,15 @@ export default {
     return `Claim subscription rewards for period ${periodId}`
   },
   commitVote: (disputeId, roundId, outcome) => {
-    return `Vote ${voteOptionToString(
-      outcome
-    )} on round #${roundId} of dispute #${disputeId}`
+    return `Vote ${voteOptionToString(outcome)} on round ${numberToWord(
+      roundId
+    )} of dispute #${disputeId}`
   },
   confirmAppeal: (disputeId, roundId, ruling) => {
     return `
-        Confirm appeal round #${roundId} of dispute #${disputeId} in favor of
+        Confirm appeal round ${numberToWord(
+          roundId
+        )} of dispute #${disputeId} in favor of
         ruling ${appealOptionToString(ruling)}
       `
   },
@@ -62,17 +67,21 @@ export default {
   },
   revealVote: (roundId, disputeId) => {
     return `
-        Reveal vote on round ${roundId} for dispute #${disputeId}
+        Reveal vote on round ${numberToWord(roundId)} for dispute #${disputeId}
       `
   },
   settleReward: (roundId, disputeId) => {
     return `
-        Settle reward for round #${roundId} of dispute #${disputeId}
+        Settle reward for round ${numberToWord(
+          roundId
+        )} of dispute #${disputeId}
       `
   },
   settleAppealDeposit: (roundId, disputeId) => {
     return `
-        Settle appeal deposit for round #${roundId} of dispute #${disputeId}
+        Settle appeal deposit for round ${numberToWord(
+          roundId
+        )} of dispute #${disputeId}
       `
   },
   stakeActivateAnj: amount => {

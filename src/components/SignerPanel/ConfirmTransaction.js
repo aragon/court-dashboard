@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, GU, Info, textStyle, useTheme } from '@aragon/ui'
 
-function ConfirmTransaction({ onSign, description }) {
+function ConfirmTransaction({ descriptions, onSign }) {
   const theme = useTheme()
 
   return (
@@ -13,15 +13,30 @@ function ConfirmTransaction({ onSign, description }) {
             margin-bottom: ${0.5 * GU}px;
           `}
         >
-          Action to be triggered
+          Action{descriptions.length > 0 ? 's' : ''} to be triggered
         </h4>
-        <span
+        <ul
           css={`
             color: ${theme.content};
+            list-style: none;
+            padding: 0px ${1 * GU}px;
+            margin-top: ${0.5 * GU}px;
           `}
         >
-          {description}
-        </span>
+          {descriptions.map(description => (
+            <li>
+              <span
+                css={`
+                  font-weight: bold;
+                  margin-right: ${0.5 * GU}px;
+                `}
+              >
+                -
+              </span>
+              {description}
+            </li>
+          ))}
+        </ul>
       </Info>
       <Button
         label="Create transaction"

@@ -108,8 +108,6 @@ const RewardsModule = React.memo(function RewardsModule({
           }
         }
 
-        console.log('settlerewad')
-
         // Claim all appeal fee rewards
         for (const appealFee of feeRewards.appealFees) {
           const { disputeId, rounds } = appealFee
@@ -121,7 +119,15 @@ const RewardsModule = React.memo(function RewardsModule({
           }
         }
 
-        console.log('settleappeal')
+        // If we have settlements to do, then we'll make sure that the last
+        // settlement is confirmed before withdrawing total fees from the treasury
+        if (rewardTransactionQueue.length > 0) {
+          const lastSettlement = rewardTransactionQueue.pop()
+          rewardTransactionQueue.push({
+            ...lastSettlement,
+            waitForConfirmation: true,
+          })
+        }
 
         // Withdraw funds from treasury
         if (totalTreasuryFees.gt(0)) {
@@ -132,8 +138,6 @@ const RewardsModule = React.memo(function RewardsModule({
           })
         }
 
-        console.log('withdraw')
-
         // Claim subscription fees
         for (const subscriptionFee of subscriptionFees) {
           rewardTransactionQueue.push({
@@ -143,8 +147,6 @@ const RewardsModule = React.memo(function RewardsModule({
             ),
           })
         }
-
-        console.log('subscription')
 
         return addTransactions(rewardTransactionQueue)
       } catch (err) {

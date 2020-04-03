@@ -293,11 +293,10 @@ function SignerPanel() {
             />
           ) : (
             <ConfirmTransaction
-              description={transactions[0].description}
+              descriptions={flattenedTransactions.map(tx => tx.description)}
               onSign={handleSign}
             />
           )}
-          {/* TODO: Add description for multi txs */}
         </div>
       )}
     </SidePanel>

@@ -79,15 +79,15 @@ export function round(value, precision = 2) {
 }
 
 const wordNumbers = [
-  'One',
-  'Two',
-  'Three',
-  'Four',
-  'Five',
-  'Six',
-  'Seven',
-  'Eight',
-  'Nine',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
 ]
 
 export function numberToWord(number) {

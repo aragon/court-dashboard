@@ -30,9 +30,10 @@ function SigningStatus({
   const { activated } = useWallet()
   const provider = getProviderFromUseWalletId(activated)
 
-  const isMultiTx = transactions.length > 1 || transactions[0].onMined
+  const isMultiTx = transactions.length > 1
   const requiresMultipleSignatures =
-    isMultiTx && transactions.filter(tx => !tx.skipSignature) > 1
+    isMultiTx && transactions.filter(tx => !tx.skipSignature).length > 1
+
   const transactionErrored = transactionsStatus.some(status =>
     [TRANSACTION_STATUS_SIGN_FAILED, TRANSACTION_STATUS_FAILED].includes(status)
   )

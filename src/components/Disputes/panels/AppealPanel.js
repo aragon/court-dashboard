@@ -12,8 +12,10 @@ import {
   useAppealFeeAllowance,
   useFeeBalanceOf,
 } from '../../../hooks/useCourtContracts'
-import { useCourtConfig } from '../../../providers/CourtConfig'
 import { useWallet } from '../../../providers/Wallet'
+import { useCourtConfig } from '../../../providers/CourtConfig'
+import { useTransactionQueue } from '../../../providers/TransactionQueue'
+import radspec from '../../../radspec'
 
 function AppealPanel({
   confirm,
@@ -24,6 +26,7 @@ function AppealPanel({
 }) {
   const { feeToken } = useCourtConfig()
   const { account: connectedAccount } = useWallet()
+  const { addTransactions } = useTransactionQueue()
   const [selectedOutcome, setSelectedOutcome] = useState({
     value: -1,
     error: null,
@@ -77,34 +80,44 @@ function AppealPanel({
         return
       }
 
-      try {
-        if (feeAllowance.lt(requiredDeposit)) {
-          // TODO: some ERC20s don't let to set a new allowance if the current allowance is positive (handle this cases)
-          if (feeAllowance.eq(0)) {
-            console.warn('Allowance must be zero')
-          }
-          // Approve fee deposit for appealing
-          const approveTx = await onApproveFeeDeposit(requiredDeposit)
-          await approveTx.wait()
+      const transactionQueue = []
+      if (feeAllowance.lt(requiredDeposit)) {
+        // TODO: some ERC20s don't let to set a new allowance if the current allowance is positive (handle this cases)
+        if (feeAllowance.eq(0)) {
+          console.warn('Allowance must be zero')
         }
 
-        const appealOption = appealOptions[selectedOutcome.value]
-
-        // Appeal ruling
-        const tx = await onAppeal(
-          dispute.id,
-          dispute.lastRoundId,
-          appealOption.outcome
-        )
-
-        onDone()
-        await tx.wait()
-      } catch (err) {
-        console.error('Error submitting tx: ', err)
+        // Approve fee deposit for appealing
+        transactionQueue.push({
+          intent: () => onApproveFeeDeposit(requiredDeposit),
+          description: radspec.approveFeeDeposit(formatUnits(requiredDeposit)),
+          waitForConfirmation: true,
+        })
       }
+
+      const appealOption = appealOptions[selectedOutcome.value]
+
+      // Appeal ruling
+      const disputeId = dispute.id
+      const roundId = dispute.lastRoundId
+      const appealRuling = appealOption.outcome
+
+      transactionQueue.push({
+        intent: () => onAppeal(disputeId, roundId, appealRuling),
+        description: radspec[confirm ? 'confirmAppeal' : 'appealRuling'](
+          disputeId,
+          roundId,
+          appealRuling
+        ),
+      })
+
+      onDone()
+      return addTransactions(transactionQueue)
     },
     [
+      addTransactions,
       appealOptions,
+      confirm,
       dispute.id,
       dispute.lastRoundId,
       feeAllowance,

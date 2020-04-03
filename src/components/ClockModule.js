@@ -55,11 +55,12 @@ function ClockModule() {
   }, [])
 
   const handleOnClick = useCallback(async () => {
+    handlePopoverClose()
     return addTransaction({
       intent: () => onHeartbeat(neededTransitions),
       description: radspec.heartbeat(neededTransitions),
     })
-  }, [addTransaction, neededTransitions, onHeartbeat])
+  }, [addTransaction, handlePopoverClose, neededTransitions, onHeartbeat])
 
   const IconSync = isSynced ? IconCheck : IconCross
 
