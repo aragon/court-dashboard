@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  Bar,
   ButtonIcon,
   GU,
   Header,
   IconClose,
   Layout,
   Tabs,
-  breakpoint,
   springs,
-  textStyle,
   useTheme,
   useViewport,
 } from '@aragon/ui'
@@ -26,11 +23,7 @@ const NETWORK_INDEX = 0
 const AnimatedDiv = animated.div
 
 function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
-  const theme = useTheme()
-
   useEsc(onClose)
-
-  const tabItems = VALUES.filter((_, index) => index === NETWORK_INDEX)
 
   const container = useRef()
   useEffect(() => {
@@ -50,30 +43,12 @@ function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
           `}
         />
         <React.Fragment>
-          {tabItems.length > 1 ? (
-            <Tabs
-              items={tabItems}
-              onChange={onNavigation}
-              selected={sectionIndex}
-            />
-          ) : (
-            <Bar>
-              <div
-                css={`
-                  display: flex;
-                  height: 100%;
-                  align-items: center;
-                  padding-left: ${compact ? 2 * GU : 3 * GU}px;
-                  color: ${compact
-                    ? theme.surfaceContent
-                    : theme.surfaceContentSecondary};
-                  ${textStyle('body2')}
-                `}
-              >
-                {tabItems[0]}
-              </div>
-            </Bar>
-          )}
+          <Tabs
+            items={VALUES}
+            onChange={onNavigation}
+            selected={sectionIndex}
+          />
+
           <main>{sectionIndex === NETWORK_INDEX && <Network />}</main>
         </React.Fragment>
       </Layout>
@@ -81,12 +56,11 @@ function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
   )
 }
 
-function useGlobalPreferences({ path = {}, onScreenChange }) {
+function useGlobalPreferences({ path = '', onScreenChange }) {
   const [sectionIndex, setSectionIndex] = useState(null)
-  const [subsection, setSubsection] = useState(null)
   const handleNavigation = useCallback(
     index => {
-      onScreenChange(PATHS[index])
+      onScreenChange(PATHS[index]) // TODO - Test if this is working with the email preferences
     },
     [onScreenChange]
   )
@@ -98,19 +72,10 @@ function useGlobalPreferences({ path = {}, onScreenChange }) {
     }
     const index = PATHS.findIndex(item => path.startsWith(item))
 
-    if (index !== NETWORK_INDEX) {
-      return
-    }
     setSectionIndex(index === -1 ? null : index)
-
-    // subsection is the part after the PATH, e.g. for `?p=/notifications/verify` - `/verify`
-    const subsection = index !== -1 ? path.substring(PATHS[index].length) : null
-
-    setSubsection(subsection)
-    // Does the current path start with any of the declared route paths
   }, [path, sectionIndex])
 
-  return { sectionIndex, subsection, handleNavigation }
+  return { sectionIndex, handleNavigation }
 }
 
 function Close({ compact, onClick }) {
@@ -141,10 +106,10 @@ function Close({ compact, onClick }) {
   )
 }
 
-function AnimatedGlobalPreferences(props) {
+function AnimatedGlobalPreferences({ path, onScreenChange, onClose }) {
   const { sectionIndex, handleNavigation } = useGlobalPreferences({
-    path: props.path,
-    onScreenChange: props.onScreenChange,
+    path,
+    onScreenChange,
   })
 
   const { below } = useViewport()
@@ -163,7 +128,7 @@ function AnimatedGlobalPreferences(props) {
       {show =>
         show &&
         /* eslint-disable react/prop-types */
-        // z-index 2 on mobile keeps the menu above this preferences modal
+        // z-index 1 on mobile keeps the menu above this preferences modal
         (({ opacity, enterProgress, blocking }) => (
           <AnimatedDiv
             style={{
@@ -185,14 +150,13 @@ function AnimatedGlobalPreferences(props) {
               right: 0;
               overflow: auto;
               min-width: 360px;
-              padding-bottom: ${2 * GU}px;
+              padding-bottom: ${compact ? 2 : 0 * GU}px;
               border-top: 2px solid ${theme.accent};
               background: ${theme.surface};
-              ${breakpoint('medium', `padding-bottom:0;`)}
             `}
           >
             <GlobalPreferences
-              {...props}
+              onClose={onClose}
               compact={compact}
               sectionIndex={sectionIndex}
               onNavigation={handleNavigation}

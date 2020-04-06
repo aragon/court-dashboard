@@ -1,38 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
 import { Layout, Root, ScrollView, useViewport } from '@aragon/ui'
+import usePreferences from '../hooks/usePreferences'
 import MenuPanel, { MENU_PANEL_WIDTH } from './MenuPanel'
 import Header from './Header/Header'
-import { getPreferencesSearch } from '../Routes'
 import GlobalPreferences from './GlobalPreferences/GlobalPreferences'
-
-const GLOBAL_PREFERENCES_QUERY_PARAM = '?preferences=/'
 
 function MainView({ children }) {
   const { width: vw, below } = useViewport()
   const compactMode = below('medium')
   const [menuPanelOpen, setMenuPanelOpen] = useState(!compactMode)
-  const history = useHistory()
-  const search = useLocation().search
-  const locator = useLocation()
 
-  function parsePreferences(search = '') {
-    const [, path = ''] = search.split(GLOBAL_PREFERENCES_QUERY_PARAM)
+  const [openPreferences, closePreferences, preferenceOption] = usePreferences()
 
-    return { path }
-  }
-
-  const preferenceOption = parsePreferences(search)
-  const openPreferences = useCallback(
+  const handleOpenPreferences = useCallback(
     screen => {
-      history.push('/' + getPreferencesSearch(screen))
+      openPreferences(screen)
     },
-    [history]
+    [openPreferences]
   )
 
-  const closePreferences = useCallback(() => {
-    history.push(locator.pathname)
-  }, [history, locator])
+  const handleClosePreferences = useCallback(() => {
+    closePreferences()
+  }, [closePreferences])
 
   const toggleMenuPanel = useCallback(
     () => setMenuPanelOpen(opened => !opened),
@@ -51,13 +40,12 @@ function MainView({ children }) {
     setMenuPanelOpen(!compactMode)
   }, [compactMode])
 
-  if (preferenceOption.path) {
+  if (preferenceOption) {
     return (
       <GlobalPreferences
-        path={preferenceOption.path}
-        onScreenChange={() => {}}
-        onClose={closePreferences}
-        compact={false}
+        path={preferenceOption}
+        onScreenChange={handleOpenPreferences}
+        onClose={handleClosePreferences}
       />
     )
   }
@@ -77,7 +65,7 @@ function MainView({ children }) {
         <Header
           compactMode={compactMode}
           toggleMenuPanel={toggleMenuPanel}
-          onOpenPreferences={openPreferences}
+          onOpenPreferences={handleOpenPreferences}
         />
       </div>
       <div
