@@ -1,5 +1,7 @@
-import { COURT_SERVER_ENDPOINT } from '../endpoints'
+import { courtServerEndpoint } from '../endpoints'
 import { getVoteId, hashPassword } from '../utils/crvoting-utils'
+
+const COURT_SERVER_ENDPOINT = courtServerEndpoint()
 
 export default async (juror, disputeId, roundId, outcome, password) => {
   const voteId = getVoteId(disputeId, roundId).toString()

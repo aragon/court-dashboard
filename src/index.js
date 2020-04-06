@@ -13,12 +13,12 @@ import { captureMessage } from '@sentry/browser'
 import { devtoolsExchange } from '@urql/devtools'
 import { createGlobalStyle } from 'styled-components'
 import App from './App'
-import endpoints from './endpoints'
+import { graphEndpoints } from './endpoints'
 import initializeSentry from './sentry'
 
 initializeSentry()
 
-const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = endpoints()
+const [GRAPH_API_ENDPOINT_HTTP, GRAPH_API_ENDPOINT_WS] = graphEndpoints()
 
 const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINT_WS, {
   reconnect: true,
