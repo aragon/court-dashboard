@@ -3,10 +3,7 @@ import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract, useContractReadOnly } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
-import {
-  getFunctionSignature,
-  isLocalOrUnknownNetwork,
-} from '../lib/web3-utils'
+import { getFunctionSignature } from '../lib/web3-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import {
   hashVote,
