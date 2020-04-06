@@ -336,7 +336,9 @@ const Row = styled.div`
   ${({ compactMode }) => `
     grid-gap: ${(compactMode ? 2.5 : 5) * GU}px;
     margin-bottom: ${compactMode ? 0 : 2 * GU}px;
-    grid-template-columns: ${compactMode ? 'auto' : '1fr minmax(200px, auto)'};
+    grid-template-columns: ${
+      compactMode ? 'auto' : `1fr minmax(${25 * GU}px, auto)`
+    };
   `}
 `
 

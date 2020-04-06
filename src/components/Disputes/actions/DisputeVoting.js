@@ -67,37 +67,35 @@ function VotingActions({ canJurorVote, onRequestCommit }) {
           flex-direction: ${compactMode ? 'column' : 'row'};
           width: 100%;
           margin-bottom: ${1.5 * GU}px;
-
-          & > button {
-            width: ${buttonWidth};
-            margin-bottom: ${(compactMode ? 1 : 0) * GU}px;
-          }
         `}
       >
-        <Button
-          mode="positive"
-          wide
+        <VotingButton
+          compactMode={compactMode}
           disabled={!canJurorVote}
+          mode="positive"
           onClick={() => onRequestCommit(VOTE_OPTION_IN_FAVOR)}
+          width={buttonWidth}
         >
           Allow action
-        </Button>
-        <Button
-          mode="negative"
-          wide
+        </VotingButton>
+        <VotingButton
+          compactMode={compactMode}
           disabled={!canJurorVote}
+          mode="negative"
           onClick={() => onRequestCommit(VOTE_OPTION_AGAINST)}
+          width={buttonWidth}
         >
           Block action
-        </Button>
+        </VotingButton>
 
-        <Button
-          wide
+        <VotingButton
+          compactMode={compactMode}
           disabled={!canJurorVote}
           onClick={() => onRequestCommit(VOTE_OPTION_REFUSE)}
+          width={buttonWidth}
         >
           Refuse to vote
-        </Button>
+        </VotingButton>
       </div>
       <RefuseToVoteHint compactMode={compactMode} width={buttonWidth} />
       <Info mode={canJurorVote ? 'description' : 'warning'}>
@@ -149,18 +147,27 @@ const RefuseToVoteHint = ({ compactMode, width }) => {
             Why refuse to vote?
           </span>
           <Help hint="">
-            You can refuse to vote for many reasons, for example if you consider
-            that the evidence was not conclusive enough or the description was
-            incoherent. In any case, you won’t be penalized at this stage for
-            selecting any of these options. Remember that you should vote the
-            way that you think a majority of jurors will vote, since you will be
-            penalized if your vote is in the minority.
+            <p>
+              You can refuse to vote for many reasons, for example if you
+              consider that the evidence was not conclusive enough or the
+              description was incoherent.
+            </p>
+            <p>
+              Remember that you should vote the way that you think a majority of
+              jurors will vote, since you will be penalized if your vote is in
+              the minority.
+            </p>
           </Help>
         </Container>
       </div>
     </div>
   )
 }
+
+const VotingButton = styled(Button)`
+  width: ${({ width }) => width};
+  margin-bottom: ${({ compactMode }) => (compactMode ? 1 : 0) * GU}px;
+`
 
 const Label = styled.label`
   cursor: pointer;
