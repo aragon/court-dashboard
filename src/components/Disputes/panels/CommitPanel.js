@@ -68,7 +68,7 @@ const CommitPanel = React.memo(function CommitPanel({
           },
           description: 'Request auto-reveal service',
           onError: 'Failed to request auto-reveal service',
-          onSuccess: 'Auto-reveal service requested succesfully!',
+          onSuccess: 'Auto-reveal service requested!',
           skipSignature: true,
         })
       }

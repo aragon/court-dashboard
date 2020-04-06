@@ -62,8 +62,8 @@ function SignerPanel() {
       // Mark tx as errored at signing
       setTransactionProgress(({ signed, ...txProgress }) => ({
         ...txProgress,
-        signed,
         erroredSigning: signed,
+        signed,
       }))
 
       // Re throw error
@@ -80,18 +80,18 @@ function SignerPanel() {
           { index, hash: signedTx.hash },
         ])
 
-        // Wait for tx to be mined
+        // Wait for tx to be confirmed
         await signedTx.wait()
-        return setTransactionProgress(txProgress => ({
+        return setTransactionProgress(({ confirmed, ...txProgress }) => ({
           ...txProgress,
-          confirmed: index + 1,
+          confirmed: confirmed + 1,
         }))
       } catch (err) {
         // Mark tx as failed
-        setTransactionProgress(({ confirmed, ...txProgress }) => ({
+        setTransactionProgress(({ signed, ...txProgress }) => ({
           ...txProgress,
-          confirmed,
-          failed: confirmed,
+          failed: signed - 1,
+          signed: signed - 1,
         }))
 
         // Re throw error
@@ -107,6 +107,10 @@ function SignerPanel() {
       return []
     }
 
+    const requiredConfirmationTxs = transactions
+      .map((tx, index) => ({ ...tx, index }))
+      .filter(tx => tx.waitForConfirmation)
+
     const { confirmed, erroredSigning, failed, signed } = transactionProgress
     const status = (transaction, index) => {
       // Transaction signing failed
@@ -119,17 +123,24 @@ function SignerPanel() {
         return TRANSACTION_STATUS_FAILED
       }
 
-      // Transaction confirmed
-      if (index < confirmed && transaction.waitForConfirmation) {
-        return TRANSACTION_STATUS_CONFIRMED
+      if (transaction.waitForConfirmation) {
+        const confirmationIndex = requiredConfirmationTxs.findIndex(
+          tx => tx.index === index
+        )
+
+        // Transaction confirmed
+        if (confirmationIndex < confirmed) {
+          return TRANSACTION_STATUS_CONFIRMED
+        }
+
+        // Transaction pending
+        if (index < signed) {
+          return TRANSACTION_STATUS_PENDING
+        }
       }
 
       // Transaction signed
       if (index < signed) {
-        if (transaction.waitForConfirmation) {
-          return TRANSACTION_STATUS_PENDING
-        }
-
         return TRANSACTION_STATUS_SIGNED
       }
 
@@ -140,12 +151,24 @@ function SignerPanel() {
     return transactions.map((transaction, index) => status(transaction, index))
   }, [transactions, transactionProgress])
 
+  const allSuccess = useMemo(() => {
+    const { confirmed, signed } = transactionProgress
+
+    const requiredConfirmations = transactions.filter(
+      tx => tx.waitForConfirmation
+    ).length
+
+    const allSigned = signed > 0 && signed === transactions.length
+    const allConfirmed = confirmed === requiredConfirmations
+    return allSigned && allConfirmed
+  }, [transactionProgress, transactions])
+
   const maxAttemptsReached = attempts >= MAX_ATTEMPTS
 
   // Create transactions
   useEffect(
     () => {
-      if (!transactionProgress.signing) {
+      if (!transactionProgress.signing || maxAttemptsReached) {
         return
       }
 
@@ -165,11 +188,11 @@ function SignerPanel() {
       let cancelled = false
 
       const createTransactions = async () => {
-        const filteredTransactions = transactions
-          .slice(transactionProgress.signed)
-          .entries()
+        const filteredTransactions = transactions.slice(
+          transactionProgress.signed
+        )
 
-        for (const [index, transaction] of filteredTransactions) {
+        for (const [index, transaction] of filteredTransactions.entries()) {
           if (cancelled) {
             break
           }
@@ -209,9 +232,12 @@ function SignerPanel() {
         cancelled = true
       }
     },
+    // We'll remove `transactionProgress.signed` from the dependencies to prevent the effect from running every time we sign a tx
+    // Note that we'll retry the signing process form the last failed tx only if the user requests to do so
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       attempts,
+      maxAttemptsReached,
       transactions,
       signTransaction,
       transactionProgress.signing,
@@ -228,22 +254,7 @@ function SignerPanel() {
       }, 3000)
     }
 
-    const { confirmed, erroredSigning, failed, signed } = transactionProgress
-
-    const requiredConfirmations = transactions.filter(
-      tx => tx.waitForConfirmation
-    ).length
-
-    const allSigned = signed > 0 && signed === transactions.length
-    const allConfirmed = confirmed === requiredConfirmations
-    const success = allSigned && allConfirmed
-
-    // We only close the panel if there's only one transaction to sign and it fails to do so
-    // If we have multiple transactions we'll let the user to retry the signature process
-    const onlyTxFailed =
-      transactions.length === 1 && (erroredSigning === 0 || failed === 0)
-
-    if (maxAttemptsReached || success || onlyTxFailed) {
+    if (maxAttemptsReached || allSuccess) {
       startClearing()
     }
 
@@ -251,10 +262,11 @@ function SignerPanel() {
       clearTimeout(timeout)
     }
   }, [
+    allSuccess,
     clearTransactionQueue,
-    transactions,
     handleSignerClose,
     maxAttemptsReached,
+    transactions,
     transactionProgress,
   ])
 
@@ -275,7 +287,9 @@ function SignerPanel() {
         >
           {transactionProgress.signing ? (
             <SigningStatus
+              allSuccess={allSuccess}
               maxAttemptsReached={maxAttemptsReached}
+              onClosePanel={handleSignerClose}
               onNextAttempt={handleNextAttempt}
               transactions={transactions}
               transactionHashes={transactionHashes}

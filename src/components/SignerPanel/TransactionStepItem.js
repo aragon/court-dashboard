@@ -9,6 +9,7 @@ import {
 } from '@aragon/ui'
 import {
   TRANSACTION_STATUS_CONFIRMED,
+  TRANSACTION_STATUS_FAILED,
   TRANSACTION_STATUS_PENDING,
   TRANSACTION_STATUS_SIGN_FAILED,
   TRANSACTION_STATUS_SIGNED,
@@ -24,12 +25,19 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
   const theme = useTheme()
 
   const { background, iconColor, labelColor, labelText } = useMemo(() => {
-    if (status === TRANSACTION_STATUS_SIGN_FAILED) {
+    if (
+      status === TRANSACTION_STATUS_SIGN_FAILED ||
+      status === TRANSACTION_STATUS_FAILED
+    ) {
       return {
         background: theme.negative,
         iconColor: theme.accentContent,
         labelColor: theme.negative,
-        labelText: transaction.onError || 'Signing transaction failed!',
+        labelText:
+          transaction.onError ||
+          (status === TRANSACTION_STATUS_SIGN_FAILED
+            ? 'Signing transaction failed!'
+            : 'Transaction failed'),
       }
     }
 

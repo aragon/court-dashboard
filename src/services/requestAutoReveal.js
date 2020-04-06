@@ -10,8 +10,6 @@ export default async (juror, disputeId, roundId, outcome, password) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       juror,
-      disputeId,
-      roundNumber: roundId,
       voteId,
       outcome: outcome.toString(),
       salt,
@@ -34,7 +32,7 @@ export default async (juror, disputeId, roundId, outcome, password) => {
 
       const errorMessage = revealData.error || errors
       if (errorMessage) {
-        throw new Error(`Failed to request auto-reveal service ${errors}`)
+        throw new Error(`Failed to request auto-reveal service ${errorMessage}`)
       }
 
       return revealData

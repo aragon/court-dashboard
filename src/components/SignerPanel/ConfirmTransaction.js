@@ -28,8 +28,8 @@ function ConfirmTransaction({ descriptions, onSign }) {
                 list-style: none;
               `}
             >
-              {descriptions.map(description => (
-                <li>
+              {descriptions.map((description, index) => (
+                <li key={index}>
                   <span
                     css={`
                       font-weight: bold;

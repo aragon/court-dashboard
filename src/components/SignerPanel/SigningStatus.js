@@ -20,23 +20,18 @@ import {
 } from './transaction-statuses'
 
 function SigningStatus({
+  allSuccess,
   maxAttemptsReached,
+  onClosePanel,
   onNextAttempt,
   transactions,
   transactionHashes,
   transactionsStatus,
 }) {
   const theme = useTheme()
-  const { activated } = useWallet()
-  const provider = getProviderFromUseWalletId(activated)
 
   const isMultiTx = transactions.length > 1
-  const requiresMultipleSignatures =
-    isMultiTx && transactions.filter(tx => !tx.skipSignature).length > 1
 
-  const transactionErrored = transactionsStatus.some(status =>
-    [TRANSACTION_STATUS_SIGN_FAILED, TRANSACTION_STATUS_FAILED].includes(status)
-  )
   return (
     <div>
       <div
@@ -63,35 +58,21 @@ function SigningStatus({
           />
         )}
       </div>
-      {isMultiTx && (
-        <Info
-          css={`
-            margin-top: ${2 * GU}px;
-          `}
-        >
-          {requiresMultipleSignatures ? (
-            <span>
-              This action requires multiple transactions. Please sign them one
-              after another and <b>do not close this window</b> until the
-              process is finished. Open your Ethereum provider {provider.name}{' '}
-              to sign the transaction.{' '}
-              <Link href="#">I don’t see the Ethereum provider.</Link>
-            </span>
-          ) : (
-            <span>
-              This action requires multiple transactions. Please,{' '}
-              <b>do not close this window</b> until the process is finished.
-            </span>
-          )}
-        </Info>
-      )}
-
-      {isMultiTx && transactionErrored && (
-        <TransactionReattempt
+      <div
+        css={`
+          margin-top: ${2 * GU}px;
+        `}
+      >
+        <SigningStatusInfo
+          allSuccess={allSuccess}
+          isMultiTx={isMultiTx}
           maxAttemptsReached={maxAttemptsReached}
+          onClosePanel={onClosePanel}
           onNextAttempt={onNextAttempt}
+          transactions={transactions}
+          transactionsStatus={transactionsStatus}
         />
-      )}
+      </div>
     </div>
   )
 }
@@ -201,35 +182,108 @@ function SingleTx({ status }) {
   )
 }
 
-function TransactionReattempt({ maxAttemptsReached, onNextAttempt }) {
-  return (
-    <div
-      css={`
-        margin-top: ${2 * GU}px;
-      `}
-    >
-      {!maxAttemptsReached ? (
-        <>
-          <Info mode="warning">
-            An error has occurred during the signature process. Don't worry, you
-            can try to send the transaction again.
-          </Info>
-          <Button
-            css={`
-              margin-top: ${2 * GU}px;
-            `}
-            label="OK, let's try again"
-            onClick={onNextAttempt}
-            wide
-          />
-        </>
-      ) : (
-        <Info mode="warning">
-          It seems possible that the transaction won't go through, please try
-          again in a few minutes.
+function SigningStatusInfo({
+  allSuccess,
+  isMultiTx,
+  maxAttemptsReached,
+  onClosePanel,
+  onNextAttempt,
+  transactions,
+  transactionsStatus,
+}) {
+  const { activated } = useWallet()
+  const provider = getProviderFromUseWalletId(activated)
+
+  if (allSuccess) {
+    return (
+      <Info>Transaction{isMultiTx ? 's' : ''} submitted successfully!</Info>
+    )
+  }
+
+  const requiresMultipleSignatures =
+    isMultiTx && transactions.filter(tx => !tx.skipSignature).length > 1
+  const transactionFailedStatus = transactionsStatus.find(status =>
+    [TRANSACTION_STATUS_SIGN_FAILED, TRANSACTION_STATUS_FAILED].includes(status)
+  )
+
+  if (transactionFailedStatus) {
+    if (isMultiTx) {
+      return (
+        <TransactionReattempt
+          maxAttemptsReached={maxAttemptsReached}
+          onClosePanel={onClosePanel}
+          onNextAttempt={onNextAttempt}
+        />
+      )
+    }
+
+    return (
+      <>
+        <Info>
+          {transactionFailedStatus === TRANSACTION_STATUS_SIGN_FAILED
+            ? "Your transaction wasn't signed"
+            : 'Your transaction failed'}
         </Info>
-      )}
-    </div>
+        <Button
+          css={`
+            margin-top: ${2 * GU}px;
+          `}
+          label="Close"
+          mode="strong"
+          onClick={onClosePanel}
+          wide
+        />
+      </>
+    )
+  }
+
+  if (isMultiTx) {
+    return (
+      <Info>
+        {requiresMultipleSignatures ? (
+          <span>
+            This action requires multiple transactions. Please sign them one
+            after another and <b>do not close this window</b> until the process
+            is finished. Open your Ethereum provider {provider.name} to sign the
+            transactions.{' '}
+            <Link href="#">I don’t see the Ethereum provider.</Link>
+          </span>
+        ) : (
+          <span>
+            This action requires multiple transactions. Please,{' '}
+            <b>do not close this window</b> until the process is finished.
+          </span>
+        )}
+      </Info>
+    )
+  }
+
+  return <Info>Open {provider.name} to sign your transaction</Info>
+}
+
+const TransactionReattempt = ({
+  maxAttemptsReached,
+  onClosePanel,
+  onNextAttempt,
+}) => {
+  return (
+    <>
+      <Info>
+        {maxAttemptsReached
+          ? `Seems that the transaction won't go through`
+          : `An error has occurred during the signature process. Don't worry, you can
+        try to send the transaction again.`}
+      </Info>
+      <Button
+        css={`
+          margin-top: ${2 * GU}px;
+        `}
+        label={maxAttemptsReached ? 'Close' : "OK, let's try again"}
+        onClick={maxAttemptsReached ? onClosePanel : onNextAttempt}
+        mode="strong"
+        wide
+      />
+    </>
   )
 }
 

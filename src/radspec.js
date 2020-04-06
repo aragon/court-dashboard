@@ -14,7 +14,7 @@ export default {
   appealRuling: (disputeId, roundId, ruling) => {
     return `Appeal round ${numberToWord(
       roundId
-    )} of dispute #${disputeId} in favor of ruling ${appealOptionToString(
+    )} of dispute #${disputeId} in favor of ruling: ${appealOptionToString(
       ruling
     )}`
   },
@@ -37,7 +37,7 @@ export default {
         Confirm appeal round ${numberToWord(
           roundId
         )} of dispute #${disputeId} in favor of
-        ruling ${appealOptionToString(ruling)}
+        ruling: ${appealOptionToString(ruling)}
       `
   },
   deactivateAnj: amount => {
