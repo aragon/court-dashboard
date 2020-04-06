@@ -1,12 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Card, GU, useTheme, useViewport } from '@aragon/ui'
+import GlobalPreferencesButton from '../GlobalPreferences/GlobalPreferencesButton'
+import usePreferences from '../../hooks/usePreferences'
 import globalError from '../../assets/globalError.svg'
 import backgroundError from '../../assets/backgroundError.svg'
 import logo from '../../assets/logo.svg'
 
 function GlobalErrorScreen({ children }) {
   const theme = useTheme()
+  const [openPreferences] = usePreferences(true)
   return (
     <div
       css={`
@@ -20,14 +23,18 @@ function GlobalErrorScreen({ children }) {
         border-top-color: ${theme.accent};
       `}
     >
-      <img
+      <div
         css={`
           position: absolute;
-          top: 16px;
-          left: 16px;
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          padding: ${2 * GU}px ${2 * GU}px 0;
         `}
-        src={logo}
-      />
+      >
+        <img src={logo} />
+        <GlobalPreferencesButton onOpen={openPreferences} />
+      </div>
       <div
         css={`
           display: flex;

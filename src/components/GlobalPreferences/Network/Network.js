@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import {
   Box,
@@ -13,12 +13,12 @@ import {
 import { defaultEthNode, defaultIpfsGateway } from '../../../networks'
 import { setDefaultEthNode, setIpfsGateway } from '../../../local-settings'
 import { InvalidNetworkType, InvalidURI, NoConnection } from '../../../errors'
-import keycodes from '../../../keycodes'
 import {
   checkValidEthNode,
   getNetworkType,
   sanitizeNetworkType,
 } from '../../../lib/web3-utils'
+import { useEnterKey } from '../../../hooks/useKeyboardArrows'
 
 function Network() {
   const {
@@ -142,22 +142,10 @@ const useNetwork = () => {
     window.localStorage.clear()
   }, [])
 
-  const handleKeyPress = useCallback(
-    ({ keyCode }) => {
-      if (
-        keyCode === keycodes.enter &&
-        (ipfsGateway !== defaultIpfsGateway || ethNode !== defaultEthNode)
-      ) {
-        handleNetworkChange()
-      }
-    },
-    [handleNetworkChange, ethNode, ipfsGateway]
-  )
+  const defaultsChanged =
+    ipfsGateway !== defaultIpfsGateway || ethNode !== defaultEthNode
 
-  useEffect(() => {
-    window.addEventListener('keypress', handleKeyPress)
-    return () => window.removeEventListener('keypress', handleKeyPress)
-  }, [handleKeyPress])
+  useEnterKey(handleNetworkChange, defaultsChanged)
 
   return {
     ethNode,

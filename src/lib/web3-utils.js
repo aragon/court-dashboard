@@ -9,7 +9,7 @@ export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
 const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
-const httpRegex = /^(http|https):\/\//
+const httpRegex = /^(https?):\/\//
 
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
@@ -174,7 +174,7 @@ export async function checkValidEthNode(uri) {
   const isLocalOrUnknown = isLocalOrUnknownNetwork(env('CHAIN_ID'))
 
   if (!httpRegex.test(uri)) {
-    throw new InvalidURI('The URI must use the Http protocol')
+    throw new InvalidURI('The URI must use the HTTP protocol')
   }
 
   try {

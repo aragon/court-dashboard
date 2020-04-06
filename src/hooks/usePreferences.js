@@ -1,38 +1,53 @@
-import { useCallback, useRef } from 'react'
+import { useRef } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import { getPreferencesSearch } from '../Routes'
+
+// Preferences base query string
+const GLOBAL_PREFERENCES_QUERY_PARAM = '?preferences='
+
+export function getPreferencesSearch(screen) {
+  return `${GLOBAL_PREFERENCES_QUERY_PARAM}${screen}`
+}
+
+function parsePreferences(search = '') {
+  const [, path = ''] = search.split(GLOBAL_PREFERENCES_QUERY_PARAM)
+
+  return path
+}
 
 /**
  * Hook to interact with the preferences
- * @returns {Array} first parameter open preferences handler, second parameter close preferences handler
- *  third parameter the selected preference option
+ * @param {Boolean} appCrashed flag that indicates if the app crashed
+ * @returns {Array} [open preferences handler, close preferences handler, current preference screen]
  */
-export default function usePreferences() {
-  /* We need to keep track of the path where the preference was called 
-    in order to return to the same path when the preference modal is closed
-  */
-  const { pathname: previousPath } = useLocation()
+export default function usePreferences(appCrashed = false) {
+  // We need to keep track of the path where the preference was called in order to return to the same path when the preference modal is closed
+  const { pathname, search } = useLocation()
   const history = useHistory()
 
-  const preferenceOption = useRef('')
+  const searchParmFromUrl = parsePreferences(search)
 
-  const handleOpenPreferences = useCallback(
-    screen => {
-      preferenceOption.current = screen
-      const fullPath = previousPath + getPreferencesSearch(screen)
-      history.push(fullPath)
-    },
-    [history, previousPath]
-  )
+  // In case that this hook is called from the the global error we need to redirect to the home page and reload
+  const basePath = appCrashed ? '/' : pathname
 
-  const handleClosePreferences = useCallback(() => {
-    preferenceOption.current = ''
-    history.push(previousPath)
-  }, [history, previousPath])
+  const preferenceScreen = useRef(searchParmFromUrl)
+
+  const handleOpenPreferences = screen => {
+    preferenceScreen.current = screen
+    const fullPath = basePath + getPreferencesSearch(preferenceScreen.current)
+    history.push(fullPath)
+    if (appCrashed) {
+      window.location.reload()
+    }
+  }
+
+  const handleClosePreferences = () => {
+    preferenceScreen.current = ''
+    history.push(basePath)
+  }
 
   return [
     handleOpenPreferences,
     handleClosePreferences,
-    preferenceOption.current,
+    preferenceScreen.current,
   ]
 }

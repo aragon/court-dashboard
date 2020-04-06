@@ -6,9 +6,6 @@ import Tasks from './components/Tasks/Tasks'
 import Disputes from './components/Disputes/Disputes'
 import DisputeDetail from './components/Disputes/DisputeDetail'
 
-// Preferences base query string
-const GLOBAL_PREFERENCES_QUERY_PARAM = '?preferences='
-
 export default function Routes() {
   return (
     <Switch>
@@ -20,8 +17,4 @@ export default function Routes() {
       <Redirect to="/dashboard" />
     </Switch>
   )
-}
-
-export function getPreferencesSearch(screen) {
-  return `${GLOBAL_PREFERENCES_QUERY_PARAM}${screen}`
 }

@@ -149,7 +149,7 @@ function AnimatedGlobalPreferences({ path, onScreenChange, onClose }) {
               left: 0;
               right: 0;
               overflow: auto;
-              min-width: 360px;
+              min-width: ${45 * GU}px;
               padding-bottom: ${compact ? 2 : 0 * GU}px;
               border-top: 2px solid ${theme.accent};
               background: ${theme.surface};

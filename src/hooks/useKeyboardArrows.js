@@ -39,3 +39,19 @@ export function useEsc(cb) {
     return () => window.removeEventListener('keydown', handlekeyDown)
   }, [handlekeyDown])
 }
+
+export function useEnterKey(cb, validated) {
+  const handleKeyPress = useCallback(
+    ({ keyCode }) => {
+      if (keyCode === keycodes.enter && validated) {
+        cb()
+      }
+    },
+    [cb, validated]
+  )
+
+  useEffect(() => {
+    window.addEventListener('keypress', handleKeyPress)
+    return () => window.removeEventListener('keypress', handleKeyPress)
+  }, [handleKeyPress])
+}
