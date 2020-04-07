@@ -579,7 +579,7 @@ export function useTotalANTStakedPolling(timeout = 1000) {
     let cancelled = false
     let timeoutId
 
-    // We won't be using this stats other than from mainnet network
+    // This stat is only relevant and shown on mainnet
     if (!networkAgentAddress || !networkReserveAddress) {
       return setError(true)
     }
