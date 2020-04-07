@@ -12,17 +12,6 @@ function MainView({ children }) {
 
   const [openPreferences, closePreferences, preferenceOption] = usePreferences()
 
-  const handleOpenPreferences = useCallback(
-    screen => {
-      openPreferences(screen)
-    },
-    [openPreferences]
-  )
-
-  const handleClosePreferences = useCallback(() => {
-    closePreferences()
-  }, [closePreferences])
-
   const toggleMenuPanel = useCallback(
     () => setMenuPanelOpen(opened => !opened),
     []
@@ -44,8 +33,8 @@ function MainView({ children }) {
     return (
       <GlobalPreferences
         path={preferenceOption}
-        onScreenChange={handleOpenPreferences}
-        onClose={handleClosePreferences}
+        onScreenChange={openPreferences}
+        onClose={closePreferences}
       />
     )
   }
@@ -65,7 +54,7 @@ function MainView({ children }) {
         <Header
           compactMode={compactMode}
           toggleMenuPanel={toggleMenuPanel}
-          onOpenPreferences={handleOpenPreferences}
+          onOpenPreferences={openPreferences}
         />
       </div>
       <div

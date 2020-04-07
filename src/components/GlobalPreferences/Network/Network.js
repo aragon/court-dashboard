@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import {
   Box,
   Button,
-  Info,
   GU,
   TextInput,
   textStyle,
@@ -11,7 +10,11 @@ import {
   useTheme,
 } from '@aragon/ui'
 import { defaultEthNode, defaultIpfsGateway } from '../../../networks'
-import { setDefaultEthNode, setIpfsGateway } from '../../../local-settings'
+import {
+  clearLocalStorageNetworkSettings,
+  setDefaultEthNode,
+  setIpfsGateway,
+} from '../../../local-settings'
 import { InvalidNetworkType, InvalidURI, NoConnection } from '../../../errors'
 import {
   checkValidEthNode,
@@ -27,7 +30,6 @@ function Network() {
     ipfsGateway,
     handleEthNodeChange,
     handleIpfsGatewayChange,
-    handleClearCache,
     networkError,
     handleNetworkChange,
   } = useNetwork()
@@ -97,24 +99,18 @@ function Network() {
           `}
         >
           <span>
-            Press this button to refresh the cache of the application in your
-            browser.
+            Press this button to reset the network settings to their defaults.
           </span>
         </div>
         <Button
           css={`
             margin-bottom: ${2 * GU}px;
           `}
-          onClick={handleClearCache}
+          onClick={clearLocalStorageNetworkSettings}
           wide={compact}
         >
-          Clear application cache
+          Reset network settings
         </Button>
-        <Info>
-          This will only delete the data stored in your browser to make the app
-          load faster. No data related to the organization itself will be
-          altered.
-        </Info>
       </Box>
     </React.Fragment>
   )
@@ -126,7 +122,13 @@ const useNetwork = () => {
   const [ipfsGateway, setIpfsGatewayValue] = useState(defaultIpfsGateway)
   const networkType = getNetworkType()
 
+  const defaultsChanged =
+    ipfsGateway !== defaultIpfsGateway || ethNode !== defaultEthNode
+
   const handleNetworkChange = useCallback(async () => {
+    if (!defaultsChanged) {
+      return
+    }
     try {
       await checkValidEthNode(ethNode)
     } catch (err) {
@@ -136,23 +138,15 @@ const useNetwork = () => {
     setDefaultEthNode(ethNode)
     setIpfsGateway(ipfsGateway)
     window.location.reload()
-  }, [ethNode, ipfsGateway])
+  }, [ethNode, ipfsGateway, defaultsChanged])
 
-  const handleClearCache = useCallback(() => {
-    window.localStorage.clear()
-  }, [])
-
-  const defaultsChanged =
-    ipfsGateway !== defaultIpfsGateway || ethNode !== defaultEthNode
-
-  useEnterKey(handleNetworkChange, defaultsChanged)
+  useEnterKey(handleNetworkChange)
 
   return {
     ethNode,
     networkType,
     ipfsGateway,
     handleNetworkChange,
-    handleClearCache,
     networkError,
     handleEthNodeChange: ({ currentTarget: { value } }) =>
       setEthNodeValue(value),

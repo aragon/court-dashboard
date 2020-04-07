@@ -20,6 +20,12 @@ function setLocalSetting(confKey, value) {
   return window.localStorage.setItem(storageKey, value)
 }
 
+export function clearLocalStorageNetworkSettings() {
+  // TODO - remove subgrapk key onces available
+  window.localStorage.removeItem('DEFAULT_ETH_NODE_KEY')
+  window.localStorage.removeItem('IPFS_GATEWAY_KEY')
+}
+
 export function getDefaultEthNode() {
   // Let the network configuration handle node defaults
   return getLocalSetting(DEFAULT_ETH_NODE) || ''

@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 // Preferences base query string
@@ -9,9 +9,9 @@ export function getPreferencesSearch(screen) {
 }
 
 function parsePreferences(search = '') {
-  const [, path = ''] = search.split(GLOBAL_PREFERENCES_QUERY_PARAM)
+  const searchParams = new URLSearchParams(search)
 
-  return path
+  return searchParams.get('preferences')
 }
 
 /**
@@ -24,26 +24,29 @@ export default function usePreferences(appCrashed = false) {
   const { pathname, search } = useLocation()
   const history = useHistory()
 
-  const searchParmFromUrl = parsePreferences(search)
+  const searchParamFromUrl = parsePreferences(search)
 
   // In case that this hook is called from the the global error we need to redirect to the home page and reload
   const basePath = appCrashed ? '/' : pathname
 
-  const preferenceScreen = useRef(searchParmFromUrl)
+  const preferenceScreen = useRef(searchParamFromUrl)
 
-  const handleOpenPreferences = screen => {
-    preferenceScreen.current = screen
-    const fullPath = basePath + getPreferencesSearch(preferenceScreen.current)
-    history.push(fullPath)
-    if (appCrashed) {
-      window.location.reload()
-    }
-  }
+  const handleOpenPreferences = useCallback(
+    screen => {
+      preferenceScreen.current = screen
+      const fullPath = basePath + getPreferencesSearch(preferenceScreen.current)
+      history.push(fullPath)
+      if (appCrashed) {
+        window.location.reload()
+      }
+    },
+    [appCrashed, basePath, history]
+  )
 
-  const handleClosePreferences = () => {
+  const handleClosePreferences = useCallback(() => {
     preferenceScreen.current = ''
     history.push(basePath)
-  }
+  }, [basePath, history])
 
   return [
     handleOpenPreferences,

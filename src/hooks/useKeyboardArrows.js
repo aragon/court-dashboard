@@ -40,14 +40,14 @@ export function useEsc(cb) {
   }, [handlekeyDown])
 }
 
-export function useEnterKey(cb, validated) {
+export function useEnterKey(cb) {
   const handleKeyPress = useCallback(
     ({ keyCode }) => {
-      if (keyCode === keycodes.enter && validated) {
+      if (keyCode === keycodes.enter) {
         cb()
       }
     },
-    [cb, validated]
+    [cb]
   )
 
   useEffect(() => {
