@@ -115,8 +115,6 @@ function VotingActions({ canJurorVote, onRequestCommit }) {
 const RefuseToVoteHint = ({ compactMode, width }) => {
   const theme = useTheme()
 
-  const Container = compactMode ? Label : 'div'
-
   return (
     <div
       css={`
@@ -132,13 +130,7 @@ const RefuseToVoteHint = ({ compactMode, width }) => {
           color: ${theme.help};
         `}
       >
-        <Container
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <Container as={compactMode ? 'label' : 'div'} compactMode={compactMode}>
           <span
             css={`
               margin-right: ${0.5 * GU}px;
@@ -153,9 +145,9 @@ const RefuseToVoteHint = ({ compactMode, width }) => {
               description was incoherent.
             </p>
             <p>
-              Remember that you should vote the way that you think the majority of
-              jurors will vote, since you will be penalized if your vote is in
-              the minority.
+              Remember that you should vote the way that you think the majority
+              of jurors will vote, since you will be penalized if your vote is
+              in the minority.
             </p>
           </Help>
         </Container>
@@ -169,8 +161,11 @@ const VotingButton = styled(Button)`
   margin-bottom: ${({ compactMode }) => (compactMode ? 1 : 0) * GU}px;
 `
 
-const Label = styled.label`
-  cursor: pointer;
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ${({ compactMode }) => (compactMode ? 'pointer' : '')};
 `
 
 export default DisputeVoting
