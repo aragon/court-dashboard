@@ -292,7 +292,7 @@ const RevealService = React.memo(function RevealService({
 
 const InfoSection = React.memo(function InfoSection({ revealService }) {
   const content = revealService
-    ? 'You must copy or download this code before you can commit your vote. It will be valid to commit and reveal your vote for this dispute only. You won’t be required to enter this code unless a problem occur with our services.'
+    ? 'As a safety measure, you must copy or download this code before you can commit your vote. This code is valid for revealing your vote for this dispute only. You won’t be required to enter this code unless a problem occurs with our services.'
     : 'You must copy or download this code before you can commit your vote. You will be asked to confirm it in order to reveal your vote. Failure to do so will result in a monetary penalty to your account.'
 
   return (
