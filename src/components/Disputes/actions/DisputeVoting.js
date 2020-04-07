@@ -153,7 +153,7 @@ const RefuseToVoteHint = ({ compactMode, width }) => {
               description was incoherent.
             </p>
             <p>
-              Remember that you should vote the way that you think a majority of
+              Remember that you should vote the way that you think the majority of
               jurors will vote, since you will be penalized if your vote is in
               the minority.
             </p>
