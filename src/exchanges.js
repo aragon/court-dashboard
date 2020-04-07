@@ -14,7 +14,7 @@ const GRAPH_API_ENDPOINTS = endpoints()
 export const subscriptionClient = new SubscriptionClient(
   GRAPH_API_ENDPOINTS[1],
   {
-    reconnect: true,
+    reconnect: !env('MOCK_DATA'),
     reconnectionAttempts: 10,
   }
 )

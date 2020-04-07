@@ -59,7 +59,7 @@ const DISPUTES_DATA = [
       description: 'Dispute confirm appealed',
       metadata: DEFAULT_IPFS_METADATA,
     }),
-    rounds: [{ ...ROUNDS.PREVIOUS }, { ...ROUNDS.CONFIRM_APPEALED }],
+    rounds: [populatePreviousRounds(1), { ...ROUNDS.CONFIRM_APPEALED }],
   },
   {
     state: DisputeState.Adjudicating,
@@ -104,8 +104,9 @@ const DISPUTES_DATA = [
 ]
 
 function populatePreviousRounds(numberOfRounds) {
-  return Array.from({ length: numberOfRounds }).map(_ => ({
+  return Array.from({ length: numberOfRounds }).map((_, index) => ({
     ...ROUNDS.PREVIOUS,
+    jurorsNumber: courtConfig.appealStepFactor ** (index + 1),
   }))
 }
 
