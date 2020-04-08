@@ -8,6 +8,7 @@ import {
   TransactionBadge,
   textStyle,
   useTheme,
+  useViewport,
 } from '@aragon/ui'
 import styled from 'styled-components'
 import DisputeActions from './DisputeActions'
@@ -42,6 +43,9 @@ const DisputeInfo = React.memo(function({
   onRequestCommit,
   onRequestReveal,
 }) {
+  const { below } = useViewport()
+  const compactMode = below('medium')
+
   const {
     agreementText,
     agreementUrl,
@@ -58,7 +62,6 @@ const DisputeInfo = React.memo(function({
 
   const isFinalRulingEnsured =
     phase === DisputePhase.ExecuteRuling || status === Status.Closed
-
   const isDisputeVoided = dispute?.status === Status.Voided
 
   return (
@@ -71,11 +74,15 @@ const DisputeInfo = React.memo(function({
           align-items: center;
         `}
       >
-        <DisputeHeader dispute={dispute} error={error} />
+        <DisputeHeader dispute={dispute} error={error?.message} />
         {(() => {
           if (error) {
             return (
-              <ErrorLoading subject="dispute" errors={[error]} border={false} />
+              <ErrorLoading
+                subject="dispute"
+                errors={[error.message]}
+                border={false}
+              />
             )
           }
 
@@ -94,7 +101,7 @@ const DisputeInfo = React.memo(function({
           }
           return (
             <>
-              <Row>
+              <Row compactMode={compactMode}>
                 {disputedActionText ? (
                   <Field
                     label="Disputed Action"
@@ -112,7 +119,7 @@ const DisputeInfo = React.memo(function({
                   <Field label="Organization" value={organization} />
                 )}
               </Row>
-              <Row>
+              <Row compactMode={compactMode}>
                 {disputedActionRadspec ? (
                   <Field label="Description" value={disputedActionRadspec} />
                 ) : (
@@ -120,7 +127,7 @@ const DisputeInfo = React.memo(function({
                 )}
                 {creator && <Field label="Plaintiff" value={creator} />}
               </Row>
-              <Row>
+              <Row compactMode={compactMode}>
                 {agreementText ? (
                   <Field
                     label="Link to agreement"
@@ -138,7 +145,7 @@ const DisputeInfo = React.memo(function({
             </>
           )
         })()}
-        {!isDisputeVoided && !error && (
+        {!isDisputeVoided && !error?.fromGraph && (
           <>
             {(phase === DisputePhase.AppealRuling ||
               phase === DisputePhase.ConfirmAppeal ||
@@ -325,9 +332,14 @@ function DisputeActionText({ dispute, isFinalRulingEnsured }) {
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 1fr minmax(200px, auto);
-  grid-gap: ${5 * GU}px;
-  margin-bottom: ${2 * GU}px;
+
+  ${({ compactMode }) => `
+    grid-gap: ${(compactMode ? 2.5 : 5) * GU}px;
+    margin-bottom: ${compactMode ? 0 : 2 * GU}px;
+    grid-template-columns: ${
+      compactMode ? 'auto' : `1fr minmax(${25 * GU}px, auto)`
+    };
+  `}
 `
 
 DisputeInfo.propTypes = {
