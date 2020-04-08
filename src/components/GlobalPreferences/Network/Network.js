@@ -32,6 +32,7 @@ function Network() {
     handleIpfsGatewayChange,
     networkError,
     handleNetworkChange,
+    handleClearNetworkSettings,
   } = useNetwork()
   const theme = useTheme()
 
@@ -106,7 +107,7 @@ function Network() {
           css={`
             margin-bottom: ${2 * GU}px;
           `}
-          onClick={clearLocalStorageNetworkSettings}
+          onClick={handleClearNetworkSettings}
           wide={compact}
         >
           Reset network settings
@@ -140,6 +141,11 @@ const useNetwork = () => {
     window.location.reload()
   }, [ethNode, ipfsGateway, defaultsChanged])
 
+  const handleClearNetworkSettings = useCallback(() => {
+    clearLocalStorageNetworkSettings()
+    window.location.reload()
+  }, [])
+
   useEnterKey(handleNetworkChange)
 
   return {
@@ -147,6 +153,7 @@ const useNetwork = () => {
     networkType,
     ipfsGateway,
     handleNetworkChange,
+    handleClearNetworkSettings,
     networkError,
     handleEthNodeChange: ({ currentTarget: { value } }) =>
       setEthNodeValue(value),

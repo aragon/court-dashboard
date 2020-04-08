@@ -54,7 +54,6 @@ const Header = React.memo(function Header({
           css={`
             display: flex;
             height: 100%;
-            margin-left: ${1 * GU}px;
           `}
         >
           <AccountModule />
@@ -72,7 +71,6 @@ const Header = React.memo(function Header({
           css={`
             display: flex;
             height: 100%;
-            margin-left: ${2 * GU}px;
           `}
         >
           <ActivityButton />
