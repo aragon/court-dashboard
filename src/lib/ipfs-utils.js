@@ -1,5 +1,5 @@
 import isIPFS from 'is-ipfs'
-import { IPFS_ENDPOINT } from '../endpoints'
+import { defaultIpfsGateway } from '../networks'
 
 const SPLIT_IPFS_REGEX = /(Qm[a-zA-Z0-9]{44})/
 const TEST_IPFS_REGEX = /(Qm[a-zA-Z0-9]{44})/
@@ -7,7 +7,7 @@ const TEST_IPFS_REGEX = /(Qm[a-zA-Z0-9]{44})/
 const REQUEST_TIMEOUT = 60000
 
 export const ipfsGet = async cid => {
-  const endpoint = `${IPFS_ENDPOINT}/${cid}`
+  const endpoint = `${defaultIpfsGateway}/${cid}`
   try {
     const result = await fetch(endpoint, { timeout: REQUEST_TIMEOUT })
     const data = await result.text()

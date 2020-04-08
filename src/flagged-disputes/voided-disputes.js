@@ -1,7 +1,7 @@
 import {
-  networks,
+  networkConfigs,
   getInternalNetworkName,
-  getNetwork,
+  getNetworkConfig,
   RINKEBY_COURT,
   RINKEBY_STAGING_COURT,
   RINKEBY_USABILITY_COURT,
@@ -11,7 +11,7 @@ import env from '../environment'
 const VOIDED_DISPUTES = {
   main: new Map([
     [
-      networks.main.court,
+      networkConfigs.main.court,
       new Map(
         [
           {
@@ -31,15 +31,15 @@ const VOIDED_DISPUTES = {
     [RINKEBY_USABILITY_COURT, new Map([])],
     [RINKEBY_STAGING_COURT, new Map([])],
   ]),
-  ropsten: new Map([[networks.ropsten.court, new Map([])]]),
-  local: new Map([[networks.local.court, new Map([])]]),
+  ropsten: new Map([[networkConfigs.ropsten.court, new Map([])]]),
+  local: new Map([[networkConfigs.local.court, new Map([])]]),
 }
 
 export function getVoidedDisputesByCourt() {
   if (env('SKIP_VOIDING')) {
     return new Map([])
   }
-  const courtAddress = getNetwork().court
+  const courtAddress = getNetworkConfig().court
 
   return VOIDED_DISPUTES[getInternalNetworkName()].get(courtAddress)
 }
