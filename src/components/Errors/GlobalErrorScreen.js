@@ -23,8 +23,8 @@ function GlobalErrorScreen({ children }) {
       <img
         css={`
           position: absolute;
-          top: 16px;
-          left: 16px;
+          top: ${2 * GU}px;
+          left: ${2 * GU}px;
         `}
         src={logo}
       />

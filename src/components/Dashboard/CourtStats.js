@@ -118,7 +118,6 @@ function TokenStats({ stat, theme }) {
 
 function AnjUsdValue(amount) {
   const usdValue = useANJBalanceToUsd(amount)
-
   return usdValue
 }
 

@@ -31,6 +31,12 @@ const ENV_VARS = {
   MOCK_DATA() {
     return process.env.REACT_APP_MOCK_DATA === '1'
   },
+  DEFAULT_ETH_NODE() {
+    return process.env.REACT_APP_DEFAULT_ETH_NODE || ''
+  },
+  IPFS_GATEWAY() {
+    return process.env.REACT_APP_IPFS_GATEWAY || ''
+  },
 }
 
 export default function env(name) {

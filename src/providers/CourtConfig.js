@@ -1,13 +1,12 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useCourtConfigSubscription } from '../hooks/subscription-hooks'
-
-import { getNetwork } from '../networks'
+import { getNetworkConfig } from '../networks'
 
 const CourtConfigContext = React.createContext()
 
 function CourtConfigProvider({ children }) {
-  const courtAddress = getNetwork().court
+  const courtAddress = getNetworkConfig().court
   const courtConfig = useCourtConfigSubscription(courtAddress)
 
   return (

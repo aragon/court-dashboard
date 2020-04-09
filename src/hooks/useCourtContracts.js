@@ -3,10 +3,7 @@ import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
 import { useContract, useContractReadOnly } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
-import {
-  getFunctionSignature,
-  isLocalOrUnknownNetwork,
-} from '../lib/web3-utils'
+import { getFunctionSignature } from '../lib/web3-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import {
   hashVote,
@@ -582,15 +579,11 @@ export function useTotalANTStakedPolling(timeout = 1000) {
     let cancelled = false
     let timeoutId
 
-    // Since we don't have the ANT contract address on the local environment we are skipping the stat
-    if (
-      isLocalOrUnknownNetwork() ||
-      !networkAgentAddress ||
-      !networkReserveAddress
-    ) {
-      setError(true)
-      return
+    // This stat is only relevant and shown on mainnet
+    if (!networkAgentAddress || !networkReserveAddress) {
+      return setError(true)
     }
+
     if (!antContract) {
       return
     }

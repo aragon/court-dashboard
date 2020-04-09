@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Layout, Root, ScrollView, useViewport } from '@aragon/ui'
+import usePreferences from '../hooks/usePreferences'
 import MenuPanel, { MENU_PANEL_WIDTH } from './MenuPanel'
 import Header from './Header/Header'
+import GlobalPreferences from './GlobalPreferences/GlobalPreferences'
 
 function MainView({ children }) {
   const { width: vw, below } = useViewport()
   const compactMode = below('medium')
-
   const [menuPanelOpen, setMenuPanelOpen] = useState(!compactMode)
+
+  const [openPreferences, closePreferences, preferenceOption] = usePreferences()
+
   const toggleMenuPanel = useCallback(
     () => setMenuPanelOpen(opened => !opened),
     []
@@ -25,6 +29,15 @@ function MainView({ children }) {
     setMenuPanelOpen(!compactMode)
   }, [compactMode])
 
+  if (preferenceOption) {
+    return (
+      <GlobalPreferences
+        path={preferenceOption}
+        onScreenChange={openPreferences}
+        onClose={closePreferences}
+      />
+    )
+  }
   return (
     <div
       css={`
@@ -38,7 +51,11 @@ function MainView({ children }) {
           flex-shrink: 0;
         `}
       >
-        <Header compactMode={compactMode} toggleMenuPanel={toggleMenuPanel} />
+        <Header
+          compactMode={compactMode}
+          toggleMenuPanel={toggleMenuPanel}
+          onOpenPreferences={openPreferences}
+        />
       </div>
       <div
         css={`
