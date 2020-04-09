@@ -48,7 +48,7 @@ export const JurorTreasuryBalances = gql`
 `
 
 export const FirstANJActivationMovement = gql`
-  query Juror($id: ID!) {
+  query JurorFirstANJActivationMovement($id: ID!) {
     juror(id: $id) {
       anjMovements(
         where: { type: "Activation" }
