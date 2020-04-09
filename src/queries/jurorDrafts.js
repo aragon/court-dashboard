@@ -38,7 +38,7 @@ export const JurorDraftsRewarded = gql`
   }
 `
 
-// Jurors drafts for juror with id `$id` created from `$from`
+// Jurors drafts for juror with id `$id` created since `$from`
 export const JurorDraftsFrom = gql`
   subscription JurorDraftsFrom($id: ID!, $from: BigInt!) {
     juror(id: $id) {

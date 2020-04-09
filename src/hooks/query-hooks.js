@@ -1,10 +1,7 @@
 import { useQuery } from 'urql'
 
-import {
-  ActiveJurors,
-  JurorFirstANJActivationMovement,
-} from '../queries/balances'
-import { JurorFeesClaimed } from '../queries/juror'
+import { JurorFirstANJActivationMovement } from '../queries/balances'
+import { ActiveJurors, JurorFeesClaimed } from '../queries/juror'
 import { JurorDrafts } from '../queries/jurorDrafts'
 
 export function useJurorDraftQuery(jurorId) {
