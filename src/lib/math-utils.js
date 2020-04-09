@@ -95,15 +95,15 @@ export function numberToWord(number) {
 }
 
 const ordinalNumbers = [
-  'First',
-  'Second',
-  'Third',
-  'Fourth',
-  'Fifth',
-  'Sixth',
-  'Seventh',
-  'Eighth',
-  'Ninth',
+  'first',
+  'second',
+  'third',
+  'fourth',
+  'fifth',
+  'sixth',
+  'seventh',
+  'eighth',
+  'ninth',
 ]
 
 export function numberToOrdinal(number) {

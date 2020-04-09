@@ -54,10 +54,9 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
         background: theme.info,
         iconColor: theme.accentContent,
         labelColor: theme.contentSecondary.alpha(0.6),
-        labelText: 'Transaction being mined...',
+        labelText: 'Transaction being mined…',
       }
     }
-
     if (status === TRANSACTION_STATUS_SIGNED) {
       return {
         iconColor: theme.positive,
@@ -72,7 +71,7 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
       labelColor: theme.contentSecondary.alpha(0.6),
       labelText: transaction.skipSignature
         ? transaction.description
-        : 'Waiting for signature...',
+        : 'Waiting for signature…',
     }
   }, [status, theme, transaction])
 
@@ -85,8 +84,8 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
       css={`
         display: grid;
         grid-template-columns: 20% 80%;
-        grid-gap: 16px;
-        width: 280px;
+        grid-gap: ${2 * GU}px;
+        width: ${35 * GU}px;
       `}
     >
       <div
@@ -96,8 +95,8 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 50px;
-          height: 50px;
+          width: ${6 * GU}px;
+          height: ${6 * GU}px;
           border-radius: 50%;
           margin-top: ${0.5 * GU}px;
 

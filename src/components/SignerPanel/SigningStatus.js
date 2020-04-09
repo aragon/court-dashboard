@@ -37,7 +37,7 @@ function SigningStatus({
       <div
         css={`
           background: ${theme.feedbackSurface};
-          height: 350px;
+          height: ${44 * GU}px;
           display: flex;
           flex-direction: column;
           justify-content: space-evenly;
@@ -116,7 +116,7 @@ function SingleTx({ status }) {
     if (status === TRANSACTION_STATUS_PENDING) {
       return {
         iconColor: theme.info,
-        label: 'Transaction being mined...',
+        label: 'Transaction being mined…',
       }
     }
 
@@ -129,7 +129,7 @@ function SingleTx({ status }) {
 
     return {
       iconColor: theme.hint,
-      label: 'Waiting for signature...',
+      label: 'Waiting for signature…',
     }
   }, [theme, status])
 
@@ -146,8 +146,8 @@ function SingleTx({ status }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 60px;
-          height: 60px;
+          width: ${7.5 * GU}px;
+          height: ${7.5 * GU}px;
           border: 2px solid ${iconColor};
           border-radius: 50%;
           transition: border-color 150ms ease-in-out;
@@ -246,7 +246,6 @@ function SigningStatusInfo({
             after another and <b>do not close this window</b> until the process
             is finished. Open your Ethereum provider {provider.name} to sign the
             transactions.{' '}
-            <Link href="#">I don’t see the Ethereum provider.</Link>
           </span>
         ) : (
           <span>
@@ -272,7 +271,7 @@ const TransactionReattempt = ({
         {maxAttemptsReached
           ? `Seems that the transaction won't go through`
           : `An error has occurred during the signature process. Don't worry, you can
-        try to send the transaction again.`}
+             try to send the transaction again.`}
       </Info>
       <Button
         css={`
