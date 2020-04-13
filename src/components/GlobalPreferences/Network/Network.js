@@ -162,9 +162,9 @@ const useNetwork = () => {
     }
     setDefaultEthNode(ethNode)
     setIpfsGateway(ipfsGateway)
-    setSubgraphEndpoint(ipfsGateway)
+    setSubgraphEndpoint(subgraphEndpoint)
     window.location.reload()
-  }, [ethNode, ipfsGateway, defaultsChanged])
+  }, [ethNode, ipfsGateway, defaultsChanged, subgraphEndpoint])
 
   const handleClearNetworkSettings = useCallback(() => {
     clearLocalStorageNetworkSettings()

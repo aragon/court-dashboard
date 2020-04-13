@@ -11,15 +11,13 @@ import { getFetchExchange, getSubscriptionExchange } from './graphql-exchanges'
 import { devtoolsExchange } from '@urql/devtools'
 import { createGlobalStyle } from 'styled-components'
 import App from './App'
-import endpoints from './endpoints'
+import { defaultSubgraphEndpoint } from './networks'
 import initializeSentry from './sentry'
 
 initializeSentry()
 
-const [GRAPH_API_ENDPOINT_HTTP] = endpoints()
-
 const client = createClient({
-  url: GRAPH_API_ENDPOINT_HTTP,
+  url: defaultSubgraphEndpoint,
   exchanges: [
     debugExchange,
     devtoolsExchange,
@@ -29,6 +27,7 @@ const client = createClient({
   ],
 })
 
+console.log('client ', client)
 const GlobalStyle = createGlobalStyle`
   body img {
     user-select:none;
