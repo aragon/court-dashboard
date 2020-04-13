@@ -34,6 +34,9 @@ const ENV_VARS = {
   IPFS_GATEWAY() {
     return process.env.REACT_APP_IPFS_GATEWAY || ''
   },
+  CUSTOM_SUBGRAPH_ENDPOINT() {
+    return process.env.REACT_APP_CUSTOM_SUBGRAPH_ENDPOINT || ''
+  },
 }
 
 export default function env(name) {

@@ -162,7 +162,7 @@ const useNetwork = () => {
     }
     setDefaultEthNode(ethNode)
     setIpfsGateway(ipfsGateway)
-    setSubgraphEndpoint()
+    setSubgraphEndpoint(ipfsGateway)
     window.location.reload()
   }, [ethNode, ipfsGateway, defaultsChanged])
 
