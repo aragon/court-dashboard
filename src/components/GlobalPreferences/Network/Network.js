@@ -9,11 +9,16 @@ import {
   useLayout,
   useTheme,
 } from '@aragon/ui'
-import { defaultEthNode, defaultIpfsGateway } from '../../../networks'
+import {
+  defaultEthNode,
+  defaultIpfsGateway,
+  defaultSubgraphEndpoint,
+} from '../../../networks'
 import {
   clearLocalStorageNetworkSettings,
   setDefaultEthNode,
   setIpfsGateway,
+  setSubgraphEndpoint,
 } from '../../../local-settings'
 import { InvalidNetworkType, InvalidURI, NoConnection } from '../../../errors'
 import {
@@ -28,8 +33,10 @@ function Network() {
     ethNode,
     networkType,
     ipfsGateway,
+    subgraphEndpoint,
     handleEthNodeChange,
     handleIpfsGatewayChange,
+    handleSubgraphEndpointChange,
     networkError,
     handleNetworkChange,
     handleClearNetworkSettings,
@@ -89,6 +96,18 @@ function Network() {
             `}
           />
         </Label>
+        <Label theme={theme}>
+          Subgraph Endpoint
+          <TextInput
+            value={subgraphEndpoint}
+            wide
+            onChange={handleSubgraphEndpointChange}
+            css={`
+              ${textStyle('body2')};
+              color: ${theme.contentSecondary};
+            `}
+          />
+        </Label>
         <Button mode="strong" onClick={handleNetworkChange} wide={compact}>
           Save changes
         </Button>
@@ -121,10 +140,15 @@ const useNetwork = () => {
   const [networkError, setNetworkError] = useState(null)
   const [ethNode, setEthNodeValue] = useState(defaultEthNode)
   const [ipfsGateway, setIpfsGatewayValue] = useState(defaultIpfsGateway)
+  const [subgraphEndpoint, setSubgraphEndpointValue] = useState(
+    defaultSubgraphEndpoint
+  )
   const networkType = getNetworkType()
 
   const defaultsChanged =
-    ipfsGateway !== defaultIpfsGateway || ethNode !== defaultEthNode
+    ipfsGateway !== defaultIpfsGateway ||
+    ethNode !== defaultEthNode ||
+    subgraphEndpoint !== defaultSubgraphEndpoint
 
   const handleNetworkChange = useCallback(async () => {
     if (!defaultsChanged) {
@@ -138,6 +162,7 @@ const useNetwork = () => {
     }
     setDefaultEthNode(ethNode)
     setIpfsGateway(ipfsGateway)
+    setSubgraphEndpoint()
     window.location.reload()
   }, [ethNode, ipfsGateway, defaultsChanged])
 
@@ -152,6 +177,7 @@ const useNetwork = () => {
     ethNode,
     networkType,
     ipfsGateway,
+    subgraphEndpoint,
     handleNetworkChange,
     handleClearNetworkSettings,
     networkError,
@@ -159,6 +185,8 @@ const useNetwork = () => {
       setEthNodeValue(value),
     handleIpfsGatewayChange: ({ currentTarget: { value } }) =>
       setIpfsGatewayValue(value),
+    handleSubgraphEndpointChange: ({ currentTarget: { value } }) =>
+      setSubgraphEndpointValue(value),
   }
 }
 
