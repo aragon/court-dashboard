@@ -3,6 +3,7 @@ import {
   ButtonBase,
   ButtonIcon,
   GU,
+  IconExternal,
   IconSettings,
   Popover,
   RADIUS,
@@ -84,8 +85,16 @@ function GlobalPreferencesButton({ onOpen }) {
           </li>
           <Item
             onClick={handleItemClick('network')}
+            iconFirst
             icon={iconNetwork}
             label="Network"
+          />
+          <Item
+            onClick={handleItemClick('network')}
+            iconFirst={false}
+            icon="IconExternal"
+            label="Any questions? Visit our FAQ"
+            href="https://help.aragon.org/article/48-aragon-court-faq"
           />
         </ul>
       </Popover>
@@ -93,8 +102,17 @@ function GlobalPreferencesButton({ onOpen }) {
   )
 }
 
-function Item({ icon, label, onClick }) {
+function Item({ icon, iconFirst, label, onClick, href }) {
   const theme = useTheme()
+  let Icon
+
+  switch (icon) {
+    case 'IconExternal':
+      Icon = IconExternal
+      break
+    default:
+      Icon = () => <img src={icon} alt="" />
+  }
 
   return (
     <li
@@ -112,6 +130,8 @@ function Item({ icon, label, onClick }) {
           height: ${7 * GU}px;
           border-radius: 0;
         `}
+        external={Boolean(href)}
+        href={href}
       >
         <div
           css={`
@@ -128,7 +148,7 @@ function Item({ icon, label, onClick }) {
             }
           `}
         >
-          {icon && <img src={icon} alt="" />}
+          {iconFirst && <Icon />}
           <div
             css={`
               flex-grow: 1;
@@ -139,6 +159,15 @@ function Item({ icon, label, onClick }) {
           >
             {label}
           </div>
+          {!iconFirst && (
+            <div
+              css={`
+                color: ${theme.surfaceContentSecondary};
+              `}
+            >
+              <Icon />
+            </div>
+          )}
         </div>
       </ButtonBase>
     </li>
