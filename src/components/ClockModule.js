@@ -19,7 +19,6 @@ import HeaderPopover from './Header/HeaderPopover'
 import { useCourtClock } from '../providers/CourtClock'
 import { useCourtConfig } from '../providers/CourtConfig'
 import { useHeartbeat } from '../hooks/useCourtContracts'
-import { useTransactionQueue } from '../providers/TransactionQueue'
 
 import { formatDuration } from '../utils/date-utils'
 import {
@@ -27,7 +26,6 @@ import {
   isLocalOrUnknownNetwork,
   shortenAddress,
 } from '../lib/web3-utils'
-import radspec from '../radspec'
 
 import logoSvg from '../assets/LogoAccent.svg'
 
@@ -39,7 +37,6 @@ function ClockModule() {
   const wallet = useWallet()
   const onHeartbeat = useHeartbeat()
   const courtConfig = useCourtConfig()
-  const { addTransaction } = useTransactionQueue()
 
   const {
     currentTermId,
@@ -56,11 +53,9 @@ function ClockModule() {
 
   const handleOnClick = useCallback(async () => {
     handlePopoverClose()
-    return addTransaction({
-      intent: () => onHeartbeat(neededTransitions),
-      description: radspec.heartbeat(neededTransitions),
-    })
-  }, [addTransaction, handlePopoverClose, neededTransitions, onHeartbeat])
+
+    return onHeartbeat(neededTransitions)
+  }, [handlePopoverClose, neededTransitions, onHeartbeat])
 
   const IconSync = isSynced ? IconCheck : IconCross
 

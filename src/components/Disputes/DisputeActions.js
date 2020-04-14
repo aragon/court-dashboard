@@ -187,6 +187,7 @@ function InformationSection({
 }
 
 // Helper function that returns main attributes for the YourVoteInfo component
+// TODO: Contemplate final round cases (when a juror has voted, the ANJ amount is pre-slashed)
 const useInfoAttributes = ({
   hasJurorVoted,
   jurorDraft,

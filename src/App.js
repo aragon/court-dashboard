@@ -2,19 +2,17 @@ import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { Main, ToastHub } from '@aragon/ui'
 import theme from './theme-court'
-
-import { ActivityProvider } from './components/Activity/ActivityProvider'
-import { CourtClockProvider } from './providers/CourtClock'
-import { CourtConfigProvider } from './providers/CourtConfig'
-import { TransactionQueueProvider } from './providers/TransactionQueue'
-import { WalletProvider } from './providers/Wallet'
-
 import AppLoader from './components/AppLoader'
 import GlobalErrorHandler from './GlobalErrorHandler'
 import MainView from './components/MainView'
 import OnboardingLoader from './components/OnboardingLoader'
 import Routes from './Routes'
 import SignerPanel from './components/SignerPanel/SignerPanel'
+import { ActivityProvider } from './components/Activity/ActivityProvider'
+import { CourtClockProvider } from './providers/CourtClock'
+import { CourtConfigProvider } from './providers/CourtConfig'
+import { TransactionQueueProvider } from './providers/TransactionQueue'
+import { WalletProvider } from './providers/Wallet'
 
 function App() {
   return (

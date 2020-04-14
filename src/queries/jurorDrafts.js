@@ -2,14 +2,12 @@ import gql from 'graphql-tag'
 
 // All juror drafts by `id` not yet rewarded
 export const JurorDraftsNotRewarded = gql`
-  subscription JurorDraft($id: ID!) {
+  subscription JurorDraftsNotRewarded($id: ID!) {
     juror(id: $id) {
       id
       drafts(where: { rewarded: false }) {
         id
         weight
-        locked
-        rewarded
         outcome
         round {
           number
@@ -29,8 +27,8 @@ export const JurorDraftsNotRewarded = gql`
 `
 
 // First juror draft already rewarded
-export const JurorDraftRewarded = gql`
-  query JurorDraft($id: ID!) {
+export const JurorDraftsRewarded = gql`
+  query JurorDraftsRewarded($id: ID!) {
     juror(id: $id) {
       id
       drafts(where: { rewarded: true }, first: 1) {
@@ -40,9 +38,9 @@ export const JurorDraftRewarded = gql`
   }
 `
 
-// Jurors drafts by `id` for current term
-export const CurrentTermJurorDrafts = gql`
-  subscription JurorDrafts($id: ID!, $from: BigInt!) {
+// Jurors drafts for juror with id `$id` created since `$from`
+export const JurorDraftsFrom = gql`
+  subscription JurorDraftsFrom($id: ID!, $from: BigInt!) {
     juror(id: $id) {
       id
       drafts(where: { createdAt_gt: $from }) {
@@ -53,7 +51,8 @@ export const CurrentTermJurorDrafts = gql`
   }
 `
 
-// All juror drafts by `id`
+// All juror drafts for juror with id `id`
+// Useful query to know all disputes that the juror by `$id` is part of
 export const JurorDrafts = gql`
   query JurorDrafts($id: ID!) {
     juror(id: $id) {

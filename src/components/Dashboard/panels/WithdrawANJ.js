@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import ANJForm from './ANJForm'
 import { formatUnits } from '../../../lib/math-utils'
-import radspec from '../../../radspec'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 
 const WithdrawANJ = React.memo(function WithdrawANJ({
@@ -31,7 +30,6 @@ const WithdrawANJ = React.memo(function WithdrawANJ({
   return (
     <ANJForm
       actionLabel="Withdraw"
-      describe={radspec.withdrawAnj}
       maxAmount={maxAmount}
       onSubmit={onWithdrawANJ}
       onDone={onDone}

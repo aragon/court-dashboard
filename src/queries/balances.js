@@ -1,15 +1,15 @@
 import gql from 'graphql-tag'
 
-export const ANJBalance = gql`
-  subscription ANJBalance($id: ID!) {
+export const JurorANJWalletBalance = gql`
+  subscription JurorANJWalletBalance($id: ID!) {
     anjbalance(id: $id) {
       amount
     }
   }
 `
 
-export const Juror = gql`
-  subscription Juror($id: ID!, $from: BigInt!) {
+export const JurorANJBalances = gql`
+  subscription JurorANJBalances($id: ID!, $from: BigInt!) {
     juror(id: $id) {
       activeBalance
       lockedBalance
@@ -47,8 +47,8 @@ export const JurorTreasuryBalances = gql`
   }
 `
 
-export const FirstANJActivationMovement = gql`
-  query Juror($id: ID!) {
+export const JurorFirstANJActivationMovement = gql`
+  query JurorFirstANJActivationMovement($id: ID!) {
     juror(id: $id) {
       anjMovements(
         where: { type: "Activation" }
@@ -61,13 +61,6 @@ export const FirstANJActivationMovement = gql`
         createdAt
         type
       }
-    }
-  }
-`
-export const ActiveJurors = gql`
-  query Jurors {
-    jurors(first: 1000, where: { activeBalance_gt: 0 }) {
-      id
     }
   }
 `

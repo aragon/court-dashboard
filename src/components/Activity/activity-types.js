@@ -122,13 +122,6 @@ const ACTIVITY_TYPES = new Map(
         description: radspec.settleAppealDeposit(roundId, disputeId),
       }
     },
-    stakeActivateAnj({ amount }) {
-      return {
-        icon: iconAnj,
-        title: 'Stake and activate ANJ',
-        description: radspec.stakeActivateAnj(amount),
-      }
-    },
     transaction({ transactionHash }) {
       return {
         title: 'Transaction',

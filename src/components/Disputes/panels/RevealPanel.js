@@ -1,14 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, Field, GU, TextInput } from '@aragon/ui'
-import { useTransactionQueue } from '../../../providers/TransactionQueue'
 import { useWallet } from '../../../providers/Wallet'
-import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import { getJurorDraft } from '../../../utils/juror-draft-utils'
-import {
-  getCodeFromLocalStorage,
-  removeCodeFromLocalStorage,
-} from '../../../utils/one-time-code-utils'
-import radspec from '../../../radspec'
+import { getDisputeLastRound } from '../../../utils/dispute-utils'
+import { getCodeFromLocalStorage } from '../../../utils/one-time-code-utils'
 
 const RevealPanel = React.memo(function RevealPanel({
   dispute,
@@ -17,7 +12,6 @@ const RevealPanel = React.memo(function RevealPanel({
 }) {
   const wallet = useWallet()
   const [password, setPassword] = useState('')
-  const { addTransaction } = useTransactionQueue()
   const lastRound = getDisputeLastRound(dispute)
 
   const jurorDraft = getJurorDraft(lastRound, wallet.account)
@@ -36,23 +30,15 @@ const RevealPanel = React.memo(function RevealPanel({
       event.preventDefault()
 
       onDone()
-      return addTransaction({
-        intent: () =>
-          onReveal(
-            dispute.id,
-            dispute.lastRoundId,
-            wallet.account,
-            jurorDraft.commitment,
-            password
-          ),
-
-        description: radspec.revealVote(dispute.lastRoundId, dispute.id),
-
-        callback: () => removeCodeFromLocalStorage(wallet.account, dispute.id),
-      })
+      onReveal(
+        dispute.id,
+        dispute.lastRoundId,
+        wallet.account,
+        jurorDraft.commitment,
+        password
+      )
     },
     [
-      addTransaction,
       dispute.id,
       dispute.lastRoundId,
       jurorDraft.commitment,

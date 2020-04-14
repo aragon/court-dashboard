@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import ANJForm from './ANJForm'
 import { formatUnits } from '../../../lib/math-utils'
-import radspec from '../../../radspec'
 import { useCourtConfig } from '../../../providers/CourtConfig'
 
 const DeactivateANJ = React.memo(function DeactivateANJ({
@@ -47,7 +46,6 @@ const DeactivateANJ = React.memo(function DeactivateANJ({
   return (
     <ANJForm
       actionLabel="Deactivate"
-      describe={radspec.deactivateAnj}
       maxAmount={maxAmount}
       onSubmit={onDeactivateANJ}
       onDone={onDone}

@@ -8,3 +8,11 @@ export const JurorFeesClaimed = gql`
     }
   }
 `
+
+export const ActiveJurors = gql`
+  query ActiveJurors {
+    jurors(first: 1000, where: { activeBalance_gt: 0 }) {
+      id
+    }
+  }
+`

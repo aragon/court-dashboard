@@ -65,7 +65,7 @@ export default {
         Leak vote of ${voter} for vote #${voteId}
       `
   },
-  revealVote: (roundId, disputeId) => {
+  revealVote: (disputeId, roundId) => {
     return `
         Reveal vote on round ${numberToWord(roundId)} for dispute #${disputeId}
       `
@@ -82,11 +82,6 @@ export default {
         Settle appeal deposit for round ${numberToWord(
           roundId
         )} of dispute #${disputeId}
-      `
-  },
-  stakeActivateAnj: amount => {
-    return `
-        Activate the total amount of ${amount} ANJ
       `
   },
   transaction: transactionHash => {

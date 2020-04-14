@@ -1,5 +1,4 @@
-import env from '../environment'
-import { getNetworkType } from '../lib/web3-utils'
+import { getInternalNetworkName } from '../networks'
 
 export const KNOWN_TOKEN_BY_ENV = {
   ANJ: {
@@ -66,5 +65,5 @@ export const KNOWN_TOKEN_BY_ENV = {
 }
 
 export function getKnownToken(symbol) {
-  return KNOWN_TOKEN_BY_ENV[symbol][getNetworkType(env('CHAIN_ID'))]
+  return KNOWN_TOKEN_BY_ENV[symbol][getInternalNetworkName()]
 }

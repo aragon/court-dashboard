@@ -140,8 +140,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
             requestMode={requestMode}
             commit={actions.commit}
             reveal={actions.reveal}
-            appeal={actions.appeal}
-            confirmAppeal={actions.confirmAppeal}
+            appealRound={actions.appealRound}
             approveFeeDeposit={actions.approveFeeDeposit}
             onDone={panelState.requestClose}
           />
@@ -172,10 +171,9 @@ const PanelTitle = ({ requestMode, disputeId }) => {
 }
 
 const PanelComponent = ({
-  appeal,
+  appealRound,
   approveFeeDeposit,
   commit,
-  confirmAppeal,
   dispute,
   requestMode,
   reveal,
@@ -203,7 +201,7 @@ const PanelComponent = ({
       <AppealPanel
         dispute={dispute}
         onApproveFeeDeposit={approveFeeDeposit}
-        onAppeal={data.confirm ? confirmAppeal : appeal}
+        onAppeal={appealRound}
         confirm={data.confirm}
         {...props}
       />

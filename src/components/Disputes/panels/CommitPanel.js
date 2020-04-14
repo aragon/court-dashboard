@@ -12,14 +12,8 @@ import {
   useTheme,
 } from '@aragon/ui'
 import useOneTimeCode from '../../../hooks/useOneTimeCode'
-import { useTransactionQueue } from '../../../providers/TransactionQueue'
 import { useWallet } from '../../../providers/Wallet'
-
-import requestAutoReveal from '../../../services/requestAutoReveal'
-import { saveCodeInLocalStorage } from '../../../utils/one-time-code-utils'
-
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
-import radspec from '../../../radspec'
 
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
@@ -32,53 +26,23 @@ const CommitPanel = React.memo(function CommitPanel({
   const [revealService, setRevealService] = useState(true)
   const { account: connectedAccount } = useWallet()
   const { oneTimeCode, download } = useOneTimeCode()
-  const { addTransactions } = useTransactionQueue()
   const toast = useToast()
 
   const handleCommit = useCallback(
     async event => {
       event.preventDefault()
 
-      const disputeId = dispute.id
-      const roundId = dispute.lastRoundId
-
-      const transactionQueue = [
-        {
-          intent: () => onCommit(disputeId, roundId, outcome, oneTimeCode),
-          description: radspec.commitVote(disputeId, roundId, outcome),
-
-          waitForConfirmation: true,
-          // Callback function to run after main tx
-          callback: () =>
-            saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode),
-        },
-      ]
-
-      // If juror opted-in for the reveal service we'll send the commitment and password to the court-server
-      if (revealService) {
-        transactionQueue.push({
-          intent: async () => {
-            return requestAutoReveal(
-              connectedAccount,
-              disputeId,
-              roundId,
-              outcome,
-              oneTimeCode
-            )
-          },
-          description: 'Request auto-reveal service',
-          onError: 'Failed to request auto-reveal service',
-          onSuccess: 'Auto-reveal service requested!',
-          skipSignature: true,
-        })
-      }
-
       onDone()
-
-      return addTransactions(transactionQueue)
+      return onCommit(
+        connectedAccount,
+        dispute.id,
+        dispute.lastRoundId,
+        outcome,
+        oneTimeCode,
+        revealService
+      )
     },
     [
-      addTransactions,
       connectedAccount,
       dispute.id,
       dispute.lastRoundId,

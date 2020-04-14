@@ -11,12 +11,10 @@ import {
 } from '@aragon/ui'
 
 import { useCourtConfig } from '../../../providers/CourtConfig'
-import { useTransactionQueue } from '../../../providers/TransactionQueue'
 import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
 
 const ANJForm = React.memo(function ANJForm({
   actionLabel,
-  describe,
   maxAmount,
   onDone,
   onSubmit,
@@ -30,7 +28,6 @@ const ANJForm = React.memo(function ANJForm({
   const theme = useTheme()
   const { anjToken } = useCourtConfig()
   const inputRef = useSidePanelFocusOnReady()
-  const { addTransaction } = useTransactionQueue()
 
   const handleEditMode = useCallback(
     editMode => {
@@ -106,10 +103,7 @@ const ANJForm = React.memo(function ANJForm({
     setAmount(amount => ({ ...amount, error: null }))
 
     onDone()
-    return addTransaction({
-      intent: () => onSubmit(amount.valueBN),
-      description: describe(formatUnits(amount.valueBN)),
-    })
+    onSubmit(amount.valueBN)
   }
 
   const errorMessage = amount.error

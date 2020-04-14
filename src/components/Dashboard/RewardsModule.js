@@ -15,12 +15,10 @@ import NoRewards from './NoRewards'
 
 import { useWallet } from '../../providers/Wallet'
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useTransactionQueue } from '../../providers/TransactionQueue'
 import useJurorSubscriptionFees from '../../hooks/useJurorSubscriptionFees'
 
-import radspec from '../../radspec'
 import { addressesEqual } from '../../lib/web3-utils'
-import { bigNum, formatTokenAmount, formatUnits } from '../../lib/math-utils'
+import { bigNum, formatTokenAmount } from '../../lib/math-utils'
 
 const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
   return useMemo(() => {
@@ -49,14 +47,10 @@ const RewardsModule = React.memo(function RewardsModule({
   rewards,
   treasury,
   loading,
-  onClaimSubscriptionFees,
-  onSettleAppealDeposit,
-  onSettleReward,
-  onWithdraw,
+  onClaimRewards,
 }) {
   const wallet = useWallet()
   const { feeToken } = useCourtConfig()
-  const { addTransactions } = useTransactionQueue()
 
   // Subscriptions are fetched directly from the subscriptions contract
   const subscriptionFees = useJurorSubscriptionFees()
@@ -94,67 +88,19 @@ const RewardsModule = React.memo(function RewardsModule({
 
       if (!rewards) return
 
-      const rewardTransactionQueue = []
-
-      // Claim all arbitrable fee rewards
-      for (const arbitrableFee of feeRewards.arbitrableFees) {
-        const { disputeId, rounds } = arbitrableFee
-        for (const roundId of rounds) {
-          rewardTransactionQueue.push({
-            intent: () => onSettleReward(disputeId, roundId, wallet.account),
-            description: radspec.settleReward(roundId, disputeId),
-          })
-        }
-      }
-
-      // Claim all appeal fee rewards
-      for (const appealFee of feeRewards.appealFees) {
-        const { disputeId, rounds } = appealFee
-        for (const roundId of rounds) {
-          rewardTransactionQueue.push({
-            intent: () => onSettleAppealDeposit(disputeId, roundId),
-            description: radspec.settleAppealDeposit(roundId, disputeId),
-          })
-        }
-      }
-
-      // If we have settlements to do, then we'll make sure that the last
-      // settlement is confirmed before withdrawing total fees from the treasury
-      if (rewardTransactionQueue.length > 0) {
-        const lastSettlement = rewardTransactionQueue.pop()
-        rewardTransactionQueue.push({
-          ...lastSettlement,
-          waitForConfirmation: true,
-        })
-      }
-
-      // Withdraw funds from treasury
-      if (totalTreasuryFees.gt(0)) {
-        rewardTransactionQueue.push({
-          intent: () =>
-            onWithdraw(feeToken.id, wallet.account, totalTreasuryFees),
-          description: radspec.claimRewards(formatUnits(totalTreasuryFees)),
-        })
-      }
-
-      // Claim subscription fees
-      for (const subscriptionFee of subscriptionFees) {
-        rewardTransactionQueue.push({
-          intent: () => onClaimSubscriptionFees(subscriptionFee.periodId),
-          description: radspec.claimSubscriptionFees(subscriptionFee.periodId),
-        })
-      }
-
-      return addTransactions(rewardTransactionQueue)
+      return onClaimRewards(
+        wallet.account,
+        feeRewards.arbitrableFees,
+        feeRewards.appealFees,
+        totalTreasuryFees,
+        subscriptionFees,
+        feeToken.id
+      )
     },
     [
-      addTransactions,
       feeRewards,
       feeToken,
-      onClaimSubscriptionFees,
-      onSettleAppealDeposit,
-      onSettleReward,
-      onWithdraw,
+      onClaimRewards,
       rewards,
       subscriptionFees,
       totalTreasuryFees,

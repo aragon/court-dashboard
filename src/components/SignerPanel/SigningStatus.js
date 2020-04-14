@@ -1,13 +1,5 @@
 import React, { useMemo } from 'react'
-import {
-  Button,
-  GU,
-  IconCheck,
-  IconCross,
-  Info,
-  Link,
-  useTheme,
-} from '@aragon/ui'
+import { Button, GU, IconCheck, IconCross, Info, useTheme } from '@aragon/ui'
 import TransactionStepItem from './TransactionStepItem'
 import { useWallet } from '../../providers/Wallet'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'

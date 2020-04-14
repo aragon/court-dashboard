@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { captureException } from '@sentry/browser'
 import { CourtModuleType } from '../types/court-module-types'
+import { useActivity } from '../components/Activity/ActivityProvider'
 import { useContract, useContractReadOnly } from '../web3-contracts'
 import { useCourtConfig } from '../providers/CourtConfig'
-import {
-  getFunctionSignature,
-  isLocalOrUnknownNetwork,
-} from '../lib/web3-utils'
+import { useTransactionQueue } from '../providers/TransactionQueue'
+import requestAutoReveal from '../services/requestAutoReveal'
+import { getFunctionSignature } from '../lib/web3-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import {
   hashVote,
@@ -14,11 +14,12 @@ import {
   getVoteId,
   hashPassword,
 } from '../utils/crvoting-utils'
-import { getModuleAddress } from '../utils/court-utils'
 import { retryMax } from '../utils/retry-max'
-import { useActivity } from '../components/Activity/ActivityProvider'
-import { networkAgentAddress, networkReserveAddress } from '../networks'
+import radspec from '../radspec'
 import { getKnownToken } from '../utils/known-tokens'
+import { getModuleAddress } from '../utils/court-utils'
+import { saveCodeInLocalStorage } from '../utils/one-time-code-utils'
+import { networkAgentAddress, networkReserveAddress } from '../networks'
 
 import aragonCourtAbi from '../abi/AragonCourt.json'
 import courtSubscriptionsAbi from '../abi/CourtSubscriptions.json'
@@ -71,6 +72,7 @@ function useCourtContract(moduleType, abi) {
  */
 export function useANJActions() {
   const { addActivity } = useActivity()
+  const { addTransaction } = useTransactionQueue()
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
@@ -80,58 +82,82 @@ export function useANJActions() {
   // activate ANJ directly from available balance
   const activateANJ = useCallback(
     amount => {
-      return addActivity(
-        jurorRegistryContract.activate(amount, {
-          gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
-        }),
-        'activateAnj',
-        { amount: formatUnits(amount) }
-      )
+      const formattedAmount = formatUnits(amount)
+
+      return addTransaction({
+        intent: () =>
+          addActivity(
+            jurorRegistryContract.activate(amount, {
+              gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
+            }),
+            'activateAnj',
+            { amount: formattedAmount }
+          ),
+        description: radspec.activateAnj(formattedAmount),
+      })
     },
-    [jurorRegistryContract, addActivity]
+    [addActivity, addTransaction, jurorRegistryContract]
   )
 
   const deactivateANJ = useCallback(
     amount => {
-      return addActivity(
-        jurorRegistryContract.deactivate(amount, {
-          gasLimit: ANJ_ACTIONS_GAS_LIMIT,
-        }),
-        'deactivateAnj',
-        { amount: formatUnits(amount) }
-      )
+      const formattedAmount = formatUnits(amount)
+
+      return addTransaction({
+        intent: () =>
+          addActivity(
+            jurorRegistryContract.deactivate(amount, {
+              gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+            }),
+            'deactivateAnj',
+            { amount: formattedAmount }
+          ),
+        description: radspec.deactivateAnj(formattedAmount),
+      })
     },
-    [jurorRegistryContract, addActivity]
+    [addActivity, addTransaction, jurorRegistryContract]
   )
 
   // approve, stake and activate ANJ
   const stakeActivateANJ = useCallback(
     amount => {
-      return addActivity(
-        anjTokenContract.approveAndCall(
-          jurorRegistryContract.address,
-          amount,
-          ACTIVATE_SELECTOR,
-          { gasLimit: ANJ_ACTIVATE_GAS_LIMIT }
-        ),
-        'stakeActivateAnj',
-        { amount: formatUnits(amount) }
-      )
+      const formattedAmount = formatUnits(amount)
+
+      return addTransaction({
+        intent: () =>
+          addActivity(
+            anjTokenContract.approveAndCall(
+              jurorRegistryContract.address,
+              amount,
+              ACTIVATE_SELECTOR,
+              { gasLimit: ANJ_ACTIVATE_GAS_LIMIT }
+            ),
+            'activateAnj',
+            { amount: formattedAmount }
+          ),
+        description: radspec.activateAnj(formattedAmount),
+      })
     },
-    [anjTokenContract, jurorRegistryContract, addActivity]
+    [addActivity, addTransaction, anjTokenContract, jurorRegistryContract]
   )
 
   const withdrawANJ = useCallback(
     amount => {
-      return addActivity(
-        jurorRegistryContract.unstake(amount, '0x', {
-          gasLimit: ANJ_ACTIONS_GAS_LIMIT,
-        }),
-        'withdrawAnj',
-        { amount: formatUnits(amount) }
-      )
+      const formattedAmount = formatUnits(amount)
+
+      return addTransaction({
+        intent: () =>
+          addActivity(
+            jurorRegistryContract.unstake(amount, '0x', {
+              gasLimit: ANJ_ACTIONS_GAS_LIMIT,
+            }),
+            'withdrawAnj',
+            { amount: formattedAmount }
+          ),
+        description: radspec.withdrawAnj(formattedAmount),
+      })
     },
-    [jurorRegistryContract, addActivity]
+    [addActivity, addTransaction, jurorRegistryContract]
   )
 
   return { activateANJ, deactivateANJ, stakeActivateANJ, withdrawANJ }
@@ -143,6 +169,7 @@ export function useANJActions() {
  */
 export function useDisputeActions() {
   const { addActivity } = useActivity()
+  const { addTransaction, addTransactions } = useTransactionQueue()
   const disputeManagerContract = useCourtContract(
     CourtModuleType.DisputeManager,
     disputeManagerAbi
@@ -159,30 +186,68 @@ export function useDisputeActions() {
   // Draft jurors
   const draft = useCallback(
     disputeId => {
-      return addActivity(
-        disputeManagerContract.draft(disputeId, {
-          gasLimit: GAS_LIMIT,
-        }),
-        'draftJury',
-        { disputeId }
-      )
+      return addTransaction({
+        intent: () =>
+          addActivity(
+            disputeManagerContract.draft(disputeId, {
+              gasLimit: GAS_LIMIT,
+            }),
+            'draftJury',
+            { disputeId }
+          ),
+        description: radspec.draftJury(disputeId),
+      })
     },
-    [disputeManagerContract, addActivity]
+    [addActivity, addTransaction, disputeManagerContract]
   )
 
   // Commit
   const commit = useCallback(
-    (disputeId, roundId, outcome, password) => {
+    (account, disputeId, roundId, outcome, password, revealServiceEnabled) => {
       const voteId = getVoteId(disputeId, roundId)
       const commitment = hashVote(outcome, password)
 
-      return addActivity(
-        votingContract.commit(voteId, commitment),
-        'commitVote',
-        { disputeId, roundId, outcome }
-      )
+      const transactionQueue = [
+        {
+          intent: () =>
+            addActivity(
+              votingContract.commit(voteId, commitment),
+              'commitVote',
+              {
+                disputeId,
+                roundId,
+                outcome,
+              }
+            ),
+          description: radspec.commitVote(disputeId, roundId, outcome),
+          waitForConfirmation: true,
+          // Callback function to run after main tx
+          callback: () => saveCodeInLocalStorage(account, disputeId, password),
+        },
+      ]
+
+      // If juror opted-in for the reveal service we'll send the commitment and password to the court-server
+      if (revealServiceEnabled) {
+        transactionQueue.push({
+          intent: async () => {
+            return requestAutoReveal(
+              account,
+              disputeId,
+              roundId,
+              outcome,
+              password
+            )
+          },
+          description: 'Request auto-reveal service',
+          onError: 'Failed to request auto-reveal service',
+          onSuccess: 'Auto-reveal service requested!',
+          skipSignature: true,
+        })
+      }
+
+      return addTransactions(transactionQueue)
     },
-    [votingContract, addActivity]
+    [addActivity, addTransactions, votingContract]
   )
 
   // Reveal
@@ -191,25 +256,38 @@ export function useDisputeActions() {
       const voteId = getVoteId(disputeId, roundId)
       const outcome = getOutcomeFromCommitment(commitment, password)
 
-      return addActivity(
-        votingContract.reveal(voteId, voter, outcome, hashPassword(password)),
-        'revealVote',
-        { roundId, disputeId }
-      )
+      return addTransaction({
+        intent: () =>
+          addActivity(
+            votingContract.reveal(
+              voteId,
+              voter,
+              outcome,
+              hashPassword(password)
+            ),
+            'revealVote',
+            { disputeId, roundId }
+          ),
+        description: radspec.revealVote(disputeId, roundId),
+      })
     },
-    [votingContract, addActivity]
+    [addActivity, addTransaction, votingContract]
   )
 
   // Leak
   const leak = useCallback(
     (voteId, voter, outcome, salt) => {
-      return addActivity(
-        votingContract.leak(voteId, voter, outcome, salt),
-        'leakVote',
-        { voteId, voter }
-      )
+      return addTransaction({
+        intent: () =>
+          addActivity(
+            votingContract.leak(voteId, voter, outcome, salt),
+            'leakVote',
+            { voteId, voter }
+          ),
+        descritpion: radspec.leakVote(voteId, voter),
+      })
     },
-    [votingContract, addActivity]
+    [addActivity, addTransaction, votingContract]
   )
 
   const approveFeeDeposit = useCallback(
@@ -234,49 +312,89 @@ export function useDisputeActions() {
         { disputeId, roundId, ruling }
       )
     },
-    [disputeManagerContract, addActivity]
+    [addActivity, disputeManagerContract]
   )
 
   // Confirm appeal round of dispute
   const confirmAppeal = useCallback(
-    (disputeId, round, ruling) => {
+    (disputeId, roundId, ruling) => {
       return addActivity(
-        disputeManagerContract.confirmAppeal(disputeId, round, ruling, {
+        disputeManagerContract.confirmAppeal(disputeId, roundId, ruling, {
           gasLimit: GAS_LIMIT,
         }),
         'confirmAppeal',
-        { disputeId, roundId: round, ruling }
+        { disputeId, roundId, ruling }
       )
     },
     [disputeManagerContract, addActivity]
   )
 
+  // General function that will appeal or confirm appeal a given round on a given dispute
+  const appealRound = useCallback(
+    (disputeId, roundId, ruling, requiredDeposit, allowance, confirm) => {
+      const transactionQueue = []
+
+      // Check if requires pre-transactions
+      if (allowance.lt(requiredDeposit)) {
+        // TODO: some ERC20s don't let to set a new allowance if the current allowance is positive (handle this cases)
+        if (!allowance.eq(0)) {
+          console.warn('Allowance must be zero')
+        }
+
+        // Approve fee deposit for appealing
+        transactionQueue.push({
+          intent: () => approveFeeDeposit(requiredDeposit),
+          description: radspec.approveFeeDeposit(formatUnits(requiredDeposit)),
+          waitForConfirmation: true,
+        })
+      }
+
+      const action = confirm ? confirmAppeal : appeal
+
+      transactionQueue.push({
+        intent: () => action(disputeId, roundId, ruling),
+        description: radspec[confirm ? 'confirmAppeal' : 'appealRuling'](
+          disputeId,
+          roundId,
+          ruling
+        ),
+      })
+
+      return addTransactions(transactionQueue)
+    },
+    [addTransactions, appeal, approveFeeDeposit, confirmAppeal]
+  )
+
   const executeRuling = useCallback(
     disputeId => {
-      return addActivity(
-        aragonCourtContract.executeRuling(disputeId, {
-          gasLimit: GAS_LIMIT,
-        }),
-        'executeRuling',
-        { disputeId }
-      )
+      return addTransaction({
+        intent: () =>
+          addActivity(
+            aragonCourtContract.executeRuling(disputeId, {
+              gasLimit: GAS_LIMIT,
+            }),
+            'executeRuling',
+            { disputeId }
+          ),
+        description: radspec.executeRuling(disputeId),
+      })
     },
-    [aragonCourtContract, addActivity]
+    [addActivity, addTransaction, aragonCourtContract]
   )
+
   return {
-    approveFeeDeposit,
-    draft,
+    appealRound,
     commit,
-    reveal,
-    leak,
-    appeal,
-    confirmAppeal,
+    draft,
     executeRuling,
+    leak,
+    reveal,
   }
 }
 
 export function useHeartbeat() {
   const { addActivity } = useActivity()
+  const { addTransaction } = useTransactionQueue()
   const aragonCourtContract = useCourtContract(
     CourtModuleType.AragonCourt,
     aragonCourtAbi
@@ -284,18 +402,22 @@ export function useHeartbeat() {
 
   return useCallback(
     transitions => {
-      return addActivity(
-        aragonCourtContract.heartbeat(transitions),
-        'heartbeat',
-        { transitions }
-      )
+      return addTransaction({
+        intent: () =>
+          addActivity(aragonCourtContract.heartbeat(transitions), 'heartbeat', {
+            transitions,
+          }),
+        description: radspec.heartbeat(transitions),
+      })
     },
-    [addActivity, aragonCourtContract]
+    [addActivity, addTransaction, aragonCourtContract]
   )
 }
 
 export function useRewardActions() {
   const { addActivity } = useActivity()
+  const { addTransactions } = useTransactionQueue()
+  const { claimFees } = useCourtSubscriptionActions()
   const disputeManagerContract = useCourtContract(
     CourtModuleType.DisputeManager,
     disputeManagerAbi
@@ -345,7 +467,71 @@ export function useRewardActions() {
     [addActivity, treasuryContract]
   )
 
-  return { settleReward, settleAppealDeposit, withdraw }
+  const claimRewards = useCallback(
+    (
+      account,
+      arbitrableFees,
+      appealFees,
+      treasuryFees,
+      subscriptionFees,
+      feeTokenAddress
+    ) => {
+      const transactionQueue = []
+
+      // Claim all arbitrable fee rewards
+      for (const arbitrableFee of arbitrableFees) {
+        const { disputeId, rounds } = arbitrableFee
+        for (const roundId of rounds) {
+          transactionQueue.push({
+            intent: () => settleReward(disputeId, roundId, account),
+            description: radspec.settleReward(roundId, disputeId),
+          })
+        }
+      }
+
+      // Claim all appeal fee rewards
+      for (const appealFee of appealFees) {
+        const { disputeId, rounds } = appealFee
+        for (const roundId of rounds) {
+          transactionQueue.push({
+            intent: () => settleAppealDeposit(disputeId, roundId),
+            description: radspec.settleAppealDeposit(roundId, disputeId),
+          })
+        }
+      }
+
+      // If we have settlements to do, then we'll make sure that the last
+      // settlement is confirmed before withdrawing total fees from the treasury
+      if (transactionQueue.length > 0) {
+        const lastSettlement = transactionQueue.pop()
+        transactionQueue.push({
+          ...lastSettlement,
+          waitForConfirmation: true,
+        })
+      }
+
+      // Withdraw funds from treasury
+      if (treasuryFees.gt(0)) {
+        transactionQueue.push({
+          intent: () => withdraw(feeTokenAddress, account, treasuryFees),
+          description: radspec.claimRewards(formatUnits(treasuryFees)),
+        })
+      }
+
+      // Claim subscription fees
+      for (const subscriptionFee of subscriptionFees) {
+        transactionQueue.push({
+          intent: () => claimFees(subscriptionFee.periodId),
+          description: radspec.claimSubscriptionFees(subscriptionFee.periodId),
+        })
+      }
+
+      return addTransactions(transactionQueue)
+    },
+    [addTransactions, claimFees, settleAppealDeposit, settleReward, withdraw]
+  )
+
+  return { claimRewards }
 }
 
 export function useCourtSubscriptionActions() {
@@ -588,11 +774,11 @@ export function useTotalANTStakedPolling(timeout = 1000) {
     let cancelled = false
     let timeoutId
 
-    // Since we don't have the ANT contract address on the local environment we are skipping the stat
-    if (isLocalOrUnknownNetwork()) {
-      setError(true)
-      return
+    // This stat is only relevant and shown on mainnet
+    if (!networkAgentAddress || !networkReserveAddress) {
+      return setError(true)
     }
+
     if (!antContract) {
       return
     }
