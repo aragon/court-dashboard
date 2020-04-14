@@ -3,8 +3,9 @@ import endpoints, { IPFS_ENDPOINT } from './endpoints'
 
 const DEFAULT_ETH_NODE = 'DEFAULT_ETH_NODE'
 const IPFS_GATEWAY = 'IPFS_GATEWAY'
-const CUSTOM_SUBGRAPH_ENDPOINT = 'CUSTOM_SUBGRAPH_ENDPOINT'
-const [GRAPH_API_ENDPOINT_HTTP] = endpoints()
+const CUSTOM_HTTP_SUBGRAPH_ENDPOINT = 'CUSTOM_HTTP_SUBGRAPH_ENDPOINT'
+const CUSTOM_WS_SUBGRAPH_ENDPOINT = 'CUSTOM_WS_SUBGRAPH_ENDPOINT'
+const [GRAPH_API_HTTP_ENDPOINT, GRAPH_API_WS_ENDPOINT] = endpoints()
 
 // Get a setting from localStorage
 function getLocalStorageSetting(confKey) {
@@ -46,10 +47,20 @@ export function getIpfsGateway() {
   return getLocalSetting(IPFS_GATEWAY) || IPFS_ENDPOINT
 }
 
-export function getSubgraphEndpoint() {
-  return getLocalSetting(CUSTOM_SUBGRAPH_ENDPOINT) || GRAPH_API_ENDPOINT_HTTP
+export function getSubgraphHttpEndpoint() {
+  return (
+    getLocalSetting(CUSTOM_HTTP_SUBGRAPH_ENDPOINT) || GRAPH_API_HTTP_ENDPOINT
+  )
 }
 
-export function setSubgraphEndpoint(endpoint) {
-  return setLocalSetting(CUSTOM_SUBGRAPH_ENDPOINT, endpoint)
+export function getSubgraphWsEndpoint() {
+  return getLocalSetting(CUSTOM_WS_SUBGRAPH_ENDPOINT) || GRAPH_API_WS_ENDPOINT
+}
+
+export function setSubgraphHttpEndpoint(endpoint) {
+  return setLocalSetting(CUSTOM_HTTP_SUBGRAPH_ENDPOINT, endpoint)
+}
+
+export function setSubgraphWsEndpoint(endpoint) {
+  return setLocalSetting(CUSTOM_WS_SUBGRAPH_ENDPOINT, endpoint)
 }

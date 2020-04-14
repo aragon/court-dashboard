@@ -12,13 +12,15 @@ import {
 import {
   defaultEthNode,
   defaultIpfsGateway,
-  defaultSubgraphEndpoint,
+  defaultSubgraphHttpEndpoint,
+  defaultSubgraphWsEndpoint,
 } from '../../../networks'
 import {
   clearLocalStorageNetworkSettings,
   setDefaultEthNode,
   setIpfsGateway,
-  setSubgraphEndpoint,
+  setSubgraphHttpEndpoint,
+  setSubgraphWsEndpoint,
 } from '../../../local-settings'
 import { InvalidNetworkType, InvalidURI, NoConnection } from '../../../errors'
 import {
@@ -27,16 +29,19 @@ import {
   sanitizeNetworkType,
 } from '../../../lib/web3-utils'
 import { useEnterKey } from '../../../hooks/useKeyboardArrows'
+import { useSubgraph } from '../../../providers/Subgraph'
 
 function Network() {
   const {
     ethNode,
     networkType,
     ipfsGateway,
-    subgraphEndpoint,
+    subgraphHttpEndpoint,
+    subgraphWsEndpoint,
     handleEthNodeChange,
     handleIpfsGatewayChange,
-    handleSubgraphEndpointChange,
+    handleSubgraphHttpEndpointChange,
+    handleSubgraphWsEndpointChange,
     networkError,
     handleNetworkChange,
     handleClearNetworkSettings,
@@ -97,11 +102,23 @@ function Network() {
           />
         </Label>
         <Label theme={theme}>
-          Subgraph Endpoint
+          Subgraph HTTP Endpoint
           <TextInput
-            value={subgraphEndpoint}
+            value={subgraphHttpEndpoint}
             wide
-            onChange={handleSubgraphEndpointChange}
+            onChange={handleSubgraphHttpEndpointChange}
+            css={`
+              ${textStyle('body2')};
+              color: ${theme.contentSecondary};
+            `}
+          />
+        </Label>
+        <Label theme={theme}>
+          Subgraph WS Endpoint
+          <TextInput
+            value={subgraphWsEndpoint}
+            wide
+            onChange={handleSubgraphWsEndpointChange}
             css={`
               ${textStyle('body2')};
               color: ${theme.contentSecondary};
@@ -140,15 +157,25 @@ const useNetwork = () => {
   const [networkError, setNetworkError] = useState(null)
   const [ethNode, setEthNodeValue] = useState(defaultEthNode)
   const [ipfsGateway, setIpfsGatewayValue] = useState(defaultIpfsGateway)
-  const [subgraphEndpoint, setSubgraphEndpointValue] = useState(
-    defaultSubgraphEndpoint
+  const [subgraphHttpEndpoint, setSubgraphHttpEndpointValue] = useState(
+    defaultSubgraphHttpEndpoint
   )
+  const [subgraphWsEndpoint, setSubgraphWsEndpointValue] = useState(
+    defaultSubgraphWsEndpoint
+  )
+
+  const { resetSubgraphClient } = useSubgraph()
   const networkType = getNetworkType()
 
   const defaultsChanged =
     ipfsGateway !== defaultIpfsGateway ||
     ethNode !== defaultEthNode ||
-    subgraphEndpoint !== defaultSubgraphEndpoint
+    subgraphHttpEndpoint !== defaultSubgraphHttpEndpoint ||
+    subgraphWsEndpoint !== defaultSubgraphWsEndpoint
+
+  const subgraphChanged =
+    subgraphHttpEndpoint !== defaultSubgraphHttpEndpoint ||
+    subgraphWsEndpoint !== defaultSubgraphWsEndpoint
 
   const handleNetworkChange = useCallback(async () => {
     if (!defaultsChanged) {
@@ -162,9 +189,22 @@ const useNetwork = () => {
     }
     setDefaultEthNode(ethNode)
     setIpfsGateway(ipfsGateway)
-    setSubgraphEndpoint(subgraphEndpoint)
+    setSubgraphHttpEndpoint(subgraphHttpEndpoint)
+    setSubgraphWsEndpoint(subgraphWsEndpoint)
+
+    if (subgraphChanged) {
+      resetSubgraphClient()
+    }
     window.location.reload()
-  }, [ethNode, ipfsGateway, defaultsChanged, subgraphEndpoint])
+  }, [
+    ethNode,
+    ipfsGateway,
+    defaultsChanged,
+    subgraphChanged,
+    subgraphHttpEndpoint,
+    subgraphWsEndpoint,
+    resetSubgraphClient,
+  ])
 
   const handleClearNetworkSettings = useCallback(() => {
     clearLocalStorageNetworkSettings()
@@ -177,7 +217,8 @@ const useNetwork = () => {
     ethNode,
     networkType,
     ipfsGateway,
-    subgraphEndpoint,
+    subgraphHttpEndpoint,
+    subgraphWsEndpoint,
     handleNetworkChange,
     handleClearNetworkSettings,
     networkError,
@@ -185,8 +226,10 @@ const useNetwork = () => {
       setEthNodeValue(value),
     handleIpfsGatewayChange: ({ currentTarget: { value } }) =>
       setIpfsGatewayValue(value),
-    handleSubgraphEndpointChange: ({ currentTarget: { value } }) =>
-      setSubgraphEndpointValue(value),
+    handleSubgraphHttpEndpointChange: ({ currentTarget: { value } }) =>
+      setSubgraphHttpEndpointValue(value),
+    handleSubgraphWsEndpointChange: ({ currentTarget: { value } }) =>
+      setSubgraphWsEndpointValue(value),
   }
 }
 

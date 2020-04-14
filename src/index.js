@@ -1,33 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {
-  createClient,
-  Provider as UrqlProvider,
-  cacheExchange,
-  debugExchange,
-} from 'urql'
-import { getFetchExchange, getSubscriptionExchange } from './graphql-exchanges'
-
-import { devtoolsExchange } from '@urql/devtools'
 import { createGlobalStyle } from 'styled-components'
 import App from './App'
-import { defaultSubgraphEndpoint } from './networks'
 import initializeSentry from './sentry'
+import { SubGraphProvider } from './providers/Subgraph'
 
 initializeSentry()
 
-const client = createClient({
-  url: defaultSubgraphEndpoint,
-  exchanges: [
-    debugExchange,
-    devtoolsExchange,
-    cacheExchange,
-    getFetchExchange(),
-    getSubscriptionExchange(),
-  ],
-})
-
-console.log('client ', client)
 const GlobalStyle = createGlobalStyle`
   body img {
     user-select:none;
@@ -35,9 +14,9 @@ const GlobalStyle = createGlobalStyle`
 `
 
 ReactDOM.render(
-  <UrqlProvider value={client}>
+  <SubGraphProvider>
     <GlobalStyle />
     <App />
-  </UrqlProvider>,
+  </SubGraphProvider>,
   document.getElementById('root')
 )
