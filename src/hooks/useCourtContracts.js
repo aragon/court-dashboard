@@ -238,9 +238,9 @@ export function useDisputeActions() {
               password
             )
           },
-          description: 'Request auto-reveal service',
-          onError: 'Failed to request auto-reveal service',
-          onSuccess: 'Auto-reveal service requested!',
+          description: 'Enable auto-reveal service',
+          onError: 'Failed to enable auto-reveal service',
+          onSuccess: 'Auto-reveal service enabled!',
           skipSignature: true,
         })
       }
@@ -336,9 +336,14 @@ export function useDisputeActions() {
 
       // Check if requires pre-transactions
       if (allowance.lt(requiredDeposit)) {
-        // TODO: some ERC20s don't let to set a new allowance if the current allowance is positive (handle this cases)
+        // Some ERC20s don't let to set a new allowance if the current allowance is positive
         if (!allowance.eq(0)) {
-          console.warn('Allowance must be zero')
+          // Reset allowance
+          transactionQueue.push({
+            intent: () => approveFeeDeposit(0),
+            description: radspec.approveFeeDeposit('0'),
+            waitForConfirmation: true,
+          })
         }
 
         // Approve fee deposit for appealing

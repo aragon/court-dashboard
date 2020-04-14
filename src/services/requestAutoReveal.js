@@ -19,22 +19,12 @@ export default async (juror, disputeId, roundId, outcome, password) => {
   })
     .then(res => res.json())
     .then(revealData => {
-      // The API returns a single error message
-      // or multiple errors with the following structure example
-      // [ {
-      //      salt: 'Signature does not correspond to the juror address provided'
-      //    }
-      //    {
-      //      outcome: 'An outcome must be given'
-      //    },
-      //  ]
       const errors = revealData.errors
-        ? revealData.errors.map(err => Object.values(err).join(', ')).join(', ')
-        : null
+        ?.map(err => Object.values(err).join(', '))
+        .join(', ')
 
-      const errorMessage = revealData.error || errors
-      if (errorMessage) {
-        throw new Error(`Failed to request auto-reveal service ${errorMessage}`)
+      if (errors) {
+        throw new Error(`Failed to request auto-reveal service ${errors}`)
       }
 
       return revealData
