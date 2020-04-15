@@ -27,7 +27,8 @@ export function clearLocalStorageNetworkSettings() {
   // TODO - remove subgrapk key once available
   window.localStorage.removeItem('DEFAULT_ETH_NODE_KEY')
   window.localStorage.removeItem('IPFS_GATEWAY_KEY')
-  window.localStorage.removeItem('CUSTOM_SUBGRAPH_ENDPOINT_KEY')
+  window.localStorage.removeItem('CUSTOM_HTTP_SUBGRAPH_ENDPOINT_KEY')
+  window.localStorage.removeItem('CUSTOM_WS_SUBGRAPH_ENDPOINT_KEY')
 }
 
 export function getDefaultEthNode() {
