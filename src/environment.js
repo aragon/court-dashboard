@@ -34,8 +34,11 @@ const ENV_VARS = {
   IPFS_GATEWAY() {
     return process.env.REACT_APP_IPFS_GATEWAY || ''
   },
-  CUSTOM_SUBGRAPH_ENDPOINT() {
-    return process.env.REACT_APP_CUSTOM_SUBGRAPH_ENDPOINT || ''
+  CUSTOM_HTTP_SUBGRAPH_ENDPOINT() {
+    return process.env.REACT_APP_CUSTOM_HTTP_SUBGRAPH_ENDPOINT || ''
+  },
+  CUSTOM_WS_SUBGRAPH_ENDPOINT() {
+    return process.env.REACT_APP_CUSTOM_WS_SUBGRAPH_ENDPOINT || ''
   },
 }
 
