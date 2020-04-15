@@ -1,23 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { captureMessage } from '@sentry/browser'
-import { devtoolsExchange } from '@urql/devtools'
-import { createGlobalStyle } from 'styled-components'
 import {
   createClient,
   Provider as UrqlProvider,
   cacheExchange,
   debugExchange,
 } from 'urql'
+import { getFetchExchange, getSubscriptionExchange } from './graphql-exchanges'
 
+import { devtoolsExchange } from '@urql/devtools'
+import { createGlobalStyle } from 'styled-components'
 import App from './App'
-
 import endpoints from './endpoints'
-import {
-  getFetchExchange,
-  getSubscriptionExchange,
-  subscriptionClient,
-} from './exchanges'
 import initializeSentry from './sentry'
 
 initializeSentry()
@@ -33,19 +27,6 @@ const client = createClient({
     getFetchExchange(),
     getSubscriptionExchange(),
   ],
-})
-
-let connectionAttempts = 0
-subscriptionClient.onConnected(() => (connectionAttempts = 0))
-
-// Check for connection errors and if reaches max attempts send error log to Sentry
-subscriptionClient.onError(err => {
-  const maxReconnectionAttempts = subscriptionClient.reconnectionAttempts
-
-  if (maxReconnectionAttempts === ++connectionAttempts) {
-    captureMessage(`Connection error, could not connect to ${err.target.url}`)
-  }
-  console.log('Retrying connection...')
 })
 
 const GlobalStyle = createGlobalStyle`

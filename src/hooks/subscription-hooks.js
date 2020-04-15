@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { useSubscription } from 'urql'
+import { useCourtConfig } from '../providers/CourtConfig'
 
 // queries
 import { OpenTasks } from '../queries/tasks'
-import { useCourtConfig } from '../providers/CourtConfig'
 import { AllDisputes, SingleDispute } from '../queries/disputes'
 import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
 import { JurorDraftsFrom, JurorDraftsNotRewarded } from '../queries/jurorDrafts'
@@ -22,7 +22,6 @@ import {
 import { bigNum } from '../lib/math-utils'
 import { dayjs } from '../utils/date-utils'
 import { groupMovements } from '../utils/anj-movement-utils'
-import { CourtModuleType } from '../types/court-module-types'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
 import { transformDisputeDataAttributes } from '../utils/dispute-utils'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
@@ -31,6 +30,9 @@ import {
   getModuleAddress,
   transformCourtConfigDataAttributes,
 } from '../utils/court-utils'
+
+// types
+import { CourtModuleType } from '../types/court-module-types'
 
 const NO_AMOUNT = bigNum(0)
 

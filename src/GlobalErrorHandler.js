@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { captureException, showReportDialog } from '@sentry/browser'
-import GenericError from './Errors/GenericError'
-import GlobalErrorScreen from './Errors/GlobalErrorScreen'
-import DisputeNotFoundError from './Disputes/DisputeNotFoundError'
+import GenericError from './components/Errors/GenericError'
+import GlobalErrorScreen from './components/Errors/GlobalErrorScreen'
+import DisputeNotFoundError from './components/Disputes/DisputeNotFoundError'
 
-import { DisputeNotFound } from '../errors'
-import { sentryEnabled } from '../sentry'
+import { DisputeNotFound } from './errors'
+import { sentryEnabled } from './sentry'
 
 class GlobalErrorHandler extends React.Component {
   static propTypes = {
