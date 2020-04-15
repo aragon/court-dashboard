@@ -90,7 +90,6 @@ function GlobalPreferencesButton({ onOpen }) {
             label="Network"
           />
           <Item
-            onClick={handleItemClick('network')}
             iconFirst={false}
             icon="IconExternal"
             label="Any questions? Visit our FAQ"
