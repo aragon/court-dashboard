@@ -10,6 +10,7 @@ export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 const httpRegex = /^(https?):\/\//
+const websocketRegex = /^wss?:\/\/.+/
 
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
@@ -170,10 +171,9 @@ export function transformAddresses(str, callback) {
  *    - NoConnection: Couldn't connect to URI
  */
 export async function checkValidEthNode(uri) {
-  // Must be websocket connection
   const isLocalOrUnknown = isLocalOrUnknownNetwork(env('CHAIN_ID'))
 
-  if (!httpRegex.test(uri)) {
+  if (!validHttpFormat(uri)) {
     throw new InvalidURI('The URI must use the HTTP protocol')
   }
 
@@ -194,5 +194,19 @@ export async function checkValidEthNode(uri) {
     throw new NoConnection()
   }
 
+  return true
+}
+
+export function validHttpFormat(uri) {
+  if (!httpRegex.test(uri)) {
+    return false
+  }
+  return true
+}
+
+export function validWebSocketFormat(uri) {
+  if (!websocketRegex.test(uri)) {
+    return false
+  }
   return true
 }

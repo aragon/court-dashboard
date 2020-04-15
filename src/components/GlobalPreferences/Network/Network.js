@@ -27,6 +27,8 @@ import {
   checkValidEthNode,
   getNetworkType,
   sanitizeNetworkType,
+  validHttpFormat,
+  validWebSocketFormat,
 } from '../../../lib/web3-utils'
 import { useEnterKey } from '../../../hooks/useKeyboardArrows'
 import { useSubgraph } from '../../../providers/Subgraph'
@@ -42,7 +44,7 @@ function Network() {
     handleIpfsGatewayChange,
     handleSubgraphHttpEndpointChange,
     handleSubgraphWsEndpointChange,
-    networkError,
+    settingsErrors,
     handleNetworkChange,
     handleClearNetworkSettings,
   } = useNetwork()
@@ -50,6 +52,7 @@ function Network() {
 
   const { layoutName } = useLayout()
   const compact = layoutName === 'small'
+  const { ethError, httpSubgraphError, wsSubgraphError } = settingsErrors || {}
 
   return (
     <React.Fragment>
@@ -65,7 +68,7 @@ function Network() {
               color: ${theme.contentSecondary};
             `}
           />
-          {networkError && (
+          {ethError && (
             <span
               css={`
                 ${textStyle('body4')};
@@ -73,15 +76,15 @@ function Network() {
               `}
             >
               {(() => {
-                if (networkError instanceof InvalidNetworkType) {
+                if (ethError instanceof InvalidNetworkType) {
                   return `Node must be connected to ${sanitizeNetworkType(
                     networkType
                   )}`
                 }
-                if (networkError instanceof InvalidURI) {
+                if (ethError instanceof InvalidURI) {
                   return 'Must provide Http endpoint to node'
                 }
-                if (networkError instanceof NoConnection) {
+                if (ethError instanceof NoConnection) {
                   return 'Could not connect to node'
                 }
                 return 'URI does not seem to be a ETH node'
@@ -112,6 +115,16 @@ function Network() {
               color: ${theme.contentSecondary};
             `}
           />
+          {httpSubgraphError && (
+            <span
+              css={`
+                ${textStyle('body4')};
+                color: ${theme.negative};
+              `}
+            >
+              {httpSubgraphError}
+            </span>
+          )}
         </Label>
         <Label theme={theme}>
           Subgraph WS Endpoint
@@ -124,6 +137,16 @@ function Network() {
               color: ${theme.contentSecondary};
             `}
           />
+          {wsSubgraphError && (
+            <span
+              css={`
+                ${textStyle('body4')};
+                color: ${theme.negative};
+              `}
+            >
+              {wsSubgraphError}
+            </span>
+          )}
         </Label>
         <Button mode="strong" onClick={handleNetworkChange} wide={compact}>
           Save changes
@@ -154,7 +177,7 @@ function Network() {
 }
 
 const useNetwork = () => {
-  const [networkError, setNetworkError] = useState(null)
+  const [settingsErrors, setSettingsErrors] = useState(null)
   const [ethNode, setEthNodeValue] = useState(defaultEthNode)
   const [ipfsGateway, setIpfsGatewayValue] = useState(defaultIpfsGateway)
   const [subgraphHttpEndpoint, setSubgraphHttpEndpointValue] = useState(
@@ -179,18 +202,24 @@ const useNetwork = () => {
 
   const handleNetworkChange = useCallback(async () => {
     if (!defaultsChanged) {
+      setSettingsErrors(null)
       return
     }
-    try {
-      await checkValidEthNode(ethNode)
-    } catch (err) {
-      setNetworkError(err)
+
+    const errors = await validateNetworkSettings(
+      ethNode,
+      subgraphHttpEndpoint,
+      subgraphWsEndpoint
+    )
+
+    if (errors) {
+      setSettingsErrors(errors)
       return
     }
     setDefaultEthNode(ethNode)
-    setIpfsGateway(ipfsGateway)
     setSubgraphHttpEndpoint(subgraphHttpEndpoint)
     setSubgraphWsEndpoint(subgraphWsEndpoint)
+    setIpfsGateway(ipfsGateway)
 
     if (subgraphChanged) {
       resetSubgraphClient()
@@ -221,7 +250,7 @@ const useNetwork = () => {
     subgraphWsEndpoint,
     handleNetworkChange,
     handleClearNetworkSettings,
-    networkError,
+    settingsErrors,
     handleEthNodeChange: ({ currentTarget: { value } }) =>
       setEthNodeValue(value),
     handleIpfsGatewayChange: ({ currentTarget: { value } }) =>
@@ -233,6 +262,30 @@ const useNetwork = () => {
   }
 }
 
+async function validateNetworkSettings(
+  ethNode,
+  subgraphHttpEndpoint,
+  subgraphWsEndpoint
+) {
+  const settingsErrors = {}
+  try {
+    await checkValidEthNode(ethNode)
+  } catch (err) {
+    settingsErrors.ethError = err
+  }
+
+  if (!validHttpFormat(subgraphHttpEndpoint)) {
+    settingsErrors.httpSubgraphError = 'The URI must use the HTTP protocol'
+  }
+  if (!validWebSocketFormat(subgraphWsEndpoint)) {
+    settingsErrors.wsSubgraphError = 'The URI must use the WS protocol'
+  }
+
+  if (Object.entries(settingsErrors).length === 0) {
+    return null
+  }
+  return settingsErrors
+}
 const Label = styled.label`
   color: ${({ theme }) => theme.content};
   display: block;
