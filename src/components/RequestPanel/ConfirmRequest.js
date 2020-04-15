@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, GU, Info, textStyle, useTheme } from '@aragon/ui'
 
-function ConfirmTransaction({ descriptions, onSign }) {
+function ConfirmRequest({ descriptions, onStartRequest }) {
   const theme = useTheme()
 
   return (
@@ -48,10 +48,10 @@ function ConfirmTransaction({ descriptions, onSign }) {
         </div>
       </Info>
       <Button
-        label="Create transaction"
+        label="Create request"
         mode="strong"
         wide
-        onClick={onSign}
+        onClick={onStartRequest}
         css={`
           margin-top: ${2 * GU}px;
         `}
@@ -60,4 +60,4 @@ function ConfirmTransaction({ descriptions, onSign }) {
   )
 }
 
-export default ConfirmTransaction
+export default ConfirmRequest

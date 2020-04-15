@@ -1,28 +1,28 @@
 import React, { useMemo } from 'react'
 import { Button, GU, IconCheck, IconCross, Info, useTheme } from '@aragon/ui'
-import TransactionStepItem from './TransactionStepItem'
+import RequestStepItem from './RequestStepItem'
 import { useWallet } from '../../providers/Wallet'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
 import {
-  TRANSACTION_STATUS_CONFIRMED,
-  TRANSACTION_STATUS_FAILED,
-  TRANSACTION_STATUS_PENDING,
-  TRANSACTION_STATUS_SIGNED,
-  TRANSACTION_STATUS_SIGN_FAILED,
-} from './transaction-statuses'
+  REQUEST_STATUS_CONFIRMED,
+  REQUEST_STATUS_FAILED,
+  REQUEST_STATUS_PENDING,
+  REQUEST_STATUS_PROCESSED,
+  REQUEST_STATUS_PROCESSING_FAILED,
+} from './request-statuses'
 
-function SigningStatus({
+function RequestStatus({
   allSuccess,
+  lastProcessedAt,
   maxAttemptsReached,
   onClosePanel,
   onNextAttempt,
-  transactions,
-  transactionHashes,
-  transactionsStatus,
+  requests,
+  requestStatus,
 }) {
   const theme = useTheme()
 
-  const isMultiTx = transactions.length > 1
+  const multipleRequests = requests.length > 1
 
   return (
     <div>
@@ -36,18 +36,14 @@ function SigningStatus({
           align-items: center;
         `}
       >
-        {isMultiTx ? (
-          <MultiStepTx
-            onNextAttempt={onNextAttempt}
-            transactions={transactions}
-            transactionHashes={transactionHashes}
-            transactionsStatus={transactionsStatus}
+        {multipleRequests ? (
+          <MultiStepRequest
+            lastProcessedAt={lastProcessedAt}
+            requests={requests}
+            requestStatus={requestStatus}
           />
         ) : (
-          <SingleTx
-            status={transactionsStatus[0]}
-            transaction={transactions[0]}
-          />
+          <SingleRequest request={requests[0]} status={requestStatus[0]} />
         )}
       </div>
       <div
@@ -55,75 +51,73 @@ function SigningStatus({
           margin-top: ${2 * GU}px;
         `}
       >
-        <SigningStatusInfo
+        <RequestStatusInfo
           allSuccess={allSuccess}
-          isMultiTx={isMultiTx}
+          multipleRequests={multipleRequests}
           maxAttemptsReached={maxAttemptsReached}
           onClosePanel={onClosePanel}
           onNextAttempt={onNextAttempt}
-          transactions={transactions}
-          transactionsStatus={transactionsStatus}
+          requests={requests}
+          requestStatus={requestStatus}
         />
       </div>
     </div>
   )
 }
 
-function MultiStepTx({ transactions, transactionHashes, transactionsStatus }) {
-  return transactions.map((tx, index) => {
-    const { hash } =
-      transactionHashes.find(txHash => txHash.index === index) || {}
-    const txStatus = transactionsStatus[index]
+function MultiStepRequest({ lastProcessedAt, requests, requestStatus }) {
+  return requests.map((request, index) => {
+    const status = requestStatus[index]
 
     return (
-      <TransactionStepItem
+      <RequestStepItem
         key={index}
-        hash={hash}
-        status={txStatus}
+        lastProcessedAt={lastProcessedAt}
+        status={status}
         stepNumber={index + 1}
-        transaction={tx}
+        request={request}
       />
     )
   })
 }
 
-function SingleTx({ status }) {
+function SingleRequest({ request, status }) {
   const theme = useTheme()
 
   const { iconColor, label } = useMemo(() => {
-    if (status === TRANSACTION_STATUS_SIGN_FAILED) {
+    if (status === REQUEST_STATUS_PROCESSING_FAILED) {
       return {
         iconColor: theme.negative,
-        label: 'Signing transaction failed!',
+        label: request.isTx ? 'Signing transaction failed!' : request.onError,
       }
     }
 
-    if (status === TRANSACTION_STATUS_CONFIRMED) {
+    if (status === REQUEST_STATUS_CONFIRMED) {
       return {
         iconColor: theme.positive,
         label: 'Transaction confirmed!',
       }
     }
 
-    if (status === TRANSACTION_STATUS_PENDING) {
+    if (status === REQUEST_STATUS_PENDING) {
       return {
         iconColor: theme.info,
         label: 'Transaction being mined…',
       }
     }
 
-    if (status === TRANSACTION_STATUS_SIGNED) {
+    if (status === REQUEST_STATUS_PROCESSED) {
       return {
         iconColor: theme.positive,
-        label: 'Transaction signed!',
+        label: request.isTx ? 'Transaction signed!' : request.onSuccess,
       }
     }
 
     return {
       iconColor: theme.hint,
-      label: 'Waiting for signature…',
+      label: request.isTx ? 'Waiting for signature…' : request.description,
     }
-  }, [theme, status])
+  }, [request, status, theme])
 
   return (
     <div
@@ -145,7 +139,7 @@ function SingleTx({ status }) {
           transition: border-color 150ms ease-in-out;
         `}
       >
-        {status === TRANSACTION_STATUS_SIGN_FAILED ? (
+        {status === REQUEST_STATUS_PROCESSING_FAILED ? (
           <IconCross
             size="medium"
             css={`
@@ -174,34 +168,34 @@ function SingleTx({ status }) {
   )
 }
 
-function SigningStatusInfo({
+function RequestStatusInfo({
   allSuccess,
-  isMultiTx,
+  multipleRequests,
   maxAttemptsReached,
   onClosePanel,
   onNextAttempt,
-  transactions,
-  transactionsStatus,
+  requests,
+  requestStatus,
 }) {
   const { activated } = useWallet()
   const provider = getProviderFromUseWalletId(activated)
 
   if (allSuccess) {
     return (
-      <Info>Transaction{isMultiTx ? 's' : ''} submitted successfully!</Info>
+      <Info>Request{multipleRequests ? 's' : ''} processed successfully!</Info>
     )
   }
 
   const requiresMultipleSignatures =
-    isMultiTx && transactions.filter(tx => !tx.skipSignature).length > 1
-  const transactionFailedStatus = transactionsStatus.find(status =>
-    [TRANSACTION_STATUS_SIGN_FAILED, TRANSACTION_STATUS_FAILED].includes(status)
+    multipleRequests && requests.filter(request => request.isTx).length > 1
+  const requestFailedStatus = requestStatus.find(status =>
+    [REQUEST_STATUS_PROCESSING_FAILED, REQUEST_STATUS_FAILED].includes(status)
   )
 
-  if (transactionFailedStatus) {
-    if (isMultiTx) {
+  if (requestFailedStatus) {
+    if (multipleRequests) {
       return (
-        <TransactionReattempt
+        <RequestReattempt
           maxAttemptsReached={maxAttemptsReached}
           onClosePanel={onClosePanel}
           onNextAttempt={onNextAttempt}
@@ -212,9 +206,9 @@ function SigningStatusInfo({
     return (
       <>
         <Info>
-          {transactionFailedStatus === TRANSACTION_STATUS_SIGN_FAILED
-            ? "Your transaction wasn't signed"
-            : 'Your transaction failed'}
+          {requestFailedStatus === REQUEST_STATUS_PROCESSING_FAILED
+            ? "Your request wasn't processed correctly"
+            : 'Your request failed'}
         </Info>
         <Button
           css={`
@@ -229,7 +223,7 @@ function SigningStatusInfo({
     )
   }
 
-  if (isMultiTx) {
+  if (multipleRequests) {
     return (
       <Info>
         {requiresMultipleSignatures ? (
@@ -241,7 +235,7 @@ function SigningStatusInfo({
           </span>
         ) : (
           <span>
-            This action requires multiple transactions. Please,{' '}
+            This action requires multiple steps. Please,{' '}
             <b>do not close this window</b> until the process is finished.
           </span>
         )}
@@ -249,10 +243,17 @@ function SigningStatusInfo({
     )
   }
 
-  return <Info>Open {provider.name} to sign your transaction</Info>
+  // If we get here means we have only one request
+  return (
+    <Info>
+      {requests[0].isTx
+        ? `Open {provider.name} to sign your transaction`
+        : requests[0].description}
+    </Info>
+  )
 }
 
-const TransactionReattempt = ({
+const RequestReattempt = ({
   maxAttemptsReached,
   onClosePanel,
   onNextAttempt,
@@ -261,9 +262,9 @@ const TransactionReattempt = ({
     <>
       <Info>
         {maxAttemptsReached
-          ? `Seems that the transaction won't go through`
-          : `An error has occurred during the signature process. Don't worry, you can
-             try to send the transaction again.`}
+          ? `Seems that the request can't be processed`
+          : `An error has occurred during the request process. Don't worry, you can
+             try to process the request again.`}
       </Info>
       <Button
         css={`
@@ -278,4 +279,4 @@ const TransactionReattempt = ({
   )
 }
 
-export default SigningStatus
+export default RequestStatus

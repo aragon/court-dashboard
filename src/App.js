@@ -6,12 +6,12 @@ import AppLoader from './components/AppLoader'
 import GlobalErrorHandler from './GlobalErrorHandler'
 import MainView from './components/MainView'
 import OnboardingLoader from './components/OnboardingLoader'
+import RequestPanel from './components/RequestPanel/RequestPanel'
 import Routes from './Routes'
-import SignerPanel from './components/SignerPanel/SignerPanel'
 import { ActivityProvider } from './components/Activity/ActivityProvider'
 import { CourtClockProvider } from './providers/CourtClock'
 import { CourtConfigProvider } from './providers/CourtConfig'
-import { TransactionQueueProvider } from './providers/TransactionQueue'
+import { RequestQueueProvider } from './providers/RequestQueue'
 import { WalletProvider } from './providers/Wallet'
 
 function App() {
@@ -29,16 +29,16 @@ function App() {
               <ToastHub threshold={1} timeout={1500}>
                 <CourtConfigProvider>
                   <CourtClockProvider>
-                    <TransactionQueueProvider>
+                    <RequestQueueProvider>
                       <MainView>
                         <OnboardingLoader>
                           <AppLoader>
                             <Routes />
                           </AppLoader>
                         </OnboardingLoader>
-                        <SignerPanel />
+                        <RequestPanel />
                       </MainView>
-                    </TransactionQueueProvider>
+                    </RequestQueueProvider>
                   </CourtClockProvider>
                 </CourtConfigProvider>
               </ToastHub>

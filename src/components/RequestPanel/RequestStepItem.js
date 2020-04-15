@@ -1,47 +1,44 @@
 import React, { useMemo } from 'react'
+import { GU, IconCheck, IconCross, textStyle, useTheme } from '@aragon/ui'
+import TransactionProgress from './TransactionProgress'
 import {
-  GU,
-  IconCheck,
-  IconCross,
-  textStyle,
-  TransactionBadge,
-  useTheme,
-} from '@aragon/ui'
-import {
-  TRANSACTION_STATUS_CONFIRMED,
-  TRANSACTION_STATUS_FAILED,
-  TRANSACTION_STATUS_PENDING,
-  TRANSACTION_STATUS_SIGN_FAILED,
-  TRANSACTION_STATUS_SIGNED,
-} from './transaction-statuses'
+  REQUEST_STATUS_CONFIRMED,
+  REQUEST_STATUS_FAILED,
+  REQUEST_STATUS_PENDING,
+  REQUEST_STATUS_PROCESSED,
+  REQUEST_STATUS_PROCESSING_FAILED,
+} from './request-statuses'
 import { numberToOrdinal } from '../../lib/math-utils'
 
-// We could have transactions that are not cast to the network but perform another action e.g. requesting the auto-reveal service
-// Nevertheless we treat them as another transaction and we differentiate it from the rest by the `skipSignature` prop
-// For this particular transactions, if its status is signed then it means that the action executed successfuly
-// Note that if we want to add more descriptive messages to this type of txs, then we should add `onError` and `onSuccess` props
-// For an example, see CommitPanel
-function TransactionStepItem({ hash, status, stepNumber, transaction }) {
+const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+
+function RequestStepItem({ lastProcessedAt, request, status, stepNumber }) {
   const theme = useTheme()
 
-  const { background, iconColor, labelColor, labelText } = useMemo(() => {
+  const {
+    background,
+    iconColor,
+    labelColor,
+    labelText,
+    showProgress,
+  } = useMemo(() => {
     if (
-      status === TRANSACTION_STATUS_SIGN_FAILED ||
-      status === TRANSACTION_STATUS_FAILED
+      status === REQUEST_STATUS_PROCESSING_FAILED ||
+      status === REQUEST_STATUS_FAILED
     ) {
       return {
         background: theme.negative,
         iconColor: theme.accentContent,
         labelColor: theme.negative,
-        labelText:
-          transaction.onError ||
-          (status === TRANSACTION_STATUS_SIGN_FAILED
+        labelText: request.isTx
+          ? status === REQUEST_STATUS_PROCESSING_FAILED
             ? 'Signing transaction failed!'
-            : 'Transaction failed'),
+            : 'Transaction failed'
+          : request.onError,
       }
     }
 
-    if (status === TRANSACTION_STATUS_CONFIRMED) {
+    if (status === REQUEST_STATUS_CONFIRMED) {
       return {
         iconColor: theme.positive,
         labelColor: theme.positive,
@@ -49,19 +46,20 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
       }
     }
 
-    if (status === TRANSACTION_STATUS_PENDING) {
+    if (status === REQUEST_STATUS_PENDING) {
       return {
         background: theme.info,
         iconColor: theme.accentContent,
         labelColor: theme.contentSecondary.alpha(0.6),
         labelText: 'Transaction being mined…',
+        showProgress: true,
       }
     }
-    if (status === TRANSACTION_STATUS_SIGNED) {
+    if (status === REQUEST_STATUS_PROCESSED) {
       return {
         iconColor: theme.positive,
         labelColor: theme.positive,
-        labelText: transaction.onSuccess || 'Transaction signed!',
+        labelText: request.isTx ? 'Transaction signed!' : request.onSuccess,
       }
     }
 
@@ -69,15 +67,16 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
       background: theme.surfaceContentSecondary.alpha(0.2),
       iconColor: theme.contentSecondary,
       labelColor: theme.contentSecondary.alpha(0.6),
-      labelText: transaction.skipSignature
-        ? transaction.description
-        : 'Waiting for signature…',
+      labelText: request.isTx ? 'Waiting for signature…' : request.description,
     }
-  }, [status, theme, transaction])
+  }, [request, status, theme])
 
+  const error =
+    status === REQUEST_STATUS_PROCESSING_FAILED ||
+    status === REQUEST_STATUS_FAILED
   const success =
-    status === TRANSACTION_STATUS_CONFIRMED ||
-    (status === TRANSACTION_STATUS_SIGNED && !transaction.waitForConfirmation)
+    status === REQUEST_STATUS_CONFIRMED ||
+    (status === REQUEST_STATUS_PROCESSED && !request.ensureConfirmation)
 
   return (
     <div
@@ -85,6 +84,7 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
         display: grid;
         grid-template-columns: 20% 80%;
         grid-gap: ${2 * GU}px;
+        min-height: ${10 * GU}px;
         width: ${35 * GU}px;
       `}
     >
@@ -104,7 +104,7 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
         `}
       >
         {(() => {
-          if (status === TRANSACTION_STATUS_SIGN_FAILED) {
+          if (error) {
             return (
               <IconCross
                 size="medium"
@@ -145,7 +145,7 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
             ${textStyle('title4')}
           `}
         >
-          {numberToOrdinal(stepNumber)} transaction
+          {capitalize(numberToOrdinal(stepNumber))} request
         </h3>
         <p
           css={`
@@ -155,19 +155,10 @@ function TransactionStepItem({ hash, status, stepNumber, transaction }) {
         >
           {labelText}
         </p>
-
-        {hash && (
-          <div
-            css={`
-              margin-top: ${1 * GU}px;
-            `}
-          >
-            <TransactionBadge transaction={hash} />
-          </div>
-        )}
+        {showProgress && <TransactionProgress createdAt={lastProcessedAt} />}
       </div>
     </div>
   )
 }
 
-export default TransactionStepItem
+export default RequestStepItem
