@@ -29,11 +29,11 @@ export function isJurorCoherent(jurorDraft) {
 }
 
 export function transformJurorDataAttributes(jurorDraft) {
-  const { weight, round } = jurorDraft
+  const { round, weight } = jurorDraft
 
   return {
     ...jurorDraft,
-    weight,
+    weight: bigNum(weight),
     round: {
       ...round,
       number: parseInt(round.number, 10),
