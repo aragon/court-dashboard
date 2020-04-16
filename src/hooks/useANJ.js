@@ -52,7 +52,6 @@ export function useANJBalances() {
 
   // Use ANJ Locked distribution
   const lockedDistribution = useJurorLockedANJDistribution()
-
   const convertedLockedBalance = useMemo(() => {
     return { amount: lockedBalance, distribution: lockedDistribution }
   }, [lockedBalance, lockedDistribution])

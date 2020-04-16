@@ -5,7 +5,7 @@ import { dayjs } from '../../utils/date-utils'
 import { DisputeState } from '../types'
 import { accounts } from '../helper'
 
-const DEFAULT_SUBMITTER = accounts[6]
+const DEFAULT_SUBMITTER = accounts[5]
 const DEFAULT_EVIDENCE =
   '0x697066733a516d55765a53545a3958767156786b624446664a576e6644394759703376376d71353778464d563173774e34314c'
 const DEFAULT_IPFS_METADATA =

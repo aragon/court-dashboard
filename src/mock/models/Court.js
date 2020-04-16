@@ -12,8 +12,8 @@ import {
   getDraftTermId,
   getMinActiveBalanceMultiple,
   getRandomNumber,
-  pct,
   getTermStartTime,
+  pct,
 } from '../helper'
 import {
   ANJMovementType,
@@ -24,8 +24,8 @@ import {
   getRulingOptionNumber,
 } from '../types'
 
-const DEFAULT_APPEAL_MAKER = accounts[4]
-const DEFAULT_APPEAL_TAKER = accounts[5]
+const DEFAULT_APPEAL_MAKER = accounts[3]
+const DEFAULT_APPEAL_TAKER = accounts[4]
 const DEFAULT_APPEAL_DEPOSIT = bigExp('185')
 const DEFAULT_CONFIRM_APPEAL_DEPOSIT = bigExp('225')
 
@@ -106,7 +106,7 @@ export default class Court {
             // Select a juror
             const selectedJurorIndex = getRandomNumber(
               0,
-              this.jurors.length - 2
+              this.jurors.length - 1
             )
             const selectedJuror = this.jurors[selectedJurorIndex]
 
