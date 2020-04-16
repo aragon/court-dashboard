@@ -42,7 +42,7 @@ function useOpenTasks(tasks, now, courtSettings) {
         !voidedDisputes.has(task.dispute.id) &&
         task.phase !== DisputesTypes.Phase.Ended
     )
-  }, [convertedTasks]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [convertedTasksPhasesKey, voidedDisputes]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return useMemo(() => {
     if (!convertedTasks) {
