@@ -34,4 +34,4 @@ npm run sync-assets
 
 echo "Building app…"
 echo ""
-REACT_APP_ENABLE_SENTRY=$enable_sentry REACT_APP_BUILD=$build npx react-app-rewired build
+cross-env REACT_APP_ENABLE_SENTRY=$enable_sentry REACT_APP_BUILD=$build npx react-app-rewired build
