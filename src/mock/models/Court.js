@@ -13,6 +13,7 @@ import {
   getMinActiveBalanceMultiple,
   getRandomNumber,
   pct,
+  getTermStartTime,
 } from '../helper'
 import {
   ANJMovementType,
@@ -23,12 +24,12 @@ import {
   getRulingOptionNumber,
 } from '../types'
 
-const DEFAULT_APPEAL_MAKER = accounts[3]
-const DEFAULT_APPEAL_TAKER = accounts[4]
+const DEFAULT_APPEAL_MAKER = accounts[4]
+const DEFAULT_APPEAL_TAKER = accounts[5]
 const DEFAULT_APPEAL_DEPOSIT = bigExp('185')
 const DEFAULT_CONFIRM_APPEAL_DEPOSIT = bigExp('225')
 
-export default class {
+export default class Court {
   constructor() {
     this.config = courtConfig
     this.jurorsRegistryModule = JurorRegistry
@@ -68,6 +69,7 @@ export default class {
     })
   }
 
+  // Randomly draft the 3 possible jurors.
   draftJurors() {
     for (let i = 0; i < this.disputes.length; i++) {
       const dispute = this.disputes[i]
@@ -104,7 +106,7 @@ export default class {
             // Select a juror
             const selectedJurorIndex = getRandomNumber(
               0,
-              this.jurors.length - 1
+              this.jurors.length - 2
             )
             const selectedJuror = this.jurors[selectedJurorIndex]
 
@@ -141,6 +143,7 @@ export default class {
       round,
       juror,
       weight,
+      createdAt: getTermStartTime(round.draftTermId, this.config),
     }
 
     this.lockAnjAmount(juror, draftLockAmount)
@@ -170,6 +173,7 @@ export default class {
     }
   }
 
+  // Create votes for each round flagged with `voteData`
   createVotes() {
     for (let i = 0; i < this.disputes.length; i++) {
       const dispute = this.disputes[i]
@@ -255,6 +259,7 @@ export default class {
     }
   }
 
+  // Create appeals for each round flagged with `appealData`
   createAppeals() {
     for (let i = 0; i < this.disputes.length; i++) {
       const dispute = this.disputes[i]
@@ -262,7 +267,7 @@ export default class {
       for (let roundId = 0; roundId < dispute.rounds.length; roundId++) {
         const round = dispute.rounds[roundId]
 
-        // flagData tells whether we should create appeals for the dispute in question
+        // `appealData` tells whether we should create appeals for the dispute in question
         if (!round.appealData) {
           continue
         }
@@ -297,6 +302,7 @@ export default class {
     }
   }
 
+  // Settle penalties for each round that is flagged with `settlePenalties` prop
   settlePenalties() {
     for (let i = 0; i < this.disputes.length; i++) {
       const dispute = this.disputes[i]

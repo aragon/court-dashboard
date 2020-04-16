@@ -9,6 +9,8 @@ export const accounts = [
   '0x22d491bde2303f2f43325b2108d26f1eaba1e32b',
   '0xe11ba2b4d45eaed5996cd0823791e0c93114882d',
   '0xd03ea8624c8c5987235048901fb614fdca89b117',
+  '0x95cED938F7991cd0dFcb48F0a06a40FA1aF46EBC',
+  '0x3E5e9111Ae8eB78Fe1CC3bb8915d5D461F3Ef9A9',
 ]
 
 export const getRandomNumber = (min, max) =>
@@ -51,6 +53,13 @@ export const getDraftTermId = (state, courtConfig) => {
       appealTerms -
       appealConfirmationTerms
   )
+}
+export const getTermStartTime = (termId, courtConfig) => {
+  const { termDuration, terms } = courtConfig
+  const secondsFromFirstTerm = termId * termDuration
+
+  const firstTermStartTime = terms[0].startTime
+  return firstTermStartTime + secondsFromFirstTerm
 }
 
 export const getMinActiveBalanceMultiple = (

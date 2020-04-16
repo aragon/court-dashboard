@@ -3,7 +3,7 @@ import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { captureMessage } from '@sentry/browser'
 import env from './environment'
 import endpoints from './endpoints'
-import { mockFetchExchange, mockSubscriptionExchange } from './mock/exchanges/'
+import { mockFetchExchange, mockSubscriptionExchange } from './mock/exchanges'
 
 const GRAPH_API_ENDPOINTS = endpoints()
 const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINTS[1], {

@@ -17,7 +17,7 @@ const ROUNDS = {
     state: AdjudicationState.Ended,
     draftTermId: '50', // TODO: Find better calculation
 
-    // We'll create "mock" votes and appeals for previous rounds
+    // Create mock votes and appeals for previous rounds
     voteData: {
       winningOutcome: RulingOptions.Against,
     },
@@ -86,8 +86,8 @@ const ROUNDS = {
     ...DEFAULT_ROUND_DATA,
   },
 
-  // Round ended In favor
   ENDED: {
+    // Round ended In favor
     IN_FAVOR: {
       state: AdjudicationState.Ended,
       jurorsNumber: courtConfig.firstRoundJurorsNumber,
@@ -110,6 +110,7 @@ const ROUNDS = {
       ...DEFAULT_ROUND_DATA,
     },
 
+    // Round ended no votes
     NO_VOTES: {
       state: AdjudicationState.Ended,
       jurorsNumber: courtConfig.firstRoundJurorsNumber,
@@ -122,7 +123,6 @@ const ROUNDS = {
         winningOutcome: RulingOptions.Against,
         minority: RulingOptions.InFavor,
       },
-      // settlePenalties: true,
       ...DEFAULT_ROUND_DATA,
     },
   },

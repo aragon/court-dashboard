@@ -20,7 +20,7 @@ export default {
   /** **** DASHBOARD STATE *****/
 
   // Get Court JurorRegistry module
-  JurorsRegistryModule: ({ id }) => ({
+  JurorsRegistryModule: () => ({
     jurorsRegistryModule: court.jurorsRegistryModule,
   }),
 
@@ -28,7 +28,9 @@ export default {
 
   JurorFeesClaimed: ({ owner }) => ({ feeMovements: [] }),
 
-  ActiveJurors: () => ({ jurors: [] }),
+  ActiveJurors: () => ({
+    jurors: court.jurors.map(juror => ({ id: juror.id })),
+  }),
   // Get first activation movements for juror with id `id`
   JurorFirstANJActivationMovement: ({ id }) => {
     const { anjMovements } = court.getJuror(id) || {}
@@ -97,15 +99,17 @@ export default {
     }
   },
 
-  JurorDraftsFrom: ({ id, from }) => ({
-    drafts: [],
-  }),
-  JurorDraftsRewarded: ({ id }) => ({
-    juror: {
-      id: '',
-      drafts: [],
-    },
-  }),
+  JurorDraftsFrom: ({ id, from }) => {
+    const juror = removeJurorCircularReferences(court.getJuror(id))
+
+    return {
+      juror: {
+        id,
+        drafts: juror.drafts.filter(draft => draft.createdAt >= from),
+      },
+    }
+  },
+
   JurorDraftsNotRewarded: ({ id }) => {
     const juror = removeJurorCircularReferences(court.getJuror(id))
     const { drafts = [] } = juror || {}

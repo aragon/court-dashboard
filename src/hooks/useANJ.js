@@ -53,7 +53,6 @@ export function useANJBalances() {
   // Use ANJ Locked distribution
   const lockedDistribution = useJurorLockedANJDistribution()
 
-  console.log('lockedDistribution', lockedDistribution)
   const convertedLockedBalance = useMemo(() => {
     return { amount: lockedBalance, distribution: lockedDistribution }
   }, [lockedBalance, lockedDistribution])
@@ -263,7 +262,7 @@ export function useJurorLockedANJDistribution() {
           lockDistribution.splice(index, 1, {
             ...elem,
             amount: elem.amount.add(lockedAmount),
-            weight: elem.weight + weight,
+            weight: elem.weight.add(weight),
           })
         } else {
           lockDistribution.push({

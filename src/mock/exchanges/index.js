@@ -1,5 +1,5 @@
 import { makeResult } from 'urql'
-import { filter, make, merge, mergeMap, pipe, share, takeUntil } from 'wonka'
+import { filter, make, merge, mergeMap, pipe, share } from 'wonka'
 import mockData from '../data'
 
 const OPERATION_DEFINITION = 'OperationDefinition'
@@ -15,34 +15,26 @@ export const mockSubscriptionExchange = ({ forward }) => {
 }
 
 function handleOperation(operationType, forward) {
-  const isDesiredOperation = operation => {
+  const isOperationType = operation => {
     const { operationName } = operation
     return operationName === operationType
   }
 
   return ops$ => {
     const sharedOps$ = share(ops$)
-    const subscriptionResults$ = pipe(
+    const results$ = pipe(
       sharedOps$,
-      filter(isDesiredOperation),
-      mergeMap(operation => {
-        const { key } = operation
-        const teardown$ = pipe(
-          sharedOps$,
-          filter(op => op.operationName === 'teardown' && op.key === key)
-        )
-
-        return pipe(convertMockedData(operation), takeUntil(teardown$))
-      })
+      filter(isOperationType),
+      mergeMap(convertMockedData)
     )
 
     const forward$ = pipe(
       sharedOps$,
-      filter(op => !isDesiredOperation(op)),
+      filter(op => !isOperationType(op)),
       forward
     )
 
-    return merge([subscriptionResults$, forward$])
+    return merge([results$, forward$])
   }
 }
 
@@ -52,9 +44,7 @@ const convertMockedData = operation => {
       node => node.kind === OPERATION_DEFINITION && node.name
     )
 
-    const abortController =
-      typeof AbortController !== 'undefined' ? new AbortController() : undefined
-
+    // Get the desired mocked data
     const convertedData = mockData[queryName.value](operation.variables)
 
     Promise.resolve()
@@ -72,10 +62,6 @@ const convertMockedData = operation => {
         complete()
       })
 
-    return () => {
-      if (abortController !== undefined) {
-        abortController.abort()
-      }
-    }
+    return () => {}
   })
 }

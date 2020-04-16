@@ -3,43 +3,35 @@ import ROUNDS from './Rounds'
 import { hash256 } from '../../lib/web3-utils'
 import { dayjs } from '../../utils/date-utils'
 import { DisputeState } from '../types'
+import { accounts } from '../helper'
 
+const DEFAULT_SUBMITTER = accounts[6]
+const DEFAULT_EVIDENCE =
+  '0x697066733a516d55765a53545a3958767156786b624446664a576e6644394759703376376d71353778464d563173774e34314c'
 const DEFAULT_IPFS_METADATA =
   'QmPWJBAvLqdv5oNv7WvEFaghiMkWtcThDRJGFKu6kennpF/metadata.json'
 
-// Data that tells the state of each dispute
+// State of each dispute
 const DISPUTES_DATA = [
   {
     state: DisputeState.Ruled,
-    metadata: JSON.stringify({
-      description: 'Dispute finished (First round, In favor)',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute finished (First round, In favor)',
     rounds: [{ ...ROUNDS.ENDED.IN_FAVOR }],
   },
   {
     state: DisputeState.Ruled,
-    metadata: JSON.stringify({
-      description:
-        'Dispute finished (First round, Refused to vote, Penalties Settled)',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description:
+      'Dispute finished (First round, Refused to vote, Penalties Settled)',
     rounds: [{ ...ROUNDS.ENDED.REFUSED }],
   },
   {
     state: DisputeState.Ruled,
-    metadata: JSON.stringify({
-      description: 'Dispute finished (First round, No one voted)',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute finished (First round, No one voted)',
     rounds: [{ ...ROUNDS.ENDED.NO_VOTES }],
   },
   {
     state: DisputeState.Ruled,
-    metadata: JSON.stringify({
-      description: 'Dispute finished (Final round, Against)',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute finished (Final round, Against)',
     rounds: [
       ...populatePreviousRounds(courtConfig.maxRegularAppealRounds),
       { ...ROUNDS.ENDED.FINAL_ROUND },
@@ -47,58 +39,37 @@ const DISPUTES_DATA = [
   },
   {
     state: DisputeState.Adjudicating,
-    metadata: JSON.stringify({
-      description: 'Dispute finished (Execute ruling)',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute finished (Execute ruling)',
     rounds: [{ ...ROUNDS.ENDED.IN_FAVOR }],
   },
   {
     state: DisputeState.Drafting,
-    metadata: JSON.stringify({
-      description: 'Dispute confirm appealed',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute confirm appealed',
     rounds: [populatePreviousRounds(1), { ...ROUNDS.CONFIRM_APPEALED }],
   },
   {
     state: DisputeState.Adjudicating,
-    metadata: JSON.stringify({
-      description: 'Dispute appealed',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute appealed',
     rounds: [{ ...ROUNDS.APPEALED }],
   },
   {
     state: DisputeState.Adjudicating,
-    metadata: JSON.stringify({
-      description: 'Dispute appealing',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute appealing',
     rounds: [{ ...ROUNDS.APPEALING }],
   },
   {
     state: DisputeState.Adjudicating,
-    metadata: JSON.stringify({
-      description: 'Dispute revealing',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute revealing',
     rounds: [{ ...ROUNDS.REVEALING }],
   },
   {
     state: DisputeState.Adjudicating,
-    metadata: JSON.stringify({
-      description: 'Dispute comitting',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute comitting',
     rounds: [{ ...ROUNDS.COMITTING }],
   },
   {
     state: DisputeState.Evidence,
-    metadata: JSON.stringify({
-      description: 'Dispute in evidence submission',
-      metadata: DEFAULT_IPFS_METADATA,
-    }),
+    description: 'Dispute in evidence submission',
     rounds: [{ ...ROUNDS.NOT_DRAFTED }],
   },
 ]
@@ -114,7 +85,7 @@ function generateDisputes() {
   const disputes = []
 
   for (let i = 0; i < DISPUTES_DATA.length; i++) {
-    const { metadata, rounds, state } = DISPUTES_DATA[i]
+    const { description, rounds, state } = DISPUTES_DATA[i]
 
     const disputeId = String(i)
     const dispute = {
@@ -124,8 +95,18 @@ function generateDisputes() {
       createdAt: dayjs().unix(),
       possibleRulings: 2,
       state,
-      metadata,
+      metadata: JSON.stringify({
+        description,
+        metadata: DEFAULT_IPFS_METADATA,
+      }),
       lastRoundId: rounds.length - 1,
+      evidences: [
+        {
+          submitter: DEFAULT_SUBMITTER,
+          data: DEFAULT_EVIDENCE,
+          createdAt: dayjs().unix(),
+        },
+      ],
     }
 
     dispute.rounds = rounds.map((round, index) => ({

@@ -2,7 +2,7 @@ import { getNetworkConfig } from '../../networks'
 import { bigExp } from '../helper'
 import dayjs from 'dayjs'
 
-const TERM_DURATION = 60 // 1 minutes
+const TERM_DURATION = 60 // 1 minute
 const CURRENT_TERM = 100
 const COURT_START = dayjs() // Court started 100 terms ago
   .subtract(TERM_DURATION * CURRENT_TERM, 'second')
@@ -49,10 +49,7 @@ const courtConfig = {
   appealConfirmCollateralFactor: '20000',
   minActiveBalance: bigExp('100'),
   penaltyPct: '1000',
-  modules: [
-    // type
-    // address
-  ],
+  modules: [],
   subscriptions: {
     currentPeriod: '0',
     feeAmount: bigExp('10'),
