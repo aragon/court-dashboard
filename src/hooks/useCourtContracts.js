@@ -592,6 +592,7 @@ export function useTotalANTStakedPolling(timeout = 1000) {
       timeoutId = setTimeout(() => {
         const agentBalancePromise = antContract.balanceOf(networkAgentAddress)
         const vaultBalancePromise = antContract.balanceOf(networkReserveAddress)
+
         return Promise.all([agentBalancePromise, vaultBalancePromise])
           .then(([antInAgent, antInVault]) => {
             if (!cancelled) {

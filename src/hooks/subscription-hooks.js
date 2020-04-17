@@ -4,19 +4,19 @@ import { useCourtConfig } from '../providers/CourtConfig'
 
 // queries
 import { OpenTasks } from '../queries/tasks'
+import { AllDisputes, SingleDispute } from '../queries/disputes'
+import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
+import { JurorDraftsFrom, JurorDraftsNotRewarded } from '../queries/jurorDrafts'
 import {
   CourtConfig,
   FeeMovements,
   JurorsRegistryModule,
 } from '../queries/court'
-import { AllDisputes, SingleDispute } from '../queries/disputes'
-import { AppealsByMaker, AppealsByTaker } from '../queries/appeals'
 import {
   JurorANJBalances,
   JurorANJWalletBalance,
   JurorTreasuryBalances,
 } from '../queries/balances'
-import { JurorDraftsFrom, JurorDraftsNotRewarded } from '../queries/jurorDrafts'
 
 // utils
 import { bigNum } from '../lib/math-utils'

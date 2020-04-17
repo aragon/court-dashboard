@@ -1,11 +1,13 @@
 import { fetchExchange, subscriptionExchange } from 'urql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { captureMessage } from '@sentry/browser'
+import env from './environment'
 import endpoints from './endpoints'
+import { mockFetchExchange, mockSubscriptionExchange } from './mock/exchanges'
 
 const GRAPH_API_ENDPOINTS = endpoints()
 const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINTS[1], {
-  reconnect: true,
+  reconnect: !env('MOCK_DATA'),
   reconnectionAttempts: 10,
 })
 
@@ -16,11 +18,13 @@ const DEFAULT_SUBSCRIPTION_EXCHANGE = subscriptionExchange({
 })
 
 export function getFetchExchange() {
-  return DEFAULT_FETCH_EXCHANGE
+  return env('MOCK_DATA') ? mockFetchExchange : DEFAULT_FETCH_EXCHANGE
 }
 
 export function getSubscriptionExchange() {
-  return DEFAULT_SUBSCRIPTION_EXCHANGE
+  return env('MOCK_DATA')
+    ? mockSubscriptionExchange
+    : DEFAULT_SUBSCRIPTION_EXCHANGE
 }
 
 let connectionAttempts = 0
