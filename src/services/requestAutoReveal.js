@@ -28,7 +28,7 @@ export default async (juror, disputeId, roundId, outcome, password) => {
       .map(err => Object.values(err).join(', '))
       .join(', ')
 
-    throw new Error(`Failed to request auto-reveal service ${errors}`)
+    throw new Error(`Failed to request auto-reveal service due to errors: ${errors}`)
   } catch (err) {
     console.error(err)
     throw err
