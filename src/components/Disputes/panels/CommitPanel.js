@@ -29,7 +29,7 @@ const CommitPanel = React.memo(function CommitPanel({
   const toast = useToast()
 
   const handleCommit = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
       onDone()

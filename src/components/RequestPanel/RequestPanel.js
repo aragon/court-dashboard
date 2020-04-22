@@ -196,7 +196,7 @@ function RequestPanel() {
                 await ensureRequestConfirmed(requestProcess)
 
                 // Execute callback function if required
-                if (request.callback) {
+                if (typeof request?.callback === 'function') {
                   request.callback()
                 }
               }
@@ -220,7 +220,7 @@ function RequestPanel() {
       }
     },
     // We'll remove `progress.processed` from the dependencies to prevent the effect from running every time we process a request
-    // Note that we'll retry processing requests form the last failed one only if the user requests to do so
+    // Note that we'll retry processing requests from the last failed one only if the user requests to do so
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       attempts,

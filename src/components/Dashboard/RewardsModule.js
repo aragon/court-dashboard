@@ -88,7 +88,7 @@ const RewardsModule = React.memo(function RewardsModule({
 
       if (!rewards) return
 
-      return onClaimRewards(
+      onClaimRewards(
         wallet.account,
         feeRewards.arbitrableFees,
         feeRewards.appealFees,

@@ -6,10 +6,10 @@ function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
   const wallet = useWallet()
 
   const handleSubmit = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
-      return onExecuteRuling(disputeId)
+      onExecuteRuling(disputeId)
     },
     [disputeId, onExecuteRuling]
   )

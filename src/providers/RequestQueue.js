@@ -6,17 +6,9 @@ const RequestQueueContext = React.createContext()
 function RequestQueueProvider({ children }) {
   const [requestQueue, setRequestQueue] = useState([])
 
-  const addRequest = useCallback(
-    request => {
-      const newRequests = [...requestQueue, request]
-      return setRequestQueue(newRequests)
-    },
-    [requestQueue]
-  )
-
   const addRequests = useCallback(
     requests => {
-      const newRequests = [...requestQueue, ...requests]
+      const newRequests = requestQueue.concat(requests)
       return setRequestQueue(newRequests)
     },
     [requestQueue]
@@ -29,7 +21,6 @@ function RequestQueueProvider({ children }) {
   return (
     <RequestQueueContext.Provider
       value={{
-        addRequest,
         addRequests,
         clearRequestQueue,
         requests: requestQueue,

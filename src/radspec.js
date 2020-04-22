@@ -84,11 +84,6 @@ export default {
         )} of dispute #${disputeId}
       `
   },
-  transaction: transactionHash => {
-    return `
-        Transaction: ${transactionHash}
-      `
-  },
   withdrawAnj: amount => {
     return `
         Withdraw the total amount of ${amount} ANJ

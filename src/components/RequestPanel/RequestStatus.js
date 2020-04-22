@@ -247,7 +247,7 @@ function RequestStatusInfo({
   return (
     <Info>
       {requests[0].isTx
-        ? `Open {provider.name} to sign your transaction`
+        ? `Open ${provider.name} to sign your transaction`
         : requests[0].description}
     </Info>
   )

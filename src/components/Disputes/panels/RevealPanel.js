@@ -26,7 +26,7 @@ const RevealPanel = React.memo(function RevealPanel({
   const handlePasswordChange = event => setPassword(event.target.value)
 
   const handleReveal = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
       onDone()

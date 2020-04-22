@@ -72,7 +72,7 @@ function useCourtContract(moduleType, abi) {
  */
 export function useANJActions() {
   const { addActivity } = useActivity()
-  const { addRequest } = useRequestQueue()
+  const { addRequests } = useRequestQueue()
   const jurorRegistryContract = useCourtContract(
     CourtModuleType.JurorsRegistry,
     jurorRegistryAbi
@@ -84,7 +84,7 @@ export function useANJActions() {
     amount => {
       const formattedAmount = formatUnits(amount)
 
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(
             jurorRegistryContract.activate(amount, {
@@ -97,14 +97,14 @@ export function useANJActions() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, jurorRegistryContract]
+    [addActivity, addRequests, jurorRegistryContract]
   )
 
   const deactivateANJ = useCallback(
     amount => {
       const formattedAmount = formatUnits(amount)
 
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(
             jurorRegistryContract.deactivate(amount, {
@@ -117,7 +117,7 @@ export function useANJActions() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, jurorRegistryContract]
+    [addActivity, addRequests, jurorRegistryContract]
   )
 
   // approve, stake and activate ANJ
@@ -125,7 +125,7 @@ export function useANJActions() {
     amount => {
       const formattedAmount = formatUnits(amount)
 
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(
             anjTokenContract.approveAndCall(
@@ -141,14 +141,14 @@ export function useANJActions() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, anjTokenContract, jurorRegistryContract]
+    [addActivity, addRequests, anjTokenContract, jurorRegistryContract]
   )
 
   const withdrawANJ = useCallback(
     amount => {
       const formattedAmount = formatUnits(amount)
 
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(
             jurorRegistryContract.unstake(amount, '0x', {
@@ -161,7 +161,7 @@ export function useANJActions() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, jurorRegistryContract]
+    [addActivity, addRequests, jurorRegistryContract]
   )
 
   return { activateANJ, deactivateANJ, stakeActivateANJ, withdrawANJ }
@@ -173,7 +173,7 @@ export function useANJActions() {
  */
 export function useDisputeActions() {
   const { addActivity } = useActivity()
-  const { addRequest, addRequests } = useRequestQueue()
+  const { addRequests } = useRequestQueue()
   const disputeManagerContract = useCourtContract(
     CourtModuleType.DisputeManager,
     disputeManagerAbi
@@ -190,7 +190,7 @@ export function useDisputeActions() {
   // Draft jurors
   const draft = useCallback(
     disputeId => {
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(
             disputeManagerContract.draft(disputeId, {
@@ -203,7 +203,7 @@ export function useDisputeActions() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, disputeManagerContract]
+    [addActivity, addRequests, disputeManagerContract]
   )
 
   // Commit
@@ -261,7 +261,7 @@ export function useDisputeActions() {
       const voteId = getVoteId(disputeId, roundId)
       const outcome = getOutcomeFromCommitment(commitment, password)
 
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(
             votingContract.reveal(
@@ -277,13 +277,13 @@ export function useDisputeActions() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, votingContract]
+    [addActivity, addRequests, votingContract]
   )
 
   // Leak
   const leak = useCallback(
     (voteId, voter, outcome, salt) => {
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(
             votingContract.leak(voteId, voter, outcome, salt),
@@ -294,7 +294,7 @@ export function useDisputeActions() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, votingContract]
+    [addActivity, addRequests, votingContract]
   )
 
   const approveFeeDeposit = useCallback(
@@ -382,7 +382,7 @@ export function useDisputeActions() {
 
   const executeRuling = useCallback(
     disputeId => {
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(
             aragonCourtContract.executeRuling(disputeId, {
@@ -395,7 +395,7 @@ export function useDisputeActions() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, aragonCourtContract]
+    [addActivity, addRequests, aragonCourtContract]
   )
 
   return {
@@ -410,7 +410,7 @@ export function useDisputeActions() {
 
 export function useHeartbeat() {
   const { addActivity } = useActivity()
-  const { addRequest } = useRequestQueue()
+  const { addRequests } = useRequestQueue()
   const aragonCourtContract = useCourtContract(
     CourtModuleType.AragonCourt,
     aragonCourtAbi
@@ -418,7 +418,7 @@ export function useHeartbeat() {
 
   return useCallback(
     transitions => {
-      return addRequest({
+      return addRequests({
         intent: () =>
           addActivity(aragonCourtContract.heartbeat(transitions), 'heartbeat', {
             transitions,
@@ -427,7 +427,7 @@ export function useHeartbeat() {
         isTx: true,
       })
     },
-    [addActivity, addRequest, aragonCourtContract]
+    [addActivity, addRequests, aragonCourtContract]
   )
 }
 

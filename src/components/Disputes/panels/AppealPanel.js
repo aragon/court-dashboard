@@ -69,7 +69,7 @@ function AppealPanel({
 
   // For submission
   const handleAppeal = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
       const errored = validateForm(selectedOutcome.value)

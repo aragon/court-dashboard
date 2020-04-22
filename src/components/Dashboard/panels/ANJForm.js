@@ -91,7 +91,7 @@ const ANJForm = React.memo(function ANJForm({
   }, [amount.valueBN, runParentValidation])
 
   // Form submit
-  const handleSubmit = async event => {
+  const handleSubmit = event => {
     event.preventDefault()
 
     const error = validateForm(amount.valueBN)
