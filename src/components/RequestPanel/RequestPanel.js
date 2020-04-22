@@ -200,7 +200,7 @@ function RequestPanel() {
               }
             }
           } catch (err) {
-            console.error(`Error when executing: ${request.description}:`, err)
+            console.error(`Error when executing '${request.description}':`, err)
             captureException(err)
 
             throw err
