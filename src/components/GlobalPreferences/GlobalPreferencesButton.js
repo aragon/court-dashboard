@@ -85,34 +85,36 @@ function GlobalPreferencesButton({ onOpen }) {
           </li>
           <Item
             onClick={handleItemClick('network')}
-            iconFirst
-            icon={iconNetwork}
+            Icon={() => <img src={iconNetwork} alt="" />}
             label="Network"
           />
-          <Item
-            iconFirst={false}
-            icon="IconExternal"
-            label="Any questions? Visit our FAQ"
-            href="https://help.aragon.org/article/48-aragon-court-faq"
-          />
+          <Item href="https://help.aragon.org/article/48-aragon-court-faq">
+            <div
+              css={`
+                flex-grow: 1;
+                display: flex;
+                align-items: center;
+                margin-left: ${1 * GU}px;
+              `}
+            >
+              Any questions? Visit our FAQ
+            </div>
+            <div
+              css={`
+                color: ${theme.surfaceContentSecondary};
+              `}
+            >
+              <IconExternal />
+            </div>
+          </Item>
         </ul>
       </Popover>
     </React.Fragment>
   )
 }
 
-function Item({ icon, iconFirst, label, onClick, href }) {
+function Item({ children, Icon, label, onClick, href }) {
   const theme = useTheme()
-  let Icon
-
-  switch (icon) {
-    case 'IconExternal':
-      Icon = IconExternal
-      break
-    default:
-      Icon = () => <img src={icon} alt="" />
-  }
-
   return (
     <li
       css={`
@@ -147,25 +149,20 @@ function Item({ icon, iconFirst, label, onClick, href }) {
             }
           `}
         >
-          {iconFirst && <Icon />}
-          <div
-            css={`
-              flex-grow: 1;
-              display: flex;
-              align-items: center;
-              margin-left: ${icon ? 1 * GU : 0}px;
-            `}
-          >
-            {label}
-          </div>
-          {!iconFirst && (
-            <div
-              css={`
-                color: ${theme.surfaceContentSecondary};
-              `}
-            >
+          {children || (
+            <>
               <Icon />
-            </div>
+              <div
+                css={`
+                  flex-grow: 1;
+                  display: flex;
+                  align-items: center;
+                  margin-left: ${1 * GU}px;
+                `}
+              >
+                {label}
+              </div>
+            </>
           )}
         </div>
       </ButtonBase>
