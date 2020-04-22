@@ -48,7 +48,7 @@ function ConfirmRequest({ descriptions, onStartRequest }) {
         </div>
       </Info>
       <Button
-        label="Create request"
+        label="Confirm"
         mode="strong"
         wide
         onClick={onStartRequest}

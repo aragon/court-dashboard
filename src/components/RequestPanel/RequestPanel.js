@@ -191,24 +191,19 @@ function RequestPanel() {
           try {
             const requestProcess = await processRequest(request)
 
-            if (!cancelled) {
-              if (request.isTx && request.ensureConfirmation) {
-                await ensureRequestConfirmed(requestProcess)
+            if (request.isTx && request.ensureConfirmation) {
+              await ensureRequestConfirmed(requestProcess)
 
-                // Execute callback function if required
-                if (typeof request?.callback === 'function') {
-                  request.callback()
-                }
+              // Execute callback function if required
+              if (typeof request.callback === 'function') {
+                request.callback()
               }
             }
           } catch (err) {
             console.error(`Error when executing: ${request.description}:`, err)
             captureException(err)
 
-            if (requests.length > 1) {
-              // Cancel to stop later requests from being  processed
-              cancelled = true
-            }
+            throw err
           }
         }
       }
@@ -256,34 +251,32 @@ function RequestPanel() {
   return (
     <SidePanel
       blocking={blockPanel}
-      title="Create request"
+      title="Confirm action"
       opened={requests.length > 0}
       onClose={handleSignerClose}
     >
-      {requests.length > 0 && (
-        <div
-          css={`
-            margin-top: ${3 * GU}px;
-          `}
-        >
-          {progress.requesting ? (
-            <RequestStatus
-              allSuccess={allSuccess}
-              lastProcessedAt={progress.lastProcessedAt}
-              maxAttemptsReached={maxAttemptsReached}
-              onClosePanel={handleSignerClose}
-              onNextAttempt={handleNextAttempt}
-              requests={requests}
-              requestStatus={requestStatus}
-            />
-          ) : (
-            <ConfirmRequest
-              descriptions={requests.map(request => request.description)}
-              onStartRequest={handleStartRequest}
-            />
-          )}
-        </div>
-      )}
+      <div
+        css={`
+          margin-top: ${3 * GU}px;
+        `}
+      >
+        {progress.requesting ? (
+          <RequestStatus
+            allSuccess={allSuccess}
+            lastProcessedAt={progress.lastProcessedAt}
+            maxAttemptsReached={maxAttemptsReached}
+            onClosePanel={handleSignerClose}
+            onNextAttempt={handleNextAttempt}
+            requests={requests}
+            requestStatus={requestStatus}
+          />
+        ) : (
+          <ConfirmRequest
+            descriptions={requests.map(request => request.description)}
+            onStartRequest={handleStartRequest}
+          />
+        )}
+      </div>
     </SidePanel>
   )
 }

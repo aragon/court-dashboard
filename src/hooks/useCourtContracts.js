@@ -343,7 +343,7 @@ export function useDisputeActions() {
 
       // Check if requires pre-transactions
       if (allowance.lt(requiredDeposit)) {
-        // Some ERC20s don't let to set a new allowance if the current allowance is positive
+        // Some ERC20s don't allow setting a new allowance if the current allowance is positive
         if (!allowance.eq(0)) {
           // Reset allowance
           requestQueue.push({
