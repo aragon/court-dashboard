@@ -101,7 +101,7 @@ function MainView({ children }) {
               css={`
                 display: flex;
                 flex-direction: column;
-                min-height: 100%;
+                height: 100%;
               `}
             >
               <div
@@ -126,11 +126,13 @@ function MainView({ children }) {
                   color: ${theme.surfaceContentSecondary};
                 `}
               >
-                Services provided by{' '}
-                <Link href="https://aragon.one">Aragon One.</Link> Read our{' '}
+                Supporting services provided by{' '}
+                <Link href="https://aragon.one">Aragon One</Link>. Read Aragon
+                Court's{' '}
                 <Link href="https://anj.aragon.org/legal/terms-general.pdf">
-                  Terms of Service.
+                  Terms of Service
                 </Link>
+                .
               </footer>
             </div>
           </ScrollView>
