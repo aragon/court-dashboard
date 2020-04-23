@@ -70,8 +70,8 @@
   "bundlewatch": {
     "files": [
       {
-        "path": "build/**/*.js",
-        "maxSize": "1000kb",
+        "path": "build/static/*.js",
+        "maxSize": "900kb",
         "compression": "gzip"
       }
     ]
