@@ -15,7 +15,7 @@ const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
 
   return (
     <React.Fragment>
-      <SyncIndicator visible={fetchingEvidences} label="Loading evidences..." />
+      <SyncIndicator visible={fetchingEvidences} label="Loading evidences…" />
       {evidenceProcessed &&
         evidenceProcessed.map((evidence, index) => {
           const { createdAt, submitter, metadata, error } = evidence

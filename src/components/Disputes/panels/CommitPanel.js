@@ -6,7 +6,6 @@ import {
   IconDownload,
   Info,
   Switch,
-  Tag,
   TextInput,
   textStyle,
   useToast,
@@ -14,52 +13,44 @@ import {
 } from '@aragon/ui'
 import useOneTimeCode from '../../../hooks/useOneTimeCode'
 import { useWallet } from '../../../providers/Wallet'
-import { saveCodeInLocalStorage } from '../../../utils/one-time-code-utils'
-
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
-
-const AUTO_REVEAL_ENABLED = false // TODO: Remove when auto reveal service is running
 
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
   onCommit,
-  commitment,
   onDone,
+  outcome,
 }) {
   const [codeSaved, setCodeSaved] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
-  const [revealService, setRevealService] = useState(false)
+  const [revealService, setRevealService] = useState(true)
   const { account: connectedAccount } = useWallet()
   const { oneTimeCode, download } = useOneTimeCode()
   const toast = useToast()
 
   const handleCommit = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
-      try {
-        const tx = await onCommit(
-          dispute.id,
-          dispute.lastRoundId,
-          commitment,
-          oneTimeCode
-        )
-
-        onDone()
-        await tx.wait()
-        saveCodeInLocalStorage(connectedAccount, dispute.id, oneTimeCode)
-      } catch (err) {
-        console.error('Error submitting transaction: ', err)
-      }
+      onDone()
+      return onCommit(
+        connectedAccount,
+        dispute.id,
+        dispute.lastRoundId,
+        outcome,
+        oneTimeCode,
+        revealService
+      )
     },
     [
-      commitment,
       connectedAccount,
       dispute.id,
       dispute.lastRoundId,
       onCommit,
       onDone,
       oneTimeCode,
+      outcome,
+      revealService,
     ]
   )
 
@@ -105,7 +96,7 @@ const CommitPanel = React.memo(function CommitPanel({
         css={`
           margin-top: ${2 * GU}px;
         `}
-        disabled={!(revealService || codeSaved || codeCopied)}
+        disabled={!(codeSaved || codeCopied)}
         onClick={handleCommit}
         type="submit"
         mode="strong"
@@ -238,11 +229,7 @@ const RevealService = React.memo(function RevealService({
           align-items: center;
         `}
       >
-        <Switch
-          checked={revealService}
-          onChange={onRevealServiceChange}
-          disabled={!AUTO_REVEAL_ENABLED}
-        />
+        <Switch checked={revealService} onChange={onRevealServiceChange} />
         <span
           css={`
             margin-left: ${2 * GU}px;
@@ -251,16 +238,6 @@ const RevealService = React.memo(function RevealService({
         >
           Auto-reveal service.
         </span>
-        {!AUTO_REVEAL_ENABLED && (
-          <Tag
-            css={`
-              margin-left: ${1 * GU}px;
-            `}
-            mode="new"
-          >
-            Coming soon
-          </Tag>
-        )}
       </div>
       <div
         css={`
@@ -277,14 +254,10 @@ const RevealService = React.memo(function RevealService({
   )
 })
 
-const InfoSection = React.memo(function InfoSection({
-  commitEndTime,
-  copiedOrSaved,
-  revealService,
-}) {
+const InfoSection = React.memo(function InfoSection({ revealService }) {
   const content = revealService
-    ? 'This temporary code will be valid to commit and reveal your vote for this dispute only. You won’t be required to enter this code unless a problem occur with our services.'
-    : 'You must copy or download this code before you can commit your vote. You will be asked to confirm it in order to reveal your vote. Failure to do so will result in a monetary penalty to your account.'
+    ? 'As a safety measure, you must copy or download this code before you can commit your vote. This code is valid for revealing your vote for this dispute only. You won’t be required to enter this code unless a problem occurs with our services.'
+    : 'You must copy or download this code before you can commit your vote. You will later be asked to provide this same code to reveal your vote. Failure to provide the correct code will result in a monetary penalty to your account.'
 
   return (
     <Info

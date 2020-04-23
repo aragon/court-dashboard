@@ -1,9 +1,9 @@
 import { fetchExchange, subscriptionExchange } from 'urql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { captureMessage } from '@sentry/browser'
-import endpoints from './endpoints'
+import { graphEndpoints } from './endpoints'
 
-const GRAPH_API_ENDPOINTS = endpoints()
+const GRAPH_API_ENDPOINTS = graphEndpoints()
 const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINTS[1], {
   reconnect: true,
   reconnectionAttempts: 10,

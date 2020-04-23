@@ -81,10 +81,7 @@ function Dashboard() {
                     rewards={rewards}
                     treasury={treasury}
                     loading={fetchingData}
-                    onClaimSubscriptionFees={actions.claimSubscriptionFees}
-                    onSettleAppealDeposit={actions.settleAppealDeposit}
-                    onSettleReward={actions.settleReward}
-                    onWithdraw={actions.withdraw}
+                    onClaimRewards={actions.claimRewards}
                   />
                   <AppealColateralModule
                     appeals={appealCollaterals}

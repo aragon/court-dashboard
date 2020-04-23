@@ -6,15 +6,10 @@ function DisputeExecuteRuling({ disputeId, onExecuteRuling }) {
   const wallet = useWallet()
 
   const handleSubmit = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
-      try {
-        const tx = await onExecuteRuling(disputeId)
-        await tx.wait()
-      } catch (err) {
-        console.error('Error submitting tx: ', err)
-      }
+      onExecuteRuling(disputeId)
     },
     [disputeId, onExecuteRuling]
   )

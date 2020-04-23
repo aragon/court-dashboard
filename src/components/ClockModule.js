@@ -51,14 +51,11 @@ function ClockModule() {
     setOpened(false)
   }, [])
 
-  const handleOnClick = useCallback(async () => {
-    try {
-      const tx = await onHeartbeat(neededTransitions)
-      await tx.wait()
-    } catch (err) {
-      console.error(err)
-    }
-  }, [neededTransitions, onHeartbeat])
+  const handleOnClick = useCallback(() => {
+    handlePopoverClose()
+
+    onHeartbeat(neededTransitions)
+  }, [handlePopoverClose, neededTransitions, onHeartbeat])
 
   const IconSync = isSynced ? IconCheck : IconCross
 

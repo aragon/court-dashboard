@@ -11,12 +11,12 @@ import { getFetchExchange, getSubscriptionExchange } from './graphql-exchanges'
 import { devtoolsExchange } from '@urql/devtools'
 import { createGlobalStyle } from 'styled-components'
 import App from './App'
-import endpoints from './endpoints'
+import { graphEndpoints } from './endpoints'
 import initializeSentry from './sentry'
 
 initializeSentry()
 
-const [GRAPH_API_ENDPOINT_HTTP] = endpoints()
+const [GRAPH_API_ENDPOINT_HTTP] = graphEndpoints()
 
 const client = createClient({
   url: GRAPH_API_ENDPOINT_HTTP,

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import {
-  ButtonBase,
   Button,
+  ButtonBase,
   Field,
   GU,
   Info,
@@ -10,8 +10,8 @@ import {
   useTheme,
 } from '@aragon/ui'
 
-import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
 import { useCourtConfig } from '../../../providers/CourtConfig'
+import { parseUnits, formatUnits, bigNum } from '../../../lib/math-utils'
 
 const ANJForm = React.memo(function ANJForm({
   actionLabel,
@@ -91,7 +91,7 @@ const ANJForm = React.memo(function ANJForm({
   }, [amount.valueBN, runParentValidation])
 
   // Form submit
-  const handleSubmit = async event => {
+  const handleSubmit = event => {
     event.preventDefault()
 
     const error = validateForm(amount.valueBN)
@@ -102,14 +102,8 @@ const ANJForm = React.memo(function ANJForm({
 
     setAmount(amount => ({ ...amount, error: null }))
 
-    try {
-      const tx = await onSubmit(amount.valueBN)
-
-      onDone()
-      await tx.wait()
-    } catch (err) {
-      console.error('Error submitting tx: ', err) // TODO: How should we handle errors ?
-    }
+    onDone()
+    onSubmit(amount.valueBN)
   }
 
   const errorMessage = amount.error

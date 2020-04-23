@@ -6,15 +6,10 @@ function DisputeDraft({ disputeId, onDraft }) {
   const wallet = useWallet()
 
   const handleSubmit = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
-      try {
-        const tx = await onDraft(disputeId)
-        await tx.wait()
-      } catch (err) {
-        console.error('Error submitting tx: ', err)
-      }
+      onDraft(disputeId)
     },
     [disputeId, onDraft]
   )

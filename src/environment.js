@@ -6,6 +6,9 @@ const ENV_VARS = {
     const chainId = parseInt(process.env.REACT_APP_CHAIN_ID)
     return isNaN(chainId) ? CHAIN_ID_DEFAULT : chainId
   },
+  COURT_SERVER_NAME() {
+    return process.env.REACT_APP_COURT_SERVER_NAME
+  },
   SKIP_VOIDING() {
     return process.env.REACT_APP_SKIP_VOIDING === '1'
   },
