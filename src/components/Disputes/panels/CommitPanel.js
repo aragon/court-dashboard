@@ -6,7 +6,6 @@ import {
   IconDownload,
   Info,
   Switch,
-  Tag,
   TextInput,
   textStyle,
   useToast,
@@ -24,7 +23,7 @@ const CommitPanel = React.memo(function CommitPanel({
 }) {
   const [codeSaved, setCodeSaved] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
-  const [revealService, setRevealService] = useState(false)
+  const [revealService, setRevealService] = useState(true)
   const { account: connectedAccount } = useWallet()
   const { oneTimeCode, download } = useOneTimeCode()
   const toast = useToast()
@@ -230,11 +229,7 @@ const RevealService = React.memo(function RevealService({
           align-items: center;
         `}
       >
-        <Switch
-          disabled
-          checked={revealService}
-          onChange={onRevealServiceChange}
-        />
+        <Switch checked={revealService} onChange={onRevealServiceChange} />
         <span
           css={`
             margin-left: ${2 * GU}px;
@@ -243,14 +238,6 @@ const RevealService = React.memo(function RevealService({
         >
           Auto-reveal service.
         </span>
-        <Tag
-          css={`
-            margin-left: ${1 * GU}px;
-          `}
-          mode="new"
-        >
-          Coming soon
-        </Tag>
       </div>
       <div
         css={`
