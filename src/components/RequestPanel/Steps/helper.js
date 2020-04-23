@@ -41,6 +41,7 @@ export function hasRequestSucceeded(request, status) {
     (status === REQUEST_STATUS_PROCESSED && !request.ensureConfirmation)
   )
 }
+
 export function hasRequestFailed(status) {
   return (
     status === REQUEST_STATUS_PROCESSING_FAILED ||
