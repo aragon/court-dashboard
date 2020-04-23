@@ -1,8 +1,13 @@
-name: Run tests
+name: CI
 
-on: push
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
 jobs:
-  tests:
+  CI:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
