@@ -3,6 +3,7 @@ import {
   ButtonBase,
   ButtonIcon,
   GU,
+  IconExternal,
   IconSettings,
   Popover,
   RADIUS,
@@ -87,15 +88,33 @@ function GlobalPreferencesButton({ onOpen }) {
             icon={iconNetwork}
             label="Network"
           />
+          <Item href="https://help.aragon.org/article/48-aragon-court-faq">
+            <div
+              css={`
+                flex-grow: 1;
+                display: flex;
+                align-items: center;
+                margin-right: ${1 * GU}px;
+              `}
+            >
+              Any questions? Visit our FAQ
+            </div>
+            <div
+              css={`
+                color: ${theme.surfaceContentSecondary};
+              `}
+            >
+              <IconExternal />
+            </div>
+          </Item>
         </ul>
       </Popover>
     </React.Fragment>
   )
 }
 
-function Item({ icon, label, onClick }) {
+function Item({ children, icon, label, onClick, href }) {
   const theme = useTheme()
-
   return (
     <li
       css={`
@@ -107,6 +126,8 @@ function Item({ icon, label, onClick }) {
       <ButtonBase
         onClick={onClick}
         label={label}
+        external={Boolean(href)}
+        href={href}
         css={`
           width: 100%;
           height: ${7 * GU}px;
@@ -128,17 +149,21 @@ function Item({ icon, label, onClick }) {
             }
           `}
         >
-          {icon && <img src={icon} alt="" />}
-          <div
-            css={`
-              flex-grow: 1;
-              display: flex;
-              align-items: center;
-              margin-left: ${icon ? 1 * GU : 0}px;
-            `}
-          >
-            {label}
-          </div>
+          {children || (
+            <>
+              {icon && <img src={icon} alt="" />}
+              <div
+                css={`
+                  flex-grow: 1;
+                  display: flex;
+                  align-items: center;
+                  margin-left: ${icon ? 1 * GU : 0}px;
+                `}
+              >
+                {label}
+              </div>
+            </>
+          )}
         </div>
       </ButtonBase>
     </li>
