@@ -94,7 +94,7 @@ function GlobalPreferencesButton({ onOpen }) {
                 flex-grow: 1;
                 display: flex;
                 align-items: center;
-                margin-left: ${1 * GU}px;
+                margin-right: ${1 * GU}px;
               `}
             >
               Any questions? Visit our FAQ
