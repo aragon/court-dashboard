@@ -153,18 +153,18 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
 const PanelTitle = ({ requestMode, disputeId }) => {
   const { mode, data } = requestMode
 
-  if (mode === REQUEST_MODE.COMMIT)
-    return <>Commit your vote on dispute #{disputeId}</>
+  if (mode === REQUEST_MODE.COMMIT) {
+    return `Commit your vote on dispute #${disputeId}`
+  }
 
-  if (mode === REQUEST_MODE.REVEAL)
-    return <>Reveal your vote on dispute #{disputeId}</>
+  if (mode === REQUEST_MODE.REVEAL) {
+    return `Reveal your vote on dispute #${disputeId}`
+  }
 
   if (mode === REQUEST_MODE.APPEAL) {
-    if (data.confirm) {
-      return <>Confirm an appeal on dispute #{disputeId}</>
-    }
-
-    return <>Appeal ruling on dispute #{disputeId}</>
+    return data.confirm
+      ? `Confirm an appeal on dispute #${disputeId}`
+      : `Appeal ruling on dispute #${disputeId}`
   }
 
   return null
