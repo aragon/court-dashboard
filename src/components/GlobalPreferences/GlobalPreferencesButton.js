@@ -85,7 +85,7 @@ function GlobalPreferencesButton({ onOpen }) {
           </li>
           <Item
             onClick={handleItemClick('network')}
-            Icon={() => <img src={iconNetwork} alt="" />}
+            icon={iconNetwork}
             label="Network"
           />
           <Item href="https://help.aragon.org/article/48-aragon-court-faq">
@@ -113,7 +113,7 @@ function GlobalPreferencesButton({ onOpen }) {
   )
 }
 
-function Item({ children, Icon, label, onClick, href }) {
+function Item({ children, icon, label, onClick, href }) {
   const theme = useTheme()
   return (
     <li
@@ -126,13 +126,13 @@ function Item({ children, Icon, label, onClick, href }) {
       <ButtonBase
         onClick={onClick}
         label={label}
+        external={Boolean(href)}
+        href={href}
         css={`
           width: 100%;
           height: ${7 * GU}px;
           border-radius: 0;
         `}
-        external={Boolean(href)}
-        href={href}
       >
         <div
           css={`
@@ -151,13 +151,13 @@ function Item({ children, Icon, label, onClick, href }) {
         >
           {children || (
             <>
-              <Icon />
+              {icon && <img src={icon} alt="" />}
               <div
                 css={`
                   flex-grow: 1;
                   display: flex;
                   align-items: center;
-                  margin-left: ${1 * GU}px;
+                  margin-left: ${icon ? 1 * GU : 0}px;
                 `}
               >
                 {label}
