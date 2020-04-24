@@ -27,28 +27,25 @@ import {
   checkValidEthNode,
   getNetworkType,
   sanitizeNetworkType,
-  validHttpFormat,
-  validWebSocketFormat,
 } from '../../../lib/web3-utils'
+import { validHttpFormat, validWebSocketFormat } from '../../../lib/uri-utils'
 import { useEnterKey } from '../../../hooks/useKeyboardArrows'
 import { useSubgraph } from '../../../providers/Subgraph'
 
 function Network() {
   const {
     ethNode,
-    networkType,
-    ipfsGateway,
-    subgraphHttpEndpoint,
-    subgraphWsEndpoint,
+    handleClearNetworkSettings,
     handleEthNodeChange,
     handleIpfsGatewayChange,
+    handleNetworkChange,
     handleSubgraphHttpEndpointChange,
     handleSubgraphWsEndpointChange,
+    ipfsGateway,
     settingsErrors,
-    handleNetworkChange,
-    handleClearNetworkSettings,
+    subgraphHttpEndpoint,
+    subgraphWsEndpoint,
   } = useNetwork()
-  const theme = useTheme()
 
   const { layoutName } = useLayout()
   const compact = layoutName === 'small'
@@ -57,97 +54,29 @@ function Network() {
   return (
     <React.Fragment>
       <Box heading="Node settings">
-        <Label theme={theme}>
-          Ethereum node
-          <TextInput
-            value={ethNode}
-            wide
-            onChange={handleEthNodeChange}
-            css={`
-              ${textStyle('body2')};
-              color: ${theme.contentSecondary};
-            `}
-          />
-          {ethError && (
-            <span
-              css={`
-                ${textStyle('body4')};
-                color: ${theme.negative};
-              `}
-            >
-              {(() => {
-                if (ethError instanceof InvalidNetworkType) {
-                  return `Node must be connected to ${sanitizeNetworkType(
-                    networkType
-                  )}`
-                }
-                if (ethError instanceof InvalidURI) {
-                  return 'Must provide Http endpoint to node'
-                }
-                if (ethError instanceof NoConnection) {
-                  return 'Could not connect to node'
-                }
-                return 'URI does not seem to be a ETH node'
-              })()}
-            </span>
-          )}
-        </Label>
-        <Label theme={theme}>
-          IPFS Gateway
-          <TextInput
-            value={ipfsGateway}
-            wide
-            onChange={handleIpfsGatewayChange}
-            css={`
-              ${textStyle('body2')};
-              color: ${theme.contentSecondary};
-            `}
-          />
-        </Label>
-        <Label theme={theme}>
-          Subgraph HTTP Endpoint
-          <TextInput
-            value={subgraphHttpEndpoint}
-            wide
-            onChange={handleSubgraphHttpEndpointChange}
-            css={`
-              ${textStyle('body2')};
-              color: ${theme.contentSecondary};
-            `}
-          />
-          {httpSubgraphError && (
-            <span
-              css={`
-                ${textStyle('body4')};
-                color: ${theme.negative};
-              `}
-            >
-              {httpSubgraphError}
-            </span>
-          )}
-        </Label>
-        <Label theme={theme}>
-          Subgraph WS Endpoint
-          <TextInput
-            value={subgraphWsEndpoint}
-            wide
-            onChange={handleSubgraphWsEndpointChange}
-            css={`
-              ${textStyle('body2')};
-              color: ${theme.contentSecondary};
-            `}
-          />
-          {wsSubgraphError && (
-            <span
-              css={`
-                ${textStyle('body4')};
-                color: ${theme.negative};
-              `}
-            >
-              {wsSubgraphError}
-            </span>
-          )}
-        </Label>
+        <Field
+          label="Ethereum node"
+          text={ethNode}
+          onTextChange={handleEthNodeChange}
+          error={ethError}
+        />
+        <Field
+          label="IPFS Gateway"
+          text={ipfsGateway}
+          onTextChange={handleIpfsGatewayChange}
+        />
+        <Field
+          label="Subgraph HTTP endpoint"
+          text={subgraphHttpEndpoint}
+          onTextChange={handleSubgraphHttpEndpointChange}
+          error={httpSubgraphError}
+        />
+        <Field
+          label="Subgraph WS endpoint"
+          text={subgraphWsEndpoint}
+          onTextChange={handleSubgraphWsEndpointChange}
+          error={wsSubgraphError}
+        />
         <Button mode="strong" onClick={handleNetworkChange} wide={compact}>
           Save changes
         </Button>
@@ -176,6 +105,34 @@ function Network() {
   )
 }
 
+function Field({ label, text, onTextChange, error }) {
+  const theme = useTheme()
+  return (
+    <Label theme={theme}>
+      {label}
+      <TextInput
+        value={text}
+        wide
+        onChange={onTextChange}
+        css={`
+          ${textStyle('body2')};
+          color: ${theme.contentSecondary};
+        `}
+      />
+      {error && (
+        <span
+          css={`
+            ${textStyle('body4')};
+            color: ${theme.negative};
+          `}
+        >
+          {error}
+        </span>
+      )}
+    </Label>
+  )
+}
+
 const useNetwork = () => {
   const [settingsErrors, setSettingsErrors] = useState(null)
   const [ethNode, setEthNodeValue] = useState(defaultEthNode)
@@ -190,15 +147,14 @@ const useNetwork = () => {
   const { resetSubgraphClient } = useSubgraph()
   const networkType = getNetworkType()
 
-  const defaultsChanged =
-    ipfsGateway !== defaultIpfsGateway ||
-    ethNode !== defaultEthNode ||
-    subgraphHttpEndpoint !== defaultSubgraphHttpEndpoint ||
-    subgraphWsEndpoint !== defaultSubgraphWsEndpoint
-
   const subgraphChanged =
     subgraphHttpEndpoint !== defaultSubgraphHttpEndpoint ||
     subgraphWsEndpoint !== defaultSubgraphWsEndpoint
+
+  const defaultsChanged =
+    ipfsGateway !== defaultIpfsGateway ||
+    ethNode !== defaultEthNode ||
+    subgraphChanged
 
   const handleNetworkChange = useCallback(async () => {
     if (!defaultsChanged) {
@@ -209,7 +165,8 @@ const useNetwork = () => {
     const errors = await validateNetworkSettings(
       ethNode,
       subgraphHttpEndpoint,
-      subgraphWsEndpoint
+      subgraphWsEndpoint,
+      networkType
     )
 
     if (errors) {
@@ -226,12 +183,13 @@ const useNetwork = () => {
     }
     window.location.reload()
   }, [
-    ethNode,
-    ipfsGateway,
     defaultsChanged,
-    subgraphChanged,
+    ethNode,
     subgraphHttpEndpoint,
     subgraphWsEndpoint,
+    networkType,
+    ipfsGateway,
+    subgraphChanged,
     resetSubgraphClient,
   ])
 
@@ -244,7 +202,6 @@ const useNetwork = () => {
 
   return {
     ethNode,
-    networkType,
     ipfsGateway,
     subgraphHttpEndpoint,
     subgraphWsEndpoint,
@@ -265,13 +222,26 @@ const useNetwork = () => {
 async function validateNetworkSettings(
   ethNode,
   subgraphHttpEndpoint,
-  subgraphWsEndpoint
+  subgraphWsEndpoint,
+  networkType
 ) {
   const settingsErrors = {}
   try {
     await checkValidEthNode(ethNode)
   } catch (err) {
-    settingsErrors.ethError = err
+    if (err instanceof InvalidNetworkType) {
+      settingsErrors.ethError = `Node must be connected to ${sanitizeNetworkType(
+        networkType
+      )}`
+    }
+    if (err instanceof InvalidURI) {
+      settingsErrors.ethError = 'Must provide Http endpoint to node'
+    }
+    if (err instanceof NoConnection) {
+      settingsErrors.ethError = 'Could not connect to node'
+    } else {
+      settingsErrors.ethError = 'URI does not seem to be a ETH node'
+    }
   }
 
   if (!validHttpFormat(subgraphHttpEndpoint)) {
