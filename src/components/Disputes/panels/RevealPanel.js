@@ -1,12 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, Field, GU, TextInput } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
-import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import { getJurorDraft } from '../../../utils/juror-draft-utils'
-import {
-  getCodeFromLocalStorage,
-  removeCodeFromLocalStorage,
-} from '../../../utils/one-time-code-utils'
+import { getDisputeLastRound } from '../../../utils/dispute-utils'
+import { getCodeFromLocalStorage } from '../../../utils/one-time-code-utils'
 
 const RevealPanel = React.memo(function RevealPanel({
   dispute,
@@ -29,24 +26,17 @@ const RevealPanel = React.memo(function RevealPanel({
   const handlePasswordChange = event => setPassword(event.target.value)
 
   const handleReveal = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
-      try {
-        const tx = await onReveal(
-          dispute.id,
-          dispute.lastRoundId,
-          wallet.account,
-          jurorDraft.commitment,
-          password
-        )
-
-        onDone()
-        await tx.wait()
-        removeCodeFromLocalStorage(wallet.account, dispute.id)
-      } catch (err) {
-        console.error('Error submitting tx: ', err)
-      }
+      onDone()
+      onReveal(
+        dispute.id,
+        dispute.lastRoundId,
+        wallet.account,
+        jurorDraft.commitment,
+        password
+      )
     },
     [
       dispute.id,

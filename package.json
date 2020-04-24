@@ -31,19 +31,20 @@
     "styled-components": "^4.4.1",
     "subscriptions-transport-ws": "^0.9.16",
     "urql": "^1.6.3",
-    "use-wallet": "^0.4.4"
+    "use-wallet": "^0.5.0"
   },
   "scripts": {
-    "start": "npm run sync-assets && REACT_APP_BUILD=$(git log --pretty=format:'%h' -n 1) react-app-rewired start",
-    "start:local": "REACT_APP_CHAIN_ID=1337 npm run start ",
-    "start:mainnet": "REACT_APP_CHAIN_ID=1 npm run start",
-    "start:ropsten": "REACT_APP_CHAIN_ID=3 npm run start",
-    "start:rinkeby": "REACT_APP_CHAIN_ID=4 npm run start",
+    "start": "npm run sync-assets && cross-env REACT_APP_BUILD=$(git log --pretty=format:'%h' -n 1) react-app-rewired start",
+    "start:local": "cross-env REACT_APP_CHAIN_ID=1337 npm run start",
+    "start:mainnet": "cross-env REACT_APP_CHAIN_ID=1 npm run start",
+    "start:ropsten": "cross-env REACT_APP_CHAIN_ID=3 npm run start",
+    "start:rinkeby": "cross-env REACT_APP_CHAIN_ID=4 npm run start",
     "build": "./scripts/build.sh",
-    "build:local": "REACT_APP_CHAIN_ID=1337 npm run build",
-    "build:mainnet": "REACT_APP_CHAIN_ID=1 npm run build",
-    "build:ropsten": "REACT_APP_CHAIN_ID=3 npm run build",
-    "build:rinkeby": "REACT_APP_CHAIN_ID=4 npm run build",
+    "build:local": "cross-env REACT_APP_CHAIN_ID=1337 npm run build",
+    "build:mainnet": "cross-env REACT_APP_CHAIN_ID=1 npm run build",
+    "build:ropsten": "cross-env REACT_APP_CHAIN_ID=3 npm run build",
+    "build:rinkeby": "cross-env REACT_APP_CHAIN_ID=4 npm run build",
+    "bundlewatch": "bundlewatch",
     "lint": "eslint ./src",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
@@ -66,6 +67,15 @@
       "last 1 safari version"
     ]
   },
+  "bundlewatch": {
+    "files": [
+      {
+        "path": "build/static/**/*.js",
+        "maxSize": "900kb",
+        "compression": "gzip"
+      }
+    ]
+  },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
@@ -73,6 +83,8 @@
     "@urql/devtools": "^0.1.2",
     "babel-eslint": "^10.0.3",
     "babel-plugin-styled-components": "^1.10.6",
+    "bundlewatch": "^0.2.6",
+    "cross-env": "^7.0.2",
     "customize-cra": "^0.9.1",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",

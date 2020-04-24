@@ -239,9 +239,6 @@ async function validateNetworkSettings(
     }
     if (err instanceof NoConnection) {
       settingsErrors.ethError = 'Could not connect to node'
-    } else {
-      settingsErrors.ethError = 'URI does not seem to be a ETH node'
-    }
   }
 
   if (!validHttpFormat(subgraphHttpEndpoint)) {

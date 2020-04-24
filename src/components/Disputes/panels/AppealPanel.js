@@ -12,8 +12,8 @@ import {
   useAppealFeeAllowance,
   useFeeBalanceOf,
 } from '../../../hooks/useCourtContracts'
-import { useCourtConfig } from '../../../providers/CourtConfig'
 import { useWallet } from '../../../providers/Wallet'
+import { useCourtConfig } from '../../../providers/CourtConfig'
 
 function AppealPanel({
   confirm,
@@ -69,7 +69,7 @@ function AppealPanel({
 
   // For submission
   const handleAppeal = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
       const errored = validateForm(selectedOutcome.value)
@@ -77,39 +77,30 @@ function AppealPanel({
         return
       }
 
-      try {
-        if (feeAllowance.lt(requiredDeposit)) {
-          // TODO: some ERC20s don't let to set a new allowance if the current allowance is positive (handle this cases)
-          if (feeAllowance.eq(0)) {
-            console.warn('Allowance must be zero')
-          }
-          // Approve fee deposit for appealing
-          const approveTx = await onApproveFeeDeposit(requiredDeposit)
-          await approveTx.wait()
-        }
+      const appealOption = appealOptions[selectedOutcome.value]
 
-        const appealOption = appealOptions[selectedOutcome.value]
+      // Appeal ruling
+      const disputeId = dispute.id
+      const roundId = dispute.lastRoundId
+      const appealRuling = appealOption.outcome
 
-        // Appeal ruling
-        const tx = await onAppeal(
-          dispute.id,
-          dispute.lastRoundId,
-          appealOption.outcome
-        )
-
-        onDone()
-        await tx.wait()
-      } catch (err) {
-        console.error('Error submitting tx: ', err)
-      }
+      onDone()
+      onAppeal(
+        disputeId,
+        roundId,
+        appealRuling,
+        requiredDeposit,
+        feeAllowance,
+        confirm
+      )
     },
     [
       appealOptions,
+      confirm,
       dispute.id,
       dispute.lastRoundId,
       feeAllowance,
       onAppeal,
-      onApproveFeeDeposit,
       onDone,
       requiredDeposit,
       selectedOutcome.value,

@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Layout, Root, ScrollView, useViewport } from '@aragon/ui'
+import {
+  GU,
+  Layout,
+  Link,
+  Root,
+  ScrollView,
+  textStyle,
+  useTheme,
+  useViewport,
+} from '@aragon/ui'
 import usePreferences from '../hooks/usePreferences'
 import MenuPanel, { MENU_PANEL_WIDTH } from './MenuPanel'
 import Header from './Header/Header'
@@ -7,6 +16,7 @@ import GlobalPreferences from './GlobalPreferences/GlobalPreferences'
 
 function MainView({ children }) {
   const { width: vw, below } = useViewport()
+  const theme = useTheme()
   const compactMode = below('medium')
   const [menuPanelOpen, setMenuPanelOpen] = useState(!compactMode)
 
@@ -87,12 +97,44 @@ function MainView({ children }) {
           `}
         >
           <ScrollView>
-            <Layout
-              parentWidth={vw - (compactMode ? 0 : MENU_PANEL_WIDTH)}
-              paddingBottom={0}
+            <div
+              css={`
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+              `}
             >
-              {children}
-            </Layout>
+              <div
+                css={`
+                  flex: 1 0 auto;
+                `}
+              >
+                <Layout
+                  parentWidth={vw - (compactMode ? 0 : MENU_PANEL_WIDTH)}
+                  paddingBottom={0}
+                >
+                  {children}
+                </Layout>
+              </div>
+              <footer
+                css={`
+                  flex-shrink: 0;
+                  margin-bottom: ${5 * GU}px;
+                  width: 100%;
+                  text-align: center;
+                  ${textStyle('body2')};
+                  color: ${theme.surfaceContentSecondary};
+                `}
+              >
+                Supporting services provided by{' '}
+                <Link href="https://aragon.one">Aragon One</Link>. Read Aragon
+                Court's{' '}
+                <Link href="https://anj.aragon.org/legal/terms-general.pdf">
+                  Terms of Service
+                </Link>
+                .
+              </footer>
+            </div>
           </ScrollView>
         </Root.Provider>
       </div>

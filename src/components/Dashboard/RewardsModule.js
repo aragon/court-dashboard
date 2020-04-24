@@ -9,18 +9,16 @@ import {
   textStyle,
   useTheme,
 } from '@aragon/ui'
-import * as Sentry from '@sentry/browser'
 
 import Loading from './Loading'
 import NoRewards from './NoRewards'
 
 import { useWallet } from '../../providers/Wallet'
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { getProviderFromUseWalletId } from '../../ethereum-providers'
 import useJurorSubscriptionFees from '../../hooks/useJurorSubscriptionFees'
 
-import { bigNum, formatTokenAmount } from '../../lib/math-utils'
 import { addressesEqual } from '../../lib/web3-utils'
+import { bigNum, formatTokenAmount } from '../../lib/math-utils'
 
 const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
   return useMemo(() => {
@@ -49,10 +47,7 @@ const RewardsModule = React.memo(function RewardsModule({
   rewards,
   treasury,
   loading,
-  onClaimSubscriptionFees,
-  onSettleAppealDeposit,
-  onSettleReward,
-  onWithdraw,
+  onClaimRewards,
 }) {
   const wallet = useWallet()
   const { feeToken } = useCourtConfig()
@@ -88,60 +83,24 @@ const RewardsModule = React.memo(function RewardsModule({
 
   // Form submission
   const handleFormSubmit = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
       if (!rewards) return
 
-      const rewardTransactionQueue = []
-      try {
-        // Claim all arbitrable fee rewards
-        for (const arbitrableFee of feeRewards.arbitrableFees) {
-          const { disputeId, rounds } = arbitrableFee
-          for (const roundId of rounds) {
-            rewardTransactionQueue.push(
-              await onSettleReward(disputeId, roundId, wallet.account)
-            )
-          }
-        }
-
-        // Claim all appeal fee rewards
-        for (const appealFee of feeRewards.appealFees) {
-          const { disputeId, rounds } = appealFee
-          for (const roundId of rounds) {
-            rewardTransactionQueue.push(
-              await onSettleAppealDeposit(disputeId, roundId)
-            )
-          }
-        }
-
-        // Withdraw funds from treasury
-        if (totalTreasuryFees.gt(0)) {
-          rewardTransactionQueue.push(
-            await onWithdraw(feeToken.id, wallet.account, totalTreasuryFees)
-          )
-        }
-
-        // Claim subscription fees
-        for (const subscriptionFee of subscriptionFees) {
-          rewardTransactionQueue.push(
-            await onClaimSubscriptionFees(subscriptionFee.periodId)
-          )
-        }
-
-        await Promise.all(rewardTransactionQueue.map(tx => tx.wait()))
-      } catch (err) {
-        console.error(`Error claiming rewards: ${err}`)
-        Sentry.captureException(err)
-      }
+      onClaimRewards(
+        wallet.account,
+        feeRewards.arbitrableFees,
+        feeRewards.appealFees,
+        totalTreasuryFees,
+        subscriptionFees,
+        feeToken.id
+      )
     },
     [
       feeRewards,
       feeToken,
-      onClaimSubscriptionFees,
-      onSettleAppealDeposit,
-      onSettleReward,
-      onWithdraw,
+      onClaimRewards,
       rewards,
       subscriptionFees,
       totalTreasuryFees,
@@ -181,13 +140,7 @@ const RewardsModule = React.memo(function RewardsModule({
                 {totalSubscriptionFees.gt(0) && (
                   <SubscriptionFeeRewards totalFees={totalSubscriptionFees} />
                 )}
-                <TotalFees
-                  totalFees={totalFeeRewards}
-                  requiresMultipleTxs={
-                    totalDisputesFees.gt(0) ||
-                    (subscriptionFees.length > 0 && treasuryBalance.gt(0))
-                  }
-                />
+                <TotalFees totalFees={totalFeeRewards} />
               </form>
             )}
           </div>
@@ -325,11 +278,9 @@ function SubscriptionFeeRewards({ totalFees }) {
   )
 }
 
-function TotalFees({ totalFees, requiresMultipleTxs }) {
+function TotalFees({ totalFees }) {
   const theme = useTheme()
-  const { activated } = useWallet()
   const { feeToken } = useCourtConfig()
-  const provider = getProviderFromUseWalletId(activated)
 
   const { symbol, decimals } = feeToken
   const totalFeesFormatted = formatTokenAmount(totalFees, true, decimals, true)
@@ -358,16 +309,6 @@ function TotalFees({ totalFees, requiresMultipleTxs }) {
         <Button mode="positive" type="submit" wide>
           Claim rewards
         </Button>
-        {requiresMultipleTxs && (
-          <Info
-            css={`
-              margin-top: ${2 * GU}px;
-            `}
-          >
-            This action requires multiple transactions to be signed in{' '}
-            {provider.name}. Please confirm them one after another.
-          </Info>
-        )}
       </div>
     </FeeSection>
   )

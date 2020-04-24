@@ -4,11 +4,11 @@ import {
   Phase as DisputePhase,
   Status as DisputeStatus,
 } from '../../types/dispute-status-types'
-import DisputeVoting from './actions/DisputeVoting'
-import DisputeDraft from './actions/DisputeDraft'
-import DisputeReveal from './actions/DisputeReveal'
 import DisputeAppeal from './actions/DisputeAppeal'
+import DisputeDraft from './actions/DisputeDraft'
 import DisputeExecuteRuling from './actions/DisputeExecuteRuling'
+import DisputeReveal from './actions/DisputeReveal'
+import DisputeVoting from './actions/DisputeVoting'
 import { useWallet } from '../../providers/Wallet'
 import {
   getJurorDraft,

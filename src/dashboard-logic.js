@@ -1,14 +1,10 @@
 import { useCallback, useState } from 'react'
 
-import {
-  useANJActions,
-  useRewardActions,
-  useCourtSubscriptionActions,
-} from './hooks/useCourtContracts'
 import { useANJBalances } from './hooks/useANJ'
 import { useSidePanel } from './hooks/useSidePanel'
 import useJurorRewards from './hooks/useJurorRewards'
 import useJurorAppealCollaterals from './hooks/useJurorAppealCollaterals'
+import { useANJActions, useRewardActions } from './hooks/useCourtContracts'
 import { useDashboardState } from './components/Dashboard/DashboardStateProvider'
 
 export const REQUEST_MODE = {
@@ -87,17 +83,13 @@ export function useDashboardLogic() {
   const [mode, setMode] = usePanelRequestMode(panelState.requestOpen)
   const requests = usePanelRequestActions(setMode)
 
-  const { claimFees: claimSubscriptionFees } = useCourtSubscriptionActions()
-  const { settleReward, settleAppealDeposit, withdraw } = useRewardActions()
+  const { claimRewards } = useRewardActions()
   const actions = {
     activateANJ:
       mode === REQUEST_MODE.STAKE_ACTIVATE ? stakeActivateANJ : activateANJ,
-    claimSubscriptionFees,
     deactivateANJ,
     withdrawANJ,
-    settleReward,
-    settleAppealDeposit,
-    withdraw,
+    claimRewards,
   }
 
   return {

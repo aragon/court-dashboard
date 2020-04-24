@@ -79,19 +79,35 @@ export function round(value, precision = 2) {
 }
 
 const wordNumbers = [
-  'One',
-  'Two',
-  'Three',
-  'Four',
-  'Five',
-  'Six',
-  'Seven',
-  'Eight',
-  'Nine',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
 ]
 
 export function numberToWord(number) {
   return wordNumbers[number]
+}
+
+const ordinalNumbers = [
+  'first',
+  'second',
+  'third',
+  'fourth',
+  'fifth',
+  'sixth',
+  'seventh',
+  'eighth',
+  'ninth',
+]
+
+export function numberToOrdinal(number) {
+  return ordinalNumbers[number - 1]
 }
 
 export function getPercentage(value, totalValue) {

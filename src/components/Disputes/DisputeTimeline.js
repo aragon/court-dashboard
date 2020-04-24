@@ -249,7 +249,7 @@ function DisplayTime({ item }) {
     }
     return <Timer end={new Date(endTime)} maxUnits={3} />
   }
-  return <>{dateFormat(endTime, 'DD/MM/YY')}</>
+  return <>{dateFormat(endTime, 'onlyDate')}</>
 }
 
 function OutcomePoint() {

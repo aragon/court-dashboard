@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react'
-
-import { useCourtConfig } from '../../../providers/CourtConfig'
 import ANJForm from './ANJForm'
 import { formatUnits } from '../../../lib/math-utils'
+import { useCourtConfig } from '../../../providers/CourtConfig'
 
 const ActivateANJ = React.memo(function ActivateANJ({
   onActivateANJ,

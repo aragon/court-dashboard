@@ -3,13 +3,13 @@ import { textStyle, GU } from '@aragon/ui'
 import { dayjs } from '../../utils/date-utils'
 
 function getDueDayText(dueDate) {
-  const diff = dayjs(dueDate).diff(dayjs(), 'day')
+  const diff = dayjs(dueDate).diff(dayjs().startOf('day'), 'day')
 
   if (diff === 0) {
     return 'Due today'
   }
   if (diff === 1) {
-    return 'Due in the next day'
+    return 'Due tomorrow'
   }
   return `Due in ${diff} days`
 }

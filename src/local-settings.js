@@ -1,5 +1,5 @@
 import env from './environment'
-import endpoints, { IPFS_ENDPOINT } from './endpoints'
+import { graphEndpoints, IPFS_ENDPOINT } from './endpoints'
 
 const DEFAULT_ETH_NODE = 'DEFAULT_ETH_NODE'
 const IPFS_GATEWAY = 'IPFS_GATEWAY'
@@ -8,7 +8,7 @@ const SUBGRAPH_WS_ENDPOINT = 'SUBGRAPH_WS_ENDPOINT'
 const [
   DEFAULT_SUBGRAPH_HTTP_ENDPOINT,
   DEFAULT_SUBGRAPH_WS_ENDPOINT,
-] = endpoints()
+] = graphEndpoints()
 
 // Get a setting from localStorage
 function getLocalStorageSetting(confKey) {
