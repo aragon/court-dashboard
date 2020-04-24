@@ -2,6 +2,7 @@ import env from '../environment'
 import { providers as Providers } from 'ethers'
 import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
 import { InvalidURI, InvalidNetworkType, NoConnection } from '../errors'
+import { validHttpFormat } from './uri-utils'
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
 export const DEFAULT_LOCAL_CHAIN = 'private'
@@ -9,8 +10,6 @@ export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
 const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
-const httpRegex = /^(https?):\/\//
-const websocketRegex = /^wss?:\/\/.+/
 
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
@@ -194,19 +193,5 @@ export async function checkValidEthNode(uri) {
     throw new NoConnection()
   }
 
-  return true
-}
-
-export function validHttpFormat(uri) {
-  if (!httpRegex.test(uri)) {
-    return false
-  }
-  return true
-}
-
-export function validWebSocketFormat(uri) {
-  if (!websocketRegex.test(uri)) {
-    return false
-  }
   return true
 }
