@@ -3,9 +3,12 @@ import endpoints, { IPFS_ENDPOINT } from './endpoints'
 
 const DEFAULT_ETH_NODE = 'DEFAULT_ETH_NODE'
 const IPFS_GATEWAY = 'IPFS_GATEWAY'
-const CUSTOM_HTTP_SUBGRAPH_ENDPOINT = 'CUSTOM_HTTP_SUBGRAPH_ENDPOINT'
-const CUSTOM_WS_SUBGRAPH_ENDPOINT = 'CUSTOM_WS_SUBGRAPH_ENDPOINT'
-const [GRAPH_API_HTTP_ENDPOINT, GRAPH_API_WS_ENDPOINT] = endpoints()
+const SUBGRAPH_HTTP_ENDPOINT = 'SUBGRAPH_HTTP_ENDPOINT'
+const SUBGRAPH_WS_ENDPOINT = 'SUBGRAPH_WS_ENDPOINT'
+const [
+  DEFAULT_SUBGRAPH_HTTP_ENDPOINT,
+  DEFAULT_SUBGRAPH_WS_ENDPOINT,
+] = endpoints()
 
 // Get a setting from localStorage
 function getLocalStorageSetting(confKey) {
@@ -24,11 +27,10 @@ function setLocalSetting(confKey, value) {
 }
 
 export function clearLocalStorageNetworkSettings() {
-  // TODO - remove subgrapk key once available
   window.localStorage.removeItem('DEFAULT_ETH_NODE_KEY')
   window.localStorage.removeItem('IPFS_GATEWAY_KEY')
-  window.localStorage.removeItem('CUSTOM_HTTP_SUBGRAPH_ENDPOINT_KEY')
-  window.localStorage.removeItem('CUSTOM_WS_SUBGRAPH_ENDPOINT_KEY')
+  window.localStorage.removeItem('SUBGRAPH_HTTP_ENDPOINT_KEY')
+  window.localStorage.removeItem('SUBGRAPH_WS_ENDPOINT_KEY')
 }
 
 export function getDefaultEthNode() {
@@ -40,28 +42,28 @@ export function setDefaultEthNode(node) {
   return setLocalSetting(DEFAULT_ETH_NODE, node)
 }
 
-export function setIpfsGateway(gateway) {
-  return setLocalSetting(IPFS_GATEWAY, gateway)
-}
-
 export function getIpfsGateway() {
   return getLocalSetting(IPFS_GATEWAY) || IPFS_ENDPOINT
 }
 
+export function setIpfsGateway(gateway) {
+  return setLocalSetting(IPFS_GATEWAY, gateway)
+}
+
 export function getSubgraphHttpEndpoint() {
   return (
-    getLocalSetting(CUSTOM_HTTP_SUBGRAPH_ENDPOINT) || GRAPH_API_HTTP_ENDPOINT
+    getLocalSetting(SUBGRAPH_HTTP_ENDPOINT) || DEFAULT_SUBGRAPH_HTTP_ENDPOINT
   )
 }
 
-export function getSubgraphWsEndpoint() {
-  return getLocalSetting(CUSTOM_WS_SUBGRAPH_ENDPOINT) || GRAPH_API_WS_ENDPOINT
+export function setSubgraphHttpEndpoint(endpoint) {
+  return setLocalSetting(SUBGRAPH_HTTP_ENDPOINT, endpoint)
 }
 
-export function setSubgraphHttpEndpoint(endpoint) {
-  return setLocalSetting(CUSTOM_HTTP_SUBGRAPH_ENDPOINT, endpoint)
+export function getSubgraphWsEndpoint() {
+  return getLocalSetting(SUBGRAPH_WS_ENDPOINT) || DEFAULT_SUBGRAPH_WS_ENDPOINT
 }
 
 export function setSubgraphWsEndpoint(endpoint) {
-  return setLocalSetting(CUSTOM_WS_SUBGRAPH_ENDPOINT, endpoint)
+  return setLocalSetting(SUBGRAPH_WS_ENDPOINT, endpoint)
 }
