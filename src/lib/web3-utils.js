@@ -180,9 +180,11 @@ export async function checkValidEthNode(uri) {
     const expectedNetworkType = getNetworkType()
     const provider = await new Providers.JsonRpcProvider(uri)
     const networkType = await provider.getNetwork()
+    const networkTypeName =
+      networkType.name === 'homestead' ? 'main' : networkType.name
 
     if (!isLocalOrUnknown) {
-      if (networkType.name !== expectedNetworkType) {
+      if (networkTypeName !== expectedNetworkType) {
         throw new InvalidNetworkType()
       }
     }

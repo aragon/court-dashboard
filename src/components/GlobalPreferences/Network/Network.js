@@ -239,20 +239,22 @@ async function validateNetworkSettings(
     }
     if (err instanceof NoConnection) {
       settingsErrors.ethError = 'Could not connect to node'
-  }
+    }
 
-  if (!validHttpFormat(subgraphHttpEndpoint)) {
-    settingsErrors.httpSubgraphError = 'The URI must use the HTTP protocol'
-  }
-  if (!validWebSocketFormat(subgraphWsEndpoint)) {
-    settingsErrors.wsSubgraphError = 'The URI must use the WS protocol'
-  }
+    if (!validHttpFormat(subgraphHttpEndpoint)) {
+      settingsErrors.httpSubgraphError = 'The URI must use the HTTP protocol'
+    }
+    if (!validWebSocketFormat(subgraphWsEndpoint)) {
+      settingsErrors.wsSubgraphError = 'The URI must use the WS protocol'
+    }
 
-  if (Object.entries(settingsErrors).length === 0) {
-    return null
+    if (Object.entries(settingsErrors).length === 0) {
+      return null
+    }
+    return settingsErrors
   }
-  return settingsErrors
 }
+
 const Label = styled.label`
   color: ${({ theme }) => theme.content};
   display: block;
