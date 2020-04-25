@@ -1,7 +1,9 @@
-import { accounts, bigExp } from '../helper'
+import { accounts } from '../helper'
+import courtConfig from './CourtConfig'
 import { ANJMovementType } from '../types'
+import { bigNum } from '../../lib/math-utils'
 
-const ACTIVE_BASE_BALANCE = '10000'
+const MIN_ACTIVE_BASE_MULTIPLIER = '10'
 const numberOfJurors = 3
 
 const JUROR_DEFAULT_DATA = {
@@ -17,7 +19,9 @@ const JUROR_DEFAULT_DATA = {
 
 function generateJurors() {
   return accounts.slice(0, numberOfJurors).map((account, index) => {
-    const activeBalance = bigExp(`${ACTIVE_BASE_BALANCE * (index + 1)}`)
+    const activeBalance = bigNum(courtConfig.minActiveBalance).mul(
+      MIN_ACTIVE_BASE_MULTIPLIER * (index + 1)
+    )
 
     return {
       ...JUROR_DEFAULT_DATA,

@@ -101,11 +101,12 @@ export default {
 
   JurorDraftsFrom: ({ id, from }) => {
     const juror = removeJurorCircularReferences(court.getJuror(id))
+    const { drafts = [] } = juror || {}
 
     return {
       juror: {
         id,
-        drafts: juror.drafts.filter(draft => draft.createdAt >= from),
+        drafts: drafts.filter(draft => draft.createdAt >= from),
       },
     }
   },
