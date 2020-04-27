@@ -14,7 +14,7 @@ Expected chain id to connect to. Either one of `1 (mainnnet)`, `3 (ropsten)`, `4
 
 ### `REACT_APP_IPFS_GATEWAY`
 
-Url of the [IPFS](https://ipfs.io) gateway to load dispute metadata from. If you intend to connect to a local IPFS daemon, by default you should set this to `http://localhost:8080/ipfs`
+Url of the [IPFS](https://ipfs.io) Gateway to load dispute metadata from. If you intend to connect to a local IPFS daemon, by default you should set this to `http://localhost:8080/ipfs`.
 
 ### `REACT_APP_SUBGRAPH_NAME`
 
