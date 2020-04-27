@@ -8,7 +8,9 @@ import {
 } from '../networks'
 
 const PRECEDENCE_CAMPAIGN_DISPUTES = {
-  main: new Map([[networkConfigs.main.court, new Map([])]]),
+  main: new Map([
+    [networkConfigs.main.court, new Map([['1'], ['2'], ['3'], ['4'], ['5']])],
+  ]),
   rinkeby: new Map([
     [RINKEBY_COURT, new Map([])],
     [RINKEBY_STAGING_COURT, new Map([['0']])],
