@@ -10,7 +10,7 @@ Url of the default Ethereum node to read blockchain data from. If you intend to 
 
 ### `REACT_APP_CHAIN_ID`
 
-Expected chain id to connect to. Either one of `1 (mainnnet)`, `3 (ropsten)`, `4(rinkeby)` or `1337 (local)`.
+Expected chain id to connect to. Either one of `1 (mainnnet)`, `3 (ropsten)`, `4 (rinkeby)` or `1337 (local)`.
 
 ### `REACT_APP_IPFS_GATEWAY`
 
