@@ -273,8 +273,9 @@ const RevealService = React.memo(function RevealService({
         your behalf in this and following disputes. You can always turn off this
         service later if you choose.
         <Link href="https://help.aragon.org/article/43-dispute-lifecycle#onetime">
-          Learn more.
+          Learn more
         </Link>
+        .
       </div>
     </React.Fragment>
   )
