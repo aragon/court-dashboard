@@ -196,3 +196,18 @@ export async function checkValidEthNode(uri) {
 
   return true
 }
+
+export async function signMessage(wallet, message) {
+  let signHash
+  let error = false
+  let errorMsg
+
+  try {
+    signHash = await wallet.ethers.getSigner().signMessage(message)
+  } catch (err) {
+    error = true
+    errorMsg = err
+  }
+
+  return { signHash, error, errorMsg }
+}
