@@ -1,6 +1,6 @@
 # Build-time environment options
 
-The app can be configured in a number of ways via environment variables. Without any settings, the app is configured to connect to our Rinkeby deployment fetching metadata from IPFS.
+The app can be configured in a number of ways via environment variables. Without any settings, the app is configured to connect to our Rinkeby deployment fetching metadata from a non-local IPFS Gateway.
 
 ## General settings
 
@@ -65,4 +65,3 @@ To enable error reporting to sentry
 ### `REACT_APP_SKIP_VOIDING`
 
 To disable flagging of voided disputes.
-
