@@ -5,6 +5,7 @@ import {
   IconCopy,
   IconDownload,
   Info,
+  Link,
   Switch,
   TextInput,
   textStyle,
@@ -248,7 +249,10 @@ const RevealService = React.memo(function RevealService({
         By enabling this feature you trust Aragon One to reveal your vote on
         your behalf in this and following disputes. You can always turn off this
         service later if you choose.
-        {/* TODO: Add ref:  <Link>Learn more</Link>. */}
+        <Link href="https://help.aragon.org/article/43-dispute-lifecycle#onetime">
+          Learn more
+        </Link>
+        .
       </div>
     </React.Fragment>
   )
