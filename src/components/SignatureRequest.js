@@ -49,6 +49,7 @@ const SignerRequest = React.memo(function SignerRequest({
 
       if (actionError) {
         onActionErrorScreen()
+        return
       }
 
       setSignHash(signHash)
