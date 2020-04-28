@@ -77,7 +77,13 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
           text-align: center;
         `}
       >
-        <img src={emailIllustration} />
+        <div
+          css={`
+            align-items: center;
+          `}
+        >
+          <img src={emailIllustration} width={141} height={141} alt="" />
+        </div>
         <span
           css={`
             ${textStyle('title2')};
@@ -94,12 +100,11 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
             margin-top: ${1.5 * GU}px;
           `}
         >
-          {`Almost there! We’ve sent a verification email to ${email}.
-          Kindly check your inbox and click the link to verify your account. ${
-            updateMode
-              ? 'Alternatively, you can update this email or delete it, if you wish to unsubscribe'
-              : ''
-          }`}
+          Almost there! We’ve sent a verification email to {email}. Kindly check
+          your inbox and click the link to verify your account.
+          {updateMode
+            ? 'Alternatively, you can update this email or delete it, if you wish to unsubscribe'
+            : ''}
         </span>
         {(() => {
           if (updateMode) {
@@ -153,7 +158,7 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
                           margin-top: ${0.5 * GU}px;
                         `}
                       >
-                        Please enter a valid email address
+                        Please enter a valid email address.
                       </p>
                     )}
                   </Field>
@@ -227,6 +232,7 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
           onChange={checked => setTermsAccepted(checked)}
         />
 
+        {/** TODO- Add Links once we have them */}
         <span
           css={`
             ${textStyle('body2')};
@@ -235,7 +241,7 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
             text-align: left;
           `}
         >
-          {`By continuing with your email, you agree `}
+          By continuing with your email, you agree to Aragon court{' '}
           <Link href="#">legal terms </Link> and{' '}
           <Link href="#"> email collection policy.</Link>
         </span>
@@ -245,7 +251,8 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
 }
 
 const ActionButtons = styled(Button)`
-  width: ${({ width }) => width};
+  width: ${({ compactMode }) =>
+    compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  2)`};
 `
 
 export default VerifyEmailAddress
