@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { ButtonIcon, IconClose, Modal, Viewport, springs } from '@aragon/ui'
+import { Modal, Viewport, springs } from '@aragon/ui'
 import { Transition } from 'react-spring/renderprops'
 import { useSteps } from '../../hooks/useOnboarding'
 import useKeyboardArrows from '../../hooks/useKeyboardArrows'
@@ -10,7 +10,6 @@ import HighlightScreen, { RATIO_LEFT } from './HighlightScreen'
 import { getNetworkType } from '../../lib/web3-utils'
 
 const OnboardingModal = React.memo(function OnboardingModal({
-  onClose,
   onComplete,
   visible,
 }) {
@@ -38,7 +37,6 @@ const OnboardingModal = React.memo(function OnboardingModal({
             padding={0}
             width={Math.min(1055, width - 40)}
             visible={visible}
-            onClose={onClose}
             css="z-index: 4"
           >
             <div
@@ -49,23 +47,6 @@ const OnboardingModal = React.memo(function OnboardingModal({
                   : `${Math.max(500, Math.min(620, height - 40))}px`,
               }}
             >
-              {onClose && (
-                <ButtonIcon
-                  label="Close"
-                  onClick={onClose}
-                  css={`
-                    position: absolute;
-                    top: 17px;
-                    right: 17px;
-                    z-index: 2;
-                    color: ${content[step].visual.buttonColor ||
-                      highlights.defaultButtonColor};
-                  `}
-                >
-                  <IconClose />
-                </ButtonIcon>
-              )}
-
               <div
                 css={`
                   position: relative;
