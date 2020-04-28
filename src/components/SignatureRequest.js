@@ -31,8 +31,6 @@ const SignerRequest = React.memo(function SignerRequest({
   )
   const infoText = getInfoText(signingError, signHash, successText, actionText)
 
-  const buttonWidth = compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  2)`
-
   useEffect(() => {
     const requestSignature = async () => {
       if (!wallet || signingError) {
@@ -123,7 +121,7 @@ const SignerRequest = React.memo(function SignerRequest({
             `}
           >
             {/* TODO- Add the link once we have it */}
-            <ActionButtons onClick={() => {}} width={buttonWidth}>
+            <ActionButtons onClick={() => {}} compactMode={compactMode}>
               Troubleshooting
             </ActionButtons>
             <ActionButtons
@@ -131,7 +129,7 @@ const SignerRequest = React.memo(function SignerRequest({
               onClick={() => {
                 setSigningError(false)
               }}
-              width={buttonWidth}
+              compactMode={compactMode}
             >
               Repeat signature
             </ActionButtons>
@@ -154,10 +152,13 @@ function getIllustration(error, signHash) {
 
 function getStatusText(error, signHash, theme) {
   if (error) {
-    return { statusText: 'Signature failed', statusTextColor: '#FF6969' }
+    return { statusText: 'Signature failed', statusTextColor: theme.negative }
   }
   if (signHash) {
-    return { statusText: 'Signature confirmed', statusTextColor: '#2CC68F' }
+    return {
+      statusText: 'Signature confirmed',
+      statusTextColor: theme.positive,
+    }
   }
   return {
     statusText: 'Waiting for signature…',
@@ -178,6 +179,7 @@ function getInfoText(error, signHash, successText, actionText) {
 }
 
 const ActionButtons = styled(Button)`
-  width: ${({ width }) => width};
+  width: ${({ compactMode }) =>
+    compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  2)`};
 `
 export default SignerRequest
