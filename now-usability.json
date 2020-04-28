@@ -2,7 +2,7 @@
   "version": 2,
   "public": true,
   "scope": "aragon",
-  "alias": "court-rinkeby.aragon.org",
+  "alias": "court-usability.aragon.org",
   "build": {
     "env": {
       "REACT_APP_CHAIN_ID": "4",
