@@ -71,7 +71,7 @@ const SignerRequest = React.memo(function SignerRequest({
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: ${5 * GU}px;
+        padding: ${3 * GU}px;
       `}
     >
       <div
@@ -79,9 +79,10 @@ const SignerRequest = React.memo(function SignerRequest({
           display: flex;
           flex-direction: column;
           text-align: center;
+          align-items: center;
         `}
       >
-        <img src={illustration} alt="" />
+        <img src={illustration} height={140} width={140} />
         <span
           css={`
             ${textStyle('title2')};
