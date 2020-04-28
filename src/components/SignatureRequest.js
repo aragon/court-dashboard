@@ -122,6 +122,7 @@ const SignerRequest = React.memo(function SignerRequest({
               margin-top: ${3 * GU}px;
             `}
           >
+            {/* TODO- Add the link once we have it */}
             <ActionButtons onClick={() => {}} width={buttonWidth}>
               Troubleshooting
             </ActionButtons>
