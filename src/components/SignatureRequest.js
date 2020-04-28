@@ -83,7 +83,7 @@ const SignerRequest = React.memo(function SignerRequest({
           text-align: center;
         `}
       >
-        <img src={illustration} />
+        <img src={illustration} alt="" />
         <span
           css={`
             ${textStyle('title2')};
