@@ -28,7 +28,7 @@ module.exports = function() {
         subtitle: `Your account ${addressBadge()} received a reminder for pending tasks on {{date}}`,
       },
       `
-        <div style="font-size:16px;line-height:24px;color:#212B36;">
+        <div style="font-size:16px;line-height:16px;color:#212B36;">
           You have {{tasksCount}} due soon:
         </div>
         ${vspace(40)}
