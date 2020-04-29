@@ -265,6 +265,7 @@ function Field({ label, value }) {
                 <span title={part} key={index}>
                   <LocalIdentityBadge
                     connectedAccount={addressesEqual(part, wallet.account)}
+                    compact
                     entity={part}
                   />
                 </span>
