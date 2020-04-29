@@ -25,11 +25,11 @@ module.exports = function() {
     template: base(
       {
         title: 'Task Reminder',
-        subtitle: `Here are the tasks for the address ${addressBadge()} on {{date}}`,
+        subtitle: `Your account ${addressBadge()} received a reminder for pending tasks on {{date}}`,
       },
       `
-        <div style="font-size:16px;line-height:24px;color:#212B36;">
-          You have {{tasksCount}} tasks due today:
+        <div style="font-size:16px;line-height:16px;color:#212B36;">
+          You have {{tasksCount}} due soon:
         </div>
         ${vspace(40)}
 
@@ -44,7 +44,7 @@ module.exports = function() {
     templateText: `
       Aragon Court Notifications
 
-      You have {{tasksCount}} tasks due today:
+      You have {{tasksCount}} due soon:
       {{#each tasks}}
 
       Task: {{name}} (dispute #{{disputeId}})
@@ -62,7 +62,7 @@ module.exports = function() {
     mockData: {
       ...accountData('0xef0f7ecef8385483ac8a2e92d761f571c4b782bd'),
       date: 'Thursday, 17 Dec. 2019',
-      tasksCount: '2',
+      tasksCount: 'two tasks',
       tasks: [
         {
           name: 'Commit vote',
