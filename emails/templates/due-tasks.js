@@ -25,7 +25,7 @@ module.exports = function() {
     template: base(
       {
         title: 'Task Reminder',
-        subtitle: `Here are the tasks for the address ${addressBadge()} on {{date}}`,
+        subtitle: `Your account ${addressBadge()} received a reminder for pending tasks on {{date}}`,
       },
       `
         <div style="font-size:16px;line-height:24px;color:#212B36;">
