@@ -12,8 +12,6 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
     <div
       css={`
         display: flex;
-        flex-direction: column;
-        justify-content: center;
         padding: ${3 * GU}px;
       `}
     >
@@ -24,11 +22,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
           text-align: center;
         `}
       >
-        <div
-          css={`
-            align-items: center;
-          `}
-        >
+        <div>
           <img
             src={emailNotifcationIllustration}
             width={141}
@@ -48,7 +42,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
           css={`
             display: flex;
             flex-direction: column;
-            background: ${needsUnlockSettings ? '' : '#f9fafc'};
+            background: ${needsUnlockSettings ? '' : theme.background};
             padding: ${3 * GU}px ${15 * GU}px;
             margin-top: ${1.5 * GU}px;
           `}
@@ -71,7 +65,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
               </div>
               <Button
                 css={`
-                  margin-top: ${GU * 3}px;
+                  margin-top: ${3 * GU}px;
                 `}
                 mode="strong"
                 onClick={onUnlock}
