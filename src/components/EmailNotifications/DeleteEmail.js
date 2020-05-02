@@ -30,8 +30,6 @@ const DeleteEmail = React.memo(function DeleteEmail({
     <div
       css={`
         display: flex;
-        flex-direction: column;
-        justify-content: center;
         padding-top: ${3 * GU}px;
       `}
     >
@@ -76,14 +74,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
           >
             Cancel
           </Button>
-          <Button
-            css={`
-              background: linear-gradient(263.5deg, #ff6969 0%, #ff6969 100%);
-              color: #ffffff;
-            `}
-            onClick={handleOnDelete}
-            size="medium"
-          >
+          <Button mode="negative" onClick={handleOnDelete} size="medium">
             Delete email
           </Button>
         </div>
