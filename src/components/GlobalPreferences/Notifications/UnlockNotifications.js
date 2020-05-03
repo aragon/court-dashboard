@@ -11,7 +11,6 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
   return (
     <div
       css={`
-        display: flex;
         padding: ${3 * GU}px;
       `}
     >
