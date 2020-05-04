@@ -275,7 +275,7 @@ function ClockModule() {
                 label="Update term"
                 mode="strong"
                 wide
-                disabled={!wallet.account}
+                disabled={!courtConfig || !wallet.account}
                 onClick={handleOnClick}
               />
             )}
