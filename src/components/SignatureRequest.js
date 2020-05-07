@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import { useWallet } from '../providers/Wallet'
+import { getProviderFromUseWalletId } from '../ethereum-providers'
 import { signMessage } from '../lib/web3-utils'
 import { dayjs } from '../utils/date-utils'
-import signRequestIllustration from '../../src/assets/signRequest.svg'
+
 import signRequestSuccessIllustration from '../../src/assets/signRequestSuccess.svg'
 import signRequestFailIllustration from '../../src/assets/signRequestFail.svg'
+import signProcessing from '../../src/assets/loader.gif'
 
 const SignerRequest = React.memo(function SignerRequest({
   actionText,
   compactMode,
-  onActionErrorScreen,
-  onActionSuccessScreen,
-  onSignSuccessAction,
+  onActionSuccess,
+  onSignSuccess,
   successText,
   title,
 }) {
@@ -21,56 +22,84 @@ const SignerRequest = React.memo(function SignerRequest({
   const [signHash, setSignHash] = useState('')
 
   const wallet = useWallet()
+
+  const provider = getProviderFromUseWalletId(wallet.activated)
+
   const theme = useTheme()
 
-  const illustration = getIllustration(signingError, signHash)
-  const { statusText, statusTextColor } = getStatusText(
-    signingError,
-    signHash,
-    theme
-  )
-  const infoText = getInfoText(signingError, signHash, successText, actionText)
+  const illustration = useMemo(() => {
+    if (signingError) {
+      return signRequestFailIllustration
+    }
+    if (signHash) {
+      return signRequestSuccessIllustration
+    }
+    return signProcessing
+  }, [signingError, signHash])
 
-  useEffect(() => {
-    const requestSignature = async () => {
-      if (!wallet || signingError) {
-        return
-      }
-      const now = dayjs().toString()
-      const { signHash, error } = await signMessage(wallet, now)
-
-      if (error) {
-        setSigningError(true)
-        return
-      }
-      const { error: actionError } = await onSignSuccessAction()
-
-      if (actionError) {
-        onActionErrorScreen()
-        return
-      }
-
-      setSignHash(signHash)
-
-      if (onActionSuccessScreen) {
-        const timer = setTimeout(() => {
-          onActionSuccessScreen()
-        }, 3000)
-        return () => clearTimeout(timer)
+  const { statusText, statusTextColor } = useMemo(() => {
+    if (signingError) {
+      return { statusText: 'Signature failed', statusTextColor: theme.negative }
+    }
+    if (signHash) {
+      return {
+        statusText: 'Signature confirmed',
+        statusTextColor: theme.positive,
       }
     }
-    requestSignature()
+    return {
+      statusText: 'Waiting for signature…',
+      statusTextColor: theme.surfaceContentSecondary,
+    }
+  }, [signingError, signHash, theme])
 
-    /* We only need to execute it at the beginning but in order to be able to execute it again
-     if the repeat signature button is clicked we need the signingError as a dependency */
-  }, [signingError]) // eslint-disable-line react-hooks/exhaustive-deps
+  const infoText = useMemo(() => {
+    if (signingError) {
+      return 'An error has occurred when signing the message.'
+    }
+    if (signHash) {
+      return successText
+    }
+    return `Open ${provider.name} to complete the
+    signature request. Signing this message will prove ownership of your
+    account and ${actionText}`
+  }, [actionText, provider, signingError, signHash, successText])
+
+  const requestSignature = useCallback(async () => {
+    if (!wallet) {
+      return
+    }
+    const now = dayjs().toString()
+    const { signHash, error } = await signMessage(wallet, now)
+
+    if (error) {
+      setSigningError(true)
+      return
+    }
+
+    await onSignSuccess()
+
+    setSignHash(signHash)
+  }, [onSignSuccess, wallet])
+
+  useEffect(() => {
+    requestSignature()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!signHash) {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      onActionSuccess()
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [signHash, onActionSuccess])
 
   return (
     <div
       css={`
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         padding: ${3 * GU}px;
       `}
     >
@@ -82,15 +111,15 @@ const SignerRequest = React.memo(function SignerRequest({
           align-items: center;
         `}
       >
-        <img src={illustration} height={140} width={140} alt="" />
-        <span
+        <img src={illustration} height={140} width={140} />
+        <h3
           css={`
             ${textStyle('title2')};
             margin-top: ${4 * GU}px;
           `}
         >
           {title}
-        </span>
+        </h3>
 
         <span
           css={`
@@ -127,9 +156,7 @@ const SignerRequest = React.memo(function SignerRequest({
             </ActionButtons>
             <ActionButtons
               mode="strong"
-              onClick={() => {
-                setSigningError(false)
-              }}
+              onClick={requestSignature}
               compactMode={compactMode}
             >
               Repeat signature
@@ -140,44 +167,6 @@ const SignerRequest = React.memo(function SignerRequest({
     </div>
   )
 })
-
-function getIllustration(error, signHash) {
-  if (error) {
-    return signRequestFailIllustration
-  }
-  if (signHash) {
-    return signRequestSuccessIllustration
-  }
-  return signRequestIllustration
-}
-
-function getStatusText(error, signHash, theme) {
-  if (error) {
-    return { statusText: 'Signature failed', statusTextColor: theme.negative }
-  }
-  if (signHash) {
-    return {
-      statusText: 'Signature confirmed',
-      statusTextColor: theme.positive,
-    }
-  }
-  return {
-    statusText: 'Waiting for signature…',
-    statusTextColor: theme.surfaceContentSecondary,
-  }
-}
-
-function getInfoText(error, signHash, successText, actionText) {
-  if (error) {
-    return 'An error has occurred when signing the message.'
-  }
-  if (signHash) {
-    return successText
-  }
-  return `Open your Ethereum provider (Metamask or similar) to complete the
-  signature request. Signing this message will prove ownership of your
-  account and ${actionText}`
-}
 
 const ActionButtons = styled(Button)`
   width: ${({ compactMode }) =>
