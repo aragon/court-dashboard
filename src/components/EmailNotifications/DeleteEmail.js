@@ -1,7 +1,10 @@
 import React, { useCallback } from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 
+import emailNotifcationIllustration from '../../assets/emailNotifications.svg'
+
 const DeleteEmail = React.memo(function DeleteEmail({
+  isModal,
   email,
   onDelete,
   onCancel,
@@ -30,14 +33,30 @@ const DeleteEmail = React.memo(function DeleteEmail({
     <div
       css={`
         display: flex;
-        padding-top: ${3 * GU}px;
+        padding-top: ${isModal ? 3 : 0 * GU}px;
+        flex-direction: column;
       `}
     >
+      {!isModal && (
+        <div
+          css={`
+            text-align: center;
+          `}
+        >
+          <img
+            src={emailNotifcationIllustration}
+            width={180}
+            height={180}
+            alt=""
+          />
+        </div>
+      )}
       <div
         css={`
           display: flex;
           flex-direction: column;
-          text-align: left;
+          text-align: ${isModal ? 'left' : 'center'};
+          margin-top: ${isModal ? 0 : 5 * GU}px;
         `}
       >
         <span
@@ -62,7 +81,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
           css={`
             margin-top: ${4 * GU}px;
             display: flex;
-            justify-content: flex-end;
+            justify-content: ${isModal ? 'flex-end' : 'center'};
           `}
         >
           <Button
@@ -71,10 +90,16 @@ const DeleteEmail = React.memo(function DeleteEmail({
             `}
             onClick={onCancel}
             size="medium"
+            wide={!isModal}
           >
             Cancel
           </Button>
-          <Button mode="negative" onClick={handleOnDelete} size="medium">
+          <Button
+            mode="negative"
+            onClick={handleOnDelete}
+            size="medium"
+            wide={!isModal}
+          >
             Delete email
           </Button>
         </div>
