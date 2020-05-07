@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
+import { DELETE_ACTION_MODAL, DELETE_ACTION_PREFERENCES } from './constants'
 
 import emailNotifcationIllustration from '../../assets/emailNotifications.svg'
 
@@ -18,7 +19,9 @@ const DeleteEmail = React.memo(function DeleteEmail({
     const { needsSignature, error } = await onDelete()
 
     if (needsSignature) {
-      onNeedsSignature()
+      onNeedsSignature(
+        isModal ? DELETE_ACTION_MODAL : DELETE_ACTION_PREFERENCES
+      )
       return
     }
 
@@ -27,7 +30,11 @@ const DeleteEmail = React.memo(function DeleteEmail({
       return
     }
     onDeleteSuccess()
-  }, [onDelete, onDeleteError, onDeleteSuccess, onNeedsSignature])
+  }, [isModal, onDelete, onDeleteError, onDeleteSuccess, onNeedsSignature])
+
+  const handleOnCancel = useCallback(async () => {
+    onCancel(isModal ? DELETE_ACTION_MODAL : DELETE_ACTION_PREFERENCES)
+  }, [isModal, onCancel])
 
   return (
     <div
@@ -88,7 +95,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
             css={`
             margin-right: ${GU}px;}
             `}
-            onClick={onCancel}
+            onClick={handleOnCancel}
             size="medium"
             wide={!isModal}
           >
