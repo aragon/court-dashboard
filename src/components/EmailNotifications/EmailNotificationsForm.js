@@ -21,13 +21,8 @@ import emailNotifcationIllustration from '../../../src/assets/emailNotifications
 function EmailNotificationsForm({
   account,
   compactMode,
-  emailExists,
-  onError,
-  onGetExistingEmail,
+  isModal,
   onOptOut,
-  onOptOutNeedsSignature,
-  onSubscribeNeedsSignature,
-  onSubscribeSuccess,
   onSubscribeToNotifications,
 }) {
   const [emailAddress, setEmailAddress] = useState('')
@@ -49,62 +44,13 @@ function EmailNotificationsForm({
     }
   }, [])
 
-  const handleOnSubscribeToNotifications = useCallback(async () => {
-    let email = emailAddress
-
-    if (emailExists) {
-      const {
-        needsSignature,
-        email: existingEmail,
-        error: errorGettingEmail,
-      } = await onGetExistingEmail()
-
-      if (errorGettingEmail && !needsSignature) {
-        onError()
-        return
-      }
-      email = existingEmail
-    }
-
-    const {
-      subscribedEmail,
-      needsSignature: subscribeNeedsSignature,
-      error: errorSubscribing,
-    } = await onSubscribeToNotifications(email)
-
-    if (errorSubscribing && !subscribeNeedsSignature) {
-      onError()
-      return
-    }
-
-    if (subscribeNeedsSignature) {
-      onSubscribeNeedsSignature(emailAddress)
-      return
-    }
-
-    onSubscribeSuccess(subscribedEmail)
-  }, [
-    emailAddress,
-    emailExists,
-    onError,
-    onGetExistingEmail,
-    onSubscribeNeedsSignature,
-    onSubscribeSuccess,
-    onSubscribeToNotifications,
-  ])
+  const handleOnSubscribeToNotifications = useCallback(() => {
+    onSubscribeToNotifications(emailAddress)
+  }, [emailAddress, onSubscribeToNotifications])
 
   const handleOnOptOut = useCallback(async () => {
-    const { error, needsSignature } = await onOptOut()
-
-    if (error && !needsSignature) {
-      onError()
-      return
-    }
-
-    if (needsSignature) {
-      onOptOutNeedsSignature()
-    }
-  }, [onError, onOptOut, onOptOutNeedsSignature])
+    onOptOut()
+  }, [onOptOut])
 
   return (
     <>
@@ -113,7 +59,7 @@ function EmailNotificationsForm({
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding-top: ${3 * GU}px;
+          padding-top: ${isModal ? 3 : 0 * GU}px;
         `}
       >
         <div
@@ -144,14 +90,27 @@ function EmailNotificationsForm({
             Stay up to date with email notifications
           </span>
 
-          <TextContent emailExists={emailExists} account={account} />
-          {!emailExists && (
+          <TextContent account={account} />
+
+          <div
+            css={`
+              margin-top: ${5 * GU}px;
+            `}
+          >
             <div
               css={`
-                margin-top: ${5 * GU}px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
               `}
             >
-              <Field label="Enter email address">
+              <Field
+                label="Enter email address"
+                css={`
+                  width: 100%;
+                  margin-bottom: 0px;
+                `}
+              >
                 <TextInput
                   value={emailAddress}
                   adornment={
@@ -182,67 +141,82 @@ function EmailNotificationsForm({
                   placeholder="email@address.com"
                   onBlur={handleEmailAddressBlur}
                 />
-                {emailInvalid && (
-                  <div>
-                    <p
-                      css={`
-                        color: ${theme.negative};
-                        ${textStyle('body4')};
-                        float: left;
-                        margin-top: ${0.5 * GU}px;
-                      `}
-                    >
-                      Please enter a valid email address.
-                    </p>
-                  </div>
-                )}
               </Field>
+
+              {!isModal && (
+                <div
+                  css={`
+                    display: flex;
+                    align-items: flex-end;
+                    margin-left: ${2 * GU}px;
+                  `}
+                >
+                  <Button
+                    mode="strong"
+                    disabled={emailInvalid || !termsAccepted}
+                    onClick={handleOnSubscribeToNotifications}
+                    size="medium"
+                  >
+                    Subscribe
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
+
+            {emailInvalid && (
+              <div>
+                <p
+                  css={`
+                    color: ${theme.negative};
+                    ${textStyle('body4')};
+                    text-align: left;
+                    height: 0;
+                    margin-top: ${0.5 * GU}px;
+                  `}
+                >
+                  Please enter a valid email address.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
         <LegalTermsAndPolicy
-          emailExists={emailExists}
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
-          theme={theme}
         />
-        <div
-          css={`
-            display: flex;
-            justify-content: space-between;
-            flex-direction: ${compactMode ? 'column' : 'row'};
-            width: 100%;
-            margin-bottom: ${1.5 * GU}px;
-            margin-top: ${3 * GU}px;
-          `}
-        >
-          <ActionButtons compactMode={compactMode} onClick={handleOnOptOut}>
-            Opt out
-          </ActionButtons>
-          <ActionButtons
-            compactMode={compactMode}
-            mode="strong"
-            disabled={emailExists ? false : emailInvalid || !termsAccepted}
-            onClick={handleOnSubscribeToNotifications}
+
+        {isModal && (
+          <div
+            css={`
+              display: flex;
+              justify-content: space-between;
+              flex-direction: ${compactMode ? 'column' : 'row'};
+              width: 100%;
+              margin-bottom: ${1.5 * GU}px;
+              margin-top: ${3 * GU}px;
+            `}
           >
-            {emailExists ? 'Subscribe to notifications' : 'Subscribe'}
-          </ActionButtons>
-        </div>
+            <ActionButtons compactMode={compactMode} onClick={handleOnOptOut}>
+              Opt out
+            </ActionButtons>
+            <ActionButtons
+              compactMode={compactMode}
+              mode="strong"
+              disabled={emailInvalid || !termsAccepted}
+              onClick={handleOnSubscribeToNotifications}
+            >
+              Subscribe
+            </ActionButtons>
+          </div>
+        )}
       </div>
     </>
   )
 }
 
-function TextContent({ emailExists, account }) {
+function TextContent({ account }) {
   const theme = useTheme()
-  let content
-
-  if (emailExists) {
-    content = `We’ve detected an email associated to the account ${account}                                      
-        Please verify it, so you will get notifications from all Aragon Court events. 
-        You can also update it, or delete it if you wish to unsubscribe.`
-  }
-  content = `Associate an email address to your account ${account}, so you can get notifications from all Aragon Court events.`
+  const content = `Associate an email address to your account ${account}, so you can get notifications from all Aragon Court events.`
 
   return (
     <span
@@ -269,15 +243,8 @@ function TextContent({ emailExists, account }) {
   )
 }
 
-function LegalTermsAndPolicy({
-  emailExists,
-  termsAccepted,
-  setTermsAccepted,
-  theme,
-}) {
-  const text = emailExists
-    ? 'You have previously agreed to Aragon court '
-    : 'By continuing with your email, you agree to Aragon court '
+function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted }) {
+  const text = 'By continuing with your email, you agree to Aragon court '
 
   return (
     <div
@@ -290,24 +257,28 @@ function LegalTermsAndPolicy({
           display: flex;
         `}
       >
-        {!emailExists && (
-          <Checkbox
-            checked={termsAccepted}
-            onChange={checked => setTermsAccepted(checked)}
-          />
-        )}
+        <Checkbox
+          checked={termsAccepted}
+          onChange={checked => setTermsAccepted(checked)}
+        />
 
         <span
           css={`
             ${textStyle('body2')};
-            color: ${theme.surfaceContentSecondary};
+            color: #9096b6;
             margin-left: ${1.5 * GU}px;
-            text-align: ${emailExists ? 'center' : 'left'};
+            text-align: left;
           `}
         >
           {text}
-          <Link href="#">legal terms </Link> and{' '}
-          <Link href="#"> email collection policy.</Link>
+          <Link href="https://anj.aragon.org/legal/terms-general.pdf">
+            legal terms{' '}
+          </Link>{' '}
+          and{' '}
+          <Link href="https://aragon.one/email-collection.md">
+            {' '}
+            email collection policy.
+          </Link>
         </span>
       </div>
     </div>
