@@ -77,9 +77,11 @@ const SignerRequest = React.memo(function SignerRequest({
       return
     }
 
-    await onSignSuccess()
+    if (typeof onSignSuccess === 'function') {
+      await onSignSuccess()
 
-    setSignHash(signHash)
+      setSignHash(signHash)
+    }
   }, [onSignSuccess, wallet])
 
   useEffect(() => {
@@ -91,10 +93,13 @@ const SignerRequest = React.memo(function SignerRequest({
       return
     }
 
-    const timer = setTimeout(() => {
-      onActionSuccess()
-    }, 3000)
-    return () => clearTimeout(timer)
+    if (typeof onActionSuccess === 'function') {
+      const timer = setTimeout(() => {
+        onActionSuccess()
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
   }, [signHash, onActionSuccess])
 
   return (
