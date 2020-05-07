@@ -14,9 +14,8 @@ function ExistingEmailSubscription({
 }) {
   const theme = useTheme()
 
-  const textContent = `We’ve detected an email associated to the account ${account}                                      
-  Please verify it, so you will get notifications from all Aragon Court events. 
-  You can also update it, or delete it if you wish to unsubscribe.`
+  const textContent = `We’ve detected an email associated to the account ${account}.
+  First, we need to verify that you are in control of this account and then, authenticate the email address you provided.`
 
   const handleOnSubscribeToNotifications = useCallback(() => {
     onSubscribeToNotifications()
