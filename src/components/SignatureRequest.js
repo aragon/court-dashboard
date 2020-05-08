@@ -78,7 +78,7 @@ const SignerRequest = React.memo(function SignerRequest({
     }
 
     if (typeof onSignSuccess === 'function') {
-      await onSignSuccess()
+      await onSignSuccess(signHash, now)
 
       setSignHash(signHash)
     }
