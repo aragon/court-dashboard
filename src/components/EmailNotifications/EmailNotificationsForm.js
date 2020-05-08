@@ -24,6 +24,7 @@ function EmailNotificationsForm({
   isModal,
   onOptOut,
   onSubscribeToNotifications,
+  existingEmail,
 }) {
   const [emailAddress, setEmailAddress] = useState('')
   const [emailInvalid, setEmailInvalid] = useState(null)
@@ -87,10 +88,12 @@ function EmailNotificationsForm({
               margin-top: ${4 * GU}px;
             `}
           >
-            Stay up to date with email notifications
+            {existingEmail
+              ? `Update "${existingEmail}"`
+              : 'Stay up to date with email notifications'}
           </span>
 
-          <TextContent account={account} />
+          <TextContent update={existingEmail} account={account} />
 
           <div
             css={`
@@ -105,7 +108,11 @@ function EmailNotificationsForm({
               `}
             >
               <Field
-                label="Enter email address"
+                label={
+                  existingEmail
+                    ? 'Enter new email address'
+                    : 'Enter email address'
+                }
                 css={`
                   width: 100%;
                   margin-bottom: 0px;
@@ -157,7 +164,7 @@ function EmailNotificationsForm({
                     onClick={handleOnSubscribeToNotifications}
                     size="medium"
                   >
-                    Subscribe
+                    {existingEmail ? 'Update' : 'Subscribe'}
                   </Button>
                 </div>
               )}
@@ -214,9 +221,11 @@ function EmailNotificationsForm({
   )
 }
 
-function TextContent({ account }) {
+function TextContent({ update, account }) {
   const theme = useTheme()
-  const content = `Associate an email address to your account ${account}, so you can get notifications from all Aragon Court events.`
+  const content = update
+    ? `Enter a new email address for your account ${account}. We will continue sending email notifications to the current email address until you verify this new email address.`
+    : `Associate an email address to your account ${account}, so you can get notifications from all Aragon Court events.`
 
   return (
     <span
