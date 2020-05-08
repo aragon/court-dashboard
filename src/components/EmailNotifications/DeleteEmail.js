@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
-import { DELETE_ACTION_MODAL, DELETE_ACTION_PREFERENCES } from './constants'
 
 import emailNotifcationIllustration from '../../assets/emailNotifications.svg'
 
@@ -9,32 +8,16 @@ const DeleteEmail = React.memo(function DeleteEmail({
   email,
   onDelete,
   onCancel,
-  onDeleteSuccess,
-  onDeleteError,
-  onNeedsSignature,
 }) {
   const theme = useTheme()
 
-  const handleOnDelete = useCallback(async () => {
-    const { needsSignature, error } = await onDelete()
-
-    if (needsSignature) {
-      onNeedsSignature(
-        isModal ? DELETE_ACTION_MODAL : DELETE_ACTION_PREFERENCES
-      )
-      return
-    }
-
-    if (error) {
-      onDeleteError()
-      return
-    }
-    onDeleteSuccess()
-  }, [isModal, onDelete, onDeleteError, onDeleteSuccess, onNeedsSignature])
+  const handleOnDelete = useCallback(() => {
+    onDelete()
+  }, [onDelete])
 
   const handleOnCancel = useCallback(async () => {
-    onCancel(isModal ? DELETE_ACTION_MODAL : DELETE_ACTION_PREFERENCES)
-  }, [isModal, onCancel])
+    onCancel()
+  }, [onCancel])
 
   return (
     <div
