@@ -17,8 +17,8 @@ import DisputeOutcomeText from './DisputeOutcomeText'
 import DisputeStatus from './DisputeStatus'
 import DisputeVoided from './DisputeVoided'
 import ErrorLoading from '../Errors/ErrorLoading'
+import IdentityBadge from '../IdentityBadge'
 import Loading from './Loading'
-import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
 import { useWallet } from '../../providers/Wallet'
 import { Phase as DisputePhase, Status } from '../../types/dispute-status-types'
 import {
@@ -263,7 +263,7 @@ function Field({ label, value }) {
             {transformAddresses(line, (part, isAddress, index) =>
               isAddress ? (
                 <span title={part} key={index}>
-                  <LocalIdentityBadge
+                  <IdentityBadge
                     connectedAccount={addressesEqual(part, wallet.account)}
                     compact
                     entity={part}
