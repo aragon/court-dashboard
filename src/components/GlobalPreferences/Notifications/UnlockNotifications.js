@@ -3,6 +3,7 @@ import { Button, GU, IconConnect, textStyle, useTheme } from '@aragon/ui'
 import emailNotifcationIllustration from '../../../../src/assets/emailNotifications.svg'
 
 const UnlockNotifications = React.memo(function UnlockNotifications({
+  compactMode,
   needsUnlockSettings,
   onUnlock,
 }) {
@@ -11,7 +12,6 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
   return (
     <div
       css={`
-        display: flex;
         padding: ${3 * GU}px;
       `}
     >
@@ -30,20 +30,20 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
             alt=""
           />
         </div>
-        <span
+        <h3
           css={`
             ${textStyle('title2')};
             margin-top: ${3 * GU}px;
           `}
         >
           Unlock notifications settings
-        </span>
+        </h3>
         <div
           css={`
             display: flex;
             flex-direction: column;
             background: ${needsUnlockSettings ? '' : theme.background};
-            padding: ${3 * GU}px ${15 * GU}px;
+            padding: ${3 * GU}px ${compactMode ? 3 : 13 * GU}px;
             margin-top: ${1.5 * GU}px;
           `}
         >
@@ -61,7 +61,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
                 <span>
                   You are required to sign a message to prove that you
                 </span>
-                <span>own the enabled Ethereum account.</span>
+                <span>own the connected Ethereum account.</span>
               </div>
               <Button
                 css={`
@@ -82,7 +82,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
                   font-weight: 600;
                 `}
               >
-                You must enable your account to access notifications settings
+                You must connect your account to access notifications settings
               </span>
               <span
                 css={`
@@ -93,8 +93,8 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
               >
                 Connect to your Ethereum provider by clicking on the{' '}
                 <IconConnect size="small" />
-                Enable account button on the header. You may be temporarily
-                redirected to a new screen.
+                <strong>Connect account</strong> button on the header. You may
+                be temporarily redirected to a new screen.
               </span>
             </>
           )}
