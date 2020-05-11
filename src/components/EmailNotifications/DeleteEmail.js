@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 
 import emailNotifcationIllustration from '../../assets/emailNotifications.svg'
@@ -10,14 +10,6 @@ const DeleteEmail = React.memo(function DeleteEmail({
   onCancel,
 }) {
   const theme = useTheme()
-
-  const handleOnDelete = useCallback(() => {
-    onDelete()
-  }, [onDelete])
-
-  const handleOnCancel = useCallback(async () => {
-    onCancel()
-  }, [onCancel])
 
   return (
     <div
@@ -65,7 +57,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
         >
           This action will irreversibly unsubscribe you from all email
           notifications and remove this email address from our databases. You
-          can always re-subscribe from Notifications preferences later.
+          can always re-subscribe from the notifications preferences later.
         </span>
         <div
           css={`
@@ -78,7 +70,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
             css={`
             margin-right: ${GU}px;}
             `}
-            onClick={handleOnCancel}
+            onClick={onCancel}
             size="medium"
             wide={!isModal}
           >
@@ -86,7 +78,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
           </Button>
           <Button
             mode="negative"
-            onClick={handleOnDelete}
+            onClick={onDelete}
             size="medium"
             wide={!isModal}
           >
