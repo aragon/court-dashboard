@@ -10,7 +10,6 @@ import {
   RESEND_EMAIL_ACTION,
   SUBSCRIBE_EXISTING_ACTION,
   SUBSCRIBE_MODAL_ACTION,
-  VERIFY_YOUR_EMAIL_UPDATE_SCREEN,
   VERIFY_YOUR_EMAIL_SCREEN,
 } from './constants'
 
@@ -23,7 +22,7 @@ export const actions = {
 
   [SUBSCRIBE_EXISTING_ACTION]: {
     request: subscribeExistingEmail,
-    successScreen: VERIFY_YOUR_EMAIL_UPDATE_SCREEN,
+    successScreen: VERIFY_YOUR_EMAIL_SCREEN,
     requiresEmail: false,
   },
   [OPTOUT_ACTION]: {

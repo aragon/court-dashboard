@@ -31,7 +31,6 @@ import {
   SUBSCRIBE_MODAL_ACTION,
   SUCCESS_INFO_SCREEN,
   VERIFY_YOUR_EMAIL_SCREEN,
-  VERIFY_YOUR_EMAIL_UPDATE_SCREEN,
   OPTOUT_ACTION,
   SETTINGS,
 } from './constants'
@@ -138,6 +137,7 @@ const EmailNotificationsManager = React.memo(
         error,
       } = await subscribeExistingEmail(account)
 
+      console.log('existing EMAIL ', existingEmail)
       if (error && !needsSignature) {
         setSubscriptionProgress({ serviceError: true })
         return
@@ -148,7 +148,7 @@ const EmailNotificationsManager = React.memo(
           ...signatureProgress,
           email: existingEmail,
         }))
-        setScreenId(VERIFY_YOUR_EMAIL_UPDATE_SCREEN)
+        setScreenId(VERIFY_YOUR_EMAIL_SCREEN)
         return
       }
 
@@ -399,19 +399,10 @@ const EmailNotificationsManager = React.memo(
           if (screenId === VERIFY_YOUR_EMAIL_SCREEN) {
             return (
               <VerifyEmailAddress
-                updateMode={false}
-                compactMode={compactMode}
-                email={subscriptionProgress.email}
-                onResendEmail={handleOnResendEmail}
-              />
-            )
-          }
-          if (screenId === VERIFY_YOUR_EMAIL_UPDATE_SCREEN) {
-            return (
-              <VerifyEmailAddress
                 updateMode={emailExists}
                 compactMode={compactMode}
                 email={subscriptionProgress.email}
+                onResendEmail={handleOnResendEmail}
                 onSubscribe={handleOnSubscribe}
                 onDeleteEmail={() => {}}
               />
