@@ -20,14 +20,12 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   compactMode,
   email,
   onSubscribe,
-  onSubscribeSuccess,
-  onReSendVerificationEmail,
+  onResendEmail,
   onDeleteEmail,
-  onError,
 }) {
   const theme = useTheme()
   const [emailAddress, setEmailAddress] = useState('')
-  const [emailInvalid, setEmailInvalid] = useState(null)
+  const [emailInvalid, setEmailInvalid] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(false)
 
   const handleEmailAddressBlur = useCallback(e => {
@@ -44,22 +42,9 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
     }
   }, [])
 
-  const handleSubscribe = useCallback(async () => {
-    const { subscribedEmail, error } = await onSubscribe(emailAddress)
-
-    if (error) {
-      onError()
-    }
-    onSubscribeSuccess(subscribedEmail)
-  }, [emailAddress, onError, onSubscribe, onSubscribeSuccess])
-
-  const handleReSendEmail = useCallback(async () => {
-    const { error } = await onReSendVerificationEmail()
-
-    if (error) {
-      onError()
-    }
-  }, [onError, onReSendVerificationEmail])
+  const handleOnSubscribe = useCallback(() => {
+    onSubscribe(emailAddress)
+  }, [emailAddress, onSubscribe])
 
   return (
     <div
@@ -84,14 +69,14 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
         >
           <img src={emailIllustration} width={141} height={141} alt="" />
         </div>
-        <span
+        <h3
           css={`
             ${textStyle('title2')};
             margin-top: ${4 * GU}px;
           `}
         >
           Verify your email address
-        </span>
+        </h3>
 
         <span
           css={`
@@ -102,112 +87,106 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
         >
           Almost there! We’ve sent a verification email to {email}. Kindly check
           your inbox and click the link to verify your account.
-          {updateMode
-            ? 'Alternatively, you can update this email or delete it, if you wish to unsubscribe'
-            : ''}
+          {updateMode &&
+            'Alternatively, you can update this email or delete it, if you wish to unsubscribe'}
         </span>
         {(() => {
-          if (updateMode) {
-            const buttonWidth = compactMode
-              ? '100% '
-              : `calc((100% - ${2 * GU}px) /  2)`
+          if (!updateMode) {
             return (
-              <>
-                <div
-                  css={`
-                    margin-top: ${5 * GU}px;
-                  `}
-                >
-                  <Field label="Update email address">
-                    <TextInput
-                      value={emailAddress}
-                      adornment={
-                        emailInvalid === false ? (
-                          <IconCheck
-                            css={`
-                              color: ${theme.positive};
-                            `}
-                          />
-                        ) : emailAddress.trim() ? (
-                          <IconCross
-                            css={`
-                              color: ${theme.negative};
-                            `}
-                          />
-                        ) : (
-                          <IconCheck
-                            css={`
-                              opacity: 0;
-                            `}
-                          />
-                        )
-                      }
-                      adornmentPosition="end"
-                      type="email"
-                      wide
-                      onChange={handleEmailAddressChange}
-                      placeholder="email@address.com"
-                      onBlur={handleEmailAddressBlur}
-                    />
-                    {emailInvalid && (
-                      <p
-                        css={`
-                          color: ${theme.negative};
-                          ${textStyle('body4')};
-                          float: left;
-                          margin-top: ${0.5 * GU}px;
-                        `}
-                      >
-                        Please enter a valid email address.
-                      </p>
-                    )}
-                  </Field>
-                </div>
-                <LegalTermsAndPolicy
-                  termsAccepted={termsAccepted}
-                  setTermsAccepted={setTermsAccepted}
-                  theme={theme}
-                />
-                <div
-                  css={`
-                    display: flex;
-                    justify-content: space-between;
-                    flex-direction: ${compactMode ? 'column' : 'row'};
-                    width: 100%;
-                    margin-bottom: ${1.5 * GU}px;
-                    margin-top: ${3 * GU}px;
-                  `}
-                >
-                  <ActionButtons
-                    compactMode={compactMode}
-                    onClick={onDeleteEmail}
-                    width={buttonWidth}
-                  >
-                    Delete email
-                  </ActionButtons>
-                  <ActionButtons
-                    compactMode={compactMode}
-                    mode="strong"
-                    disabled={emailInvalid || !termsAccepted}
-                    onClick={handleSubscribe}
-                    width={buttonWidth}
-                  >
-                    Send verification email
-                  </ActionButtons>
-                </div>
-              </>
+              <Button
+                mode="strong"
+                onClick={onResendEmail}
+                css={`
+                  margin-top: ${3 * GU}px;
+                `}
+              >
+                Resend verification email
+              </Button>
             )
           }
           return (
-            <Button
-              css={`
-                margin-top: ${3 * GU}px;
-              `}
-              mode="strong"
-              onClick={handleReSendEmail}
-            >
-              Resend verification email
-            </Button>
+            <>
+              <div
+                css={`
+                  margin-top: ${5 * GU}px;
+                `}
+              >
+                <Field label="Update email address">
+                  <TextInput
+                    value={emailAddress}
+                    adornment={
+                      emailInvalid ? (
+                        <IconCross
+                          css={`
+                            color: ${theme.negative};
+                          `}
+                        />
+                      ) : emailAddress.trim() ? (
+                        <IconCheck
+                          css={`
+                            color: ${theme.positive};
+                          `}
+                        />
+                      ) : (
+                        <IconCheck
+                          css={`
+                            opacity: 0;
+                          `}
+                        />
+                      )
+                    }
+                    adornmentPosition="end"
+                    type="email"
+                    wide
+                    onChange={handleEmailAddressChange}
+                    placeholder="email@address.com"
+                    onBlur={handleEmailAddressBlur}
+                  />
+                  {emailInvalid && (
+                    <p
+                      css={`
+                        color: ${theme.negative};
+                        ${textStyle('body4')};
+                        float: left;
+                        margin-top: ${0.5 * GU}px;
+                      `}
+                    >
+                      Please enter a valid email address.
+                    </p>
+                  )}
+                </Field>
+              </div>
+              <LegalTermsAndPolicy
+                termsAccepted={termsAccepted}
+                setTermsAccepted={setTermsAccepted}
+                theme={theme}
+              />
+              <div
+                css={`
+                  display: flex;
+                  justify-content: space-between;
+                  flex-direction: ${compactMode ? 'column' : 'row'};
+                  width: 100%;
+                  margin-bottom: ${1.5 * GU}px;
+                  margin-top: ${3 * GU}px;
+                `}
+              >
+                <ActionButtons
+                  compactMode={compactMode}
+                  onClick={onDeleteEmail}
+                >
+                  Delete email
+                </ActionButtons>
+                <ActionButtons
+                  compactMode={compactMode}
+                  mode="strong"
+                  disabled={emailInvalid || !termsAccepted}
+                  onClick={handleOnSubscribe}
+                >
+                  Send verification email
+                </ActionButtons>
+              </div>
+            </>
           )
         })()}
       </div>
@@ -216,6 +195,13 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
 })
 
 function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
+  const handleOnChange = useCallback(
+    checked => {
+      setTermsAccepted(checked)
+    },
+    [setTermsAccepted]
+  )
+
   return (
     <div
       css={`
@@ -227,12 +213,8 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
           display: flex;
         `}
       >
-        <Checkbox
-          checked={termsAccepted}
-          onChange={checked => setTermsAccepted(checked)}
-        />
+        <Checkbox checked={termsAccepted} onChange={handleOnChange} />
 
-        {/** TODO- Add Links once we have them */}
         <span
           css={`
             ${textStyle('body2')};
@@ -241,9 +223,15 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
             text-align: left;
           `}
         >
-          By continuing with your email, you agree to Aragon court{' '}
-          <Link href="#">legal terms </Link> and{' '}
-          <Link href="#"> email collection policy.</Link>
+          By continuing with your email, you agree to Aragon Court's{' '}
+          <Link href="https://anj.aragon.org/legal/terms-general.pdf">
+            legal terms{' '}
+          </Link>{' '}
+          and{' '}
+          <Link href="https://aragon.one/email-collection.md">
+            {' '}
+            email collection policy.
+          </Link>
         </span>
       </div>
     </div>
