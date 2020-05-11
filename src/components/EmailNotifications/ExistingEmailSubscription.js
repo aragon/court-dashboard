@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { Button, GU, Link, textStyle, useTheme } from '@aragon/ui'
 import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
@@ -15,15 +15,8 @@ function ExistingEmailSubscription({
   const theme = useTheme()
 
   const textContent = `We’ve detected an email associated to the account ${account}.
-  First, we need to verify that you are in control of this account and then, authenticate the email address you provided.`
-
-  const handleOnSubscribeToNotifications = useCallback(() => {
-    onSubscribeToNotifications()
-  }, [onSubscribeToNotifications])
-
-  const handleOnOptOut = useCallback(() => {
-    onOptOut()
-  }, [onOptOut])
+  First, we need to verify that you are in control of this account and then, authenticate
+  the email address you provided.`
 
   return (
     <>
@@ -54,14 +47,14 @@ function ExistingEmailSubscription({
               alt=""
             />
           </div>
-          <span
+          <h3
             css={`
               ${textStyle('title2')};
               margin-top: ${4 * GU}px;
             `}
           >
             Stay up to date with email notifications
-          </span>
+          </h3>
 
           <span
             css={`
@@ -93,9 +86,15 @@ function ExistingEmailSubscription({
             margin-top: ${3 * GU}px;
           `}
         >
-          You have previously agreed to Aragon court{' '}
-          <Link href="#">legal terms </Link> and{' '}
-          <Link href="#"> email collection policy.</Link>
+          You have previously agreed to Aragon Court{' '}
+          <Link href="https://anj.aragon.org/legal/terms-general.pdf">
+            legal terms{' '}
+          </Link>{' '}
+          and{' '}
+          <Link href="https://aragon.one/email-collection.md">
+            {' '}
+            email collection policy.
+          </Link>
         </span>
         <div
           css={`
@@ -107,13 +106,13 @@ function ExistingEmailSubscription({
             margin-top: ${3 * GU}px;
           `}
         >
-          <ActionButtons compactMode={compactMode} onClick={handleOnOptOut}>
+          <ActionButtons compactMode={compactMode} onClick={onOptOut}>
             Opt out
           </ActionButtons>
           <ActionButtons
             compactMode={compactMode}
             mode="strong"
-            onClick={handleOnSubscribeToNotifications}
+            onClick={onSubscribeToNotifications}
           >
             Subscribe to notifications
           </ActionButtons>
