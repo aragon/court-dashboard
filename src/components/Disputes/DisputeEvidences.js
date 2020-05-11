@@ -4,7 +4,7 @@ import { useWallet } from 'use-wallet'
 import useEvidences from '../../hooks/useEvidences'
 import { addressesEqual } from '../../lib/web3-utils'
 import ErrorLoadingEvidence from './ErrorLoadingEvidence'
-import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
+import IdentityBadge from '../IdentityBadge'
 import Markdown from '../Markdown'
 import { dateFormat } from '../../utils/date-utils'
 
@@ -97,7 +97,7 @@ const EvidenceContent = React.memo(function EvidenceContent({
               align-items: flex-start;
             `}
           >
-            <LocalIdentityBadge
+            <IdentityBadge
               connectedAccount={addressesEqual(submitter, wallet.account)}
               entity={submitter}
             />
