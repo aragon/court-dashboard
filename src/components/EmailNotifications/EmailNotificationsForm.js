@@ -21,13 +21,13 @@ import emailNotifcationIllustration from '../../../src/assets/emailNotifications
 function EmailNotificationsForm({
   account,
   compactMode,
+  existingEmail,
   isModal,
   onOptOut,
   onSubscribeToNotifications,
-  existingEmail,
 }) {
   const [emailAddress, setEmailAddress] = useState('')
-  const [emailInvalid, setEmailInvalid] = useState(null)
+  const [emailInvalid, setEmailInvalid] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(false)
   const theme = useTheme()
 
@@ -48,10 +48,6 @@ function EmailNotificationsForm({
   const handleOnSubscribeToNotifications = useCallback(() => {
     onSubscribeToNotifications(emailAddress)
   }, [emailAddress, onSubscribeToNotifications])
-
-  const handleOnOptOut = useCallback(async () => {
-    onOptOut()
-  }, [onOptOut])
 
   return (
     <>
@@ -93,7 +89,7 @@ function EmailNotificationsForm({
               : 'Stay up to date with email notifications'}
           </span>
 
-          <TextContent update={existingEmail} account={account} />
+          <TextContent update={existingEmail} account={account} theme={theme} />
 
           <div
             css={`
@@ -121,16 +117,16 @@ function EmailNotificationsForm({
                 <TextInput
                   value={emailAddress}
                   adornment={
-                    emailInvalid === false ? (
-                      <IconCheck
-                        css={`
-                          color: ${theme.positive};
-                        `}
-                      />
-                    ) : emailAddress.trim() ? (
+                    emailInvalid ? (
                       <IconCross
                         css={`
                           color: ${theme.negative};
+                        `}
+                      />
+                    ) : emailAddress.trim() ? (
+                      <IconCheck
+                        css={`
+                          color: ${theme.positive};
                         `}
                       />
                     ) : (
@@ -203,7 +199,7 @@ function EmailNotificationsForm({
               margin-top: ${3 * GU}px;
             `}
           >
-            <ActionButtons compactMode={compactMode} onClick={handleOnOptOut}>
+            <ActionButtons compactMode={compactMode} onClick={onOptOut}>
               Opt out
             </ActionButtons>
             <ActionButtons
@@ -221,8 +217,7 @@ function EmailNotificationsForm({
   )
 }
 
-function TextContent({ update, account }) {
-  const theme = useTheme()
+function TextContent({ update, account, theme }) {
   const content = update
     ? `Enter a new email address for your account ${account}. We will continue sending email notifications to the current email address until you verify this new email address.`
     : `Associate an email address to your account ${account}, so you can get notifications from all Aragon Court events.`
@@ -253,8 +248,6 @@ function TextContent({ update, account }) {
 }
 
 function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted }) {
-  const text = 'By continuing with your email, you agree to Aragon court '
-
   return (
     <div
       css={`
@@ -279,7 +272,7 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted }) {
             text-align: left;
           `}
         >
-          {text}
+          By continuing with your email, you agree to Aragon Court{' '}
           <Link href="https://anj.aragon.org/legal/terms-general.pdf">
             legal terms{' '}
           </Link>{' '}
