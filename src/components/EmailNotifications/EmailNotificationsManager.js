@@ -17,6 +17,7 @@ import { actions } from './actions'
 
 import {
   createSession,
+  deleteCurrentSession,
   deleteJurorEmail,
   resendVerificationEmail,
   subscribeToNotifications,
@@ -307,6 +308,21 @@ const EmailNotificationsManager = React.memo(
       }))
     }, [defaultSignRequestText])
 
+    const handleOnUpdateEmail = useCallback(() => {
+      setScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
+    }, [])
+
+    const handleOnLockSettings = useCallback(async () => {
+      const { error, needsSignature } = await deleteCurrentSession(account)
+
+      if (error && !needsSignature) {
+        setSubscriptionProgress({ serviceError: true })
+        return
+      }
+
+      setScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
+    }, [account])
+
     const handleOnSignSuccess = useCallback((signHash, timestamp) => {
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
@@ -466,6 +482,7 @@ const EmailNotificationsManager = React.memo(
               <EmailNotificationsForm
                 isModal={isModal}
                 account={account}
+                existingEmail={subscriptionProgress.email}
                 compactMode={compactMode}
                 onOptOut={handleOnOptOut}
                 onSubscribeToNotifications={handleOnSubscribe}
@@ -521,9 +538,9 @@ const EmailNotificationsManager = React.memo(
                 email={subscriptionProgress.email}
                 notificationsDisabled={notificationsDisabled}
                 onSwitchNotificationsStatus={() => {}}
-                onLockSettings={() => {}}
+                onLockSettings={handleOnLockSettings}
                 onDeleteEmail={handleOnDeleteConfirmation}
-                onUpdateEmail={() => {}}
+                onUpdateEmail={handleOnUpdateEmail}
               />
             )
           }
