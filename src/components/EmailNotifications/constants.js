@@ -1,9 +1,5 @@
-export const DELETE_ACTION = Symbol('DELETE_ACTION')
 export const DELETE_ACTION_MODAL = Symbol('DELETE_ACTION_MODAL')
-export const DELETE_ACTION_PREFERENCES = Symbol('DELETE_ACTION_PREFERENCES')
 export const LOCK_SETTINGS_ACTION = Symbol('LOCK_SETTINGS_ACTION')
-export const UNLOCK_SETTINGS_ACTION = Symbol('UNLOCK_SETTINGS')
-export const SUBSCRIBE_ACTION = Symbol('SUBSCRIBE_ACTION')
 
 // ************************************** REMOVE AND ADD TO SETTINGS *************************************************************
 export const LOCK_SETTINGS_SIGNATURE_SETTINGS = {
@@ -12,28 +8,6 @@ export const LOCK_SETTINGS_SIGNATURE_SETTINGS = {
   actionText:
     'act as a form of authentication for the email address you provided',
   successText: 'You have successfully proved ownership of your account.',
-}
-
-export const UNLOCK_SIGNATURE_SETTINGS = {
-  successAction: UNLOCK_SETTINGS_ACTION,
-  title: 'Unlocking notification settings',
-  actionText:
-    'act as a form of authentication for the email address you provided',
-  successText: 'You have successfully proved ownership of your account.',
-}
-
-export const DELETE_SIGNATURE_SETTINGS = {
-  successAction: DELETE_ACTION,
-  actionText: 'delete your email address',
-  successText:
-    'You have successfully proved ownership of your account and deleted your email address. You can always re-subscribe from Notifications preferences later.',
-}
-
-export const DELETE_SIGNATURE_PREFERENCES_SETTINGS = {
-  successAction: DELETE_ACTION_PREFERENCES,
-  actionText: 'delete your email address',
-  successText:
-    'You have successfully proved ownership of your account and deleted your email address. You can always re-subscribe from Notifications preferences later.',
 }
 
 // ***************************************************************************************************
@@ -75,27 +49,25 @@ export const SIGNATURE_SUCCESS_SCREEN = Symbol('SIGNATURE_SUCCESS_SCREEN')
 export const SUCCESS_INFO_SCREEN = Symbol('SUCCESS_INFO_SCREEN')
 
 //* *********************************** ACTIONS *************************************************************************
-
+export const DELETE_ACTION = Symbol('DELETE_ACTION')
+export const DELETE_ACTION_PREFERENCES = Symbol('DELETE_ACTION_PREFERENCES')
 export const OPTOUT_ACTION = Symbol('OPTOUT_ACTION')
 export const RESEND_EMAIL_ACTION = Symbol('RESEND_EMAIL_ACTION')
 export const SUBSCRIBE_EXISTING_ACTION = Symbol('SUBSCRIBE_EXISTING_ACTION')
 export const SUBSCRIBE_MODAL_ACTION = Symbol('SUBSCRIBE_MODAL_ACTION')
+export const UNLOCK_SETTINGS_ACTION = Symbol('UNLOCK_SETTINGS')
 
 //* *********************************** STATUS INFO *************************************************************************
 
 export const SETTINGS = {
-  [SUBSCRIBE_MODAL_ACTION]: {
+  [DELETE_ACTION]: {
     signatureSettings: {
-      title: 'Subscribe to notification settings',
-      requestText: 'authenticate the email address you provided',
-      successText: 'You have successfully proved ownership of your account.',
+      requestText: 'delete your email address',
+      successText:
+        'You have successfully proved ownership of your account and deleted your email address. You can always re-subscribe from the notifications preferences later.',
     },
-  },
-  [SUBSCRIBE_EXISTING_ACTION]: {
-    signatureSettings: {
-      title: 'Authenticate your account',
-      requestText: 'authenticate the email address you provided',
-      successText: 'You have successfully proved ownership of your account.',
+    successInfo: {
+      title: 'Email deleted',
     },
   },
   [OPTOUT_ACTION]: {
@@ -117,6 +89,28 @@ export const SETTINGS = {
       requestText: 'resend the email verification',
       successText:
         'You have successfully proved ownership of your account and the verification email was re sent.',
+    },
+  },
+  [SUBSCRIBE_EXISTING_ACTION]: {
+    signatureSettings: {
+      title: 'Authenticate your account',
+      requestText: 'authenticate the email address you provided',
+      successText: 'You have successfully proved ownership of your account.',
+    },
+  },
+  [SUBSCRIBE_MODAL_ACTION]: {
+    signatureSettings: {
+      title: 'Subscribe to notification settings',
+      requestText: 'authenticate the email address you provided',
+      successText: 'You have successfully proved ownership of your account.',
+    },
+  },
+  [UNLOCK_SETTINGS_ACTION]: {
+    signatureSettings: {
+      title: 'Unlocking notification settings',
+      requestText:
+        'act as a form of authentication for the email address you provided',
+      successText: 'You have successfully proved ownership of your account.',
     },
   },
 }

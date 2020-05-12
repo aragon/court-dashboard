@@ -4,34 +4,43 @@ import { Box, useViewport } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
 
+import DeleteEmail from './DeleteEmail'
 import EmailNotificationsForm from './EmailNotificationsForm'
 import ExistingEmailSubscription from './ExistingEmailSubscription'
+import NotificationsPreferences from '../GlobalPreferences/Notifications/NotificationsPreferences'
 import StatusInfo from './StatusInfo'
 import SignatureRequest from '../SignatureRequest'
+import UnlockNotifications from '../GlobalPreferences/Notifications/UnlockNotifications'
 import VerifyEmailAddress from './VerifyEmailAddress'
 
 import { actions } from './actions'
 
 import {
   createSession,
+  deleteJurorEmail,
   resendVerificationEmail,
   subscribeToNotifications,
   subscribeExistingEmail,
   switchNotificationsStatus,
 } from '../../services/servicesRequests'
 import {
+  DELETE_ACTION,
+  DELETE_ACTION_PREFERENCES,
+  DELETE_EMAIL_SCREEN,
   EMAIL_NOTIFICATIONS_ERROR_SCREEN,
   EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN,
   EMAIL_NOTIFICATIONS_FORM_SCREEN,
   NOTIFICATIONS_PREFERENCES_SCREEN,
+  OPTOUT_ACTION,
   RESEND_EMAIL_ACTION,
   SIGNATURE_REQUEST_SCREEN,
   SIGNATURE_SUCCESS_SCREEN,
   SUBSCRIBE_EXISTING_ACTION,
   SUBSCRIBE_MODAL_ACTION,
   SUCCESS_INFO_SCREEN,
+  UNLOCK_SETTINGS_ACTION,
+  UNLOCK_NOTIFICATIONS_SCREEN,
   VERIFY_YOUR_EMAIL_SCREEN,
-  OPTOUT_ACTION,
   SETTINGS,
 } from './constants'
 
@@ -57,6 +66,8 @@ const DEFAULT_SUBSCRIPTION_PROGRESS = {
   signSuccessText: '',
   statusInfoTitle: '',
   statusInfoText: '',
+  verifyUpdateMode: false,
+  previousScreen: null,
 }
 
 const EmailNotificationsManager = React.memo(
@@ -67,18 +78,18 @@ const EmailNotificationsManager = React.memo(
     emailExists,
     notificationsDisabled,
     email,
-    onClose,
-    visible,
     startingScreen,
   }) {
     const [screenId, setScreenId] = useState(
-      emailExists
-        ? EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN
-        : EMAIL_NOTIFICATIONS_FORM_SCREEN
+      startingScreen ||
+        (emailExists
+          ? EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN
+          : EMAIL_NOTIFICATIONS_FORM_SCREEN)
     )
-    const [subscriptionProgress, setSubscriptionProgress] = useState(
-      DEFAULT_SUBSCRIPTION_PROGRESS
-    )
+    const [subscriptionProgress, setSubscriptionProgress] = useState({
+      ...DEFAULT_SUBSCRIPTION_PROGRESS,
+      email,
+    })
 
     const wallet = useWallet()
     const provider = getProviderFromUseWalletId(wallet.activated)
@@ -105,9 +116,10 @@ const EmailNotificationsManager = React.memo(
         }
 
         if (!subscribeNeedsSignature) {
-          setSubscriptionProgress(signatureProgress => ({
-            ...signatureProgress,
+          setSubscriptionProgress(subscriptionProgress => ({
+            ...subscriptionProgress,
             email: email,
+            verifyUpdateMode: false,
           }))
           setScreenId(VERIFY_YOUR_EMAIL_SCREEN)
           return
@@ -115,8 +127,8 @@ const EmailNotificationsManager = React.memo(
 
         const subscribeSettings = SETTINGS[SUBSCRIBE_MODAL_ACTION]
 
-        setSubscriptionProgress(signatureProgress => ({
-          ...signatureProgress,
+        setSubscriptionProgress(subscriptionProgress => ({
+          ...subscriptionProgress,
           needSignature: subscribeNeedsSignature,
           mode: SUBSCRIBE_MODAL_ACTION,
           email: email,
@@ -125,6 +137,7 @@ const EmailNotificationsManager = React.memo(
             defaultSignRequestText +
             subscribeSettings.signatureSettings.requestText,
           signSuccessText: subscribeSettings.signatureSettings.successText,
+          verifyUpdateMode: false,
         }))
       },
       [account, defaultSignRequestText]
@@ -144,9 +157,10 @@ const EmailNotificationsManager = React.memo(
       }
 
       if (!needsSignature) {
-        setSubscriptionProgress(signatureProgress => ({
-          ...signatureProgress,
+        setSubscriptionProgress(subscriptionProgress => ({
+          ...subscriptionProgress,
           email: existingEmail,
+          verifyUpdateMode: true,
         }))
         setScreenId(VERIFY_YOUR_EMAIL_SCREEN)
         return
@@ -154,16 +168,16 @@ const EmailNotificationsManager = React.memo(
 
       const subscribeSettings = SETTINGS[SUBSCRIBE_EXISTING_ACTION]
 
-      setSubscriptionProgress(signatureProgress => ({
-        ...signatureProgress,
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
         needSignature: needsSignature,
         mode: SUBSCRIBE_EXISTING_ACTION,
-        email: existingEmail,
         signatureTitle: subscribeSettings.signatureSettings.title,
         signRequestText:
           defaultSignRequestText +
           subscribeSettings.signatureSettings.requestText,
         signSuccessText: subscribeSettings.signatureSettings.successText,
+        verifyUpdateMode: true,
       }))
     }, [account, defaultSignRequestText])
 
@@ -181,8 +195,8 @@ const EmailNotificationsManager = React.memo(
       const optOutSettings = SETTINGS[OPTOUT_ACTION]
 
       if (!needsSignature) {
-        setSubscriptionProgress(signatureProgress => ({
-          ...signatureProgress,
+        setSubscriptionProgress(subscriptionProgress => ({
+          ...subscriptionProgress,
           statusInfoTitle: optOutSettings.successInfo.title,
           statusInfoText: optOutSettings.successInfo.text,
         }))
@@ -190,8 +204,8 @@ const EmailNotificationsManager = React.memo(
         return
       }
 
-      setSubscriptionProgress(signatureProgress => ({
-        ...signatureProgress,
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
         needSignature: needsSignature,
         mode: OPTOUT_ACTION,
         signatureTitle: optOutSettings.signatureSettings.title,
@@ -204,14 +218,16 @@ const EmailNotificationsManager = React.memo(
     const handleOnResendEmail = useCallback(async () => {
       const { needsSignature, error } = await resendVerificationEmail(account)
 
+      console.log('RESEEEEND ', needsSignature)
+
       if (error && !needsSignature) {
         setSubscriptionProgress({ serviceError: true })
         return
       }
 
       if (!needsSignature) {
-        setSubscriptionProgress(signatureProgress => ({
-          ...signatureProgress,
+        setSubscriptionProgress(subscriptionProgress => ({
+          ...subscriptionProgress,
         }))
         setScreenId(VERIFY_YOUR_EMAIL_SCREEN)
         return
@@ -219,8 +235,8 @@ const EmailNotificationsManager = React.memo(
 
       const resendSettings = SETTINGS[RESEND_EMAIL_ACTION]
 
-      setSubscriptionProgress(signatureProgress => ({
-        ...signatureProgress,
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
         needSignature: needsSignature,
         mode: RESEND_EMAIL_ACTION,
         signatureTitle: resendSettings.signatureSettings.title,
@@ -230,9 +246,70 @@ const EmailNotificationsManager = React.memo(
       }))
     }, [account, defaultSignRequestText])
 
+    const handleOnDeleteConfirmation = useCallback(() => {
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
+        previousScreen: screenId,
+      }))
+      setScreenId(DELETE_EMAIL_SCREEN)
+    }, [screenId])
+
+    const handleOnCancelDelete = useCallback(() => {
+      setScreenId(subscriptionProgress.previousScreen)
+    }, [subscriptionProgress.previousScreen])
+
+    const handleOnDelete = useCallback(async () => {
+      const { error, needsSignature } = await deleteJurorEmail(account)
+
+      if (error && !needsSignature) {
+        setSubscriptionProgress({ serviceError: true })
+        return
+      }
+
+      const deleteSettings = SETTINGS[DELETE_ACTION]
+
+      if (!needsSignature) {
+        if (isModal) {
+          setSubscriptionProgress(subscriptionProgress => ({
+            ...subscriptionProgress,
+            statusInfoTitle: deleteSettings.successInfo.title,
+            statusInfoText: `Your email ${subscriptionProgress.email} was succefully deleted. You can always re-subscribe from the notifications preferences later.`,
+          }))
+        }
+        setScreenId(
+          isModal ? SUCCESS_INFO_SCREEN : EMAIL_NOTIFICATIONS_FORM_SCREEN
+        )
+        return
+      }
+
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
+        needSignature: needsSignature,
+        mode: isModal ? DELETE_ACTION : DELETE_ACTION_PREFERENCES,
+        signatureTitle: `Delete "${subscriptionProgress.email}"`,
+        signRequestText:
+          defaultSignRequestText + deleteSettings.signatureSettings.requestText,
+        signSuccessText: deleteSettings.signatureSettings.successText,
+      }))
+    }, [account, defaultSignRequestText, isModal])
+
+    const handleOnUnlockSettings = useCallback(() => {
+      const unlockSettings = SETTINGS[UNLOCK_SETTINGS_ACTION]
+
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
+        needSignature: true,
+        mode: UNLOCK_SETTINGS_ACTION,
+        signatureTitle: unlockSettings.signatureSettings.title,
+        signRequestText:
+          defaultSignRequestText + unlockSettings.signatureSettings.requestText,
+        signSuccessText: unlockSettings.signatureSettings.successText,
+      }))
+    }, [defaultSignRequestText])
+
     const handleOnSignSuccess = useCallback((signHash, timestamp) => {
-      setSubscriptionProgress(signatureProgress => ({
-        ...signatureProgress,
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
         startRequest: true,
         signHash: signHash,
         signTimestamp: timestamp,
@@ -254,8 +331,8 @@ const EmailNotificationsManager = React.memo(
             subscriptionProgress.signTimestamp
           )
           if (errorCreatingSession && !cancelled) {
-            setSubscriptionProgress(signatureProgress => ({
-              ...signatureProgress,
+            setSubscriptionProgress(subscriptionProgress => ({
+              ...subscriptionProgress,
               serviceError: true,
             }))
           }
@@ -263,26 +340,37 @@ const EmailNotificationsManager = React.memo(
 
         const action = actions[subscriptionProgress.mode]
 
-        let params = [account]
+        if (action.request) {
+          let params = [account]
 
-        if (action.params) {
-          params = [...params, ...action.params]
-        }
-
-        if (action.requiresEmail) {
-          params.push(subscriptionProgress.email)
-        }
-
-        const { error } = await action.request(...params)
-
-        if (!cancelled) {
-          if (error) {
-            return setSubscriptionProgress(signatureProgress => ({
-              ...signatureProgress,
-              serviceError: true,
-            }))
+          if (action.params) {
+            params = [...params, ...action.params]
           }
 
+          if (action.requiresEmail) {
+            params.push(subscriptionProgress.email)
+          }
+
+          const { error, email } = await action.request(...params)
+
+          if (!cancelled) {
+            if (error) {
+              return setSubscriptionProgress(subscriptionProgress => ({
+                ...subscriptionProgress,
+                serviceError: true,
+              }))
+            }
+
+            if (email) {
+              setSubscriptionProgress(subscriptionProgress => ({
+                ...subscriptionProgress,
+                email: email,
+              }))
+            }
+          }
+        }
+
+        if (!cancelled) {
           setScreenId(SIGNATURE_SUCCESS_SCREEN)
 
           if (action.successScreen) {
@@ -399,12 +487,43 @@ const EmailNotificationsManager = React.memo(
           if (screenId === VERIFY_YOUR_EMAIL_SCREEN) {
             return (
               <VerifyEmailAddress
-                updateMode={emailExists}
+                updateMode={subscriptionProgress.verifyUpdateMode}
                 compactMode={compactMode}
                 email={subscriptionProgress.email}
                 onResendEmail={handleOnResendEmail}
                 onSubscribe={handleOnSubscribe}
-                onDeleteEmail={() => {}}
+                onDeleteEmail={handleOnDeleteConfirmation}
+              />
+            )
+          }
+          if (screenId === DELETE_EMAIL_SCREEN) {
+            return (
+              <DeleteEmail
+                isModal={isModal}
+                email={subscriptionProgress.email}
+                onDelete={handleOnDelete}
+                onCancel={handleOnCancelDelete}
+              />
+            )
+          }
+          if (screenId === UNLOCK_NOTIFICATIONS_SCREEN) {
+            return (
+              <UnlockNotifications
+                compactMode={compactMode}
+                onUnlock={handleOnUnlockSettings}
+                needsUnlockSettings={account && needsUnlockSettings}
+              />
+            )
+          }
+          if (screenId === NOTIFICATIONS_PREFERENCES_SCREEN) {
+            return (
+              <NotificationsPreferences
+                email={subscriptionProgress.email}
+                notificationsDisabled={notificationsDisabled}
+                onSwitchNotificationsStatus={() => {}}
+                onLockSettings={() => {}}
+                onDeleteEmail={handleOnDeleteConfirmation}
+                onUpdateEmail={() => {}}
               />
             )
           }
