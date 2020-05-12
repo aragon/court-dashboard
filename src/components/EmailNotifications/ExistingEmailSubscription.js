@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Button, GU, Link, textStyle, useTheme } from '@aragon/ui'
-import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
+import IdentityBadge from '../IdentityBadge'
 import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
 
 import emailNotifcationIllustration from '../../../src/assets/emailNotifications.svg'
@@ -66,7 +66,7 @@ function ExistingEmailSubscription({
             {transformAddresses(textContent, (part, isAddress, index) =>
               isAddress ? (
                 <span title={part} key={index}>
-                  <LocalIdentityBadge
+                  <IdentityBadge
                     connectedAccount={addressesEqual(part, account)}
                     entity={part}
                     compact

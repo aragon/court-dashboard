@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useNotificationActions } from '../../../hooks/useEmailNotifications'
-import { verifyJurorEmail } from '../../../services/servicesRequests'
+import {
+  verifyJurorEmail,
+  getJurorEmail,
+} from '../../../services/servicesRequests'
 
 import EmailNotificationsManager from '../../EmailNotifications/EmailNotificationsManager'
 import {
@@ -23,7 +25,6 @@ const NotificationsManager = React.memo(function NotificationsManager({
   const [jurorEmail, setJurorEmail] = useState('')
   const [fetching, setFetching] = useState(true)
   const [verificationError, setVerificationError] = useState(false)
-  const { getJurorEmail } = useNotificationActions(account)
 
   useEffect(() => {
     let cancelled = false
@@ -48,19 +49,25 @@ const NotificationsManager = React.memo(function NotificationsManager({
   }, [account, paramAddress, token])
 
   useEffect(() => {
+    let cancelled = false
     const getEmail = async () => {
-      if (!account || !getJurorEmail) {
+      if (!account) {
         setFetching(false)
         return
       }
 
-      const { needsSignature, email } = await getJurorEmail()
-      setJurorNeedsSignature(needsSignature)
-      setJurorEmail(email)
-      setFetching(false)
+      if (!cancelled) {
+        const { needsSignature, email } = await getJurorEmail(account)
+        setJurorNeedsSignature(needsSignature)
+        setJurorEmail(email)
+        setFetching(false)
+      }
     }
     getEmail()
-  }, [account, getJurorEmail]) //
+    return () => {
+      cancelled = true
+    }
+  }, [account])
 
   const startingScreenId = getStartingScreen(
     account,

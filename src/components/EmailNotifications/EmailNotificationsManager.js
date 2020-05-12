@@ -638,7 +638,7 @@ const AnimatedContainer = React.memo(function AnimatedModal({
       from={{
         position: 'absolute',
         opacity: 0,
-        transform: 'scale3d(1.20 1.20, 1)',
+        transform: 'scale3d(1.10 1.10, 1)',
       }}
       enter={{
         position: 'static',
@@ -648,7 +648,7 @@ const AnimatedContainer = React.memo(function AnimatedModal({
       leave={{
         position: 'absolute',
         opacity: 0,
-        transform: 'scale3d(0.80, 0.80, 1)',
+        transform: 'scale3d(0.90, 0.90, 1)',
       }}
       native
     >

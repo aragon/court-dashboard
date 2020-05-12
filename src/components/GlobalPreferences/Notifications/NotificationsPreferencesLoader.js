@@ -10,8 +10,6 @@ function NotificationsPreferencesLoader({ address, token }) {
     emailExists,
     emailVerified,
     notificationsDisabled,
-    // error,
-    // errorMsg,
   } = useSubscriptionDetails(account)
 
   return (

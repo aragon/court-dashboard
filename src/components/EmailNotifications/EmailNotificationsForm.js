@@ -12,7 +12,7 @@ import {
   textStyle,
   useTheme,
 } from '@aragon/ui'
-import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
+import IdentityBadge from '../IdentityBadge'
 import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
 import { validateEmail } from '../../utils/notifications-utils'
 
@@ -233,7 +233,7 @@ function TextContent({ update, account, theme }) {
       {transformAddresses(content, (part, isAddress, index) =>
         isAddress ? (
           <span title={part} key={index}>
-            <LocalIdentityBadge
+            <IdentityBadge
               connectedAccount={addressesEqual(part, account)}
               entity={part}
               compact
