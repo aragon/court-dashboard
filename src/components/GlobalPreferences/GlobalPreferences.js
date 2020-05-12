@@ -13,16 +13,27 @@ import {
 import { Transition, animated } from 'react-spring/renderprops'
 import { useEsc } from '../../hooks/useKeyboardArrows'
 import Network from './Network/Network'
+import NotificationsPreferencesLoader from './Notifications/NotificationsPreferencesLoader'
 
-const SECTIONS = new Map([['network', 'Network']])
+const SECTIONS = new Map([
+  ['network', 'Network'],
+  ['notifications', 'Email Notifications'],
+])
 const PATHS = Array.from(SECTIONS.keys())
 const VALUES = Array.from(SECTIONS.values())
 
 const NETWORK_INDEX = 0
+const NOTIFICATIONS_INDEX = 1
 
 const AnimatedDiv = animated.div
 
-function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
+function GlobalPreferences({
+  compact,
+  onClose,
+  onNavigation,
+  sectionIndex,
+  queryParms,
+}) {
   useEsc(onClose)
 
   const container = useRef()
@@ -32,6 +43,7 @@ function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
     }
   }, [])
 
+  const { address, token } = queryParms || {}
   return (
     <div ref={container} tabIndex="0" css="outline: 0">
       <Layout css="z-index: 2">
@@ -49,7 +61,10 @@ function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
             selected={sectionIndex}
           />
 
-          <main>{sectionIndex === NETWORK_INDEX && <Network />}</main>
+          {sectionIndex === NETWORK_INDEX && <Network />}
+          {sectionIndex === NOTIFICATIONS_INDEX && (
+            <NotificationsPreferencesLoader address={address} token={token} />
+          )}
         </React.Fragment>
       </Layout>
     </div>
@@ -60,7 +75,7 @@ function useGlobalPreferences({ path = '', onScreenChange }) {
   const [sectionIndex, setSectionIndex] = useState(null)
   const handleNavigation = useCallback(
     index => {
-      onScreenChange(PATHS[index]) // TODO - Test if this is working with the email preferences
+      onScreenChange(PATHS[index])
     },
     [onScreenChange]
   )
@@ -106,7 +121,12 @@ function Close({ compact, onClick }) {
   )
 }
 
-function AnimatedGlobalPreferences({ path, onScreenChange, onClose }) {
+function AnimatedGlobalPreferences({
+  path,
+  onScreenChange,
+  onClose,
+  queryParms,
+}) {
   const { sectionIndex, handleNavigation } = useGlobalPreferences({
     path,
     onScreenChange,
@@ -160,6 +180,7 @@ function AnimatedGlobalPreferences({ path, onScreenChange, onClose }) {
               compact={compact}
               sectionIndex={sectionIndex}
               onNavigation={handleNavigation}
+              queryParms={queryParms}
             />
           </AnimatedDiv>
         ))

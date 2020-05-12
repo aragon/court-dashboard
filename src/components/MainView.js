@@ -20,7 +20,12 @@ function MainView({ children }) {
   const compactMode = below('medium')
   const [menuPanelOpen, setMenuPanelOpen] = useState(!compactMode)
 
-  const [openPreferences, closePreferences, preferenceOption] = usePreferences()
+  const [
+    openPreferences,
+    closePreferences,
+    preferenceOption,
+    queryParms,
+  ] = usePreferences()
 
   const toggleMenuPanel = useCallback(
     () => setMenuPanelOpen(opened => !opened),
@@ -45,6 +50,7 @@ function MainView({ children }) {
         path={preferenceOption}
         onScreenChange={openPreferences}
         onClose={closePreferences}
+        queryParms={queryParms}
       />
     )
   }
