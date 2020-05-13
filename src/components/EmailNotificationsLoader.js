@@ -26,7 +26,7 @@ function EmailNotificationsLoader({ children }) {
       {!fetching && (
         <Modal
           width={Math.min(76 * GU, width - 40)}
-          visible={modalVisible}
+          visible
           onClose={handleOnClose}
           css="z-index: 4"
         >

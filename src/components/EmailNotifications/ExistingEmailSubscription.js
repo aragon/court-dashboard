@@ -1,22 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Button, GU, Link, textStyle, useTheme } from '@aragon/ui'
+import { useWallet } from '../../providers/Wallet'
 import IdentityBadge from '../IdentityBadge'
-import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
 
 import emailNotifcationIllustration from '../../../src/assets/emailNotifications.svg'
 
 function ExistingEmailSubscription({
-  account,
   compactMode,
   onOptOut,
   onSubscribeToNotifications,
 }) {
   const theme = useTheme()
-
-  const textContent = `We’ve detected an email associated to the account ${account}.
-  First, we need to verify that you are in control of this account and then, authenticate
-  the email address you provided.`
+  const { account } = useWallet()
 
   return (
     <>
@@ -63,19 +59,16 @@ function ExistingEmailSubscription({
               margin-top: ${1.5 * GU}px;
             `}
           >
-            {transformAddresses(textContent, (part, isAddress, index) =>
-              isAddress ? (
-                <span title={part} key={index}>
-                  <IdentityBadge
-                    connectedAccount={addressesEqual(part, account)}
-                    entity={part}
-                    compact
-                  />
-                </span>
-              ) : (
-                <span key={index}>{part}</span>
-              )
-            )}
+            <span>We’ve detected an email associated to the account </span>
+            <IdentityBadge
+              connectedAccount={account}
+              entity={account}
+              compact
+            />
+            <span>
+              . First, we need to verify that you are in control of this account
+              and then, authenticate the email address you provided.
+            </span>
           </span>
         </div>
         <span
@@ -86,15 +79,15 @@ function ExistingEmailSubscription({
             margin-top: ${3 * GU}px;
           `}
         >
-          You have previously agreed to Aragon Court{' '}
+          You have previously agreed to Aragon Court's{' '}
           <Link href="https://anj.aragon.org/legal/terms-general.pdf">
-            legal terms{' '}
+            legal terms
           </Link>{' '}
           and{' '}
           <Link href="https://aragon.one/email-collection.md">
-            {' '}
-            email collection policy.
+            email collection policy
           </Link>
+          .
         </span>
         <div
           css={`
