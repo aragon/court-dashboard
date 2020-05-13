@@ -33,11 +33,9 @@ function EmailNotificationsLoader({ children }) {
           <div css="">
             <EmailNotificationsManager
               isModal
-              visible={modalVisible}
               account={wallet.account}
               emailExists={emailExists}
               addressVerified={addressVerified}
-              onClose={handleOnClose}
             />
           </div>
         </Modal>
