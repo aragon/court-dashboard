@@ -3,15 +3,17 @@ import {
   Box,
   Button,
   GU,
+  IconLock,
   IconMail,
   IconTrash,
   Info,
   Link,
-  Switch,
-  useTheme,
+  RADIUS,
   Split,
+  Switch,
   Tag,
   textStyle,
+  useTheme,
 } from '@aragon/ui'
 
 import emailNotifcationIllustration from '../../../../src/assets/emailNotifications.svg'
@@ -27,7 +29,7 @@ export default function NotificationsPreferences({
   const theme = useTheme()
 
   return (
-    <React.Fragment>
+    <>
       <Split
         primary={
           <EmailNotificationBox
@@ -36,7 +38,7 @@ export default function NotificationsPreferences({
           />
         }
         secondary={
-          <React.Fragment>
+          <>
             <Box heading="Email account">
               <Tag
                 uppercase={false}
@@ -45,7 +47,7 @@ export default function NotificationsPreferences({
                 color={theme.content}
                 css={`
                   ${textStyle('body2')};
-                  border-radius: 3px;
+                  border-radius: ${RADIUS}px;
                 `}
               >
                 {email}
@@ -58,23 +60,38 @@ export default function NotificationsPreferences({
                 mode="strong"
                 onClick={onLockSettings}
               >
-                Lock settings
+                <IconLock />
+                <span
+                  css={`
+                    width: ${12 * GU}px;
+                    margin-left: ${1.5 * GU}px;
+                    text-align: left;
+                  `}
+                >
+                  Lock settings
+                </span>
               </Button>
               <Button
                 css={`
                   margin-top: ${2 * GU}px;
-                  justify-content: left;
                 `}
                 wide
                 onClick={onUpdateEmail}
               >
                 <IconMail />
-                Update email
+                <span
+                  css={`
+                    width: ${12 * GU}px;
+                    margin-left: ${1.5 * GU}px;
+                    text-align: left;
+                  `}
+                >
+                  Update email
+                </span>
               </Button>
               <Button
                 css={`
                   margin-top: ${2 * GU}px;
-                  justify-content: left;
                 `}
                 wide
                 onClick={onDeleteEmail}
@@ -84,7 +101,15 @@ export default function NotificationsPreferences({
                     color: ${theme.negative};
                   `}
                 />
-                Delete your email
+                <span
+                  css={`
+                    width: ${12 * GU}px;
+                    margin-left: ${1.5 * GU}px;
+                    text-align: left;
+                  `}
+                >
+                  Delete email
+                </span>
               </Button>
               <Info
                 css={`
@@ -93,15 +118,15 @@ export default function NotificationsPreferences({
               >
                 Learn more about our{' '}
                 <Link href="https://aragon.one/email-collection.md">
-                  Email collection policy
+                  email collection policy
                 </Link>
                 .
               </Info>
             </Box>
-          </React.Fragment>
+          </>
         }
       />
-    </React.Fragment>
+    </>
   )
 }
 
@@ -114,7 +139,7 @@ function EmailNotificationBox({
   }, [notificationsDisabled, onSwitchNotificationsStatus])
 
   return (
-    <Box heading="Signed In With Email">
+    <Box heading="Email notifications">
       <div
         css={`
           display: flex;
@@ -144,7 +169,7 @@ function EmailNotificationBox({
           <span
             css={`
               ${textStyle('body1')};
-              margin-left: ${GU}px;
+              margin-left: ${1 * GU}px;
             `}
           >
             Receive email notifications for all Aragon Court events.
@@ -153,16 +178,16 @@ function EmailNotificationBox({
         <Info
           css={`
             margin-top: ${2 * GU}px;
+            text-align: left;
           `}
           mode={notificationsDisabled ? 'warning' : 'info'}
         >
           {notificationsDisabled
-            ? `We strongly advise you to turn on these notifications. 
-            By turning off these email alerts, we won’t notify you whenever you are drafted to arbitrate a dispute or 
-            if you have any upcoming tasks. Failure to complete your jury duties will result in monetary penalties. `
-            : `We will timely notify you whenever you are drafted to arbitrate a
-          dispute, if you have any upcoming tasks and when you can start
-          claiming your rewards.`}
+            ? `We strongly advise you to enable these notifications. 
+            By disabling these email alerts, you will not be notified when you are drafted to arbitrate a dispute or 
+            when your upcoming tasks are due. Failure to complete your duties as a juror will result in monetary penalties.`
+            : `We will notify you for any relevant Aragon Court events, such as when you are drafted to arbitrate a
+            dispute, when your upcoming tasks are due, and when you have rewards to claim.`}
         </Info>
       </div>
     </Box>
