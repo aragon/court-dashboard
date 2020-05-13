@@ -1,17 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Button, GU, Link, textStyle, useTheme } from '@aragon/ui'
+import { useWallet } from '../../providers/Wallet'
 import IdentityBadge from '../IdentityBadge'
 
 import emailNotifcationIllustration from '../../../src/assets/emailNotifications.svg'
 
 function ExistingEmailSubscription({
-  account,
   compactMode,
   onOptOut,
   onSubscribeToNotifications,
 }) {
   const theme = useTheme()
+  const { account } = useWallet()
 
   return (
     <>
