@@ -86,13 +86,12 @@ function ExistingEmailSubscription({
             margin-top: ${3 * GU}px;
           `}
         >
-          You have previously agreed to Aragon Court{' '}
+          You have previously agreed to Aragon Court's{' '}
           <Link href="https://anj.aragon.org/legal/terms-general.pdf">
-            legal terms{' '}
+            legal terms
           </Link>{' '}
           and{' '}
           <Link href="https://aragon.one/email-collection.md">
-            {' '}
             email collection policy.
           </Link>
         </span>
