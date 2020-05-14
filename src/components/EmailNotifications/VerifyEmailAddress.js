@@ -42,6 +42,13 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
     }
   }, [])
 
+  const handleOnTermsChange = useCallback(
+    checked => {
+      setTermsAccepted(checked)
+    },
+    [setTermsAccepted]
+  )
+
   const handleOnSubscribe = useCallback(() => {
     onSubscribe(emailAddress)
   }, [emailAddress, onSubscribe])
@@ -139,7 +146,7 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
                     type="email"
                     wide
                     onChange={handleEmailAddressChange}
-                    placeholder="email@address.com"
+                    placeholder="you@example.org"
                     onBlur={handleEmailAddressBlur}
                   />
                   {emailInvalid && (
@@ -158,8 +165,7 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
               </div>
               <LegalTermsAndPolicy
                 termsAccepted={termsAccepted}
-                setTermsAccepted={setTermsAccepted}
-                theme={theme}
+                onChange={handleOnTermsChange}
               />
               <div
                 css={`
@@ -194,13 +200,8 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   )
 })
 
-function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
-  const handleOnChange = useCallback(
-    checked => {
-      setTermsAccepted(checked)
-    },
-    [setTermsAccepted]
-  )
+function LegalTermsAndPolicy({ termsAccepted, onChange }) {
+  const theme = useTheme()
 
   return (
     <div
@@ -213,7 +214,7 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
           display: flex;
         `}
       >
-        <Checkbox checked={termsAccepted} onChange={handleOnChange} />
+        <Checkbox checked={termsAccepted} onChange={onChange} />
 
         <span
           css={`
@@ -225,13 +226,13 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted, theme }) {
         >
           By continuing with your email, you agree to Aragon Court's{' '}
           <Link href="https://anj.aragon.org/legal/terms-general.pdf">
-            legal terms{' '}
+            legal terms
           </Link>{' '}
           and{' '}
           <Link href="https://aragon.one/email-collection.md">
-            {' '}
-            email collection policy.
+            email collection policy
           </Link>
+          .
         </span>
       </div>
     </div>

@@ -13,7 +13,6 @@ import {
   useTheme,
 } from '@aragon/ui'
 import IdentityBadge from '../IdentityBadge'
-import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
 import { validateEmail } from '../../utils/notifications-utils'
 
 import emailNotifcationIllustration from '../../../src/assets/emailNotifications.svg'
@@ -89,7 +88,40 @@ function EmailNotificationsForm({
               : 'Stay up to date with email notifications'}
           </span>
 
-          <TextContent update={existingEmail} account={account} theme={theme} />
+          <span
+            css={`
+              ${textStyle('body2')};
+              color: ${theme.surfaceContentSecondary};
+              margin-top: ${1.5 * GU}px;
+            `}
+          >
+            {existingEmail ? (
+              <>
+                <span>Enter a new email address for your account </span>
+                <IdentityBadge
+                  connectedAccount={account}
+                  entity={account}
+                  compact
+                />
+                <span>
+                  . We will continue sending email notifications to the current
+                  email address until you verify this new email address.
+                </span>
+              </>
+            ) : (
+              <>
+                <span>Associate an email address to your account </span>
+                <IdentityBadge
+                  connectedAccount={account}
+                  entity={account}
+                  compact
+                />
+                <span>
+                  , so you can get notifications from all Aragon Court events.
+                </span>
+              </>
+            )}
+          </span>
 
           <div
             css={`
@@ -141,7 +173,7 @@ function EmailNotificationsForm({
                   type="email"
                   wide
                   onChange={handleEmailAddressChange}
-                  placeholder="email@address.com"
+                  placeholder="you@example.org"
                   onBlur={handleEmailAddressBlur}
                 />
               </Field>
@@ -217,28 +249,6 @@ function EmailNotificationsForm({
   )
 }
 
-function TextContent({ update, account }) {
-  const theme = useTheme()
-  const content = update
-    ? `Enter a new email address for your account ${account}. We will continue sending email notifications to the current email address until you verify this new email address.`
-    : `Associate an email address to your account ${account}, so you can get notifications from all Aragon Court events.`
-
-  return (
-    <span
-      css={`
-        ${textStyle('body2')};
-        color: ${theme.surfaceContentSecondary};
-        margin-top: ${1.5 * GU}px;
-      `}
-    >
-      {
-        update ? 
-        <span>We’ve detected an email associated to the account </span>
-      }
-    </span>
-  )
-}
-
 function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted }) {
   return (
     <div
@@ -264,7 +274,7 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted }) {
             text-align: left;
           `}
         >
-          By continuing with your email, you agree to Aragon Court{' '}
+          By continuing with your email, you agree to Aragon Court's{' '}
           <Link href="https://anj.aragon.org/legal/terms-general.pdf">
             legal terms{' '}
           </Link>{' '}
