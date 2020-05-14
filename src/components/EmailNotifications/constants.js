@@ -1,15 +1,6 @@
 export const DELETE_ACTION_MODAL = Symbol('DELETE_ACTION_MODAL')
 export const LOCK_SETTINGS_ACTION = Symbol('LOCK_SETTINGS_ACTION')
 
-// ************************************** REMOVE AND ADD TO SETTINGS *************************************************************
-export const LOCK_SETTINGS_SIGNATURE_SETTINGS = {
-  successAction: LOCK_SETTINGS_ACTION,
-  title: 'Locking notification settings',
-  actionText:
-    'act as a form of authentication for the email address you provided',
-  successText: 'You have successfully proved ownership of your account.',
-}
-
 // ***************************************************************************************************
 
 // SCREENS
@@ -53,6 +44,10 @@ export const VERIFICATION_ERROR_SCREEN = Symbol('VERIFICATION_ERROR_SCREEN')
 export const VERIFICATION_SUCCESS_SCREEN = Symbol(
   'VERIFICATION_SUCCESSFUL_SCREEN'
 )
+export const VERIFY_EMAIL_ADDRESS_PREFERENCES = Symbol(
+  'VERIFY_EMAIL_ADDRESS_PREFERENCES'
+)
+
 //* *********************************** ACTIONS *************************************************************************
 export const DELETE_ACTION = Symbol('DELETE_ACTION')
 export const DELETE_ACTION_PREFERENCES = Symbol('DELETE_ACTION_PREFERENCES')

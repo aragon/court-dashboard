@@ -26,18 +26,16 @@ function EmailNotificationsLoader({ children }) {
       {!fetching && (
         <Modal
           width={Math.min(76 * GU, width - 40)}
-          visible
+          visible={modalVisible}
           onClose={handleOnClose}
           css="z-index: 4"
         >
           <div css="">
             <EmailNotificationsManager
               isModal
-              visible={modalVisible}
               account={wallet.account}
               emailExists={emailExists}
               addressVerified={addressVerified}
-              onClose={handleOnClose}
             />
           </div>
         </Modal>

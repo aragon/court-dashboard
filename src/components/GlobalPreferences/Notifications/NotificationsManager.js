@@ -11,6 +11,7 @@ import {
   UNLOCK_NOTIFICATIONS_SCREEN,
   VERIFICATION_ERROR_SCREEN,
   VERIFICATION_SUCCESS_SCREEN,
+  VERIFY_EMAIL_ADDRESS_PREFERENCES,
 } from '../../EmailNotifications/constants'
 
 const NotificationsManager = React.memo(function NotificationsManager({
@@ -97,26 +98,40 @@ const NotificationsManager = React.memo(function NotificationsManager({
 function getStartingScreen(
   account,
   emailExists,
-  emailVerifiedd,
+  emailVerified,
   notificationsDisabled,
   jurorNeedsSignature,
   token,
   verificationError
 ) {
+  console.log(
+    'props ',
+    emailExists,
+    emailVerified,
+    notificationsDisabled,
+    jurorNeedsSignature
+  )
   if (token) {
     if (verificationError) {
       return VERIFICATION_ERROR_SCREEN
     }
     return VERIFICATION_SUCCESS_SCREEN
   }
-  const emailVerified = true
+  if (!emailVerified && emailExists) {
+    console.log('1')
+    return VERIFY_EMAIL_ADDRESS_PREFERENCES
+  }
   if (!account || (account && emailVerified && jurorNeedsSignature)) {
+    console.log('2')
     return UNLOCK_NOTIFICATIONS_SCREEN
   }
+
   if (account && !emailVerified && !notificationsDisabled) {
+    console.log('3')
     return EMAIL_NOTIFICATIONS_FORM_SCREEN
   }
   if (account && emailVerified && !jurorNeedsSignature) {
+    console.log('4')
     return NOTIFICATIONS_PREFERENCES_SCREEN
   }
 }
