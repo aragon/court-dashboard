@@ -46,7 +46,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
             ${textStyle('title2')};
           `}
         >
-          {`Delete "${email}"`}
+          Delete “{email}”
         </span>
         <span
           css={`
@@ -68,7 +68,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
         >
           <Button
             css={`
-            margin-right: ${GU}px;}
+              margin-right: ${1 * GU}px;
             `}
             onClick={onCancel}
             size="medium"
