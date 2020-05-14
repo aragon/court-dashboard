@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@aragon/ui@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@aragon/ui/-/ui-1.3.1.tgz#f1ac4c7778ea4ed895640790e97dbf284edc0b76"
-  integrity sha512-qt2Xd9WfIC9VBBQnDo8PgUQDcSY+4bCwwJY2yCPN4sKeYKccCyVO1p6qfgSNw5+EuCY+r+NHZddmJLIUNYFu8g==
+"@aragon/ui@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@aragon/ui/-/ui-1.4.0.tgz#a2094013f93ddd408460d89a0d496f995430a292"
+  integrity sha512-PRmXrjSgjUW3JzxxpqCzcQBoqSv4ns0QMgw4tYM1MLUVWdQsJSntrLRorOBEedqbGGh+6XAQkbZ9TTyqFa2fOg==
   dependencies:
     "@babel/runtime" "^7.3.1"
     airbnb-prop-types "^2.9.0"
@@ -13,7 +13,9 @@
     command-exists "^1.2.6"
     dayjs "^1.8.14"
     js-sha3 "^0.8.0"
-    lodash-es "^4.17.15"
+    jsbi "^3.1.2"
+    lodash "^4.17.15"
+    markdown-to-jsx "^6.11.0"
     popper.js "^1.14.4"
     prop-types "^15.6.0"
     react-blockies "^1.4.0"
@@ -21,6 +23,7 @@
     react-onclickout "^2.0.8"
     react-spring "^7.2.11"
     recursive-copy "^2.0.9"
+    use-inside "^0.2.0"
 
 "@babel/code-frame@7.5.5":
   version "7.5.5"
@@ -8153,6 +8156,11 @@ jsbi@^3.1.1:
   resolved "https://registry.yarnpkg.com/jsbi/-/jsbi-3.1.1.tgz#8ea18b3e08d102c6cc09acaa9a099921d775f4fa"
   integrity sha512-+HQESPaV0mRiH614z4JPVPAftcRC2p53x92lySPzUzFwJbJTMpzHz8OYUkcXPN3fOcHUe0NdVcHnCtX/1+eCrA==
 
+jsbi@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/jsbi/-/jsbi-3.1.2.tgz#7502ed36fb2b32bb37efb3d2d0b3806a0d771780"
+  integrity sha512-5nDXo1X9QVaXK/Cpb5VECV9ss1QPbjUuk1qSruHB1PK/g39Sd414K4nci99ElFDZv0vzxDEnKn3o49/Tn9Yagw==
+
 jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
@@ -8622,11 +8630,6 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
-lodash-es@^4.17.15:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.15.tgz#21bd96839354412f23d7a10340e5eac6ee455d78"
-  integrity sha512-rlrc3yU3+JNOpZ9zj5pQtxnx2THmvRykwL4Xlxoa8I9lHBlVbbyPhgyPMioxVZ4NqyxaVVtaJnzsyOidQIhyyQ==
-
 lodash._reinterpolate@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
@@ -8816,6 +8819,14 @@ markdown-table@^1.1.0:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/markdown-table/-/markdown-table-1.1.3.tgz#9fcb69bcfdb8717bfd0398c6ec2d93036ef8de60"
   integrity sha512-1RUZVgQlpJSPWYbFSpmudq5nHY1doEIv89gBtF0s4gW1GF2XorxcA/70M5vq7rLv0a6mhOUccRsqkwhwLCIQ2Q==
+
+markdown-to-jsx@^6.11.0:
+  version "6.11.1"
+  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-6.11.1.tgz#3931612cfffaa5fd6610ecf2a4055eccccb98fa8"
+  integrity sha512-FdtDAv8d9/tjyHxdCvWZxxOgK2icwzBkTq/dPk+XlQ2B+DYDcwE89FWGzT92erXQ0CQR/bQbpNK3loNYhYL70g==
+  dependencies:
+    prop-types "^15.6.2"
+    unquote "^1.1.0"
 
 maximatch@^0.1.0:
   version "0.1.0"
@@ -13474,7 +13485,7 @@ unpipe@1.0.0, unpipe@~1.0.0:
   resolved "https://registry.yarnpkg.com/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"
   integrity sha1-sr9O6FFKrmFltIF4KdIbLvSZBOw=
 
-unquote@~1.1.1:
+unquote@^1.1.0, unquote@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/unquote/-/unquote-1.1.1.tgz#8fded7324ec6e88a0ff8b905e7c098cdc086d544"
   integrity sha1-j97XMk7G6IoP+LkF58CYzcCG1UQ=
@@ -13547,6 +13558,13 @@ urql@^1.6.3:
     react-wonka "^2.0.1"
     scheduler ">= 0.16.0"
     wonka "^4.0.7"
+
+use-inside@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/use-inside/-/use-inside-0.2.0.tgz#cdf7bc3e40495a154d16735584c242aa0f00eb13"
+  integrity sha512-GYJSslg+NyAeASSwWk1wyc6/Bek/ACIrmuFY/bPbgUjQAVrtVvzjSNiOxNh20e7zanJz/bPxtIQIxq7EzjSPqQ==
+  dependencies:
+    prop-types "^15.7.2"
 
 use-wallet@^0.5.0:
   version "0.5.0"
