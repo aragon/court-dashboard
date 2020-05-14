@@ -1,10 +1,9 @@
 import { fetchExchange, subscriptionExchange } from 'urql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { captureMessage } from '@sentry/browser'
-import { graphEndpoints } from './endpoints'
+import { defaultSubgraphWsEndpoint } from './networks'
 
-const GRAPH_API_ENDPOINTS = graphEndpoints()
-const subscriptionClient = new SubscriptionClient(GRAPH_API_ENDPOINTS[1], {
+const subscriptionClient = new SubscriptionClient(defaultSubgraphWsEndpoint, {
   reconnect: true,
   reconnectionAttempts: 10,
 })
@@ -19,7 +18,10 @@ export function getFetchExchange() {
   return DEFAULT_FETCH_EXCHANGE
 }
 
-export function getSubscriptionExchange() {
+export function getSubscriptionExchange(resetSubscription) {
+  if (resetSubscription) {
+    subscriptionClient.close()
+  }
   return DEFAULT_SUBSCRIPTION_EXCHANGE
 }
 

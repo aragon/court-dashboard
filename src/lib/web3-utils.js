@@ -2,6 +2,7 @@ import env from '../environment'
 import { providers as Providers } from 'ethers'
 import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
 import { InvalidURI, InvalidNetworkType, NoConnection } from '../errors'
+import { validHttpFormat } from './uri-utils'
 export const soliditySha3 = solidityKeccak256
 export const hash256 = keccak256
 export const DEFAULT_LOCAL_CHAIN = 'private'
@@ -9,7 +10,6 @@ export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
 const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
-const httpRegex = /^(https?):\/\//
 
 export function getFunctionSignature(func) {
   return keccak256(func).slice(0, 10)
@@ -170,10 +170,9 @@ export function transformAddresses(str, callback) {
  *    - NoConnection: Couldn't connect to URI
  */
 export async function checkValidEthNode(uri) {
-  // Must be websocket connection
   const isLocalOrUnknown = isLocalOrUnknownNetwork(env('CHAIN_ID'))
 
-  if (!httpRegex.test(uri)) {
+  if (!validHttpFormat(uri)) {
     throw new InvalidURI('The URI must use the HTTP protocol')
   }
 
@@ -181,9 +180,11 @@ export async function checkValidEthNode(uri) {
     const expectedNetworkType = getNetworkType()
     const provider = await new Providers.JsonRpcProvider(uri)
     const networkType = await provider.getNetwork()
+    const networkTypeName =
+      networkType.name === 'homestead' ? 'main' : networkType.name
 
     if (!isLocalOrUnknown) {
-      if (networkType.name !== expectedNetworkType) {
+      if (networkTypeName !== expectedNetworkType) {
         throw new InvalidNetworkType()
       }
     }
