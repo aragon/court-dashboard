@@ -4,17 +4,17 @@ The app can be configured in a number of ways via environment variables. Without
 
 ## General settings
 
-### `REACT_APP_DEFAULT_ETH_NODE`
-
-Url of the default Ethereum node to read blockchain data from. If you intend to connect to a local ganache instance, by default you should set this to `http://localhost:8545`.
-
 ### `REACT_APP_CHAIN_ID`
 
 Expected chain id to connect to. Either one of `1 (mainnnet)`, `3 (ropsten)`, `4 (rinkeby)` or `1337 (local)`.
 
+### `REACT_APP_DEFAULT_ETH_NODE`
+
+Url of the default Ethereum node to read blockchain data from. If you intend to connect to a local ganache instance, by default you should set this to `http://localhost:8545`.
+
 ### `REACT_APP_IPFS_GATEWAY`
 
-Url of the [IPFS](https://ipfs.io) Gateway to load dispute metadata from. If you intend to connect to a local IPFS daemon, by default you should set this to `http://localhost:8080/ipfs`.
+Url of the [IPFS](https://ipfs.io) Gateway to load dispute metadata from. If you intend to connect to a local IPFS daemon's Gateway, by default you should set this to `http://localhost:8080/ipfs`.
 
 ### `REACT_APP_SUBGRAPH_NAME`
 
@@ -30,32 +30,6 @@ API key from [Formatic](fortmatic.com). Requires separate keys for testnet / mai
 
 API key from [Portis](portis.io). Requires separate keys for testnet / mainnet.
 
-## 3rd Party APIs
-
-### `REACT_APP_SENTRY_DSN`
-
-[Sentry DSN](https://docs.sentry.io/error-reporting/configuration/?platform=node#dsn) for forwarding error logs.
-
-
-## Development settings
-
-### MOCK_DATA
-
-To start the court dashboard with mocked data.
-
-### Assumed ports
-
-- Local devchain: 8545
-- Subgraph endpoints:
-  - 8000 (Http)
-  - 8001 (Ws)
-- IPFS: 8080
-- Court server: 8050
-
-### Default Mnemonic
-
-`myth like bonus scare over problem client lizard pioneer submit female collect`
-
 ## Flags
 
 ### `REACT_APP_ENABLE_SENTRY`
@@ -65,3 +39,28 @@ To enable error reporting to sentry
 ### `REACT_APP_SKIP_VOIDING`
 
 To disable flagging of voided disputes.
+
+## 3rd Party APIs
+
+### `REACT_APP_SENTRY_DSN`
+
+[Sentry DSN](https://docs.sentry.io/error-reporting/configuration/?platform=node#dsn) for forwarding error logs.
+
+## Development settings
+
+### MOCK_DATA
+
+To start the court dashboard with mocked data.
+
+### Assumed localhost ports
+
+- Ethereum node: 8545
+- Subgraph:
+  - 8000 (HTTP)
+  - 8001 (WS)
+- IPFS Gateway: 8080
+- Court server: 8050
+
+### Default Mnemonic
+
+`myth like bonus scare over problem client lizard pioneer submit female collect`

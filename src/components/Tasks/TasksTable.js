@@ -7,7 +7,7 @@ import {
   useTheme,
   useViewport,
 } from '@aragon/ui'
-import LocalIdentityBadge from '../LocalIdentityBadge/LocalIdentityBadge'
+import IdentityBadge from '../IdentityBadge'
 import NoFilterResults from '../NoFilterResults'
 import TasksFilters from './TasksFilters'
 import TaskStatus from './TaskStatus'
@@ -83,8 +83,7 @@ const TaskTable = React.memo(function TaskTable({
           <Link href={`/disputes/${disputeId}`} external={false}>
             Dispute #{disputeId}
           </Link>,
-          <LocalIdentityBadge entity={juror} />,
-
+          <IdentityBadge entity={juror} />,
           <TaskStatus dueDate={dueDate} />,
           <TaskDueDate dueDate={dueDate} />,
         ]

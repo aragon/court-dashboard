@@ -12,7 +12,7 @@ export default async (juror, disputeId, roundId, outcome, password) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        juror,
+        juror: juror.toLowerCase(),
         voteId,
         outcome: outcome.toString(),
         salt,

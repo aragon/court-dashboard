@@ -76,7 +76,7 @@ function ClockModule() {
             css={`
               background-color: ${theme.background};
               display: flex;
-              border-radius: 100px;
+              border-radius: 50%;
               padding: 2px;
             `}
           >
@@ -96,19 +96,12 @@ function ClockModule() {
               & span {
                 line-height: 1;
               }
-
-              // TODO: Use showIcon new prop when available, see: https://github.com/aragon/aragon-ui/pull/734
-              & > time {
-                & > span:first-child {
-                  display: none;
-                }
-              }
             `}
           >
             {currentTermId ? (
               <>
                 {isSynced ? (
-                  <Timer end={currentTermEndDate} />
+                  <Timer end={currentTermEndDate} showIcon={false} />
                 ) : (
                   <div>
                     <span
@@ -275,7 +268,7 @@ function ClockModule() {
                 label="Update term"
                 mode="strong"
                 wide
-                disabled={!wallet.account}
+                disabled={!courtConfig || !wallet.account}
                 onClick={handleOnClick}
               />
             )}
