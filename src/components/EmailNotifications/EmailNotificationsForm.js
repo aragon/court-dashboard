@@ -217,7 +217,8 @@ function EmailNotificationsForm({
   )
 }
 
-function TextContent({ update, account, theme }) {
+function TextContent({ update, account }) {
+  const theme = useTheme()
   const content = update
     ? `Enter a new email address for your account ${account}. We will continue sending email notifications to the current email address until you verify this new email address.`
     : `Associate an email address to your account ${account}, so you can get notifications from all Aragon Court events.`
@@ -230,19 +231,10 @@ function TextContent({ update, account, theme }) {
         margin-top: ${1.5 * GU}px;
       `}
     >
-      {transformAddresses(content, (part, isAddress, index) =>
-        isAddress ? (
-          <span title={part} key={index}>
-            <IdentityBadge
-              connectedAccount={addressesEqual(part, account)}
-              entity={part}
-              compact
-            />
-          </span>
-        ) : (
-          <span key={index}>{part}</span>
-        )
-      )}
+      {
+        update ? 
+        <span>We’ve detected an email associated to the account </span>
+      }
     </span>
   )
 }
