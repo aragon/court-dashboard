@@ -235,7 +235,7 @@ async function validateNetworkSettings(
       )}`
     }
     if (err instanceof InvalidURI) {
-      settingsErrors.ethError = 'Must provide Http endpoint to node'
+      settingsErrors.ethError = 'Must provide HTTP endpoint to node'
     }
     if (err instanceof NoConnection) {
       settingsErrors.ethError = 'Could not connect to node'
