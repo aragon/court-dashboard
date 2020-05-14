@@ -43,7 +43,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
             display: flex;
             flex-direction: column;
             background: ${needsUnlockSettings ? '' : theme.background};
-            padding: ${3 * GU}px ${compactMode ? 3 : 13 * GU}px;
+            padding: ${3 * GU}px ${(compactMode ? 3 : 13) * GU}px;
             margin-top: ${1.5 * GU}px;
           `}
         >
