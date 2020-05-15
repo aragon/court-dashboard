@@ -12,6 +12,7 @@ import StatusInfo from './StatusInfo'
 import SignatureRequest from '../SignatureRequest'
 import UnlockNotifications from '../GlobalPreferences/Notifications/UnlockNotifications'
 import VerifyEmailAddress from './VerifyEmailAddress'
+import VerifyEmailAddressPreferences from '../GlobalPreferences/Notifications/VerifyEmailAddressPreferences'
 
 import { actions } from './actions'
 
@@ -44,6 +45,7 @@ import {
   UNLOCK_NOTIFICATIONS_SCREEN,
   VERIFICATION_ERROR_SCREEN,
   VERIFICATION_SUCCESS_SCREEN,
+  VERIFY_EMAIL_ADDRESS_PREFERENCES,
   VERIFY_YOUR_EMAIL_SCREEN,
 } from './constants'
 
@@ -89,6 +91,7 @@ const EmailNotificationsManager = React.memo(
           ? EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN
           : EMAIL_NOTIFICATIONS_FORM_SCREEN)
     )
+
     const [subscriptionProgress, setSubscriptionProgress] = useState({
       ...DEFAULT_SUBSCRIPTION_PROGRESS,
       email,
@@ -592,6 +595,14 @@ const EmailNotificationsManager = React.memo(
                 description="Your email was successfully verified and you can enable or disable notifications from all Aragon Court events."
                 actionText="Go to Notification settings"
                 onAction={handleOnGoToPreferences}
+              />
+            )
+          }
+          if (screenId === VERIFY_EMAIL_ADDRESS_PREFERENCES) {
+            return (
+              <VerifyEmailAddressPreferences
+                email={subscriptionProgress.email}
+                onResend={() => {}}
               />
             )
           }

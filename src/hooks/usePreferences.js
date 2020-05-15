@@ -13,8 +13,6 @@ function parsePreferences(search = '') {
 
   return {
     screen: searchParams.get('preferences'),
-    address: searchParams.get('address'),
-    token: searchParams.get('token'),
   }
 }
 
@@ -27,9 +25,7 @@ export default function usePreferences() {
   const { pathname: basePath, search } = useLocation()
   const history = useHistory()
 
-  const { screen, address, token } = parsePreferences(search)
-
-  const queryParms = { address, token }
+  const { screen } = parsePreferences(search)
 
   const preferenceScreen = useRef(screen)
 
@@ -51,6 +47,5 @@ export default function usePreferences() {
     handleOpenPreferences,
     handleClosePreferences,
     preferenceScreen.current,
-    queryParms,
   ]
 }

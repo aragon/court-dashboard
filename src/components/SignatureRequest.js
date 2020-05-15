@@ -7,11 +7,7 @@ import { dayjs } from '../utils/date-utils'
 
 import signRequestSuccessIllustration from '../../src/assets/signRequestSuccess.svg'
 import signRequestFailIllustration from '../../src/assets/signRequestFail.svg'
-<<<<<<< HEAD
-import signProcessing from '../../src/assets/loader.gif'
-=======
 import signRequestLoading from '../../src/assets/signRequestLoading.gif'
->>>>>>> development
 
 const SignerRequest = React.memo(function SignerRequest({
   compactMode,

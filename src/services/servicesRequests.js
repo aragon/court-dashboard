@@ -7,8 +7,6 @@ import {
 
 const COURT_SERVER_ENDPOINT = courtServerEndpoint()
 
-// https://court-backend-usability.eth.aragon.network
-
 export async function createSession(address, signature, timestamp) {
   const endpoint = `${COURT_SERVER_ENDPOINT}/users/${address}/sessions`
 
@@ -315,6 +313,44 @@ export async function verifyJurorEmail(address, token) {
     if (rawResponse.ok) {
       return {
         verified: jsonResponse?.verified,
+        error: null,
+      }
+    }
+
+    const errors = jsonResponse.errors
+      .map(err => Object.values(err).join(', '))
+      .join(', ')
+
+    return {
+      error: errors,
+    }
+  } catch (err) {
+    console.error(err)
+    return { error: err }
+  }
+}
+
+export async function getSubscriptionDetails(address) {
+  const endpoint = `${COURT_SERVER_ENDPOINT}/users/${address}`
+
+  try {
+    const rawResponse = await fetch(endpoint, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+
+    const jsonResponse = await rawResponse.json()
+
+    if (rawResponse.ok) {
+      return {
+        addressVerified: jsonResponse?.addressVerified,
+        emailExists: jsonResponse?.emailExists,
+        emailVerified: jsonResponse?.emailVerified,
+        notificationsDisabled: jsonResponse?.notificationsDisabled,
         error: null,
       }
     }
