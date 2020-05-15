@@ -7,6 +7,7 @@ import GlobalErrorHandler from './GlobalErrorHandler'
 import MainView from './components/MainView'
 import OnboardingLoader from './components/OnboardingLoader'
 import EmailNotificationsLoader from './components/EmailNotificationsLoader'
+import EmailNotificationsProvider from './components/EmailNotificationsProvider'
 import RequestPanel from './components/RequestPanel/RequestPanel'
 import Routes from './Routes'
 import { ActivityProvider } from './providers/ActivityProvider'
@@ -20,32 +21,34 @@ function App() {
     <WalletProvider>
       <BrowserRouter>
         <ActivityProvider>
-          <Main
-            assetsUrl="/aragon-ui/"
-            layout={false}
-            scrollView={false}
-            theme={theme}
-          >
-            <GlobalErrorHandler>
-              <ToastHub threshold={1} timeout={1500}>
-                <CourtConfigProvider>
-                  <CourtClockProvider>
-                    <RequestQueueProvider>
-                      <MainView>
-                        <OnboardingLoader>
-                          <EmailNotificationsLoader />
-                          <AppLoader>
-                            <Routes />
-                          </AppLoader>
-                        </OnboardingLoader>
-                        <RequestPanel />
-                      </MainView>
-                    </RequestQueueProvider>
-                  </CourtClockProvider>
-                </CourtConfigProvider>
-              </ToastHub>
-            </GlobalErrorHandler>
-          </Main>
+          <EmailNotificationsProvider>
+            <Main
+              assetsUrl="/aragon-ui/"
+              layout={false}
+              scrollView={false}
+              theme={theme}
+            >
+              <GlobalErrorHandler>
+                <ToastHub threshold={1} timeout={1500}>
+                  <CourtConfigProvider>
+                    <CourtClockProvider>
+                      <RequestQueueProvider>
+                        <MainView>
+                          <OnboardingLoader>
+                            <EmailNotificationsLoader />
+                            <AppLoader>
+                              <Routes />
+                            </AppLoader>
+                          </OnboardingLoader>
+                          <RequestPanel />
+                        </MainView>
+                      </RequestQueueProvider>
+                    </CourtClockProvider>
+                  </CourtConfigProvider>
+                </ToastHub>
+              </GlobalErrorHandler>
+            </Main>
+          </EmailNotificationsProvider>
         </ActivityProvider>
       </BrowserRouter>
     </WalletProvider>
