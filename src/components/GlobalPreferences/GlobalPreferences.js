@@ -13,7 +13,7 @@ import {
 import { Transition, animated } from 'react-spring/renderprops'
 import { useEsc } from '../../hooks/useKeyboardArrows'
 import Network from './Network/Network'
-import NotificationsPreferencesLoader from './Notifications/NotificationsPreferencesLoader'
+import NotificationsManager from './Notifications/NotificationsManager'
 
 const SECTIONS = new Map([
   ['network', 'Network'],
@@ -27,13 +27,7 @@ const NOTIFICATIONS_INDEX = 1
 
 const AnimatedDiv = animated.div
 
-function GlobalPreferences({
-  compact,
-  onClose,
-  onNavigation,
-  sectionIndex,
-  queryParms,
-}) {
+function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
   useEsc(onClose)
 
   const container = useRef()
@@ -43,7 +37,6 @@ function GlobalPreferences({
     }
   }, [])
 
-  const { address, token } = queryParms || {}
   return (
     <div ref={container} tabIndex="0" css="outline: 0">
       <Layout css="z-index: 2">
@@ -62,9 +55,7 @@ function GlobalPreferences({
           />
 
           {sectionIndex === NETWORK_INDEX && <Network />}
-          {sectionIndex === NOTIFICATIONS_INDEX && (
-            <NotificationsPreferencesLoader address={address} token={token} />
-          )}
+          {sectionIndex === NOTIFICATIONS_INDEX && <NotificationsManager />}
         </React.Fragment>
       </Layout>
     </div>
@@ -121,12 +112,7 @@ function Close({ compact, onClick }) {
   )
 }
 
-function AnimatedGlobalPreferences({
-  path,
-  onScreenChange,
-  onClose,
-  queryParms,
-}) {
+function AnimatedGlobalPreferences({ path, onScreenChange, onClose }) {
   const { sectionIndex, handleNavigation } = useGlobalPreferences({
     path,
     onScreenChange,
@@ -180,7 +166,6 @@ function AnimatedGlobalPreferences({
               compact={compact}
               sectionIndex={sectionIndex}
               onNavigation={handleNavigation}
-              queryParms={queryParms}
             />
           </AnimatedDiv>
         ))

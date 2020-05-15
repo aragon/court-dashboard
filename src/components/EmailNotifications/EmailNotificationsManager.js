@@ -91,6 +91,7 @@ const EmailNotificationsManager = React.memo(
           ? EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN
           : EMAIL_NOTIFICATIONS_FORM_SCREEN)
     )
+
     const [subscriptionProgress, setSubscriptionProgress] = useState({
       ...DEFAULT_SUBSCRIPTION_PROGRESS,
       email,

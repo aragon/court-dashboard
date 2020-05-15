@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { useWallet } from '../../../providers/Wallet'
 import {
   verifyJurorEmail,
   getJurorEmail,
 } from '../../../services/servicesRequests'
-
+import { useSubscriptionDetails } from '../../../hooks/useEmailNotifications'
 import EmailNotificationsManager from '../../EmailNotifications/EmailNotificationsManager'
 import {
   EMAIL_NOTIFICATIONS_FORM_SCREEN,
@@ -14,32 +16,38 @@ import {
   VERIFY_EMAIL_ADDRESS_PREFERENCES,
 } from '../../EmailNotifications/constants'
 
-const NotificationsManager = React.memo(function NotificationsManager({
-  account,
-  emailExists,
-  emailVerified,
-  notificationsDisabled,
-  paramAddress,
-  token,
-}) {
+const NotificationsManager = React.memo(function NotificationsManager() {
+  const { account } = useWallet()
+  const { search } = useLocation()
+  const [startingScreenId, setStartingScreenId] = useState()
   const [jurorNeedsSignature, setJurorNeedsSignature] = useState()
   const [jurorEmail, setJurorEmail] = useState('')
-  const [fetching, setFetching] = useState(true)
-  const [verificationError, setVerificationError] = useState(false)
+
+  const {
+    emailExists,
+    emailVerified,
+    notificationsDisabled,
+    fetching: fetchingSubscriptionData,
+  } = useSubscriptionDetails(account)
+
+  const searchParams = new URLSearchParams(search)
+  const address = searchParams.get('address')
+  const token = searchParams.get('token')
 
   useEffect(() => {
     let cancelled = false
 
-    if (!token && !paramAddress) {
+    if (!token || !address) {
       return
     }
     const verifyEmailAddress = async () => {
-      const { verified } = await verifyJurorEmail(paramAddress, token)
+      const { error } = await verifyJurorEmail(address, token)
 
       if (!cancelled) {
-        if (!verified) {
-          setVerificationError(true)
+        if (error) {
+          return setStartingScreenId(VERIFICATION_ERROR_SCREEN)
         }
+        return setStartingScreenId(VERIFICATION_SUCCESS_SCREEN)
       }
     }
 
@@ -47,41 +55,53 @@ const NotificationsManager = React.memo(function NotificationsManager({
     return () => {
       cancelled = true
     }
-  }, [account, paramAddress, token])
+  }, [account, address, token])
 
   useEffect(() => {
     let cancelled = false
     const getEmail = async () => {
+      if (address || token) {
+        return
+      }
+
       if (!account) {
-        setFetching(false)
+        return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
+      }
+
+      if (fetchingSubscriptionData) {
+        // TODO - FETCHING SCREEN
         return
       }
 
       if (!cancelled) {
         const { needsSignature, email } = await getJurorEmail(account)
+
         setJurorNeedsSignature(needsSignature)
         setJurorEmail(email)
-        setFetching(false)
+
+        if (!emailVerified && emailExists) {
+          return setStartingScreenId(VERIFY_EMAIL_ADDRESS_PREFERENCES)
+        }
+        if (account && emailVerified && needsSignature) {
+          return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
+        }
+
+        if (account && !emailVerified && !notificationsDisabled) {
+          return setStartingScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
+        }
+        if (account && emailVerified && !needsSignature) {
+          return setStartingScreenId(NOTIFICATIONS_PREFERENCES_SCREEN)
+        }
       }
     }
     getEmail()
     return () => {
       cancelled = true
     }
-  }, [account])
-
-  const startingScreenId = getStartingScreen(
-    account,
-    emailExists,
-    emailVerified,
-    notificationsDisabled,
-    jurorNeedsSignature,
-    token,
-    verificationError
-  )
+  }, [address, account, emailExists, emailVerified, notificationsDisabled, fetchingSubscriptionData, token])
 
   return (
-    !fetching && (
+    startingScreenId && (
       <EmailNotificationsManager
         needsUnlockSettings={jurorNeedsSignature}
         isModal={false}
@@ -94,46 +114,5 @@ const NotificationsManager = React.memo(function NotificationsManager({
     )
   )
 })
-
-function getStartingScreen(
-  account,
-  emailExists,
-  emailVerified,
-  notificationsDisabled,
-  jurorNeedsSignature,
-  token,
-  verificationError
-) {
-  console.log(
-    'props ',
-    emailExists,
-    emailVerified,
-    notificationsDisabled,
-    jurorNeedsSignature
-  )
-  if (token) {
-    if (verificationError) {
-      return VERIFICATION_ERROR_SCREEN
-    }
-    return VERIFICATION_SUCCESS_SCREEN
-  }
-  if (!emailVerified && emailExists) {
-    console.log('1')
-    return VERIFY_EMAIL_ADDRESS_PREFERENCES
-  }
-  if (!account || (account && emailVerified && jurorNeedsSignature)) {
-    console.log('2')
-    return UNLOCK_NOTIFICATIONS_SCREEN
-  }
-
-  if (account && !emailVerified && !notificationsDisabled) {
-    console.log('3')
-    return EMAIL_NOTIFICATIONS_FORM_SCREEN
-  }
-  if (account && emailVerified && !jurorNeedsSignature) {
-    console.log('4')
-    return NOTIFICATIONS_PREFERENCES_SCREEN
-  }
-}
 
 export default NotificationsManager
