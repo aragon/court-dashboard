@@ -1,6 +1,11 @@
 import environment from './environment'
 import { getNetworkType, isLocalOrUnknownNetwork } from './lib/web3-utils'
-import { getDefaultEthNode, getIpfsGateway } from './local-settings'
+import {
+  getDefaultEthNode,
+  getIpfsGateway,
+  getSubgraphHttpEndpoint,
+  getSubgraphWsEndpoint,
+} from './local-settings'
 
 const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
@@ -66,3 +71,7 @@ export const defaultEthNode =
   getDefaultEthNode() || getNetworkConfig().nodes.defaultEth
 
 export const defaultIpfsGateway = getIpfsGateway()
+
+export const defaultSubgraphHttpEndpoint = getSubgraphHttpEndpoint()
+
+export const defaultSubgraphWsEndpoint = getSubgraphWsEndpoint()

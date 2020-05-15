@@ -7,7 +7,11 @@ import { dayjs } from '../utils/date-utils'
 
 import signRequestSuccessIllustration from '../../src/assets/signRequestSuccess.svg'
 import signRequestFailIllustration from '../../src/assets/signRequestFail.svg'
+<<<<<<< HEAD
 import signProcessing from '../../src/assets/loader.gif'
+=======
+import signRequestLoading from '../../src/assets/signRequestLoading.gif'
+>>>>>>> development
 
 const SignerRequest = React.memo(function SignerRequest({
   compactMode,
@@ -31,7 +35,7 @@ const SignerRequest = React.memo(function SignerRequest({
     if (successMode) {
       return signRequestSuccessIllustration
     }
-    return signProcessing
+    return signRequestLoading
   }, [signingError, successMode])
 
   const { statusText, statusTextColor } = useMemo(() => {
@@ -52,7 +56,7 @@ const SignerRequest = React.memo(function SignerRequest({
 
   const infoText = useMemo(() => {
     if (signingError) {
-      return 'An error has occurred when signing the message.'
+      return 'A error occurred when signing the message.'
     }
     return text
   }, [signingError, text])
@@ -61,7 +65,7 @@ const SignerRequest = React.memo(function SignerRequest({
     if (!wallet) {
       return
     }
-    const now = dayjs().toString()
+    const now = dayjs.utc().toString()
     const { signHash, error } = await signMessage(wallet, now)
 
     if (error) {
@@ -69,11 +73,11 @@ const SignerRequest = React.memo(function SignerRequest({
       return
     }
 
-    if (typeof onSignSuccess === 'function') {
-      onSignSuccess(signHash, now)
-    }
+    onSignSuccess(signHash, now)
   }, [onSignSuccess, wallet])
 
+  /**  We only need to execute it when the component is rendered but if we need to retry the action we
+   should call to the requestSignature callback */
   useEffect(() => {
     if (successMode) {
       return

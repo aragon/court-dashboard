@@ -1,8 +1,14 @@
 import env from './environment'
-import { IPFS_ENDPOINT } from './endpoints'
+import { graphEndpoints, IPFS_ENDPOINT } from './endpoints'
 
 const DEFAULT_ETH_NODE = 'DEFAULT_ETH_NODE'
 const IPFS_GATEWAY = 'IPFS_GATEWAY'
+const SUBGRAPH_HTTP_ENDPOINT = 'SUBGRAPH_HTTP_ENDPOINT'
+const SUBGRAPH_WS_ENDPOINT = 'SUBGRAPH_WS_ENDPOINT'
+const [
+  DEFAULT_SUBGRAPH_HTTP_ENDPOINT,
+  DEFAULT_SUBGRAPH_WS_ENDPOINT,
+] = graphEndpoints()
 
 // Get a setting from localStorage
 function getLocalStorageSetting(confKey) {
@@ -21,9 +27,10 @@ function setLocalSetting(confKey, value) {
 }
 
 export function clearLocalStorageNetworkSettings() {
-  // TODO - remove subgrapk key once available
   window.localStorage.removeItem('DEFAULT_ETH_NODE_KEY')
   window.localStorage.removeItem('IPFS_GATEWAY_KEY')
+  window.localStorage.removeItem('SUBGRAPH_HTTP_ENDPOINT_KEY')
+  window.localStorage.removeItem('SUBGRAPH_WS_ENDPOINT_KEY')
 }
 
 export function getDefaultEthNode() {
@@ -35,10 +42,28 @@ export function setDefaultEthNode(node) {
   return setLocalSetting(DEFAULT_ETH_NODE, node)
 }
 
+export function getIpfsGateway() {
+  return getLocalSetting(IPFS_GATEWAY) || IPFS_ENDPOINT
+}
+
 export function setIpfsGateway(gateway) {
   return setLocalSetting(IPFS_GATEWAY, gateway)
 }
 
-export function getIpfsGateway() {
-  return getLocalSetting(IPFS_GATEWAY) || IPFS_ENDPOINT
+export function getSubgraphHttpEndpoint() {
+  return (
+    getLocalSetting(SUBGRAPH_HTTP_ENDPOINT) || DEFAULT_SUBGRAPH_HTTP_ENDPOINT
+  )
+}
+
+export function setSubgraphHttpEndpoint(endpoint) {
+  return setLocalSetting(SUBGRAPH_HTTP_ENDPOINT, endpoint)
+}
+
+export function getSubgraphWsEndpoint() {
+  return getLocalSetting(SUBGRAPH_WS_ENDPOINT) || DEFAULT_SUBGRAPH_WS_ENDPOINT
+}
+
+export function setSubgraphWsEndpoint(endpoint) {
+  return setLocalSetting(SUBGRAPH_WS_ENDPOINT, endpoint)
 }
