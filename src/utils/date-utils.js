@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import utc from 'dayjs/plugin/utc'
 
 export const SECOND = 1000
 export const MINUTE = 60 * SECOND
@@ -16,6 +17,7 @@ const KNOWN_FORMATS = {
 // dayjs plugins
 dayjs.extend(isBetween)
 dayjs.extend(relativeTime)
+dayjs.extend(utc)
 
 function dateFormat(date, format) {
   return dayjs(date).format(KNOWN_FORMATS[format] || format)
