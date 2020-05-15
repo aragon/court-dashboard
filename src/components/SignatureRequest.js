@@ -2,28 +2,25 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import { useWallet } from '../providers/Wallet'
-import { getProviderFromUseWalletId } from '../ethereum-providers'
 import { signMessage } from '../lib/web3-utils'
 import { dayjs } from '../utils/date-utils'
 
 import signRequestSuccessIllustration from '../../src/assets/signRequestSuccess.svg'
 import signRequestFailIllustration from '../../src/assets/signRequestFail.svg'
-import signProcessing from '../../src/assets/loader.gif'
+import signRequestLoading from '../../src/assets/signRequestLoading.gif'
 
 const SignerRequest = React.memo(function SignerRequest({
-  actionText,
   compactMode,
-  onActionSuccess,
+  mode,
   onSignSuccess,
-  successText,
+  text,
   title,
 }) {
   const [signingError, setSigningError] = useState(false)
-  const [signHash, setSignHash] = useState('')
+
+  const successMode = mode === 'success'
 
   const wallet = useWallet()
-
-  const provider = getProviderFromUseWalletId(wallet.activated)
 
   const theme = useTheme()
 
@@ -31,17 +28,17 @@ const SignerRequest = React.memo(function SignerRequest({
     if (signingError) {
       return signRequestFailIllustration
     }
-    if (signHash) {
+    if (successMode) {
       return signRequestSuccessIllustration
     }
-    return signProcessing
-  }, [signingError, signHash])
+    return signRequestLoading
+  }, [signingError, successMode])
 
   const { statusText, statusTextColor } = useMemo(() => {
     if (signingError) {
       return { statusText: 'Signature failed', statusTextColor: theme.negative }
     }
-    if (signHash) {
+    if (successMode) {
       return {
         statusText: 'Signature confirmed',
         statusTextColor: theme.positive,
@@ -51,25 +48,20 @@ const SignerRequest = React.memo(function SignerRequest({
       statusText: 'Waiting for signature…',
       statusTextColor: theme.surfaceContentSecondary,
     }
-  }, [signingError, signHash, theme])
+  }, [signingError, successMode, theme])
 
   const infoText = useMemo(() => {
     if (signingError) {
-      return 'An error has occurred when signing the message.'
+      return 'A error occurred when signing the message.'
     }
-    if (signHash) {
-      return successText
-    }
-    return `Open ${provider.name} to complete the
-    signature request. Signing this message will prove ownership of your
-    account and ${actionText}`
-  }, [actionText, provider, signingError, signHash, successText])
+    return text
+  }, [signingError, text])
 
   const requestSignature = useCallback(async () => {
     if (!wallet) {
       return
     }
-    const now = dayjs().toString()
+    const now = dayjs.utc().toString()
     const { signHash, error } = await signMessage(wallet, now)
 
     if (error) {
@@ -77,30 +69,17 @@ const SignerRequest = React.memo(function SignerRequest({
       return
     }
 
-    if (typeof onSignSuccess === 'function') {
-      await onSignSuccess(signHash, now)
-
-      setSignHash(signHash)
-    }
+    onSignSuccess(signHash, now)
   }, [onSignSuccess, wallet])
 
+  /**  We only need to execute it when the component is rendered but if we need to retry the action we
+   should call to the requestSignature callback */
   useEffect(() => {
-    requestSignature()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (!signHash) {
+    if (successMode) {
       return
     }
-
-    if (typeof onActionSuccess === 'function') {
-      const timer = setTimeout(() => {
-        onActionSuccess()
-      }, 3000)
-
-      return () => clearTimeout(timer)
-    }
-  }, [signHash, onActionSuccess])
+    requestSignature()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div
