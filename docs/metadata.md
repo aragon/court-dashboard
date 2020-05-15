@@ -29,7 +29,7 @@ We are going to try to find the following keys:
 1. `description`
 2. `metadata`
 
-If `metadata` is a valid [native IPFS URL](https://docs.ipfs.io/guides/guides/addressing/#native-urls) we'll fetch its content through IPFS.
+If `metadata` is a string in the form of `ipfs:{CID | IPLD path}`, we'll fetch its content through IPFS.
 The content is expected to have the following structure:
 
 ```javascript
@@ -64,10 +64,11 @@ type Evidence @entity {
 }
 ```
 
-The dashboard checks if the `data` field is a valid IPFS hash/cid
+The dashboard checks if the `data` field is a string in the form of `ipfs:{CID | IPLD path}`.
 
-### data - IPFS hash
-  Try to fetch the content from IPFS
+### data - IPFS string
+
+Try to fetch the content from IPFS
 
   - **content - JSON**
 
@@ -83,4 +84,4 @@ The dashboard checks if the `data` field is a valid IPFS hash/cid
 
 ### data - Plain String
 
-  Show the data as the evidence text
+Show the data as the evidence text
