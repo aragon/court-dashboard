@@ -53,6 +53,10 @@ export const VERIFICATION_ERROR_SCREEN = Symbol('VERIFICATION_ERROR_SCREEN')
 export const VERIFICATION_SUCCESS_SCREEN = Symbol(
   'VERIFICATION_SUCCESSFUL_SCREEN'
 )
+
+export const VERIFY_EMAIL_ADDRESS_PREFERENCES = Symbol(
+  'VERIFY_EMAIL_ADDRESS_PREFERENCES'
+)
 //* *********************************** ACTIONS *************************************************************************
 export const DELETE_ACTION = Symbol('DELETE_ACTION')
 export const DELETE_ACTION_PREFERENCES = Symbol('DELETE_ACTION_PREFERENCES')
@@ -61,8 +65,6 @@ export const RESEND_EMAIL_ACTION = Symbol('RESEND_EMAIL_ACTION')
 export const SUBSCRIBE_EXISTING_ACTION = Symbol('SUBSCRIBE_EXISTING_ACTION')
 export const SUBSCRIBE_MODAL_ACTION = Symbol('SUBSCRIBE_MODAL_ACTION')
 export const UNLOCK_SETTINGS_ACTION = Symbol('UNLOCK_SETTINGS')
-
-//* *********************************** STATUS INFO *************************************************************************
 
 export const SETTINGS = {
   [DELETE_ACTION]: {

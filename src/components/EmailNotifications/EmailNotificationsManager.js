@@ -602,7 +602,7 @@ const EmailNotificationsManager = React.memo(
             return (
               <VerifyEmailAddressPreferences
                 email={subscriptionProgress.email}
-                onResend={() => {}}
+                onResend={() => {} /* TODO- !!! */}
               />
             )
           }
