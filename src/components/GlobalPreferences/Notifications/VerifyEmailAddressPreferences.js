@@ -1,10 +1,12 @@
 import React from 'react'
-import { Button, GU, textStyle, useTheme } from '@aragon/ui'
+import { Button, GU, textStyle, useTheme, useViewport } from '@aragon/ui'
 import emailNotifcationIllustration from '../../../../src/assets/emailNotifications.svg'
 
 const VerifyEmailAddressPreferences = React.memo(
   function VerifyEmailAddressPreferences({ email, onResend }) {
     const theme = useTheme()
+    const { below } = useViewport()
+    const compact = below('medium')
 
     return (
       <div
@@ -36,7 +38,7 @@ const VerifyEmailAddressPreferences = React.memo(
             ${textStyle('body2')};
             color: ${theme.surfaceContentSecondary};
             margin-top: ${1.5 * GU}px;
-            padding: 0px ${20 * GU}px;
+            padding: 0px ${(compact ? 3 : 20) * GU}px;
           `}
         >
           Almost there! We’ve sent a verification email to{' '}
