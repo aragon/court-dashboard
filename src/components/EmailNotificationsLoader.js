@@ -12,6 +12,7 @@ function EmailNotificationsLoader({ children }) {
     wallet.account
   )
 
+  console.log('verified ', addressVerified)
   useEffect(() => {
     const visible = wallet.account && !addressVerified
     setModalVisible(visible)
