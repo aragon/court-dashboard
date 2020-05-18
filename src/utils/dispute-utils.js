@@ -381,8 +381,9 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     ]
   }
 
-  const votingEndTime =
-    disputeDraftStartTime + termDuration * (delayedTerms + commitTerms)
+  const disputeDraftEndTime =
+    disputeDraftStartTime + termDuration * delayedTerms
+  const votingEndTime = disputeDraftEndTime + termDuration * commitTerms
   const revealEndTime = votingEndTime + termDuration * revealTerms
   const appealEndTime = revealEndTime + termDuration * appealTerms
   const confirmAppealEndTime =
@@ -393,8 +394,13 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
 
   const roundPhasesAndTime = [
     {
-      // Jurors can be drafted at any time
+      // Jurors can be drafted at any time, so we'll only set the
+      // `endTime` when the drafting phase has already passed
       phase: DisputesTypes.Phase.JuryDrafting,
+      endTime:
+        DisputesTypes.Phase.JuryDrafting !== currentPhase.phase
+          ? disputeDraftEndTime
+          : null,
       active:
         isCurrentRound &&
         DisputesTypes.Phase.JuryDrafting === currentPhase.phase,
