@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react'
-import { GU, useViewport, Modal } from '@aragon/ui'
+import { GU, Inside, useViewport, Modal } from '@aragon/ui'
 import { useWallet } from '../providers/Wallet'
 import { useSubscriptionDetails } from '../hooks/useEmailNotifications'
 import EmailNotificationsManager from './EmailNotifications/EmailNotificationsManager'
@@ -30,14 +30,13 @@ function EmailNotificationsLoader({ children }) {
           onClose={handleOnClose}
           css="z-index: 4"
         >
-          <div css="">
+          <Inside name="NotificationsModal">
             <EmailNotificationsManager
-              isModal
               account={wallet.account}
               emailExists={emailExists}
               addressVerified={addressVerified}
             />
-          </div>
+          </Inside>
         </Modal>
       )}
       {children}

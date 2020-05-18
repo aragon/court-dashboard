@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react'
 import { animated, Transition } from 'react-spring/renderprops'
-import { Box, useViewport } from '@aragon/ui'
+import { Box, useInside, useViewport } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
 
@@ -77,8 +77,6 @@ const DEFAULT_SUBSCRIPTION_PROGRESS = {
 
 const EmailNotificationsManager = React.memo(
   function EmailNotificationsManager({
-    isModal,
-    account,
     needsUnlockSettings,
     emailExists,
     notificationsDisabled,
@@ -99,6 +97,8 @@ const EmailNotificationsManager = React.memo(
     })
 
     const wallet = useWallet()
+    const account = wallet.account
+    const [insideModal] = useInside('NotificationsModal')
     const provider = getProviderFromUseWalletId(wallet.activated)
 
     const { below } = useViewport()
@@ -273,7 +273,7 @@ const EmailNotificationsManager = React.memo(
       const deleteSettings = SETTINGS[DELETE_ACTION]
 
       if (!needsSignature) {
-        if (isModal) {
+        if (insideModal) {
           setSubscriptionProgress(subscriptionProgress => ({
             ...subscriptionProgress,
             statusInfoTitle: deleteSettings.successInfo.title,
@@ -281,7 +281,7 @@ const EmailNotificationsManager = React.memo(
           }))
         }
         setScreenId(
-          isModal ? SUCCESS_INFO_SCREEN : EMAIL_NOTIFICATIONS_FORM_SCREEN
+          insideModal ? SUCCESS_INFO_SCREEN : EMAIL_NOTIFICATIONS_FORM_SCREEN
         )
         return
       }
@@ -289,13 +289,13 @@ const EmailNotificationsManager = React.memo(
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
         needSignature: needsSignature,
-        mode: isModal ? DELETE_ACTION : DELETE_ACTION_PREFERENCES,
+        mode: insideModal ? DELETE_ACTION : DELETE_ACTION_PREFERENCES,
         signatureTitle: `Delete "${subscriptionProgress.email}"`,
         signRequestText:
           defaultSignRequestText + deleteSettings.signatureSettings.requestText,
         signSuccessText: deleteSettings.signatureSettings.successText,
       }))
-    }, [account, defaultSignRequestText, isModal])
+    }, [account, defaultSignRequestText, insideModal])
 
     const handleOnUnlockSettings = useCallback(() => {
       const unlockSettings = SETTINGS[UNLOCK_SETTINGS_ACTION]
@@ -469,7 +469,7 @@ const EmailNotificationsManager = React.memo(
     }, [subscriptionProgress.needSignature])
 
     return (
-      <WrappedContainer isModal={isModal} screenId={screenId}>
+      <WrappedContainer screenId={screenId}>
         {(() => {
           if (screenId === SIGNATURE_REQUEST_SCREEN) {
             return (
@@ -512,7 +512,6 @@ const EmailNotificationsManager = React.memo(
           if (screenId === EMAIL_NOTIFICATIONS_FORM_SCREEN) {
             return (
               <EmailNotificationsForm
-                isModal={isModal}
                 account={account}
                 existingEmail={subscriptionProgress.email}
                 compactMode={compactMode}
@@ -548,7 +547,6 @@ const EmailNotificationsManager = React.memo(
           if (screenId === DELETE_EMAIL_SCREEN) {
             return (
               <DeleteEmail
-                isModal={isModal}
                 email={subscriptionProgress.email}
                 onDelete={handleOnDelete}
                 onCancel={handleOnCancelDelete}
@@ -613,9 +611,10 @@ const EmailNotificationsManager = React.memo(
 )
 
 const WrappedContainer = React.memo(function AnimatedModal({ ...props }) {
-  const { isModal, screenId } = props
+  const [insideModal] = useInside('NotificationsModal')
+  const { screenId } = props
 
-  if (isModal || screenId === NOTIFICATIONS_PREFERENCES_SCREEN) {
+  if (insideModal || screenId === NOTIFICATIONS_PREFERENCES_SCREEN) {
     return <AnimatedContainer {...props} />
   }
 
@@ -638,10 +637,11 @@ const WrappedContainer = React.memo(function AnimatedModal({ ...props }) {
 })
 
 const AnimatedContainer = React.memo(function AnimatedModal({
-  isModal,
   screenId,
   children,
 }) {
+  const [insideModal] = useInside('NotificationsModal')
+
   return (
     <Transition
       items={{ children, screenId }}
@@ -664,7 +664,7 @@ const AnimatedContainer = React.memo(function AnimatedModal({
       native
     >
       {({ children, screenId }) => props =>
-        isModal ? (
+        insideModal ? (
           <animated.div style={{ ...props }}>{children}</animated.div>
         ) : (
           <animated.div

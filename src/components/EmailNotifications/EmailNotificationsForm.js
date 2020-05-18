@@ -10,8 +10,10 @@ import {
   Link,
   TextInput,
   textStyle,
+  useInside,
   useTheme,
 } from '@aragon/ui'
+import { useWallet } from '../../providers/Wallet'
 import IdentityBadge from '../IdentityBadge'
 import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
 import { validateEmail } from '../../utils/notifications-utils'
@@ -19,17 +21,17 @@ import { validateEmail } from '../../utils/notifications-utils'
 import emailNotifcationIllustration from '../../../src/assets/emailNotifications.svg'
 
 function EmailNotificationsForm({
-  account,
   compactMode,
   existingEmail,
-  isModal,
   onOptOut,
   onSubscribeToNotifications,
 }) {
   const [emailAddress, setEmailAddress] = useState('')
   const [emailInvalid, setEmailInvalid] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const { account } = useWallet()
   const theme = useTheme()
+  const [insideModal] = useInside('NotificationsModal')
 
   const handleEmailAddressBlur = useCallback(e => {
     const email = e.target.value
@@ -56,7 +58,7 @@ function EmailNotificationsForm({
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding-top: ${isModal ? 3 : 0 * GU}px;
+          padding-top: ${insideModal ? 3 : 0 * GU}px;
         `}
       >
         <div
@@ -146,7 +148,7 @@ function EmailNotificationsForm({
                 />
               </Field>
 
-              {!isModal && (
+              {!insideModal && (
                 <div
                   css={`
                     display: flex;
@@ -188,7 +190,7 @@ function EmailNotificationsForm({
           setTermsAccepted={setTermsAccepted}
         />
 
-        {isModal && (
+        {insideModal && (
           <div
             css={`
               display: flex;

@@ -104,8 +104,6 @@ const NotificationsManager = React.memo(function NotificationsManager() {
     startingScreenId && (
       <EmailNotificationsManager
         needsUnlockSettings={jurorNeedsSignature}
-        isModal={false}
-        account={account}
         emailExists={emailExists}
         notificationsDisabled={notificationsDisabled}
         email={jurorEmail}

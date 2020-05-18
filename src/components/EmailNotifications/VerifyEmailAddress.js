@@ -85,8 +85,9 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
           margin-top: ${1.5 * GU}px;
         `}
       >
-        Almost there! We’ve sent a verification email to {email}. Kindly check
-        your inbox and click the link to verify your account.
+        Almost there! We’ve sent a verification email to{' '}
+        <strong>{email}</strong>. Kindly check your inbox and click the link to
+        verify your account.
         {updateMode &&
           'Alternatively, you can update this email or delete it, if you wish to unsubscribe'}
       </span>
@@ -203,8 +204,9 @@ function LegalTermsAndPolicy({ termsAccepted, onChange }) {
           display: flex;
         `}
       >
-        <Checkbox checked={termsAccepted} onChange={onChange} />
-
+        <div>
+          <Checkbox checked={termsAccepted} onChange={onChange} />
+        </div>
         <span
           css={`
             ${textStyle('body2')};
