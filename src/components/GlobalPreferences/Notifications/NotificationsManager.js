@@ -81,14 +81,14 @@ const NotificationsManager = React.memo(function NotificationsManager() {
         if (!emailVerified && emailExists) {
           return setStartingScreenId(VERIFY_EMAIL_ADDRESS_PREFERENCES)
         }
-        if (account && emailVerified && needsSignature) {
+        if (!emailVerified) {
+          return setStartingScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
+        }
+        if (emailVerified && needsSignature) {
           return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
         }
 
-        if (account && !emailVerified && !notificationsDisabled) {
-          return setStartingScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
-        }
-        if (account && emailVerified && !needsSignature) {
+        if (emailVerified && !needsSignature) {
           return setStartingScreenId(NOTIFICATIONS_PREFERENCES_SCREEN)
         }
       }
