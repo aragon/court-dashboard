@@ -17,7 +17,7 @@ import NotificationsManager from './Notifications/NotificationsManager'
 
 const SECTIONS = new Map([
   ['network', 'Network'],
-  ['notifications', 'Email Notifications'],
+  ['notifications', 'Notifications'],
 ])
 const PATHS = Array.from(SECTIONS.keys())
 const VALUES = Array.from(SECTIONS.values())

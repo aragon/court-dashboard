@@ -259,7 +259,6 @@ const LegalTermsAndPolicy = React.memo(function LegalTermsAndPolicy({
   termsAccepted,
   onChange,
 }) {
-  console.log('terms accepted ', termsAccepted)
   return (
     <div
       css={`

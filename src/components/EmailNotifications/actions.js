@@ -5,7 +5,7 @@ import {
   subscribeExistingEmail,
   subscribeToNotifications,
   switchNotificationsStatus,
-} from '../../services/servicesRequests'
+} from '../../services/notificationServiceApi'
 
 import {
   DELETE_ACTION,

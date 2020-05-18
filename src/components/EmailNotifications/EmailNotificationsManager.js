@@ -25,7 +25,7 @@ import {
   subscribeToNotifications,
   subscribeExistingEmail,
   switchNotificationsStatus,
-} from '../../services/servicesRequests'
+} from '../../services/notificationServiceApi'
 import {
   DELETE_ACTION,
   DELETE_ACTION_PREFERENCES,
@@ -97,9 +97,6 @@ const EmailNotificationsManager = React.memo(
       notificationsDisabled,
     })
 
-    console.log('MANAGER!!! startingScreen ', startingScreen)
-    console.log('MANAGER!!! screenId ', screenId)
-
     const wallet = useWallet()
     const account = wallet.account
     const [insideModal] = useInside('NotificationsModal')
@@ -107,13 +104,6 @@ const EmailNotificationsManager = React.memo(
 
     const { below } = useViewport()
     const compactMode = below('medium')
-
-    useEffect(() => {
-      if (!startingScreen) {
-        return
-      }
-      setScreenId(startingScreen)
-    }, [startingScreen])
 
     const defaultSignRequestText = useMemo(() => {
       return `Open ${provider.name} to complete the
@@ -376,6 +366,13 @@ const EmailNotificationsManager = React.memo(
         signTimestamp: timestamp,
       }))
     }, [])
+
+    useEffect(() => {
+      if (!startingScreen) {
+        return
+      }
+      setScreenId(startingScreen)
+    }, [startingScreen])
 
     useEffect(() => {
       let cancelled = false

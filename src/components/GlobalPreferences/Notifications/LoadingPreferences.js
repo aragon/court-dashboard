@@ -28,13 +28,13 @@ const LoadingPreferences = React.memo(function LoadingPreferences() {
           align-items: center;
         `}
       >
-        <LoadingRing />{' '}
+        <LoadingRing />
         <span
           css={`
             margin-left: ${1.5 * GU}px;
           `}
         >
-          Loading...
+          Loading…
         </span>
       </div>
     </div>

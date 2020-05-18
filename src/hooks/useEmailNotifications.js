@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getSubscriptionDetails } from '../services/servicesRequests'
+import { getSubscriptionDetails } from '../services/notificationServiceApi'
 
 export function useSubscriptionDetails(address) {
   const [subscriptionDetails, setSubscriptionDetails] = useState({})

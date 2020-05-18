@@ -4,7 +4,7 @@ import { useWallet } from '../../../providers/Wallet'
 import {
   verifyJurorEmail,
   getJurorEmail,
-} from '../../../services/servicesRequests'
+} from '../../../services/notificationServiceApi'
 import { useSubscriptionDetails } from '../../../hooks/useEmailNotifications'
 import EmailNotificationsManager from '../../EmailNotifications/EmailNotificationsManager'
 import {
@@ -99,7 +99,6 @@ const NotificationsManager = React.memo(function NotificationsManager() {
     }
   }, [address, account, emailExists, emailVerified, notificationsDisabled, fetchingSubscriptionData, token])
 
-  console.log('startingScreenId ', startingScreenId)
   return (
     startingScreenId && (
       <EmailNotificationsManager

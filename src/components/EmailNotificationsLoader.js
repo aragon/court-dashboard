@@ -28,7 +28,6 @@ function EmailNotificationsLoader({ children }) {
           width={Math.min(76 * GU, width - 40)}
           visible={modalVisible}
           onClose={handleOnClose}
-          css="z-index: 4"
         >
           <Inside name="NotificationsModal">
             <EmailNotificationsManager
