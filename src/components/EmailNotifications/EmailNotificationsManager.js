@@ -32,6 +32,7 @@ import {
   EMAIL_NOTIFICATIONS_ERROR_SCREEN,
   EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN,
   EMAIL_NOTIFICATIONS_FORM_SCREEN,
+  LOADING_SCREEN,
   NOTIFICATIONS_PREFERENCES_SCREEN,
   OPTOUT_ACTION,
   RESEND_EMAIL_ACTION,
@@ -603,6 +604,10 @@ const EmailNotificationsManager = React.memo(
                 onResend={handleOnResendEmail}
               />
             )
+          }
+
+          if (screenId === LOADING_SCREEN) {
+            return <div />
           }
         })()}
       </WrappedContainer>
