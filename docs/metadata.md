@@ -20,19 +20,31 @@ type Arbitrable @entity {
 }
 ```
 
-In the frontend we try to parse the `metadata` as a json object.
-
-### metadata - Json object
-
-We are going to try to find the following keys:
+The dispute `metadata` should be a JSON Object and should have the following keys:
 
 1. `description`
 2. `metadata`
 
-#### metadata - String
+If `metadata` is a string in the form of `ipfs:{CID | IPLD path}`, we'll fetch its content through IPFS.
+The content is expected to have the following structure:
 
-In case `metadata` is a plain string, we assume it to be the dispute's description and set the dispute creator (`subject.id`) as the plaintiff. No agreement link will be available.
+```javascript
+{
+  "description": …,
+  "disputedActionText": …,
+  "disputedActionURL": …,
+  "disputedActionRadspec": …,
+  "agreementTitle": …,
+  "agreementText": …,
+  "organization":  …,
+  "plaintiff": …,
+  "defendant": …,
+}
+```
 
+> Note that even though `description` should be present in the IPFS content, we also assume it to be present in the `metadata` field. We do this to avoid needing to fetch every disputes' IPFS content when loading their dispute cards.
+
+---
 
 ## Evidence
 
@@ -46,25 +58,24 @@ type Evidence @entity {
 }
 ```
 
-The dashboard check if the `data` field is a valid IPFS hash/cid
+The dashboard checks if the `data` field is a string in the form of `ipfs:{CID | IPLD path}`.
 
-### data - IPFS hash
+### data - IPFS path
 
 Try to fetch the content from IPFS
 
-#### content - Json
+  - **content - JSON**
 
-We are going to try to find the following keys:
+      We are going to try to find the following keys:
 
-1. `metadata`
+       1. `metadata`
 
-If we can find it we are going to show that as the evidence text
+      If we can find it we are going to show that as the evidence text
 
-#### content - String
-
-Show the content as the evidence text
+  - **content - String**
+      
+      Show the content as the evidence text
 
 ### data - Plain String
 
 Show the data as the evidence text
-
