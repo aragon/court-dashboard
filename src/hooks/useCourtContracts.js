@@ -8,12 +8,7 @@ import { useRequestQueue } from '../providers/RequestQueue'
 import requestAutoReveal from '../services/requestAutoReveal'
 import { getFunctionSignature } from '../lib/web3-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
-import {
-  hashVote,
-  getOutcomeFromCommitment,
-  getVoteId,
-  hashPassword,
-} from '../utils/crvoting-utils'
+import { hashVote, getVoteId, hashPassword } from '../utils/crvoting-utils'
 import { retryMax } from '../utils/retry-max'
 import radspec from '../radspec'
 import { getKnownToken } from '../utils/known-tokens'
@@ -257,9 +252,8 @@ export function useDisputeActions() {
 
   // Reveal
   const reveal = useCallback(
-    (disputeId, roundId, voter, commitment, password) => {
+    (disputeId, roundId, voter, outcome, password) => {
       const voteId = getVoteId(disputeId, roundId)
-      const outcome = getOutcomeFromCommitment(commitment, password)
 
       return addRequests({
         intent: () =>

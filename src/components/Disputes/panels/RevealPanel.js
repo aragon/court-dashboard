@@ -1,8 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Button, Field, GU, TextInput } from '@aragon/ui'
+import { Button, Field, GU, Info, TextInput } from '@aragon/ui'
 import { useWallet } from '../../../providers/Wallet'
 import { getJurorDraft } from '../../../utils/juror-draft-utils'
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
+import {
+  getOutcomeFromCommitment,
+  isValidOutcome,
+} from '../../../utils/crvoting-utils'
 import { getCodeFromLocalStorage } from '../../../utils/one-time-code-utils'
 
 const RevealPanel = React.memo(function RevealPanel({
@@ -11,10 +15,54 @@ const RevealPanel = React.memo(function RevealPanel({
   onReveal,
 }) {
   const wallet = useWallet()
+  const [error, setError] = useState(null)
   const [password, setPassword] = useState('')
   const lastRound = getDisputeLastRound(dispute)
 
   const jurorDraft = getJurorDraft(lastRound, wallet.account)
+
+  const handlePasswordChange = useCallback(event => {
+    setError(null)
+    setPassword(event.target.value)
+  }, [])
+
+  const validatePassword = useCallback(() => {
+    const outcome = getOutcomeFromCommitment(jurorDraft.commitment, password)
+    if (!isValidOutcome(outcome)) {
+      return { error: 'Invalid one time code' }
+    }
+
+    return { outcome }
+  }, [jurorDraft.commitment, password])
+
+  const handleReveal = useCallback(
+    event => {
+      event.preventDefault()
+
+      const { outcome, error } = validatePassword()
+      if (error) {
+        return setError(error)
+      }
+
+      onDone()
+      onReveal(
+        dispute.id,
+        dispute.lastRoundId,
+        wallet.account,
+        outcome,
+        password
+      )
+    },
+    [
+      dispute.id,
+      dispute.lastRoundId,
+      onDone,
+      onReveal,
+      password,
+      validatePassword,
+      wallet.account,
+    ]
+  )
 
   useEffect(() => {
     const oneTimeCode = getCodeFromLocalStorage(wallet.account, dispute.id)
@@ -22,32 +70,6 @@ const RevealPanel = React.memo(function RevealPanel({
       setPassword(oneTimeCode)
     }
   }, [dispute.id, wallet.account])
-
-  const handlePasswordChange = event => setPassword(event.target.value)
-
-  const handleReveal = useCallback(
-    event => {
-      event.preventDefault()
-
-      onDone()
-      onReveal(
-        dispute.id,
-        dispute.lastRoundId,
-        wallet.account,
-        jurorDraft.commitment,
-        password
-      )
-    },
-    [
-      dispute.id,
-      dispute.lastRoundId,
-      jurorDraft.commitment,
-      onDone,
-      onReveal,
-      password,
-      wallet.account,
-    ]
-  )
 
   return (
     <form onSubmit={handleReveal}>
@@ -62,14 +84,17 @@ const RevealPanel = React.memo(function RevealPanel({
           onChange={handlePasswordChange}
         />
       </Field>
-      <Button
-        type="submit"
-        wide
-        mode="strong"
-        css={`
-          margin-bottom: ${1.5 * GU}px;
-        `}
-      >
+      {error && (
+        <Info
+          css={`
+            margin-bottom: ${2 * GU}px;
+          `}
+          mode="error"
+        >
+          {error}
+        </Info>
+      )}
+      <Button type="submit" wide mode="strong">
         Reveal your vote
       </Button>
     </form>
