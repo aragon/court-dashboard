@@ -281,6 +281,10 @@ const EmailNotificationsManager = React.memo(
             statusInfoText: `Your email ${subscriptionProgress.email} was succefully deleted. You can always re-subscribe from the notifications preferences later.`,
           }))
         }
+        setSubscriptionProgress(subscriptionProgress => ({
+          ...subscriptionProgress,
+          email: '',
+        }))
         setScreenId(
           insideModal ? SUCCESS_INFO_SCREEN : EMAIL_NOTIFICATIONS_FORM_SCREEN
         )
