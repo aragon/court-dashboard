@@ -12,7 +12,7 @@ import {
   textStyle,
   useTheme,
 } from '@aragon/ui'
-import { validateEmail } from '../../utils/notifications-utils'
+import { validateEmail } from '../../utils/validate-utils'
 import emailIllustration from '../../assets/emailIllustration.svg'
 
 const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
