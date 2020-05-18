@@ -21,10 +21,10 @@ const RevealPanel = React.memo(function RevealPanel({
 
   const jurorDraft = getJurorDraft(lastRound, wallet.account)
 
-  const handlePasswordChange = useCallback(
-    event => setPassword(event.target.value),
-    []
-  )
+  const handlePasswordChange = useCallback(event => {
+    setError(null)
+    setPassword(event.target.value)
+  }, [])
 
   const validatePassword = useCallback(() => {
     const outcome = getOutcomeFromCommitment(jurorDraft.commitment, password)
@@ -43,8 +43,6 @@ const RevealPanel = React.memo(function RevealPanel({
       if (error) {
         return setError(error)
       }
-
-      setError(null)
 
       onDone()
       onReveal(
