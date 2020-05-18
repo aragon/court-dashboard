@@ -11,6 +11,7 @@ import {
   textStyle,
   useInside,
   useTheme,
+  useViewport,
 } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import IdentityBadge from '../IdentityBadge'
@@ -19,7 +20,6 @@ import { validateEmail } from '../../utils/validate-utils'
 import emailNotifcationIllustration from '../../../src/assets/emailNotifications.svg'
 
 function EmailNotificationsForm({
-  compactMode,
   existingEmail,
   onOptOut,
   onSubscribeToNotifications,
@@ -31,6 +31,8 @@ function EmailNotificationsForm({
   const theme = useTheme()
   const { account } = useWallet()
   const [insideModal] = useInside('Modal')
+  const { below } = useViewport()
+  const compactMode = below('medium')
 
   const handleEmailAddressBlur = useCallback(e => {
     const email = e.target.value
@@ -48,20 +50,16 @@ function EmailNotificationsForm({
 
   const handleOnSubscribeToNotifications = useCallback(
     e => {
-      if (emailInvalid || !termsAccepted) {
-        return
-      }
-      onSubscribeToNotifications(emailAddress)
       e.preventDefault()
+      onSubscribeToNotifications(emailAddress)
     },
-    [emailAddress, emailInvalid, onSubscribeToNotifications, termsAccepted]
+    [emailAddress, onSubscribeToNotifications]
   )
 
   const handleOnTermsChange = useCallback(() => {
     setTermsAccepted(!termsAccepted)
   }, [setTermsAccepted, termsAccepted])
 
-  console.log('CALLLING AGAIN!!! ', termsAccepted)
   return (
     <div
       css={`
@@ -110,7 +108,7 @@ function EmailNotificationsForm({
         >
           {existingEmail ? (
             <>
-              <span>Enter a new email address for your account </span>
+              <span>Enter a new email address for your account</span>
               <IdentityBadge
                 connectedAccount={account}
                 entity={account}
@@ -196,7 +194,6 @@ function EmailNotificationsForm({
               >
                 <Button
                   mode="strong"
-                  type="submit"
                   disabled={emailInvalid || !termsAccepted}
                   onClick={handleOnSubscribeToNotifications}
                   size="medium"
@@ -240,10 +237,10 @@ function EmailNotificationsForm({
             margin-top: ${3 * GU}px;
           `}
         >
-          <ActionButtons compactMode={compactMode} onClick={onOptOut}>
+          <ActionButton compactMode={compactMode} onClick={onOptOut}>
             Opt out
-          </ActionButtons>
-          <ActionButtons
+          </ActionButton>
+          <ActionButton
             compactMode={compactMode}
             mode="strong"
             type="submit"
@@ -251,7 +248,7 @@ function EmailNotificationsForm({
             onClick={handleOnSubscribeToNotifications}
           >
             Subscribe
-          </ActionButtons>
+          </ActionButton>
         </div>
       )}
     </div>
@@ -300,7 +297,7 @@ const LegalTermsAndPolicy = React.memo(function LegalTermsAndPolicy({
   )
 })
 
-function ActionButtons({ compactMode, ...props }) {
+function ActionButton({ compactMode, ...props }) {
   return (
     <Button
       css={`
