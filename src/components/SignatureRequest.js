@@ -137,7 +137,7 @@ const SignerRequest = React.memo(function SignerRequest({
               margin-top: ${3 * GU}px;
             `}
           >
-            {/* TODO- Add the link once https://github.com/aragon/help/issues/31 is resolved */}
+            {/* TODO - Update the link once https://github.com/aragon/help/issues/31 is resolved */}
             <ActionButtons
               href="https://help.aragon.org/article/27-general-troubleshooting-tips"
               compactMode={compactMode}
