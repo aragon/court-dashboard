@@ -7,6 +7,7 @@ import { getProviderFromUseWalletId } from '../../ethereum-providers'
 import DeleteEmail from './DeleteEmail'
 import EmailNotificationsForm from './EmailNotificationsForm'
 import ExistingEmailSubscription from './ExistingEmailSubscription'
+import LoadingPreferences from '../GlobalPreferences/Notifications/LoadingPreferences'
 import NotificationsPreferences from '../GlobalPreferences/Notifications/NotificationsPreferences'
 import StatusInfo from './StatusInfo'
 import SignatureRequest from '../SignatureRequest'
@@ -85,10 +86,9 @@ const EmailNotificationsManager = React.memo(
     startingScreen,
   }) {
     const [screenId, setScreenId] = useState(
-      startingScreen ||
-        (emailExists
-          ? EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN
-          : EMAIL_NOTIFICATIONS_FORM_SCREEN)
+      emailExists
+        ? EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN
+        : EMAIL_NOTIFICATIONS_FORM_SCREEN
     )
 
     const [subscriptionProgress, setSubscriptionProgress] = useState({
@@ -97,6 +97,9 @@ const EmailNotificationsManager = React.memo(
       notificationsDisabled,
     })
 
+    console.log('MANAGER!!! startingScreen ', startingScreen)
+    console.log('MANAGER!!! screenId ', screenId)
+
     const wallet = useWallet()
     const account = wallet.account
     const [insideModal] = useInside('NotificationsModal')
@@ -104,6 +107,13 @@ const EmailNotificationsManager = React.memo(
 
     const { below } = useViewport()
     const compactMode = below('medium')
+
+    useEffect(() => {
+      if (!startingScreen) {
+        return
+      }
+      setScreenId(startingScreen)
+    }, [startingScreen])
 
     const defaultSignRequestText = useMemo(() => {
       return `Open ${provider.name} to complete the
@@ -607,7 +617,7 @@ const EmailNotificationsManager = React.memo(
           }
 
           if (screenId === LOADING_SCREEN) {
-            return <div> LOADINGG!!!! </div>
+            return <LoadingPreferences />
           }
         })()}
       </WrappedContainer>

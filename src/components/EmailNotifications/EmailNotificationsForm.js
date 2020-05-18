@@ -30,7 +30,7 @@ function EmailNotificationsForm({
 
   const theme = useTheme()
   const { account } = useWallet()
-  const [insideModal] = useInside('Modal')
+  const [insideModal] = useInside('NotificationsModal')
   const { below } = useViewport()
   const compactMode = below('medium')
 

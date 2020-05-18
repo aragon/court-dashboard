@@ -14,6 +14,7 @@ import {
   VERIFICATION_ERROR_SCREEN,
   VERIFICATION_SUCCESS_SCREEN,
   VERIFY_EMAIL_ADDRESS_PREFERENCES,
+  LOADING_SCREEN,
 } from '../../EmailNotifications/constants'
 
 const NotificationsManager = React.memo(function NotificationsManager() {
@@ -68,16 +69,14 @@ const NotificationsManager = React.memo(function NotificationsManager() {
         return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
       }
 
-      if (fetchingSubscriptionData) {
-        // TODO - FETCHING SCREEN
-        return
-      }
-
       if (!cancelled) {
         const { needsSignature, email } = await getJurorEmail(account)
 
         setJurorNeedsSignature(needsSignature)
         setJurorEmail(email)
+        if (fetchingSubscriptionData) {
+          return setStartingScreenId(LOADING_SCREEN)
+        }
 
         if (!emailVerified && emailExists) {
           return setStartingScreenId(VERIFY_EMAIL_ADDRESS_PREFERENCES)
@@ -100,6 +99,7 @@ const NotificationsManager = React.memo(function NotificationsManager() {
     }
   }, [address, account, emailExists, emailVerified, notificationsDisabled, fetchingSubscriptionData, token])
 
+  console.log('startingScreenId ', startingScreenId)
   return (
     startingScreenId && (
       <EmailNotificationsManager

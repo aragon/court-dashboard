@@ -3,7 +3,7 @@ import environment from './environment'
 import { isLocalOrUnknownNetwork, getNetworkType } from './lib/web3-utils'
 
 const CHAIN_ID = environment('CHAIN_ID')
-// const COURT_SERVER_NAME = environment('COURT_SERVER_NAME')
+const COURT_SERVER_NAME = environment('COURT_SERVER_NAME')
 const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
 // IPFS endpoint
@@ -13,15 +13,14 @@ export const IPFS_ENDPOINT = isLocalOrUnknownNetwork(CHAIN_ID)
 
 // Court server endpoint
 export function courtServerEndpoint() {
-  // if (isLocalOrUnknownNetwork(CHAIN_ID)) {
-  //   return 'http://127.0.0.1:8050'
-  // }
+  if (isLocalOrUnknownNetwork(CHAIN_ID)) {
+    return 'http://127.0.0.1:8050'
+  }
 
-  // const networkType = getNetworkType(CHAIN_ID)
-  // return `https://court-backend${
-  //   networkType === 'main' ? '' : `-${COURT_SERVER_NAME || networkType}`
-  // }.eth.aragon.network`
-  return 'https://court-backend-usability.eth.aragon.network'
+  const networkType = getNetworkType(CHAIN_ID)
+  return `https://court-backend${
+    networkType === 'main' ? '' : `-${COURT_SERVER_NAME || networkType}`
+  }.eth.aragon.network`
 }
 
 // The graph endpoints
