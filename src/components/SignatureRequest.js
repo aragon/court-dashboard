@@ -36,7 +36,10 @@ const SignerRequest = React.memo(function SignerRequest({
 
   const { statusText, statusTextColor } = useMemo(() => {
     if (signingError) {
-      return { statusText: 'Signature failed', statusTextColor: theme.negative }
+      return {
+        statusText: 'Signature failed',
+        statusTextColor: theme.negative,
+      }
     }
     if (successMode) {
       return {
@@ -134,8 +137,11 @@ const SignerRequest = React.memo(function SignerRequest({
               margin-top: ${3 * GU}px;
             `}
           >
-            {/* TODO- Add the link once we have it */}
-            <ActionButtons onClick={() => {}} compactMode={compactMode}>
+            {/* TODO- Add the link once https://github.com/aragon/help/issues/31 is resolved */}
+            <ActionButtons
+              href="https://help.aragon.org/article/27-general-troubleshooting-tips"
+              compactMode={compactMode}
+            >
               Troubleshooting
             </ActionButtons>
             <ActionButtons
