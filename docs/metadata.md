@@ -66,7 +66,7 @@ type Evidence @entity {
 
 The dashboard checks if the `data` field is a string in the form of `ipfs:{CID | IPLD path}`.
 
-### data - IPFS string
+### data - IPFS path
 
 Try to fetch the content from IPFS
 
