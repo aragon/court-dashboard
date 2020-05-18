@@ -42,7 +42,7 @@ The content is expected to have the following structure:
 }
 ```
 
-> Note that even though the description is present in the ipfs content, we require to also be present at the `metdata` field. The reason for this is so we don't need to fetch all disputes ipfs content when loading all disputes cards.
+> Note that even though `description` should be present in the IPFS content, we also assume it to be present in the `metadata` field. We do this to avoid needing to fetch every disputes' IPFS content when loading their dispute cards.
 
 ---
 
