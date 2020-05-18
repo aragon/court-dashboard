@@ -9,7 +9,6 @@ import { useSubscriptionDetails } from '../../../hooks/useEmailNotifications'
 import EmailNotificationsManager from '../../EmailNotifications/EmailNotificationsManager'
 import {
   EMAIL_NOTIFICATIONS_FORM_SCREEN,
-  LOADING_SCREEN,
   NOTIFICATIONS_PREFERENCES_SCREEN,
   UNLOCK_NOTIFICATIONS_SCREEN,
   VERIFICATION_ERROR_SCREEN,
@@ -71,7 +70,7 @@ const NotificationsManager = React.memo(function NotificationsManager() {
 
       if (fetchingSubscriptionData) {
         // TODO - FETCHING SCREEN
-        return setStartingScreenId(LOADING_SCREEN)
+        return
       }
 
       if (!cancelled) {

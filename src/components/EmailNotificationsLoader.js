@@ -32,7 +32,6 @@ function EmailNotificationsLoader({ children }) {
         >
           <Inside name="NotificationsModal">
             <EmailNotificationsManager
-              account={wallet.account}
               emailExists={emailExists}
               addressVerified={addressVerified}
             />

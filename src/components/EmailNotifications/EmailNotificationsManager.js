@@ -607,7 +607,7 @@ const EmailNotificationsManager = React.memo(
           }
 
           if (screenId === LOADING_SCREEN) {
-            return <div />
+            return <div> LOADINGG!!!! </div>
           }
         })()}
       </WrappedContainer>
