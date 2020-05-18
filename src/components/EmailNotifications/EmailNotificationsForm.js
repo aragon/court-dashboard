@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react'
-import styled from 'styled-components'
 import {
   Button,
   Checkbox,
@@ -12,16 +11,15 @@ import {
   textStyle,
   useInside,
   useTheme,
+  useViewport,
 } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import IdentityBadge from '../IdentityBadge'
-import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
-import { validateEmail } from '../../utils/notifications-utils'
+import { validateEmail } from '../../utils/validate-utils'
 
 import emailNotifcationIllustration from '../../../src/assets/emailNotifications.svg'
 
 function EmailNotificationsForm({
-  compactMode,
   existingEmail,
   onOptOut,
   onSubscribeToNotifications,
@@ -29,9 +27,12 @@ function EmailNotificationsForm({
   const [emailAddress, setEmailAddress] = useState('')
   const [emailInvalid, setEmailInvalid] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(false)
-  const { account } = useWallet()
+
   const theme = useTheme()
-  const [insideModal] = useInside('NotificationsModal')
+  const { account } = useWallet()
+  const [insideModal] = useInside('Modal')
+  const { below } = useViewport()
+  const compactMode = below('medium')
 
   const handleEmailAddressBlur = useCallback(e => {
     const email = e.target.value
@@ -47,209 +48,218 @@ function EmailNotificationsForm({
     }
   }, [])
 
-  const handleOnSubscribeToNotifications = useCallback(() => {
-    onSubscribeToNotifications(emailAddress)
-  }, [emailAddress, onSubscribeToNotifications])
+  const handleOnSubscribeToNotifications = useCallback(
+    e => {
+      e.preventDefault()
+      onSubscribeToNotifications(emailAddress)
+    },
+    [emailAddress, onSubscribeToNotifications]
+  )
+
+  const handleOnTermsChange = useCallback(() => {
+    setTermsAccepted(!termsAccepted)
+  }, [setTermsAccepted, termsAccepted])
 
   return (
-    <>
+    <div
+      css={`
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-top: ${insideModal ? 3 : 0 * GU}px;
+      `}
+    >
       <div
         css={`
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          padding-top: ${insideModal ? 3 : 0 * GU}px;
+          text-align: center;
         `}
       >
         <div
           css={`
-            display: flex;
-            flex-direction: column;
-            text-align: center;
+            align-items: center;
+          `}
+        >
+          <img
+            src={emailNotifcationIllustration}
+            width="141"
+            height="141"
+            alt=""
+          />
+        </div>
+        <span
+          css={`
+            ${textStyle('title2')};
+            margin-top: ${4 * GU}px;
+          `}
+        >
+          {existingEmail
+            ? `Update "${existingEmail}"`
+            : 'Stay up to date with email notifications'}
+        </span>
+
+        <span
+          css={`
+            ${textStyle('body2')};
+            color: ${theme.surfaceContentSecondary};
+            margin-top: ${1.5 * GU}px;
+          `}
+        >
+          {existingEmail ? (
+            <>
+              <span>Enter a new email address for your account</span>
+              <IdentityBadge
+                connectedAccount={account}
+                entity={account}
+                compact
+              />
+              <span>
+                . We will continue sending email notifications to the current
+                email address until you verify this new email address.
+              </span>
+            </>
+          ) : (
+            <>
+              <span>Associate an email address to your account </span>
+              <IdentityBadge
+                connectedAccount={account}
+                entity={account}
+                compact
+              />
+              <span>
+                , so you can receive notifications for all Aragon Court events.
+              </span>
+            </>
+          )}
+        </span>
+
+        <div
+          css={`
+            margin-top: ${5 * GU}px;
           `}
         >
           <div
             css={`
-              align-items: center;
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
             `}
           >
-            <img
-              src={emailNotifcationIllustration}
-              width={141}
-              height={141}
-              alt=""
-            />
-          </div>
-          <span
-            css={`
-              ${textStyle('title2')};
-              margin-top: ${4 * GU}px;
-            `}
-          >
-            {existingEmail
-              ? `Update "${existingEmail}"`
-              : 'Stay up to date with email notifications'}
-          </span>
-
-          <TextContent update={existingEmail} account={account} theme={theme} />
-
-          <div
-            css={`
-              margin-top: ${5 * GU}px;
-            `}
-          >
-            <div
+            <Field
+              label={
+                existingEmail
+                  ? 'Enter new email address'
+                  : 'Enter email address'
+              }
               css={`
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
+                width: 100%;
+                margin-bottom: 0;
               `}
             >
-              <Field
-                label={
-                  existingEmail
-                    ? 'Enter new email address'
-                    : 'Enter email address'
+              <TextInput
+                value={emailAddress}
+                adornment={
+                  emailInvalid ? (
+                    <IconCross
+                      css={`
+                        color: ${theme.negative};
+                      `}
+                    />
+                  ) : (
+                    <IconCheck
+                      css={`
+                        opacity: ${emailAddress.trim() ? '1' : '0'};
+                        color: ${theme.positive};
+                      `}
+                    />
+                  )
                 }
+                adornmentPosition="end"
+                type="email"
+                wide
+                onChange={handleEmailAddressChange}
+                placeholder="you@example.org"
+                onBlur={handleEmailAddressBlur}
+              />
+            </Field>
+
+            {!insideModal && (
+              <div
                 css={`
-                  width: 100%;
-                  margin-bottom: 0px;
+                  display: flex;
+                  align-items: flex-end;
+                  margin-left: ${2 * GU}px;
                 `}
               >
-                <TextInput
-                  value={emailAddress}
-                  adornment={
-                    emailInvalid ? (
-                      <IconCross
-                        css={`
-                          color: ${theme.negative};
-                        `}
-                      />
-                    ) : emailAddress.trim() ? (
-                      <IconCheck
-                        css={`
-                          color: ${theme.positive};
-                        `}
-                      />
-                    ) : (
-                      <IconCheck
-                        css={`
-                          opacity: 0;
-                        `}
-                      />
-                    )
-                  }
-                  adornmentPosition="end"
-                  type="email"
-                  wide
-                  onChange={handleEmailAddressChange}
-                  placeholder="email@address.com"
-                  onBlur={handleEmailAddressBlur}
-                />
-              </Field>
-
-              {!insideModal && (
-                <div
-                  css={`
-                    display: flex;
-                    align-items: flex-end;
-                    margin-left: ${2 * GU}px;
-                  `}
+                <Button
+                  mode="strong"
+                  disabled={emailInvalid || !termsAccepted}
+                  onClick={handleOnSubscribeToNotifications}
+                  size="medium"
                 >
-                  <Button
-                    mode="strong"
-                    disabled={emailInvalid || !termsAccepted}
-                    onClick={handleOnSubscribeToNotifications}
-                    size="medium"
-                  >
-                    {existingEmail ? 'Update' : 'Subscribe'}
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {emailInvalid && (
-              <div>
-                <p
-                  css={`
-                    color: ${theme.negative};
-                    ${textStyle('body4')};
-                    text-align: left;
-                    height: 0;
-                    margin-top: ${0.5 * GU}px;
-                  `}
-                >
-                  Please enter a valid email address.
-                </p>
+                  {existingEmail ? 'Update' : 'Subscribe'}
+                </Button>
               </div>
             )}
           </div>
+
+          {emailInvalid && (
+            <div>
+              <p
+                css={`
+                  color: ${theme.negative};
+                  ${textStyle('body4')};
+                  text-align: left;
+                  height: 0;
+                  margin-top: ${0.5 * GU}px;
+                `}
+              >
+                Please enter a valid email address.
+              </p>
+            </div>
+          )}
         </div>
-        <LegalTermsAndPolicy
-          termsAccepted={termsAccepted}
-          setTermsAccepted={setTermsAccepted}
-        />
-
-        {insideModal && (
-          <div
-            css={`
-              display: flex;
-              justify-content: space-between;
-              flex-direction: ${compactMode ? 'column' : 'row'};
-              width: 100%;
-              margin-bottom: ${1.5 * GU}px;
-              margin-top: ${3 * GU}px;
-            `}
-          >
-            <ActionButtons compactMode={compactMode} onClick={onOptOut}>
-              Opt out
-            </ActionButtons>
-            <ActionButtons
-              compactMode={compactMode}
-              mode="strong"
-              disabled={emailInvalid || !termsAccepted}
-              onClick={handleOnSubscribeToNotifications}
-            >
-              Subscribe
-            </ActionButtons>
-          </div>
-        )}
       </div>
-    </>
-  )
-}
+      <LegalTermsAndPolicy
+        termsAccepted={termsAccepted}
+        onChange={handleOnTermsChange}
+      />
 
-function TextContent({ update, account, theme }) {
-  const content = update
-    ? `Enter a new email address for your account ${account}. We will continue sending email notifications to the current email address until you verify this new email address.`
-    : `Associate an email address to your account ${account}, so you can get notifications from all Aragon Court events.`
-
-  return (
-    <span
-      css={`
-        ${textStyle('body2')};
-        color: ${theme.surfaceContentSecondary};
-        margin-top: ${1.5 * GU}px;
-      `}
-    >
-      {transformAddresses(content, (part, isAddress, index) =>
-        isAddress ? (
-          <span title={part} key={index}>
-            <IdentityBadge
-              connectedAccount={addressesEqual(part, account)}
-              entity={part}
-              compact
-            />
-          </span>
-        ) : (
-          <span key={index}>{part}</span>
-        )
+      {insideModal && (
+        <div
+          css={`
+            display: flex;
+            justify-content: space-between;
+            flex-direction: ${compactMode ? 'column' : 'row'};
+            width: 100%;
+            margin-bottom: ${1.5 * GU}px;
+            margin-top: ${3 * GU}px;
+          `}
+        >
+          <ActionButton compactMode={compactMode} onClick={onOptOut}>
+            Opt out
+          </ActionButton>
+          <ActionButton
+            compactMode={compactMode}
+            mode="strong"
+            type="submit"
+            disabled={emailInvalid || !termsAccepted}
+            onClick={handleOnSubscribeToNotifications}
+          >
+            Subscribe
+          </ActionButton>
+        </div>
       )}
-    </span>
+    </div>
   )
 }
 
-function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted }) {
+const LegalTermsAndPolicy = React.memo(function LegalTermsAndPolicy({
+  termsAccepted,
+  onChange,
+}) {
+  console.log('terms accepted ', termsAccepted)
   return (
     <div
       css={`
@@ -261,11 +271,9 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted }) {
           display: flex;
         `}
       >
-        <Checkbox
-          checked={termsAccepted}
-          onChange={checked => setTermsAccepted(checked)}
-        />
-
+        <div>
+          <Checkbox checked={termsAccepted} onChange={onChange} />
+        </div>
         <span
           css={`
             ${textStyle('body2')};
@@ -274,24 +282,30 @@ function LegalTermsAndPolicy({ termsAccepted, setTermsAccepted }) {
             text-align: left;
           `}
         >
-          By continuing with your email, you agree to Aragon Court{' '}
+          By continuing with your email, you agree to Aragon Court's{' '}
           <Link href="https://anj.aragon.org/legal/terms-general.pdf">
-            legal terms{' '}
+            legal terms
           </Link>{' '}
           and{' '}
           <Link href="https://aragon.one/email-collection.md">
-            {' '}
-            email collection policy.
+            email collection policy
           </Link>
+          .
         </span>
       </div>
     </div>
   )
-}
+})
 
-const ActionButtons = styled(Button)`
-  width: ${({ compactMode }) =>
-    compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  2)`};
-`
+function ActionButton({ compactMode, ...props }) {
+  return (
+    <Button
+      css={`
+        width: ${compactMode ? '100%' : `calc((100% - ${2 * GU}px) /  2)`};
+      `}
+      {...props}
+    />
+  )
+}
 
 export default EmailNotificationsForm
