@@ -20,11 +20,7 @@ type Arbitrable @entity {
 }
 ```
 
-In the frontend we try to parse the `metadata` as a JSON object.
-
-### metadata - JSON object
-
-We are going to try to find the following keys:
+The dispute `metadata` should be a JSON Object and should have the following keys:
 
 1. `description`
 2. `metadata`
@@ -46,9 +42,7 @@ The content is expected to have the following structure:
 }
 ```
 
-#### metadata - String
-
-In case `metadata` is a plain string, we assume it to be the dispute's description and set the dispute creator (`subject.id`) as the plaintiff. No agreement link will be available.
+> Note that even though the description is present in the ipfs content, we require to also be present at the `metdata` field. The reason for this is so we don't need to fetch all disputes ipfs content when loading all disputes cards.
 
 ---
 
