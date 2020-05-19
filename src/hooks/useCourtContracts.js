@@ -11,6 +11,7 @@ import { bigNum, formatUnits } from '../lib/math-utils'
 import { hashVote, getVoteId, hashPassword } from '../utils/crvoting-utils'
 import { retryMax } from '../utils/retry-max'
 import radspec from '../radspec'
+import actions from '../types/court-action-types'
 import { getKnownToken } from '../utils/known-tokens'
 import { getModuleAddress } from '../utils/court-utils'
 import { saveCodeInLocalStorage } from '../utils/one-time-code-utils'
@@ -85,10 +86,10 @@ export function useANJActions() {
             jurorRegistryContract.activate(amount, {
               gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
             }),
-            'activateAnj',
+            actions.ActivateAnj,
             { amount: formattedAmount }
           ),
-        description: radspec.activateAnj(formattedAmount),
+        description: radspec[actions.ActivateAnj](formattedAmount),
         isTx: true,
       })
     },
@@ -105,10 +106,10 @@ export function useANJActions() {
             jurorRegistryContract.deactivate(amount, {
               gasLimit: ANJ_ACTIONS_GAS_LIMIT,
             }),
-            'deactivateAnj',
+            actions.DeactivateAnj,
             { amount: formattedAmount }
           ),
-        description: radspec.deactivateAnj(formattedAmount),
+        description: radspec[actions.DeactivateAnj](formattedAmount),
         isTx: true,
       })
     },
@@ -129,10 +130,10 @@ export function useANJActions() {
               ACTIVATE_SELECTOR,
               { gasLimit: ANJ_ACTIVATE_GAS_LIMIT }
             ),
-            'activateAnj',
+            actions.ActivateAnj,
             { amount: formattedAmount }
           ),
-        description: radspec.activateAnj(formattedAmount),
+        description: radspec[actions.DeactivateAnj](formattedAmount),
         isTx: true,
       })
     },
@@ -149,10 +150,10 @@ export function useANJActions() {
             jurorRegistryContract.unstake(amount, '0x', {
               gasLimit: ANJ_ACTIONS_GAS_LIMIT,
             }),
-            'withdrawAnj',
+            actions.WithdrawAnj,
             { amount: formattedAmount }
           ),
-        description: radspec.withdrawAnj(formattedAmount),
+        description: radspec[actions.WithdrawAnj](formattedAmount),
         isTx: true,
       })
     },
@@ -191,10 +192,10 @@ export function useDisputeActions() {
             disputeManagerContract.draft(disputeId, {
               gasLimit: GAS_LIMIT,
             }),
-            'draftJury',
+            actions.DraftJury,
             { disputeId }
           ),
-        description: radspec.draftJury(disputeId),
+        description: radspec[actions.DraftJury](disputeId),
         isTx: true,
       })
     },
@@ -212,14 +213,14 @@ export function useDisputeActions() {
           intent: () =>
             addActivity(
               votingContract.commit(voteId, commitment),
-              'commitVote',
+              actions.CommitVote,
               {
                 disputeId,
                 roundId,
                 outcome,
               }
             ),
-          description: radspec.commitVote(disputeId, roundId, outcome),
+          description: radspec[actions.CommitVote](disputeId, roundId, outcome),
           ensureConfirmation: true,
           isTx: true,
           // Callback function to run after main tx
@@ -264,10 +265,10 @@ export function useDisputeActions() {
               outcome,
               hashPassword(password)
             ),
-            'revealVote',
+            actions.RevealVote,
             { disputeId, roundId }
           ),
-        description: radspec.revealVote(disputeId, roundId),
+        description: radspec[actions.RevealVote](disputeId, roundId),
         isTx: true,
       })
     },
@@ -281,10 +282,10 @@ export function useDisputeActions() {
         intent: () =>
           addActivity(
             votingContract.leak(voteId, voter, outcome, salt),
-            'leakVote',
+            actions.LeakVote,
             { voteId, voter }
           ),
-        descritpion: radspec.leakVote(voteId, voter),
+        descritpion: radspec[actions.LeakVote](voteId, voter),
         isTx: true,
       })
     },
@@ -295,7 +296,7 @@ export function useDisputeActions() {
     value => {
       return addActivity(
         feeTokenContract.approve(disputeManagerContract.address, value),
-        'approveFeeDeposit',
+        actions.ApproveFeeDeposit,
         { amount: formatUnits(value) }
       )
     },
@@ -309,7 +310,7 @@ export function useDisputeActions() {
         disputeManagerContract.createAppeal(disputeId, roundId, ruling, {
           gasLimit: GAS_LIMIT,
         }),
-        'appealRuling',
+        actions.AppealRuling,
         { disputeId, roundId, ruling }
       )
     },
@@ -323,7 +324,7 @@ export function useDisputeActions() {
         disputeManagerContract.confirmAppeal(disputeId, roundId, ruling, {
           gasLimit: GAS_LIMIT,
         }),
-        'confirmAppeal',
+        actions.ConfirmAppeal,
         { disputeId, roundId, ruling }
       )
     },
@@ -342,7 +343,7 @@ export function useDisputeActions() {
           // Reset allowance
           requestQueue.push({
             intent: () => approveFeeDeposit(0),
-            description: radspec.approveFeeDeposit('0'),
+            description: radspec[actions.ApproveFeeDeposit]('0'),
             ensureConfirmation: true,
             isTx: true,
           })
@@ -351,7 +352,9 @@ export function useDisputeActions() {
         // Approve fee deposit for appealing
         requestQueue.push({
           intent: () => approveFeeDeposit(requiredDeposit),
-          description: radspec.approveFeeDeposit(formatUnits(requiredDeposit)),
+          description: radspec[actions.ApproveFeeDeposit](
+            formatUnits(requiredDeposit)
+          ),
           ensureConfirmation: true,
           isTx: true,
         })
@@ -361,11 +364,9 @@ export function useDisputeActions() {
 
       requestQueue.push({
         intent: () => action(disputeId, roundId, ruling),
-        description: radspec[confirm ? 'confirmAppeal' : 'appealRuling'](
-          disputeId,
-          roundId,
-          ruling
-        ),
+        description: radspec[
+          actions[confirm ? 'ConfirmAppeal' : 'AppealRuling']
+        ](disputeId, roundId, ruling),
         isTx: true,
       })
 
@@ -382,10 +383,10 @@ export function useDisputeActions() {
             aragonCourtContract.executeRuling(disputeId, {
               gasLimit: GAS_LIMIT,
             }),
-            'executeRuling',
+            actions.ExecuteRuling,
             { disputeId }
           ),
-        description: radspec.executeRuling(disputeId),
+        description: radspec[actions.ExecuteRuling](disputeId),
         isTx: true,
       })
     },
@@ -414,10 +415,14 @@ export function useHeartbeat() {
     transitions => {
       return addRequests({
         intent: () =>
-          addActivity(aragonCourtContract.heartbeat(transitions), 'heartbeat', {
-            transitions,
-          }),
-        description: radspec.heartbeat(transitions),
+          addActivity(
+            aragonCourtContract.heartbeat(transitions),
+            actions.Heartbeat,
+            {
+              transitions,
+            }
+          ),
+        description: radspec[actions.Heartbeat](transitions),
         isTx: true,
       })
     },
@@ -445,7 +450,7 @@ export function useRewardActions() {
         disputeManagerContract.settleReward(disputeId, roundId, juror, {
           gasLimit: GAS_LIMIT,
         }),
-        'settleReward',
+        actions.SettleReward,
         { disputeId, roundId }
       )
     },
@@ -458,7 +463,7 @@ export function useRewardActions() {
         disputeManagerContract.settleAppealDeposit(disputeId, roundId, {
           gasLimit: GAS_LIMIT,
         }),
-        'settleAppealDeposit',
+        actions.SettleAppealDeposit,
         { roundId, disputeId }
       )
     },
@@ -471,7 +476,7 @@ export function useRewardActions() {
         treasuryContract.withdraw(token, to, amount, {
           gasLimit: ANJ_ACTIONS_GAS_LIMIT,
         }),
-        'claimRewards',
+        actions.ClaimRewards,
         { amount: formatUnits(amount) }
       )
     },
@@ -495,7 +500,7 @@ export function useRewardActions() {
         for (const roundId of rounds) {
           requestQueue.push({
             intent: () => settleReward(disputeId, roundId, account),
-            description: radspec.settleReward(roundId, disputeId),
+            description: radspec[actions.SettleReward](roundId, disputeId),
             isTx: true,
           })
         }
@@ -507,7 +512,10 @@ export function useRewardActions() {
         for (const roundId of rounds) {
           requestQueue.push({
             intent: () => settleAppealDeposit(disputeId, roundId),
-            description: radspec.settleAppealDeposit(roundId, disputeId),
+            description: radspec[actions.SettleAppealDeposit](
+              roundId,
+              disputeId
+            ),
             isTx: true,
           })
         }
@@ -527,7 +535,7 @@ export function useRewardActions() {
       if (treasuryFees.gt(0)) {
         requestQueue.push({
           intent: () => withdraw(feeTokenAddress, account, treasuryFees),
-          description: radspec.claimRewards(formatUnits(treasuryFees)),
+          description: radspec[actions.ClaimRewards](formatUnits(treasuryFees)),
           isTx: true,
         })
       }
@@ -536,7 +544,9 @@ export function useRewardActions() {
       for (const subscriptionFee of subscriptionFees) {
         requestQueue.push({
           intent: () => claimFees(subscriptionFee.periodId),
-          description: radspec.claimSubscriptionFees(subscriptionFee.periodId),
+          description: radspec[actions.ClaimSubscriptionFees](
+            subscriptionFee.periodId
+          ),
           isTx: true,
         })
       }
@@ -560,7 +570,7 @@ export function useCourtSubscriptionActions() {
     periodId => {
       return addActivity(
         courtSubscriptionsContract.claimFees(periodId),
-        'claimSubscriptionFees',
+        actions.ClaimSubscriptionFees,
         { periodId }
       )
     },

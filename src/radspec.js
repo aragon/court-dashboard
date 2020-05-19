@@ -3,36 +3,34 @@ import {
   appealOptionToString,
 } from './utils/crvoting-utils'
 import { numberToWord } from './lib/math-utils'
+import actions from './types/court-action-types'
 
 export default {
-  approveFeeDeposit: amount => {
+  [actions.ApproveFeeDeposit]: amount => {
     return `Approve fee deposit: ${amount} ANJ`
   },
-  activateAnj: amount => {
+  [actions.ActivateAnj]: amount => {
     return `Activate the total amount of ${amount} ANJ`
   },
-  appealRuling: (disputeId, roundId, ruling) => {
+  [actions.AppealRuling]: (disputeId, roundId, ruling) => {
     return `Appeal round ${numberToWord(
       roundId
     )} of dispute #${disputeId} in favor of ruling: ${appealOptionToString(
       ruling
     )}`
   },
-  buyActivateAnj: amount => {
-    return `Activate the total amount of ${amount} ANJ`
-  },
-  claimRewards: amount => {
+  [actions.ClaimRewards]: amount => {
     return `Claim rewards for a total amount of ${amount} DAI`
   },
-  claimSubscriptionFees: periodId => {
+  [actions.ClaimSubscriptionFees]: periodId => {
     return `Claim subscription rewards for period ${periodId}`
   },
-  commitVote: (disputeId, roundId, outcome) => {
+  [actions.CommitVote]: (disputeId, roundId, outcome) => {
     return `Vote ${voteOptionToString(outcome)} on round ${numberToWord(
       roundId
     )} of dispute #${disputeId}`
   },
-  confirmAppeal: (disputeId, roundId, ruling) => {
+  [actions.ConfirmAppeal]: (disputeId, roundId, ruling) => {
     return `
         Confirm appeal round ${numberToWord(
           roundId
@@ -40,51 +38,51 @@ export default {
         ruling: ${appealOptionToString(ruling)}
       `
   },
-  deactivateAnj: amount => {
+  [actions.DeactivateAnj]: amount => {
     return `
         Deactivate the total amount of ${amount} ANJ
       `
   },
-  draftJury: disputeId => {
+  [actions.DraftJury]: disputeId => {
     return `
         Draft jurors for the next round of dispute #${disputeId}
       `
   },
-  executeRuling: disputeId => {
+  [actions.ExecuteRuling]: disputeId => {
     return `
         Compute the final ruling for dispute #${disputeId}
       `
   },
-  heartbeat: transitions => {
+  [actions.Heartbeat]: transitions => {
     return `
         Transition ${transitions} court term${transitions > 1 ? 's' : ''}
       `
   },
-  leakVote: (voteId, voter) => {
+  [actions.LeakVote]: (voteId, voter) => {
     return `
         Leak vote of ${voter} for vote #${voteId}
       `
   },
-  revealVote: (disputeId, roundId) => {
+  [actions.RevealVote]: (disputeId, roundId) => {
     return `
         Reveal vote on round ${numberToWord(roundId)} for dispute #${disputeId}
       `
   },
-  settleReward: (roundId, disputeId) => {
+  [actions.SettleReward]: (roundId, disputeId) => {
     return `
         Settle reward for round ${numberToWord(
           roundId
         )} of dispute #${disputeId}
       `
   },
-  settleAppealDeposit: (roundId, disputeId) => {
+  [actions.SettleAppealDeposit]: (roundId, disputeId) => {
     return `
         Settle appeal deposit for round ${numberToWord(
           roundId
         )} of dispute #${disputeId}
       `
   },
-  withdrawAnj: amount => {
+  [actions.WithdrawAnj]: amount => {
     return `
         Withdraw the total amount of ${amount} ANJ
       `

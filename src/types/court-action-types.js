@@ -1,0 +1,18 @@
+export default {
+  ActivateAnj: 'activateAnj',
+  DeactivateAnj: 'deactivateAnj',
+  WithdrawAnj: 'withdrawAnj',
+  DraftJury: 'draftJury',
+  CommitVote: 'commitVote',
+  RevealVote: 'revealVote',
+  LeakVote: 'leakVote',
+  ApproveFeeDeposit: 'approveFeeDeposit',
+  AppealRuling: 'appealRuling',
+  ConfirmAppeal: 'confirmAppeal',
+  ExecuteRuling: 'executeRuling',
+  Heartbeat: 'heartbeat',
+  SettleReward: 'settleReward',
+  SettleAppealDeposit: 'settleAppealDeposit',
+  ClaimRewards: 'claimRewards',
+  ClaimSubscriptionFees: 'claimSubscriptionFees',
+}
