@@ -76,24 +76,20 @@ const NotificationsManager = React.memo(function NotificationsManager() {
     if (token || address) {
       return
     }
-    if (fetchingEmail || fetchingSubscriptionData) {
+    if (fetchingEmail || fetchingSubscriptionData || !emailVerified) {
       return
     }
     if (account && jurorNeedsSignature) {
       return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
     }
-  }, [account, jurorNeedsSignature, fetchingEmail, fetchingSubscriptionData, token, address])
+  }, [account, jurorNeedsSignature, fetchingEmail, fetchingSubscriptionData, token, address, emailVerified])
 
   useEffect(() => {
-    if (
-      !account ||
-      fetchingSubscriptionData ||
-      fetchingEmail ||
-      jurorNeedsSignature
-    ) {
+    if (!account || fetchingSubscriptionData || fetchingEmail) {
       return
     }
     if (!emailVerified && emailExists) {
+      console.log()
       return setStartingScreenId(VERIFY_EMAIL_ADDRESS_PREFERENCES)
     }
     if (!emailVerified) {
