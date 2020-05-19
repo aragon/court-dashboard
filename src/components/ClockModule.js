@@ -35,7 +35,7 @@ function ClockModule() {
 
   const theme = useTheme()
   const wallet = useWallet()
-  const onHeartbeat = useHeartbeat()
+  const { heartbeat: onHeartbeat } = useHeartbeat()
   const courtConfig = useCourtConfig()
 
   const {
