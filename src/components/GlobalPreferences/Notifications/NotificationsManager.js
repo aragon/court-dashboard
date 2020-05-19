@@ -23,6 +23,7 @@ const NotificationsManager = React.memo(function NotificationsManager() {
   const [startingScreenId, setStartingScreenId] = useState()
   const [jurorNeedsSignature, setJurorNeedsSignature] = useState()
   const [jurorEmail, setJurorEmail] = useState('')
+  const [fetchingEmail, setFetchingEmail] = useState()
 
   const {
     emailExists,
@@ -59,45 +60,72 @@ const NotificationsManager = React.memo(function NotificationsManager() {
   }, [account, address, token])
 
   useEffect(() => {
+    if (token || address) {
+      return
+    }
+    if (!account) {
+      return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
+    }
+
+    if (fetchingSubscriptionData || fetchingEmail) {
+      return setStartingScreenId(LOADING_SCREEN)
+    }
+  }, [account, fetchingEmail, fetchingSubscriptionData, token, address])
+
+  useEffect(() => {
+    if (token || address) {
+      return
+    }
+    if (fetchingEmail || fetchingSubscriptionData) {
+      return
+    }
+    if (account && jurorNeedsSignature) {
+      return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
+    }
+  }, [account, jurorNeedsSignature, fetchingEmail, fetchingSubscriptionData, token, address])
+
+  useEffect(() => {
+    if (
+      !account ||
+      fetchingSubscriptionData ||
+      fetchingEmail ||
+      jurorNeedsSignature
+    ) {
+      return
+    }
+    if (!emailVerified && emailExists) {
+      return setStartingScreenId(VERIFY_EMAIL_ADDRESS_PREFERENCES)
+    }
+    if (!emailVerified) {
+      return setStartingScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
+    }
+
+    if (emailVerified && !jurorNeedsSignature) {
+      return setStartingScreenId(NOTIFICATIONS_PREFERENCES_SCREEN)
+    }
+  }, [account, emailExists, emailVerified, fetchingEmail, fetchingSubscriptionData, jurorNeedsSignature])
+
+  useEffect(() => {
     let cancelled = false
     const getEmail = async () => {
-      if (address || token) {
+      if (address || token || !account) {
         return
       }
-
-      if (!account) {
-        return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
-      }
+      setFetchingEmail(true)
 
       if (!cancelled) {
         const { needsSignature, email } = await getJurorEmail(account)
 
         setJurorNeedsSignature(needsSignature)
         setJurorEmail(email)
-        if (fetchingSubscriptionData) {
-          return setStartingScreenId(LOADING_SCREEN)
-        }
-
-        if (!emailVerified && emailExists) {
-          return setStartingScreenId(VERIFY_EMAIL_ADDRESS_PREFERENCES)
-        }
-        if (!emailVerified) {
-          return setStartingScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
-        }
-        if (emailVerified && needsSignature) {
-          return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
-        }
-
-        if (emailVerified && !needsSignature) {
-          return setStartingScreenId(NOTIFICATIONS_PREFERENCES_SCREEN)
-        }
+        setFetchingEmail(false)
       }
     }
     getEmail()
     return () => {
       cancelled = true
     }
-  }, [address, account, emailExists, emailVerified, notificationsDisabled, fetchingSubscriptionData, token])
+  }, [address, account, token])
 
   return (
     startingScreenId && (

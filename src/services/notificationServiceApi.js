@@ -143,6 +143,7 @@ export async function getJurorEmail(address) {
       return {
         email: jsonResponse?.email,
         error: null,
+        needsSignature: false,
       }
     }
 

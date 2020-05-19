@@ -11,7 +11,7 @@ export function useSubscriptionDetails(address) {
       if (!address) {
         return
       }
-
+      setFetching(true)
       if (!cancelled) {
         const response = await getSubscriptionDetails(address)
         setSubscriptionDetails(response)

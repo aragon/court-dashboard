@@ -75,6 +75,7 @@ const DEFAULT_SUBSCRIPTION_PROGRESS = {
   statusInfoText: '',
   verifyUpdateMode: false,
   previousScreen: null,
+  needsUnlockSettings: false,
 }
 
 const EmailNotificationsManager = React.memo(
@@ -95,6 +96,7 @@ const EmailNotificationsManager = React.memo(
       ...DEFAULT_SUBSCRIPTION_PROGRESS,
       email,
       notificationsDisabled,
+      needsUnlockSettings,
     })
 
     const wallet = useWallet()
@@ -327,7 +329,10 @@ const EmailNotificationsManager = React.memo(
         setSubscriptionProgress({ serviceError: true })
         return
       }
-
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
+        needsUnlockSettings: true,
+      }))
       setScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
     }, [account])
 
@@ -377,6 +382,20 @@ const EmailNotificationsManager = React.memo(
       }
       setScreenId(startingScreen)
     }, [startingScreen])
+
+    useEffect(() => {
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
+        email,
+      }))
+    }, [email])
+
+    useEffect(() => {
+      setSubscriptionProgress(subscriptionProgress => ({
+        ...subscriptionProgress,
+        needsUnlockSettings,
+      }))
+    }, [needsUnlockSettings])
 
     useEffect(() => {
       let cancelled = false
@@ -439,9 +458,19 @@ const EmailNotificationsManager = React.memo(
             const timer = setTimeout(() => {
               setScreenId(action.successScreen)
             }, 3000)
+            setSubscriptionProgress(subscriptionProgress => ({
+              ...subscriptionProgress,
+              needSignature: false,
+              startRequest: false,
+            }))
 
             return () => clearTimeout(timer)
           }
+          setSubscriptionProgress(subscriptionProgress => ({
+            ...subscriptionProgress,
+            needSignature: false,
+            startRequest: false,
+          }))
         }
       }
       requestAction()
@@ -570,7 +599,9 @@ const EmailNotificationsManager = React.memo(
               <UnlockNotifications
                 compactMode={compactMode}
                 onUnlock={handleOnUnlockSettings}
-                needsUnlockSettings={account && needsUnlockSettings}
+                needsUnlockSettings={
+                  account && subscriptionProgress.needsUnlockSettings
+                }
               />
             )
           }
