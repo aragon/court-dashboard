@@ -162,7 +162,7 @@ function AccountModule() {
       ) : (
         <Button
           icon={<IconConnect />}
-          label="Enable account"
+          label="Connect account"
           onClick={toggle}
           display={compactMode ? 'icon' : 'all'}
         />
