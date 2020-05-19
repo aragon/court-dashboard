@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react'
+import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { animated, Transition } from 'react-spring/renderprops'
 import { Box, useInside, useViewport } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
@@ -682,6 +682,7 @@ const AnimatedContainer = React.memo(function AnimatedModal({
   children,
 }) {
   const [insideModal] = useInside('NotificationsModal')
+  const ref = useRef()
 
   return (
     <Transition
@@ -709,14 +710,26 @@ const AnimatedContainer = React.memo(function AnimatedModal({
           <animated.div style={{ ...props }}>{children}</animated.div>
         ) : (
           <animated.div
+            id="ANIMATED!!"
             style={{
               ...props,
               top: 0,
               left: 0,
               right: 0,
+              height:
+                ref && ref.current
+                  ? `${ref.current.getBoundingClientRect().height}px`
+                  : 'auto',
             }}
           >
-            {children}
+            <div
+              ref={ref}
+              css={`
+                position: absolute;
+              `}
+            >
+              {children}
+            </div>
           </animated.div>
         )}
     </Transition>
