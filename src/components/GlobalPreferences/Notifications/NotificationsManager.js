@@ -42,6 +42,7 @@ const NotificationsManager = React.memo(function NotificationsManager() {
     if (!token || !address) {
       return
     }
+
     const verifyEmailAddress = async () => {
       const { error } = await verifyJurorEmail(address, token)
 
