@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react'
-import styled from 'styled-components'
 import {
   Button,
   Checkbox,
@@ -171,17 +170,17 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
                 margin-top: ${3 * GU}px;
               `}
             >
-              <ActionButtons compactMode={compactMode} onClick={onDeleteEmail}>
+              <ActionButton compactMode={compactMode} onClick={onDeleteEmail}>
                 Delete email
-              </ActionButtons>
-              <ActionButtons
+              </ActionButton>
+              <ActionButton
                 compactMode={compactMode}
                 mode="strong"
                 disabled={emailInvalid || !termsAccepted}
                 onClick={handleOnSubscribe}
               >
                 Send verification email
-              </ActionButtons>
+              </ActionButton>
             </div>
           </>
         )
@@ -230,9 +229,15 @@ function LegalTermsAndPolicy({ termsAccepted, onChange }) {
   )
 }
 
-const ActionButtons = styled(Button)`
-  width: ${({ compactMode }) =>
-    compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  2)`};
-`
+function ActionButton({ compactMode, ...props }) {
+  return (
+    <Button
+      css={`
+        width: ${compactMode ? '100%' : `calc((100% - ${2 * GU}px) /  2)`};
+      `}
+      {...props}
+    />
+  )
+}
 
 export default VerifyEmailAddress

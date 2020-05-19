@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import styled from 'styled-components'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 import { useWallet } from '../providers/Wallet'
 import { signMessage } from '../lib/web3-utils'
@@ -135,16 +134,16 @@ const SignerRequest = React.memo(function SignerRequest({
             `}
           >
             {/* TODO- Add the link once we have it */}
-            <ActionButtons onClick={() => {}} compactMode={compactMode}>
+            <ActionButton onClick={() => {}} compactMode={compactMode}>
               Troubleshooting
-            </ActionButtons>
-            <ActionButtons
+            </ActionButton>
+            <ActionButton
               mode="strong"
               onClick={requestSignature}
               compactMode={compactMode}
             >
               Repeat signature
-            </ActionButtons>
+            </ActionButton>
           </div>
         )}
       </div>
@@ -152,8 +151,15 @@ const SignerRequest = React.memo(function SignerRequest({
   )
 })
 
-const ActionButtons = styled(Button)`
-  width: ${({ compactMode }) =>
-    compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  2)`};
-`
+function ActionButton({ compactMode, ...props }) {
+  return (
+    <Button
+      css={`
+        width: ${compactMode ? '100%' : `calc((100% - ${2 * GU}px) /  2)`};
+      `}
+      {...props}
+    />
+  )
+}
+
 export default SignerRequest

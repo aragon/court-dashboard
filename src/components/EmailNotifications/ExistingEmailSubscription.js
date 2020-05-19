@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import { Button, GU, Link, textStyle, useTheme } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import IdentityBadge from '../IdentityBadge'
@@ -99,25 +98,31 @@ function ExistingEmailSubscription({
             margin-top: ${3 * GU}px;
           `}
         >
-          <ActionButtons compactMode={compactMode} onClick={onOptOut}>
+          <ActionButton compactMode={compactMode} onClick={onOptOut}>
             Opt out
-          </ActionButtons>
-          <ActionButtons
+          </ActionButton>
+          <ActionButton
             compactMode={compactMode}
             mode="strong"
             onClick={onSubscribeToNotifications}
           >
             Subscribe to notifications
-          </ActionButtons>
+          </ActionButton>
         </div>
       </div>
     </>
   )
 }
 
-const ActionButtons = styled(Button)`
-  width: ${({ compactMode }) =>
-    compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  2)`};
-`
+function ActionButton({ compactMode, ...props }) {
+  return (
+    <Button
+      css={`
+        width: ${compactMode ? '100%' : `calc((100% - ${2 * GU}px) /  2)`};
+      `}
+      {...props}
+    />
+  )
+}
 
 export default ExistingEmailSubscription
