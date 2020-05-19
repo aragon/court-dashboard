@@ -386,16 +386,10 @@ const EmailNotificationsManager = React.memo(
     useEffect(() => {
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
+        needsUnlockSettings,
         email,
       }))
-    }, [email])
-
-    useEffect(() => {
-      setSubscriptionProgress(subscriptionProgress => ({
-        ...subscriptionProgress,
-        needsUnlockSettings,
-      }))
-    }, [needsUnlockSettings])
+    }, [account, needsUnlockSettings, email])
 
     useEffect(() => {
       let cancelled = false
