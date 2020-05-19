@@ -69,7 +69,7 @@ export const SETTINGS = {
   },
   [OPTOUT_ACTION]: {
     signatureSettings: {
-      title: 'Opt-out email notifications',
+      title: 'Opt-out of email notifications',
       requestText: 'opt you out from email notifications',
       successText:
         'You have successfully proved ownership of your account and opted out of the email notifications service. You can always opt in again if you go to the Notifications settings, in Global preferences.',
