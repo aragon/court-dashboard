@@ -84,11 +84,7 @@ const SignerRequest = React.memo(function SignerRequest({
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div
-      css={`
-        padding: ${3 * GU}px;
-      `}
-    >
+    <div>
       <div
         css={`
           display: flex;
@@ -132,7 +128,6 @@ const SignerRequest = React.memo(function SignerRequest({
               justify-content: space-between;
               width: 100%;
               flex-direction: ${compactMode ? 'column' : 'row'};
-              margin-bottom: ${1.5 * GU}px;
               margin-top: ${3 * GU}px;
             `}
           >

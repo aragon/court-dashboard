@@ -26,6 +26,7 @@ function EmailNotificationsForm({
 }) {
   const [emailAddress, setEmailAddress] = useState('')
   const [emailInvalid, setEmailInvalid] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
 
   const theme = useTheme()
@@ -36,7 +37,11 @@ function EmailNotificationsForm({
 
   const handleEmailAddressBlur = useCallback(e => {
     const email = e.target.value
-    setEmailInvalid(!validateEmail(email))
+    const emailInvalid = !validateEmail(email)
+    setEmailInvalid(emailInvalid)
+    if (emailInvalid) {
+      setErrorMessage('Please enter a valid email address.')
+    }
   }, [])
 
   const handleEmailAddressChange = useCallback(e => {
@@ -51,9 +56,14 @@ function EmailNotificationsForm({
   const handleOnSubscribeToNotifications = useCallback(
     e => {
       e.preventDefault()
+      if (emailAddress === existingEmail) {
+        setEmailInvalid(true)
+        setErrorMessage('Email already exists.')
+        return
+      }
       onSubscribeToNotifications(emailAddress)
     },
-    [emailAddress, onSubscribeToNotifications]
+    [emailAddress, onSubscribeToNotifications, existingEmail]
   )
 
   const handleOnTermsChange = useCallback(() => {
@@ -215,7 +225,7 @@ function EmailNotificationsForm({
                   margin-top: ${0.5 * GU}px;
                 `}
               >
-                Please enter a valid email address.
+                {errorMessage}
               </p>
             </div>
           )}
