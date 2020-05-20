@@ -26,13 +26,18 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   const theme = useTheme()
   const [emailAddress, setEmailAddress] = useState('')
   const [emailInvalid, setEmailInvalid] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
 
   const [insideModal] = useInside('NotificationsModal')
 
   const handleEmailAddressBlur = useCallback(e => {
     const email = e.target.value
-    setEmailInvalid(!validateEmail(email))
+    const emailInvalid = !validateEmail(email)
+    setEmailInvalid(emailInvalid)
+    if (emailInvalid) {
+      setErrorMessage('Please enter a valid email address.')
+    }
   }, [])
 
   const handleEmailAddressChange = useCallback(e => {
@@ -52,8 +57,13 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   )
 
   const handleOnSubscribe = useCallback(() => {
+    if (emailAddress === email) {
+      setEmailInvalid(true)
+      setErrorMessage('Email already exists.')
+      return
+    }
     onSubscribe(emailAddress)
-  }, [emailAddress, onSubscribe])
+  }, [emailAddress, onSubscribe, email])
 
   return (
     <div
@@ -154,7 +164,7 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
                       margin-top: ${0.5 * GU}px;
                     `}
                   >
-                    Please enter a valid email address.
+                    {errorMessage}
                   </p>
                 )}
               </Field>
