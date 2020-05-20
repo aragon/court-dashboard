@@ -9,6 +9,7 @@ import {
   Link,
   TextInput,
   textStyle,
+  useInside,
   useTheme,
 } from '@aragon/ui'
 import { validateEmail } from '../../utils/validate-utils'
@@ -26,6 +27,8 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   const [emailAddress, setEmailAddress] = useState('')
   const [emailInvalid, setEmailInvalid] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(false)
+
+  const [insideModal] = useInside('NotificationsModal')
 
   const handleEmailAddressBlur = useCallback(e => {
     const email = e.target.value
@@ -55,7 +58,7 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   return (
     <div
       css={`
-        padding-top: ${3 * GU}px;
+        padding-top: ${(insideModal ? 3 : 0) * GU}px;
         display: flex;
         flex-direction: column;
         text-align: center;
