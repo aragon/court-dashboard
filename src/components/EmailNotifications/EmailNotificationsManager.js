@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react'
-import { animated, Transition } from 'react-spring/renderprops'
-import { Box, useInside, useViewport } from '@aragon/ui'
+import { animated, Spring, Transition } from 'react-spring/renderprops'
+import { Box, GU, springs, useInside, useViewport } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
 
@@ -651,38 +651,62 @@ const EmailNotificationsManager = React.memo(
   }
 )
 
-const WrappedContainer = React.memo(function AnimatedModal({ ...props }) {
+const WrappedContainer = React.memo(function WrappedContainer({ ...props }) {
   const [insideModal] = useInside('NotificationsModal')
   const { screenId } = props
 
-  if (insideModal || screenId === NOTIFICATIONS_PREFERENCES_SCREEN) {
-    return <AnimatedContainer {...props} />
-  }
+  const Container =
+    insideModal || screenId === NOTIFICATIONS_PREFERENCES_SCREEN
+      ? AnimatedContainer
+      : AnimatedBox
+
+  return <Container {...props} />
+})
+
+const AnimatedBox = ({ ...props }) => {
+  const ref = useRef(null)
+  const [height, setHeight] = useState(0)
+
+  const setRef = useCallback(node => {
+    if (node) {
+      setHeight(node.clientHeight)
+    }
+
+    ref.current = node
+  }, [])
 
   return (
-    <Box
-      css={`
-        display: flex;
-        justify-content: center;
-      `}
-    >
+    <Box padding={5 * GU}>
       <div
         css={`
+          position: relative;
           max-width: 800px;
+          margin: 0 auto;
         `}
       >
-        <AnimatedContainer {...props} />
+        <Spring
+          config={springs.smooth}
+          from={{ height: `${38 * GU}px` }}
+          to={{ height: `${height}px` }}
+          native
+        >
+          {({ height }) => (
+            <animated.div style={{ height }}>
+              <AnimatedContainer {...props} refCallback={setRef} />
+            </animated.div>
+          )}
+        </Spring>
       </div>
     </Box>
   )
-})
+}
 
 const AnimatedContainer = React.memo(function AnimatedModal({
   screenId,
   children,
+  refCallback,
 }) {
   const [insideModal] = useInside('NotificationsModal')
-  const ref = useRef()
 
   return (
     <Transition
@@ -710,26 +734,15 @@ const AnimatedContainer = React.memo(function AnimatedModal({
           <animated.div style={{ ...props }}>{children}</animated.div>
         ) : (
           <animated.div
-            id="ANIMATED!!"
+            ref={refCallback}
             style={{
               ...props,
               top: 0,
               left: 0,
               right: 0,
-              height:
-                ref && ref.current
-                  ? `${ref.current.getBoundingClientRect().height}px`
-                  : 'auto',
             }}
           >
-            <div
-              ref={ref}
-              css={`
-                position: absolute;
-              `}
-            >
-              {children}
-            </div>
+            {children}
           </animated.div>
         )}
     </Transition>
