@@ -3,10 +3,7 @@ import PropTypes from 'prop-types'
 
 import useNow from '../hooks/useNow'
 import { useCourtConfig } from './CourtConfig'
-import {
-  getTermStartAndEndTime,
-  getExpectedCurrentTermId,
-} from '../utils/court-utils'
+import { getTermPeriod, getExpectedCurrentTermId } from '../utils/court-utils'
 
 const CourtClockContext = React.createContext()
 
@@ -14,15 +11,17 @@ function CourtClockProvider({ children }) {
   const now = useNow()
   const courtConfig = useCourtConfig()
 
-  const { terms = [], termDuration = 0, currentTerm: actualCurrentTerm } =
+  const { currentTerm: actualCurrentTerm, terms = [], termDuration = 0 } =
     courtConfig || {}
 
-  const expectedCurrentTerm = getExpectedCurrentTermId(now, terms, termDuration)
-  const { termStartTime, termEndTime } = getTermStartAndEndTime(
-    expectedCurrentTerm,
+  const expectedCurrentTerm = getExpectedCurrentTermId(now, {
     terms,
-    termDuration
-  )
+    termDuration,
+  })
+  const [termStartTime, termEndTime] = getTermPeriod(expectedCurrentTerm, {
+    terms,
+    termDuration,
+  })
 
   const courtClock = useMemo(
     () => ({

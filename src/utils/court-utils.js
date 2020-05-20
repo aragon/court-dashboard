@@ -28,19 +28,7 @@ export function transformCourtConfigDataAttributes(courtConfig) {
   }
 }
 
-function getFirstTermDate(courtConfig) {
-  const { terms } = courtConfig
-  return terms[0].startTime
-}
-
-export function getTermStartTime(term, courtConfig) {
-  const { termDuration } = courtConfig
-  const termMs = term * termDuration
-
-  return getFirstTermDate(courtConfig) + termMs
-}
-
-export function getExpectedCurrentTermId(now, terms, termDuration) {
+export function getExpectedCurrentTermId(now, { terms, termDuration }) {
   let currentTermId = 0
 
   if (terms.length > 0) {
@@ -54,16 +42,30 @@ export function getExpectedCurrentTermId(now, terms, termDuration) {
   return currentTermId
 }
 
-export function getTermStartAndEndTime(termId, terms, termDuration) {
-  let [termStartTime, termEndTime] = [0, 0]
+export function getTermStartTime(termId, { terms, termDuration }) {
+  let termStartTime = 0
 
   if (terms.length > 0) {
     const firstTermStartTime = terms[0].startTime
     termStartTime = termId * termDuration + firstTermStartTime
-    termEndTime = termStartTime + (termDuration - 1)
   }
 
-  return { termStartTime, termEndTime }
+  return termStartTime
+}
+
+export function getTermEndTime(termId, { terms, termDuration }) {
+  let termEndTime = 0
+
+  const termStartTime = getTermStartTime(termId, { terms, termDuration })
+  termEndTime = termStartTime + (termDuration - 1)
+
+  return termEndTime
+}
+
+export function getTermPeriod(termId, { terms, termDuration }) {
+  return [getTermStartTime, getTermEndTime].map(f =>
+    f(termId, { terms, termDuration })
+  )
 }
 
 export function getModuleAddress(modules, moduleType) {
