@@ -1,8 +1,7 @@
-import { dayjs } from '../utils/date-utils'
-import { getTermStartTime } from './court-utils'
-import * as DisputesTypes from '../types/dispute-status-types'
-import { getOutcomeNumber } from './crvoting-utils'
 import { bigNum } from '../lib/math-utils'
+import { getTermEndTime, getTermStartTime } from './court-utils'
+import { getOutcomeNumber } from './crvoting-utils'
+import * as DisputesTypes from '../types/dispute-status-types'
 import { getVoidedDisputesByCourt } from '../flagged-disputes/voided-disputes'
 import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/precedence-campaign-disputes'
 
@@ -84,19 +83,24 @@ function overrideVoidedDispute(dispute, voidedDispute) {
  * Construct dispute timeline for the given dispute
  * @param {Object} dispute The dispute to get the timeline from
  * @param {Object} courtConfig The court configuration
+ * @param {Number} currentTerm The court current term
  * @returns {Array} The timeline of the given dispute
  */
-export function getDisputeTimeLine(dispute, courtConfig) {
+export function getDisputeTimeLine(dispute, courtConfig, currentTerm) {
   const { createdAt } = dispute
 
   const currentPhaseAndTime = getPhaseAndTransition(
     dispute,
     courtConfig,
-    dayjs()
+    currentTerm
   )
 
-  const evidenceSubmissionEndTime = getEvidenceSubmissionEndTime(
+  const evidenceSubmissionEndTerm = getEvidenceSubmissionEndTerm(
     dispute,
+    courtConfig
+  )
+  const evidenceSubmissionEndTime = getTermEndTime(
+    evidenceSubmissionEndTerm,
     courtConfig
   )
 
@@ -118,7 +122,8 @@ export function getDisputeTimeLine(dispute, courtConfig) {
     const roundPhases = getRoundPhasesAndTime(
       courtConfig,
       round,
-      currentPhaseAndTime
+      currentPhaseAndTime,
+      currentTerm
     )
     rounds.unshift([...roundPhases].reverse())
   })
@@ -154,10 +159,10 @@ export function getDisputeTimeLine(dispute, courtConfig) {
 /**
  * @param {Object} dispute The dispute to query the current phase and next transition of
  * @param {Object} courtConfig The court configuration
- * @param {Object} date The (dayjs) date at which to query the dispute's phase
+ * @param {Number} currentTerm The court current term
  * @returns {Object} Current phase and next phase transition for the given dispute
  */
-export function getPhaseAndTransition(dispute, courtConfig, date) {
+export function getPhaseAndTransition(dispute, courtConfig, currentTerm) {
   if (!dispute) return null
 
   let phase
@@ -179,12 +184,16 @@ export function getPhaseAndTransition(dispute, courtConfig, date) {
 
   // Evidence submission
   if (state === DisputesTypes.Phase.Evidence) {
-    const evidenceSubmissionEndTime = getEvidenceSubmissionEndTime(
+    const evidenceSubmissionEndTerm = getEvidenceSubmissionEndTerm(
       dispute,
       courtConfig
     )
+    const evidenceSubmissionEndTime = getTermEndTime(
+      evidenceSubmissionEndTerm,
+      courtConfig
+    )
 
-    if (date.isAfter(evidenceSubmissionEndTime)) {
+    if (currentTerm > evidenceSubmissionEndTerm) {
       phase = DisputesTypes.Phase.JuryDrafting
     } else {
       phase = state
@@ -195,16 +204,16 @@ export function getPhaseAndTransition(dispute, courtConfig, date) {
 
   // Jury Drafting phase
   if (state === DisputesTypes.Phase.JuryDrafting) {
-    const drafTermStartTime = getTermStartTime(
-      lastRound.draftTermId,
-      courtConfig
-    )
-
     // When a new round is created, it could happen that the draft term has not been reached yet
     // because the confirm appeal phase of the previous round has not yet ended
-    if (date.isBefore(drafTermStartTime)) {
+    if (currentTerm < lastRound.draftTermId) {
+      const draftStartTime = getTermStartTime(
+        lastRound.draftTermId,
+        courtConfig
+      )
+
       phase = DisputesTypes.Phase.NotStarted
-      nextTransition = drafTermStartTime
+      nextTransition = draftStartTime
     } else {
       phase = DisputesTypes.Phase.JuryDrafting
     }
@@ -216,16 +225,23 @@ export function getPhaseAndTransition(dispute, courtConfig, date) {
     let currentAdjudicationPhase = getAdjudicationPhase(
       dispute,
       lastRound,
-      date,
+      currentTerm,
       courtConfig
     )
-    if (currentAdjudicationPhase.phase === DisputesTypes.Phase.Ended) {
+
+    const { phase, phaseEndTerm } = currentAdjudicationPhase
+    if (phase === DisputesTypes.Phase.Ended) {
       currentAdjudicationPhase = {
         ...currentAdjudicationPhase,
         phase: DisputesTypes.Phase.ExecuteRuling,
       }
     }
-    return { ...currentAdjudicationPhase, roundId: number }
+
+    const nextTransition = phaseEndTerm
+      ? getTermEndTime(phaseEndTerm, courtConfig)
+      : null
+
+    return { ...currentAdjudicationPhase, roundId: number, nextTransition }
   }
 }
 
@@ -233,13 +249,12 @@ export function getPhaseAndTransition(dispute, courtConfig, date) {
  * Tells the adjudication state of a dispute's round at a certain time.
  * @param {Object} dispute Dispute to query the adjudication round of
  * @param {Object} round The round that is being queried
- * @param {Object} date The (dayjs) date at which to query the dispute's adjudication phase
+ * @param {Number} termId The term at which to query the dispute's adjudication phase
  * @param {Object} courtConfig The court configuration
  * @returns {Object} The adjudication phase of the requested round at the given time
  */
-export function getAdjudicationPhase(dispute, round, date, courtConfig) {
+export function getAdjudicationPhase(dispute, round, termId, courtConfig) {
   const {
-    termDuration,
     commitTerms,
     revealTerms,
     appealTerms,
@@ -248,19 +263,17 @@ export function getAdjudicationPhase(dispute, round, date, courtConfig) {
 
   const { draftTermId, delayedTerms, number: roundId } = round
 
-  const draftTermStartTime = getTermStartTime(draftTermId, courtConfig)
-  const draftTermEndTime = draftTermStartTime + delayedTerms * termDuration
-
+  const draftEndTerm = draftTermId + delayedTerms
   const maxAppealReached = hasDisputeReachedMaxAppeals(dispute, courtConfig)
 
   // When voting period has not yet started there are two possible cases:
   //   * We are at the last possible round so adjudication phase hasn't started
   //   * We are not in an adjudication phase so it is invalid
-  if (date.isBefore(draftTermEndTime)) {
+  if (termId < draftEndTerm) {
     if (maxAppealReached) {
       return {
         phase: DisputesTypes.Phase.NotStarted,
-        nextTransition: draftTermEndTime,
+        phaseEndTerm: draftEndTerm,
         roundId,
       }
     }
@@ -271,23 +284,24 @@ export function getAdjudicationPhase(dispute, round, date, courtConfig) {
     }
   }
 
-  // If given term is before the reveal start term of the last round, then jurors are still allowed to commit votes for the last round
-  const revealTermStartTime = draftTermEndTime + commitTerms * termDuration
-  if (date.isBefore(revealTermStartTime)) {
+  // Jurors can commit their votes between when the commit phase term starts and ends
+  // Note that the commit start term is the same as the draft end term
+  const commitEndTerm = draftEndTerm + commitTerms - 1
+  if (termId <= commitEndTerm) {
     return {
       phase: DisputesTypes.Phase.VotingPeriod,
-      nextTransition: revealTermStartTime,
+      phaseEndTerm: commitEndTerm,
       maxAppealReached,
       roundId,
     }
   }
 
-  // If given term is before the appeal start term of the last round, then jurors are still allowed to reveal votes for the last round
-  const appealTermStartTime = revealTermStartTime + revealTerms * termDuration
-  if (date.isBefore(appealTermStartTime)) {
+  // Jurors can reveal their votes between when the reveal phase term starts and ends
+  const revealEndTerm = commitEndTerm + revealTerms
+  if (termId <= revealEndTerm) {
     return {
       phase: DisputesTypes.Phase.RevealVote,
-      nextTransition: appealTermStartTime,
+      phaseEndTerm: revealEndTerm,
       maxAppealReached,
       roundId,
     }
@@ -301,21 +315,19 @@ export function getAdjudicationPhase(dispute, round, date, courtConfig) {
   // If the last round was not appealed yet, check if the confirmation period has started or not
   const isLastRoundAppealed =
     !!round.appeal && round.appeal.appealedRuling !== 0
-  const appealConfirmationTermStartTime =
-    appealTermStartTime + appealTerms * termDuration
+  const appealEndTerm = revealEndTerm + appealTerms
 
   if (!isLastRoundAppealed) {
     // If given term is before the appeal confirmation start term, then the last round can still be appealed. Otherwise, it is ended.
-    if (date.isBefore(appealConfirmationTermStartTime)) {
+    if (termId <= appealEndTerm) {
       return {
         phase: DisputesTypes.Phase.AppealRuling,
-        nextTransition: appealConfirmationTermStartTime,
+        phaseEndTerm: appealEndTerm,
         roundId,
       }
     } else {
       return {
         phase: DisputesTypes.Phase.Ended,
-        appealed: false,
         roundId,
       }
     }
@@ -324,13 +336,12 @@ export function getAdjudicationPhase(dispute, round, date, courtConfig) {
   // If the last round was appealed and the given term is before the appeal confirmation end term, then the last round appeal can still be
   // confirmed. Note that if the round being checked was already appealed and confirmed, it won't be the last round, thus it will be caught
   // above by the first check and considered 'Ended'.
-  const appealConfirmationTermEndTime =
-    appealConfirmationTermStartTime + appealConfirmationTerms * termDuration
+  const appealConfirmationEndTerm = appealEndTerm + appealConfirmationTerms
 
-  if (date.isBefore(appealConfirmationTermEndTime)) {
+  if (termId < appealConfirmationEndTerm) {
     return {
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      nextTransition: appealConfirmationTermEndTime,
+      phaseEndTerm: appealConfirmationEndTerm,
       roundId,
     }
   }
@@ -338,7 +349,6 @@ export function getAdjudicationPhase(dispute, round, date, courtConfig) {
   // If non of the above conditions have been met, the last round is considered ended
   return {
     phase: DisputesTypes.Phase.Ended,
-    appealed: true,
     roundId,
   }
 }
@@ -350,11 +360,11 @@ export function getAdjudicationPhase(dispute, round, date, courtConfig) {
  * @param {Object} courtConfig The court configuration
  * @param {Object} round The round to get the phases from
  * @param {Object} currentPhase The dispute's current phase
+ * @param {Number} currentTerm The court current term
  * @returns {Array} Array of all `round` phases.
  */
-function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
+function getRoundPhasesAndTime(courtConfig, round, currentPhase, currentTerm) {
   const {
-    termDuration,
     commitTerms,
     revealTerms,
     appealTerms,
@@ -365,29 +375,26 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
   const isCurrentRound = roundId === currentPhase.roundId
   const { winningOutcome } = vote || {}
 
-  const now = dayjs()
-
-  const disputeDraftStartTime = getTermStartTime(draftTermId, courtConfig)
+  const draftStartTime = getTermStartTime(draftTermId, courtConfig)
 
   // Case where we are in a next round and has not yet started
   if (isCurrentRound && currentPhase.phase === DisputesTypes.Phase.NotStarted) {
     return [
       {
         phase: DisputesTypes.Phase.NotStarted,
-        endTime: disputeDraftStartTime,
+        endTime: draftStartTime,
         roundId,
         active: true,
       },
     ]
   }
 
-  const disputeDraftEndTime =
-    disputeDraftStartTime + termDuration * delayedTerms
-  const votingEndTime = disputeDraftEndTime + termDuration * commitTerms
-  const revealEndTime = votingEndTime + termDuration * revealTerms
-  const appealEndTime = revealEndTime + termDuration * appealTerms
-  const confirmAppealEndTime =
-    appealEndTime + termDuration * appealConfirmationTerms
+  const draftEndTerm = draftTermId + delayedTerms
+  // Note that the commit start term is the same as the draft end term
+  const votingEndTerm = draftEndTerm + commitTerms - 1
+  const revealEndTerm = votingEndTerm + revealTerms
+  const appealEndTerm = revealEndTerm + appealTerms
+  const confirmAppealEndTerm = appealEndTerm + appealConfirmationTerms
 
   const roundAppealed = !!appeal
   const roundAppealConfirmed = roundAppealed && appeal.opposedRuling > 0
@@ -399,7 +406,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       phase: DisputesTypes.Phase.JuryDrafting,
       endTime:
         DisputesTypes.Phase.JuryDrafting !== currentPhase.phase
-          ? disputeDraftEndTime
+          ? getTermEndTime(draftEndTerm, courtConfig)
           : null,
       active:
         isCurrentRound &&
@@ -408,7 +415,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.VotingPeriod,
-      endTime: votingEndTime,
+      endTime: getTermEndTime(votingEndTerm, courtConfig),
       active:
         isCurrentRound &&
         DisputesTypes.Phase.VotingPeriod === currentPhase.phase,
@@ -416,12 +423,12 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     },
     {
       phase: DisputesTypes.Phase.RevealVote,
-      endTime: revealEndTime,
+      endTime: getTermEndTime(revealEndTerm, courtConfig),
       active:
         isCurrentRound && DisputesTypes.Phase.RevealVote === currentPhase.phase,
       roundId,
       outcome: winningOutcome,
-      showOutcome: now.isAfter(revealEndTime),
+      showOutcome: currentTerm > revealEndTerm,
     },
     {
       // If the round was appealed we know it's a past phase and must update the endTime for the time this took effect (appeal.createdAt)
@@ -429,13 +436,15 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       //       - It's a past phase so in that case the endTime will be the time at where it's supposed to end if taking the full appealTerms duration
       //       - It's the dispute active phase (the round can still be appealed) so the endTime will be used to tell the timer remaining time before the appeal phase is closed
       phase: DisputesTypes.Phase.AppealRuling,
-      endTime: roundAppealed ? appeal.createdAt : appealEndTime,
+      endTime: roundAppealed
+        ? appeal.createdAt
+        : getTermEndTime(appealEndTerm, courtConfig),
       active:
         isCurrentRound &&
         DisputesTypes.Phase.AppealRuling === currentPhase.phase,
       roundId,
       outcome: roundAppealed ? appeal.appealedRuling : null,
-      showOutcome: roundAppealed || now.isAfter(appealEndTime),
+      showOutcome: roundAppealed || currentTerm > appealEndTerm,
       // If the round was appealed, we'll show the outcome (appeal ruling),
       // If it wasn't appealed then we'll show a "Nobodoy appealed" message
     },
@@ -445,13 +454,15 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
       //       - It's a past phase so in that case the endTime will be the time at where it's supposed to end if taking the full confirmAppealTerms duration
       //       - It's the dispute active phase (the round can still be appeal confirmed) so the endTime will be used to tell the timer remaining time before the confirm appeal phase is closed
       phase: DisputesTypes.Phase.ConfirmAppeal,
-      endTime: roundAppealConfirmed ? appeal.confirmedAt : confirmAppealEndTime,
+      endTime: roundAppealConfirmed
+        ? appeal.confirmedAt
+        : getTermEndTime(confirmAppealEndTerm, courtConfig),
       active:
         isCurrentRound &&
         DisputesTypes.Phase.ConfirmAppeal === currentPhase.phase,
       roundId,
       outcome: roundAppealConfirmed ? appeal.opposedRuling : null,
-      showOutcome: roundAppealConfirmed || now.isAfter(confirmAppealEndTime),
+      showOutcome: roundAppealConfirmed || currentTerm > confirmAppealEndTerm,
     },
   ]
 
@@ -473,7 +484,7 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
     }
 
     // If round not appealed
-    if (!currentPhase.appealed) {
+    if (!roundAppealed) {
       return roundPhasesAndTime.slice(0, 4)
     }
 
@@ -498,12 +509,12 @@ function getRoundPhasesAndTime(courtConfig, round, currentPhase) {
  * @param {Object} courtConfig The court configuration
  * @returns {Number} The end time of the evidence submission phase in ms
  */
-function getEvidenceSubmissionEndTime(dispute, courtConfig) {
+function getEvidenceSubmissionEndTerm(dispute, courtConfig) {
   const firstRound = dispute.rounds[0]
 
   // If the evidence period is closed before the full `evidenceTerms` period,
   // the drafTermId for the first round is updated to the term this happened.
-  return getTermStartTime(firstRound.draftTermId, courtConfig)
+  return firstRound.draftTermId - 1
 }
 
 /**

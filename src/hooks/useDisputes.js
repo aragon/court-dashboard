@@ -1,31 +1,32 @@
 import { useEffect, useMemo, useState } from 'react'
 import resolvePathname from 'resolve-pathname'
 import { IPFS_ENDPOINT } from '../endpoints'
-import useNow from './useNow'
+import { useCourtClock } from '../providers/CourtClock'
 import { useCourtConfig } from '../providers/CourtConfig'
 import {
   useSingleDisputeSubscription,
   useDisputesSubscription,
 } from './subscription-hooks'
 import { getPhaseAndTransition } from '../utils/dispute-utils'
-import { convertToString, Status } from '../types/dispute-status-types'
 import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
+import { convertToString, Status } from '../types/dispute-status-types'
 
 const IPFS_ERROR_MSG = 'Error loading content from ipfs'
 
 export default function useDisputes() {
   const courtConfig = useCourtConfig()
+  const { currentTermId } = useCourtClock()
   const { disputes, fetching, error } = useDisputesSubscription()
-
-  const now = useNow() // TODO: use court clock
 
   const disputesPhases = useMemo(() => {
     if (!disputes) {
       return null
     }
 
-    return disputes.map(d => getPhaseAndTransition(d, courtConfig, now))
-  }, [courtConfig, disputes, now])
+    return disputes.map(d =>
+      getPhaseAndTransition(d, courtConfig, currentTermId)
+    )
+  }, [courtConfig, currentTermId, disputes])
 
   const disputesPhasesKey = disputesPhases
     ? disputesPhases.map(v => convertToString(Object.values(v)[0])).join('')
@@ -64,7 +65,7 @@ export default function useDisputes() {
  */
 export function useDispute(disputeId) {
   const courtConfig = useCourtConfig()
-  const now = useNow() // TODO: use court clock
+  const { currentTermId } = useCourtClock()
   const {
     dispute,
     fetching: graphFetching,
@@ -72,7 +73,11 @@ export function useDispute(disputeId) {
   } = useSingleDisputeSubscription(disputeId)
 
   const disputeProcessed = useProcessedDispute(dispute)
-  const disputePhase = getPhaseAndTransition(dispute, courtConfig, now)
+  const disputePhase = getPhaseAndTransition(
+    dispute,
+    courtConfig,
+    currentTermId
+  )
   const disputePhaseKey = disputePhase
     ? convertToString(Object.values(disputePhase)[0])
     : ''
