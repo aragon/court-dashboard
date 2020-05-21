@@ -6,7 +6,7 @@ import { numberToWord } from './lib/math-utils'
 
 export default {
   approveFeeDeposit: amount => {
-    return `Approve fee deposit: ${amount} ANJ`
+    return `Approve fee deposit: ${amount} DAI`
   },
   activateAnj: amount => {
     return `Activate the total amount of ${amount} ANJ`
