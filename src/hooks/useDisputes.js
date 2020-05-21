@@ -24,7 +24,7 @@ export default function useDisputes() {
     }
 
     return disputes.map(d =>
-      getPhaseAndTransition(d, courtConfig, currentTermId)
+      getPhaseAndTransition(d, currentTermId, courtConfig)
     )
   }, [courtConfig, currentTermId, disputes])
 
@@ -75,8 +75,8 @@ export function useDispute(disputeId) {
   const disputeProcessed = useProcessedDispute(dispute)
   const disputePhase = getPhaseAndTransition(
     dispute,
-    courtConfig,
-    currentTermId
+    currentTermId,
+    courtConfig
   )
   const disputePhaseKey = disputePhase
     ? convertToString(Object.values(disputePhase)[0])

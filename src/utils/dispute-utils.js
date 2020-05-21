@@ -91,8 +91,8 @@ export function getDisputeTimeLine(dispute, courtConfig, currentTerm) {
 
   const currentPhaseAndTime = getPhaseAndTransition(
     dispute,
-    courtConfig,
-    currentTerm
+    currentTerm,
+    courtConfig
   )
 
   const evidenceSubmissionEndTerm = getEvidenceSubmissionEndTerm(
@@ -120,10 +120,10 @@ export function getDisputeTimeLine(dispute, courtConfig, currentTerm) {
   const rounds = []
   dispute.rounds.forEach(round => {
     const roundPhases = getRoundPhasesAndTime(
-      courtConfig,
       round,
       currentPhaseAndTime,
-      currentTerm
+      currentTerm,
+      courtConfig
     )
     rounds.unshift([...roundPhases].reverse())
   })
@@ -158,11 +158,11 @@ export function getDisputeTimeLine(dispute, courtConfig, currentTerm) {
 
 /**
  * @param {Object} dispute The dispute to query the current phase and next transition of
- * @param {Object} courtConfig The court configuration
  * @param {Number} currentTerm The court current term
+ * @param {Object} courtConfig The court configuration
  * @returns {Object} Current phase and next phase transition for the given dispute
  */
-export function getPhaseAndTransition(dispute, courtConfig, currentTerm) {
+export function getPhaseAndTransition(dispute, currentTerm, courtConfig) {
   if (!dispute) return null
 
   let phase
@@ -357,13 +357,13 @@ export function getAdjudicationPhase(dispute, round, termId, courtConfig) {
  * @dev Terminology here will be:
  *        Last round => last round actually reached in a dispute
  *        Final round => max possible round for a dispute (when the max appeals for a given dispute is reached)
- * @param {Object} courtConfig The court configuration
  * @param {Object} round The round to get the phases from
  * @param {Object} currentPhase The dispute's current phase
  * @param {Number} currentTerm The court current term
+ * @param {Object} courtConfig The court configuration
  * @returns {Array} Array of all `round` phases.
  */
-function getRoundPhasesAndTime(courtConfig, round, currentPhase, currentTerm) {
+function getRoundPhasesAndTime(round, currentPhase, currentTerm, courtConfig) {
   const {
     commitTerms,
     revealTerms,
@@ -513,7 +513,7 @@ function getEvidenceSubmissionEndTerm(dispute, courtConfig) {
   const firstRound = dispute.rounds[0]
 
   // If the evidence period is closed before the full `evidenceTerms` period,
-  // the drafTermId for the first round is updated to the term this happened.
+  // the draftTermId for the first round is updated to the term this happened.
   return firstRound.draftTermId - 1
 }
 
