@@ -27,10 +27,7 @@ function ActivityItem({ activity }) {
   const theme = useTheme()
   const { removeActivity } = useActivity()
 
-  const activityData = getActivityData(
-    activity.activityType,
-    activity.activityParams
-  )
+  const { description, icon, title } = getActivityData(activity)
 
   const handleOpen = useCallback(() => {
     if (activity.transactionHash) {
@@ -97,7 +94,7 @@ function ActivityItem({ activity }) {
                 margin-right: ${1 * GU}px;
               `}
             >
-              <img src={activityData.icon} alt="" />
+              <img src={icon} alt="" />
             </div>
             <div
               css={`
@@ -108,7 +105,7 @@ function ActivityItem({ activity }) {
                 ${textStyle('body1')};
               `}
             >
-              {activityData.title}
+              {title}
             </div>
             {activity.status !== ACTIVITY_STATUS_PENDING && (
               <TimeTag
@@ -125,7 +122,7 @@ function ActivityItem({ activity }) {
               margin-top: ${2 * GU}px;
             `}
           >
-            <ItemContent text={activityData.description} />
+            <ItemContent text={description} />
             <StatusMessage activity={activity} />
             <TransactionProgress
               status={activity.status}

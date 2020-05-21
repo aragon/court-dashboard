@@ -110,9 +110,9 @@ function ActivityProvider({ children }) {
     async (
       tx,
 
-      // see methods and params defined in activity-types.js
+      // see methods defined in activity-types.js
       activityType = 'transaction',
-      activityParams = {}
+      activityDescription = ''
     ) => {
       // tx might be a promise resolving into a tx
       tx = await tx
@@ -120,7 +120,7 @@ function ActivityProvider({ children }) {
       updateActivities(activities => [
         ...activities,
         {
-          activityParams,
+          activityDescription,
           activityType,
           createdAt: Date.now(),
           from: tx.from,

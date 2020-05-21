@@ -1,5 +1,5 @@
 import radspec from '../../radspec'
-import actions from '../../types/court-action-types'
+import actions from '../../actions/court-action-types'
 
 import iconAnj from './assets/activity-icon-anj.svg'
 import iconAppealRuling from './assets/activity-icon-appeal-ruling.svg'
@@ -12,132 +12,132 @@ import iconExecuteRuling from './assets/activity-icon-execute-ruling.svg'
 // The different types of activity
 const ACTIVITY_TYPES = new Map(
   Object.entries({
-    [actions.ApproveFeeDeposit]({ amount }) {
+    [actions.ApproveFeeDeposit]() {
       return {
         icon: iconAnj,
         title: 'Approve fee deposit',
-        description: radspec[actions.ApproveFeeDeposit](amount),
       }
     },
-    [actions.ActivateAnj]({ amount }) {
+    [actions.ActivateAnj]() {
       return {
         icon: iconAnj,
         title: 'Activate ANJ',
-        description: radspec[actions.ActivateAnj](amount),
       }
     },
-    [actions.AppealRuling]({ disputeId, roundId, ruling }) {
+    [actions.AppealRuling]() {
       return {
         title: 'Appeal ruling',
         icon: iconAppealRuling,
-        description: radspec[actions.AppealRuling](disputeId, roundId, ruling),
       }
     },
-    [actions.ClaimRewards]({ amount }) {
+    [actions.ClaimRewards]() {
       return {
         title: 'Claim rewards',
         icon: iconClaimRewards,
-        description: radspec[actions.ClaimRewards](amount),
       }
     },
-    [actions.ClaimSubscriptionFees]({ periodId }) {
+    [actions.ClaimSubscriptionFees]() {
       return {
         title: 'Claim Subscription rewards',
         icon: iconClaimRewards,
-        description: radspec[actions.ClaimSubscriptionFees](periodId),
       }
     },
-    [actions.CommitVote]({ disputeId, roundId, outcome }) {
+    [actions.CommitVote]() {
       return {
         title: 'Commit vote',
         icon: iconCommitVote,
-        description: radspec[actions.CommitVote](disputeId, roundId, outcome),
       }
     },
-    [actions.ConfirmAppeal]({ disputeId, roundId, ruling }) {
+    [actions.ConfirmAppeal]() {
       return {
         title: 'Confirm appeal',
         icon: iconAppealRuling,
-        description: radspec[actions.ConfirmAppeal](disputeId, roundId, ruling),
       }
     },
-    [actions.DeactivateAnj]({ amount }) {
+    [actions.DeactivateAnj]() {
       return {
         icon: iconAnj,
         title: 'Deactivate ANJ',
-        description: radspec[actions.DeactivateAnj](amount),
       }
     },
-    [actions.DraftJury]({ disputeId }) {
+    [actions.DraftJury]() {
       return {
         title: 'Draft jury',
         icon: iconDraftJury,
-        description: radspec[actions.DraftJury](disputeId),
       }
     },
-    [actions.ExecuteRuling]({ disputeId }) {
+    [actions.ExecuteRuling]() {
       return {
         title: 'Execute ruling',
         icon: iconExecuteRuling,
-        description: radspec[actions.ExecuteRuling](disputeId),
       }
     },
-    [actions.Heartbeat]({ transitions }) {
+    [actions.Heartbeat]() {
       return {
         title: 'Update term',
         icon: iconCourtLogo,
-        description: radspec[actions.Heartbeat](transitions),
       }
     },
-    [actions.LeakVote]({ voteId, voter }) {
+    [actions.LeakVote]() {
       return {
         title: 'Leak vote',
         icon: iconCommitVote,
-        description: radspec[actions.LeakVote](voteId, voter),
       }
     },
-    [actions.RevealVote]({ roundId, disputeId }) {
+    [actions.RevealVote]() {
       return {
         title: 'Reveal vote',
         icon: iconAnj,
-        description: radspec[actions.RevealVote](roundId, disputeId),
       }
     },
-    [actions.SettleReward]({ roundId, disputeId }) {
+    [actions.SettleReward]() {
       return {
         icon: iconAnj,
         title: 'Settle reward',
-        description: radspec[actions.SettleReward](roundId, disputeId),
       }
     },
-    [actions.SettleAppealDeposit]({ roundId, disputeId }) {
+    [actions.SettleAppealDeposit]() {
       return {
         icon: iconAnj,
         title: 'Settle appeal deposit',
-        description: radspec[actions.SettleAppealDeposit](roundId, disputeId),
       }
     },
-    transaction({ transactionHash }) {
+    transaction() {
       return {
         title: 'Transaction',
         icon: iconAnj,
-        description: `
-          Transaction: ${transactionHash}
-        `,
       }
     },
-    [actions.WithdrawAnj]({ amount }) {
+    [actions.WithdrawAnj]() {
       return {
         icon: iconAnj,
         title: 'Withdraw ANJ',
-        description: radspec[actions.WithdrawAnj](amount),
       }
     },
   })
 )
 
-export function getActivityData(activityType, activityParams) {
+export function getActivityData({
+  activityDescription,
+  activityParams,
+  activityType,
+}) {
+  console.log(
+    'activityDescription,activityParams,activityType,',
+    activityDescription,
+    activityParams,
+    activityType
+  )
+
   const activity =
     ACTIVITY_TYPES.get(activityType) || ACTIVITY_TYPES.get('transaction')
-  return activity(activityParams || {})
+
+  const { title, icon } = activity()
+
+  // Older activities don't have the description stored but use the old `activityParams`
+  // so we should fallback to describe the actvity if the description is not present
+  const description =
+    activityDescription || radspec[activityType](activityParams)
+
+  return { description, icon, title }
 }
