@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { captureException } from '@sentry/browser'
 
-// hoooks
+// hooks
 import { useCourtConfig } from '../providers/CourtConfig'
 import { useRequestQueue } from '../providers/RequestQueue'
-import { useRequestProcessor } from './useRequestProcessor'
 import { useContract, useContractReadOnly } from '../web3-contracts'
 import { useActivity } from '../components/Activity/ActivityProvider'
+import { useRequestProcessor } from '../providers/useRequestProcessor'
 
 // services
 import requestAutoReveal from '../services/requestAutoReveal'
@@ -14,7 +14,7 @@ import requestAutoReveal from '../services/requestAutoReveal'
 // utils
 import radspec from '../radspec'
 import { retryMax } from '../utils/retry-max'
-import actions from '../types/court-action-types'
+import actions from '../actions/court-action-types'
 import { getKnownToken } from '../utils/known-tokens'
 import { getModuleAddress } from '../utils/court-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
@@ -92,8 +92,8 @@ export function useANJActions() {
           jurorRegistryContract.activate(amount, {
             gasLimit: ANJ_ACTIVATE_GAS_LIMIT,
           }),
+        description: radspec[actions.ActivateAnj]({ amount: formattedAmount }),
         name: actions.ActivateAnj,
-        params: { amount: formattedAmount },
       })
     },
     [jurorRegistryContract, processRequests]
@@ -108,8 +108,10 @@ export function useANJActions() {
           jurorRegistryContract.deactivate(amount, {
             gasLimit: ANJ_ACTIONS_GAS_LIMIT,
           }),
+        description: radspec[actions.DeactivateAnj]({
+          amount: formattedAmount,
+        }),
         name: actions.DeactivateAnj,
-        params: { amount: formattedAmount },
       })
     },
     [jurorRegistryContract, processRequests]
@@ -128,8 +130,10 @@ export function useANJActions() {
             ACTIVATE_SELECTOR,
             { gasLimit: ANJ_ACTIVATE_GAS_LIMIT }
           ),
+        description: radspec[actions.ActivateAnj]({
+          amount: formattedAmount,
+        }),
         name: actions.ActivateAnj,
-        params: { amount: formattedAmount },
       })
     },
     [anjTokenContract, jurorRegistryContract, processRequests]
@@ -144,8 +148,10 @@ export function useANJActions() {
           jurorRegistryContract.unstake(amount, '0x', {
             gasLimit: ANJ_ACTIONS_GAS_LIMIT,
           }),
+        description: radspec[actions.WithdrawAnj]({
+          amount: formattedAmount,
+        }),
         name: actions.WithdrawAnj,
-        params: { amount: formattedAmount },
       })
     },
     [jurorRegistryContract, processRequests]
@@ -181,8 +187,8 @@ export function useDisputeActions() {
           disputeManagerContract.draft(disputeId, {
             gasLimit: GAS_LIMIT,
           }),
+        description: radspec[actions.DraftJury]({ disputeId }),
         name: actions.DraftJury,
-        params: { disputeId },
       })
     },
     [disputeManagerContract, processRequests]
@@ -197,12 +203,12 @@ export function useDisputeActions() {
       const requestQueue = [
         {
           action: () => votingContract.commit(voteId, commitment),
-          name: actions.CommitVote,
-          params: {
+          description: radspec[actions.CommitVote]({
             disputeId,
             roundId,
             outcome,
-          },
+          }),
+          name: actions.CommitVote,
           ensureConfirmation: true,
           // Callback function to run after main tx
           callback: () => saveCodeInLocalStorage(account, disputeId, password),
@@ -241,8 +247,11 @@ export function useDisputeActions() {
       return processRequests({
         action: () =>
           votingContract.reveal(voteId, voter, outcome, hashPassword(password)),
+        description: radspec[actions.RevealVote]({
+          disputeId,
+          roundId,
+        }),
         name: actions.RevealVote,
-        params: { disputeId, roundId },
       })
     },
     [processRequests, votingContract]
@@ -253,8 +262,8 @@ export function useDisputeActions() {
     (voteId, voter, outcome, salt) => {
       return processRequests({
         action: () => votingContract.leak(voteId, voter, outcome, salt),
+        description: radspec[actions.LeakVote]({ voteId, voter }),
         name: actions.LeakVote,
-        params: { voteId, voter },
       })
     },
     [processRequests, votingContract]
@@ -265,8 +274,10 @@ export function useDisputeActions() {
       return {
         action: () =>
           feeTokenContract.approve(disputeManagerContract.address, value),
+        description: radspec[actions.ApproveFeeDeposit]({
+          amount: formatUnits(value),
+        }),
         name: actions.ApproveFeeDeposit,
-        params: { amount: formatUnits(value) },
       }
     },
     [disputeManagerContract, feeTokenContract]
@@ -280,8 +291,12 @@ export function useDisputeActions() {
           disputeManagerContract.createAppeal(disputeId, roundId, ruling, {
             gasLimit: GAS_LIMIT,
           }),
+        description: radspec[actions.AppealRuling]({
+          disputeId,
+          roundId,
+          ruling,
+        }),
         name: actions.AppealRuling,
-        params: { disputeId, roundId, ruling },
       }
     },
     [disputeManagerContract]
@@ -295,8 +310,12 @@ export function useDisputeActions() {
           disputeManagerContract.confirmAppeal(disputeId, roundId, ruling, {
             gasLimit: GAS_LIMIT,
           }),
+        description: radspec[actions.ConfirmAppeal]({
+          disputeId,
+          roundId,
+          ruling,
+        }),
         name: actions.ConfirmAppeal,
-        params: { disputeId, roundId, ruling },
       }
     },
     [disputeManagerContract]
@@ -341,8 +360,8 @@ export function useDisputeActions() {
           aragonCourtContract.executeRuling(disputeId, {
             gasLimit: GAS_LIMIT,
           }),
+        description: radspec[actions.ExecuteRuling]({ disputeId }),
         name: actions.ExecuteRuling,
-        params: { disputeId },
       })
     },
     [aragonCourtContract, processRequests]
@@ -366,27 +385,33 @@ export function useHeartbeat() {
     aragonCourtAbi
   )
 
-  const request = useCallback(
-    (transitions, ensureConfirmation = false) => ({
-      intent: () =>
-        addActivity(aragonCourtContract.heartbeat(transitions), 'heartbeat', {
-          transitions,
-        }),
-      description: radspec.heartbeat(transitions),
-      isTx: true,
-      ensureConfirmation,
-    }),
+  const heartbeatRequest = useCallback(
+    (transitions, ensureConfirmation = false) => {
+      const description = radspec[actions.Heartbeat]({ transitions })
+
+      return {
+        intent: () =>
+          addActivity(
+            aragonCourtContract.heartbeat(transitions),
+            actions.Heartbeat,
+            description
+          ),
+        description,
+        isTx: true,
+        ensureConfirmation,
+      }
+    },
     [addActivity, aragonCourtContract]
   )
 
   const heartbeat = useCallback(
     transitions => {
-      return addRequests(request(transitions))
+      return addRequests(heartbeatRequest(transitions))
     },
-    [addRequests, request]
+    [addRequests, heartbeatRequest]
   )
 
-  return { heartbeat, request }
+  return { heartbeat, heartbeatRequest }
 }
 
 export function useRewardActions() {
@@ -409,8 +434,8 @@ export function useRewardActions() {
           disputeManagerContract.settleReward(disputeId, roundId, juror, {
             gasLimit: GAS_LIMIT,
           }),
+        description: radspec[actions.SettleReward]({ roundId, disputeId }),
         name: actions.SettleReward,
-        params: { roundId, disputeId },
       }
     },
     [disputeManagerContract]
@@ -423,8 +448,11 @@ export function useRewardActions() {
           disputeManagerContract.settleAppealDeposit(disputeId, roundId, {
             gasLimit: GAS_LIMIT,
           }),
+        description: radspec[actions.SettleAppealDeposit]({
+          roundId,
+          disputeId,
+        }),
         name: actions.SettleAppealDeposit,
-        params: { roundId, disputeId },
       }
     },
     [disputeManagerContract]
@@ -437,8 +465,10 @@ export function useRewardActions() {
           treasuryContract.withdraw(token, to, amount, {
             gasLimit: ANJ_ACTIONS_GAS_LIMIT,
           }),
+        description: radspec[actions.ClaimRewards]({
+          amount: formatUnits(amount),
+        }),
         name: actions.ClaimRewards,
-        params: { amount: formatUnits(amount) },
       }
     },
     [treasuryContract]
@@ -509,8 +539,10 @@ export function useCourtSubscriptionActions() {
     periodId => {
       return {
         action: () => courtSubscriptionsContract.claimFees(periodId),
+        description: radspec[actions.ClaimSubscriptionFees]({
+          periodId,
+        }),
         name: actions.ClaimSubscriptionFees,
-        params: { periodId },
       }
     },
     [courtSubscriptionsContract]

@@ -4,7 +4,6 @@ import { useRequestQueue } from './RequestQueue'
 import { useHeartbeat } from '../hooks/useCourtContracts'
 import { useActivity } from '../components/Activity/ActivityProvider'
 
-import radspec from '../radspec'
 import allowedTermsBehind from '../actions/allowedTermsBehind'
 
 export function useRequestProcessor() {
@@ -28,14 +27,13 @@ export function useRequestProcessor() {
             ...request
           }) => {
             const intent = isTx
-              ? () => addActivity(action(), name, params)
+              ? () => addActivity(action(), name, description)
               : action
 
             return {
               name,
               intent,
-              description:
-                description || radspec[name](...Object.values(params)),
+              description,
               ensureConfirmation,
               isTx,
               ...request,
