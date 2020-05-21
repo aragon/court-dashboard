@@ -3,6 +3,7 @@ import { graphEndpoints, IPFS_ENDPOINT } from './endpoints'
 
 const DEFAULT_ETH_NODE = 'DEFAULT_ETH_NODE'
 const IPFS_GATEWAY = 'IPFS_GATEWAY'
+const PACKAGE_VERSION = 'PACKAGE_VERSION'
 const SUBGRAPH_HTTP_ENDPOINT = 'SUBGRAPH_HTTP_ENDPOINT'
 const SUBGRAPH_WS_ENDPOINT = 'SUBGRAPH_WS_ENDPOINT'
 const [
@@ -48,6 +49,20 @@ export function getIpfsGateway() {
 
 export function setIpfsGateway(gateway) {
   return setLocalSetting(IPFS_GATEWAY, gateway)
+}
+
+// The previous package version is stored in localStorage,
+// while the current one is coming from the environment.
+export function getPackageVersion() {
+  return env(PACKAGE_VERSION) || ''
+}
+
+export function getLastPackageVersion() {
+  return getLocalStorageSetting(PACKAGE_VERSION) || ''
+}
+
+export function setPackageVersion(version) {
+  return setLocalSetting(PACKAGE_VERSION, version)
 }
 
 export function getSubgraphHttpEndpoint() {
