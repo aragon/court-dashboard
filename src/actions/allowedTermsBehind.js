@@ -1,7 +1,9 @@
-import actions from './types/court-action-types'
+import actions from './court-action-types'
 
 const TERM_AGNOSTIC = -1
 
+// Some court actions cannot be executed if the court clock term is not synced or is more than a certain number of terms behind.
+// This is a mapping of every action and it's the number of maximum allowed terms behind to be able to be executed.
 export default {
   [actions.ApproveFeeDeposit]: TERM_AGNOSTIC,
   [actions.ActivateAnj]: 1,
