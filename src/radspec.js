@@ -62,7 +62,7 @@ export default {
   },
   leakVote: (voteId, voter) => {
     return `
-        Leak vote of ${voter} for vote #${voteId}
+        Report vote leaked by ${voter} for vote #${voteId}
       `
   },
   revealVote: (disputeId, roundId) => {
