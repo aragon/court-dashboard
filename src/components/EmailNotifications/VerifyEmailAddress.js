@@ -1,17 +1,15 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   Button,
   Checkbox,
-  Field,
   GU,
-  IconCheck,
-  IconCross,
   Link,
-  TextInput,
   textStyle,
   useInside,
   useTheme,
 } from '@aragon/ui'
+import EmailInput from './EmailInput'
+import { useInput } from '../../hooks/useInput'
 import { validateEmail } from '../../utils/validate-utils'
 import emailIllustration from '../../assets/emailIllustration.svg'
 
@@ -24,30 +22,14 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   onDeleteEmail,
 }) {
   const theme = useTheme()
-  const [emailAddress, setEmailAddress] = useState('')
-  const [emailInvalid, setEmailInvalid] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [error, setError] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
 
   const [insideModal] = useInside('NotificationsModal')
 
-  const handleEmailAddressBlur = useCallback(e => {
-    const email = e.target.value
-    const emailInvalid = !validateEmail(email)
-    setEmailInvalid(emailInvalid)
-    if (emailInvalid) {
-      setErrorMessage('Please enter a valid email address.')
-    }
-  }, [])
+  const { inputProps, status } = useInput(validateEmail)
 
-  const handleEmailAddressChange = useCallback(e => {
-    const email = e.target.value
-    setEmailAddress(email)
-    if (validateEmail(email)) {
-      // Set only as valid while user typing. Use blur to set invalid
-      setEmailInvalid(false)
-    }
-  }, [])
+  const emailInvalid = status === 'invalid'
 
   const handleOnTermsChange = useCallback(
     checked => {
@@ -57,13 +39,17 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   )
 
   const handleOnSubscribe = useCallback(() => {
-    if (emailAddress === email) {
-      setEmailInvalid(true)
-      setErrorMessage('Email already exists.')
-      return
+    if (inputProps.value === email) {
+      return setError('Email already exists.')
     }
-    onSubscribe(emailAddress)
-  }, [emailAddress, onSubscribe, email])
+    onSubscribe(inputProps.value)
+  }, [inputProps.value, onSubscribe, email])
+
+  useEffect(() => {
+    if (inputProps.value !== email) {
+      return setError('')
+    }
+  }, [inputProps.value, email])
 
   return (
     <div
@@ -124,50 +110,22 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
                 margin-top: ${5 * GU}px;
               `}
             >
-              <Field label="Update email address">
-                <TextInput
-                  value={emailAddress}
-                  adornment={
-                    emailInvalid ? (
-                      <IconCross
-                        css={`
-                          color: ${theme.negative};
-                        `}
-                      />
-                    ) : emailAddress.trim() ? (
-                      <IconCheck
-                        css={`
-                          color: ${theme.positive};
-                        `}
-                      />
-                    ) : (
-                      <IconCheck
-                        css={`
-                          opacity: 0;
-                        `}
-                      />
-                    )
-                  }
-                  adornmentPosition="end"
-                  type="email"
-                  wide
-                  onChange={handleEmailAddressChange}
-                  placeholder="you@example.org"
-                  onBlur={handleEmailAddressBlur}
-                />
-                {emailInvalid && (
+              <EmailInput existingEmail status={status} {...inputProps} />
+              {error && (
+                <div>
                   <p
                     css={`
                       color: ${theme.negative};
                       ${textStyle('body4')};
-                      float: left;
+                      text-align: left;
+                      height: 0;
                       margin-top: ${0.5 * GU}px;
                     `}
                   >
-                    {errorMessage}
+                    {error}
                   </p>
-                )}
-              </Field>
+                </div>
+              )}
             </div>
             <LegalTermsAndPolicy
               termsAccepted={termsAccepted}
