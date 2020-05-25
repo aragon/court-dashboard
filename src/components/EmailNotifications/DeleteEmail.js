@@ -1,25 +1,25 @@
 import React from 'react'
-import { Button, GU, textStyle, useTheme } from '@aragon/ui'
+import { Button, GU, textStyle, useInside, useTheme } from '@aragon/ui'
 
 import emailNotifcationIllustration from '../../assets/emailNotifications.svg'
 
 const DeleteEmail = React.memo(function DeleteEmail({
-  isModal,
   email,
   onDelete,
   onCancel,
 }) {
   const theme = useTheme()
+  const [insideModal] = useInside('NotificationsModal')
 
   return (
     <div
       css={`
         display: flex;
-        padding-top: ${isModal ? 3 : 0 * GU}px;
+        padding-top: ${insideModal ? 3 : 0 * GU}px;
         flex-direction: column;
       `}
     >
-      {!isModal && (
+      {!insideModal && (
         <div
           css={`
             text-align: center;
@@ -37,8 +37,8 @@ const DeleteEmail = React.memo(function DeleteEmail({
         css={`
           display: flex;
           flex-direction: column;
-          text-align: ${isModal ? 'left' : 'center'};
-          margin-top: ${isModal ? 0 : 5 * GU}px;
+          text-align: ${insideModal ? 'left' : 'center'};
+          margin-top: ${insideModal ? 0 : 5 * GU}px;
         `}
       >
         <span
@@ -63,7 +63,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
           css={`
             margin-top: ${4 * GU}px;
             display: flex;
-            justify-content: ${isModal ? 'flex-end' : 'center'};
+            justify-content: ${insideModal ? 'flex-end' : 'center'};
           `}
         >
           <Button
@@ -72,7 +72,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
             `}
             onClick={onCancel}
             size="medium"
-            wide={!isModal}
+            wide={!insideModal}
           >
             Cancel
           </Button>
@@ -80,7 +80,7 @@ const DeleteEmail = React.memo(function DeleteEmail({
             mode="negative"
             onClick={onDelete}
             size="medium"
-            wide={!isModal}
+            wide={!insideModal}
           >
             Delete email
           </Button>

@@ -1,0 +1,3 @@
+export const UNAUTHORIZED_RESPONSE = 401
+export const USER_NOT_FOUND = 404
+export const FORBIDDEN_RESPONSE = 403
