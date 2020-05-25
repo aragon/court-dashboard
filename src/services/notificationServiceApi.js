@@ -211,7 +211,9 @@ export async function subscribeExistingEmail(address) {
   if (error) {
     return { error }
   }
+  console.log('CALLING Resend ')
   const { sent, error: errorReSending } = await resendVerificationEmail(address)
+  console.log('After CALLING Resend ', sent, errorReSending)
 
   return { email, sent, error: errorReSending }
 }
@@ -344,6 +346,8 @@ export async function getSubscriptionDetails(address) {
     })
 
     const jsonResponse = await rawResponse.json()
+
+    console.log('JSON RESPONSE , ', jsonResponse)
 
     if (rawResponse.ok) {
       return {

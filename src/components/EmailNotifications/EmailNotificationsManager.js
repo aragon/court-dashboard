@@ -428,6 +428,8 @@ const EmailNotificationsManager = React.memo(
 
           const { error, email } = await action.request(...params)
 
+          console.log('On use effect action ', error, email)
+
           if (!cancelled) {
             if (error) {
               return setSubscriptionProgress(subscriptionProgress => ({
