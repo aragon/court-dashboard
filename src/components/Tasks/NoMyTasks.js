@@ -6,7 +6,7 @@ function NoMyTasks() {
   const title = 'You have no open tasks right now'
   const paragraph = (
     <span>
-      You will receive tasks to complete when you are drafted for a dispute.
+      You will receive tasks to complete when you are drafted for a dispute
     </span>
   )
 
