@@ -10,20 +10,13 @@ import ScreenConnecting from './ScreenConnecting'
 import ScreenError from './ScreenError'
 import ScreenProviders from './ScreenProviders'
 
-const NUM_OF_PROVIDERS = getUseWalletProviders().length
-
 const SCREENS = [
   {
     id: 'providers',
     title: 'Ethereum providers',
     height:
       4 * GU + // header
-      (12 + 1.5) *
-        GU *
-        ((NUM_OF_PROVIDERS % 2 !== 0
-          ? NUM_OF_PROVIDERS + 1
-          : NUM_OF_PROVIDERS) /
-          2) + // buttons
+      (12 + 1.5) * GU * Math.ceil(getUseWalletProviders().length / 2) + // buttons
       7 * GU, // footer
   },
   {
