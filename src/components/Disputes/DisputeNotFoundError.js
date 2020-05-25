@@ -28,7 +28,7 @@ function DisputeNotFoundError({ disputeId }) {
       >
         It looks like there’s no dispute associated with{' '}
         {`“DisputeID #${disputeId}”`} on the Ethereum{' '}
-        {getNetworkName(env('CHAIN_ID'))} network.
+        {getNetworkName(env('CHAIN_ID'))} network
       </div>
       <div
         css={`

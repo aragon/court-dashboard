@@ -16,7 +16,7 @@ function NoRewards() {
   const title = 'No rewards yet!'
   const paragraph = hasJurorEverClaimedRewards
     ? 'You have already claimed all your rewards'
-    : 'Once you start arbitrating disputes, your rewards will appear here.'
+    : 'Once you start arbitrating disputes, your rewards will appear here'
 
   return (
     <MessageCard

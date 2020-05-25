@@ -6,7 +6,7 @@ import MessageCard from '../MessageCard'
 function NoFilterResults({ onClearFilters }) {
   const title = 'No results found'
   const paragraph =
-    'We couldn’t find any dispute matching your filter selection.'
+    'We couldn’t find any dispute matching your filter selection'
 
   const link = {
     text: 'Clear all filters',

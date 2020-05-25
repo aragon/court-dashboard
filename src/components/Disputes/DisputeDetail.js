@@ -107,7 +107,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
                     return (
                       <MessageCard
                         title="We couldn’t load the dispute timeline"
-                        paragraph="Something went wrong! Please restart the app."
+                        paragraph="Something went wrong! Please restart the app"
                         icon={timelineErrorSvg}
                         mode="compact"
                         border={false}
