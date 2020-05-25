@@ -319,7 +319,7 @@ const ANJLockedMessage = ({ finalRulingConfirmed }) => {
 }
 
 const ANJDiscountedMessage = () => {
-  return <ANJMessage result="will be discounted" />
+  return <ANJMessage result="will be deducted" />
 }
 
 const ANJSlashedMessage = () => {
