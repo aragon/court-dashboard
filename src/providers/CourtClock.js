@@ -14,14 +14,23 @@ function CourtClockProvider({ children }) {
   const { currentTerm: actualCurrentTerm, terms = [], termDuration = 0 } =
     courtConfig || {}
 
-  const expectedCurrentTerm = getExpectedCurrentTermId(now, {
-    terms,
-    termDuration,
-  })
-  const [termStartTime, termEndTime] = getTermPeriod(expectedCurrentTerm, {
-    terms,
-    termDuration,
-  })
+  let expectedCurrentTerm = 0
+  let [termStartTime, termEndTime] = [0, 0]
+
+  if (terms.length > 0) {
+    expectedCurrentTerm = getExpectedCurrentTermId(now, {
+      terms,
+      termDuration,
+    })
+
+    const termPeriod = getTermPeriod(expectedCurrentTerm, {
+      terms,
+      termDuration,
+    })
+
+    termStartTime = termPeriod[0]
+    termEndTime = termPeriod[1]
+  }
 
   const courtClock = useMemo(
     () => ({

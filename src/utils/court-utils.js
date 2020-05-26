@@ -28,29 +28,22 @@ export function transformCourtConfigDataAttributes(courtConfig) {
   }
 }
 
-export function getExpectedCurrentTermId(now, { terms, termDuration }) {
-  let currentTermId = 0
-
-  if (terms.length > 0) {
-    const firstTermStartTime = terms[0].startTime
-
-    currentTermId = Math.floor(
-      (now.valueOf() - firstTermStartTime) / termDuration
-    )
+function getFirstTermStartTime(terms) {
+  if (terms.length === 0) {
+    throw new Error('Terms cannot be empty')
   }
 
-  return currentTermId
+  return terms[0].startTime
+}
+
+export function getExpectedCurrentTermId(now, { terms, termDuration }) {
+  const firstTermStartTime = getFirstTermStartTime(terms)
+  return Math.floor((now.valueOf() - firstTermStartTime) / termDuration)
 }
 
 export function getTermStartTime(termId, { terms, termDuration }) {
-  let termStartTime = 0
-
-  if (terms.length > 0) {
-    const firstTermStartTime = terms[0].startTime
-    termStartTime = termId * termDuration + firstTermStartTime
-  }
-
-  return termStartTime
+  const firstTermStartTime = getFirstTermStartTime(terms)
+  return termId * termDuration + firstTermStartTime
 }
 
 export function getTermEndTime(termId, { terms, termDuration }) {
