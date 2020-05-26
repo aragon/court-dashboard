@@ -79,6 +79,7 @@ const DEFAULT_SUBSCRIPTION_PROGRESS = {
   previousScreen: null,
   needsUnlockSettings: false,
   emailVerified: false,
+  emailExists: false,
 }
 
 const EmailNotificationsManager = React.memo(
@@ -99,6 +100,7 @@ const EmailNotificationsManager = React.memo(
     const [subscriptionProgress, setSubscriptionProgress] = useState({
       ...DEFAULT_SUBSCRIPTION_PROGRESS,
       email,
+      emailExists,
       notificationsDisabled,
       needsUnlockSettings,
       emailVerified,
@@ -312,12 +314,12 @@ const EmailNotificationsManager = React.memo(
     const handleOnUnlockSettings = useCallback(() => {
       const unlockSettings = SETTINGS[UNLOCK_SETTINGS_ACTION]
 
-      console.log('unlock existing email ', subscriptionProgress.email)
+      console.log('unlock existing email ', subscriptionProgress.emailExists)
 
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
         needSignature: true,
-        mode: !subscriptionProgress.email
+        mode: !subscriptionProgress.emailExists
           ? UNLOCK_SETTINGS_ACTION_NOT_EMAIL
           : subscriptionProgress.emailVerified
           ? UNLOCK_SETTINGS_ACTION
@@ -327,7 +329,7 @@ const EmailNotificationsManager = React.memo(
           defaultSignRequestText + unlockSettings.signatureSettings.requestText,
         signSuccessText: unlockSettings.signatureSettings.successText,
       }))
-    }, [defaultSignRequestText, subscriptionProgress.email])
+    }, [defaultSignRequestText, subscriptionProgress.emailExists])
 
     const handleOnUpdateEmail = useCallback(() => {
       setScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
@@ -400,8 +402,9 @@ const EmailNotificationsManager = React.memo(
         needsUnlockSettings,
         email,
         emailVerified,
+        emailExists,
       }))
-    }, [account, needsUnlockSettings, email, emailVerified])
+    }, [account, needsUnlockSettings, email, emailVerified, emailExists])
 
     useEffect(() => {
       let cancelled = false
