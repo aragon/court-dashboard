@@ -71,7 +71,7 @@ const NotificationsManager = React.memo(function NotificationsManager() {
     if (fetchingSubscriptionData || fetchingEmail) {
       return setStartingScreenId(LOADING_SCREEN)
     }
-    if (jurorNeedsSignature && emailVerified) {
+    if (jurorNeedsSignature) {
       return setStartingScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
     }
 
