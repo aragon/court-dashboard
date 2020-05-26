@@ -28,9 +28,13 @@ else
   build=$(git log --pretty=format:'%h' -n 1)
 fi
 
+# Get package version
+version=$(jq '.version' ../package.json)
+
 echo "Branch: $branch"
 echo "Build: $build"
 echo "Enable Sentry: $enable_sentry"
+echo "Package version: $version"
 echo ""
 
 echo "Syncing assets…"
@@ -39,4 +43,4 @@ npm run sync-assets
 
 echo "Building app…"
 echo ""
-cross-env REACT_APP_ENABLE_SENTRY=$enable_sentry REACT_APP_BUILD=$build npx react-app-rewired build
+cross-env REACT_APP_PACKAGE_VERSION=$version REACT_APP_ENABLE_SENTRY=$enable_sentry REACT_APP_BUILD=$build npx react-app-rewired build
