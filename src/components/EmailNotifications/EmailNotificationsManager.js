@@ -44,6 +44,7 @@ import {
   SUBSCRIBE_MODAL_ACTION,
   SUCCESS_INFO_SCREEN,
   UNLOCK_SETTINGS_ACTION,
+  UNLOCK_SETTINGS_ACTION_NOT_VERIFIED,
   UNLOCK_NOTIFICATIONS_SCREEN,
   VERIFICATION_ERROR_SCREEN,
   VERIFICATION_SUCCESS_SCREEN,
@@ -76,12 +77,14 @@ const DEFAULT_SUBSCRIPTION_PROGRESS = {
   verifyUpdateMode: false,
   previousScreen: null,
   needsUnlockSettings: false,
+  emailVerified: false,
 }
 
 const EmailNotificationsManager = React.memo(
   function EmailNotificationsManager({
     needsUnlockSettings,
     emailExists,
+    emailVerified,
     notificationsDisabled,
     email,
     startingScreen,
@@ -97,6 +100,7 @@ const EmailNotificationsManager = React.memo(
       email,
       notificationsDisabled,
       needsUnlockSettings,
+      emailVerified,
     })
 
     const wallet = useWallet()
@@ -310,7 +314,9 @@ const EmailNotificationsManager = React.memo(
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
         needSignature: true,
-        mode: UNLOCK_SETTINGS_ACTION,
+        mode: subscriptionProgress.emailVerified
+          ? UNLOCK_SETTINGS_ACTION
+          : UNLOCK_SETTINGS_ACTION_NOT_VERIFIED,
         signatureTitle: unlockSettings.signatureSettings.title,
         signRequestText:
           defaultSignRequestText + unlockSettings.signatureSettings.requestText,
@@ -388,8 +394,9 @@ const EmailNotificationsManager = React.memo(
         ...subscriptionProgress,
         needsUnlockSettings,
         email,
+        emailVerified,
       }))
-    }, [account, needsUnlockSettings, email])
+    }, [account, needsUnlockSettings, email, emailVerified])
 
     useEffect(() => {
       let cancelled = false
