@@ -314,8 +314,6 @@ const EmailNotificationsManager = React.memo(
     const handleOnUnlockSettings = useCallback(() => {
       const unlockSettings = SETTINGS[UNLOCK_SETTINGS_ACTION]
 
-      console.log('unlock existing email ', subscriptionProgress.emailExists)
-
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
         needSignature: true,
@@ -329,7 +327,7 @@ const EmailNotificationsManager = React.memo(
           defaultSignRequestText + unlockSettings.signatureSettings.requestText,
         signSuccessText: unlockSettings.signatureSettings.successText,
       }))
-    }, [defaultSignRequestText, subscriptionProgress.emailExists])
+    }, [defaultSignRequestText])
 
     const handleOnUpdateEmail = useCallback(() => {
       setScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
@@ -443,8 +441,6 @@ const EmailNotificationsManager = React.memo(
           }
 
           const { error, email } = await action.request(...params)
-
-          console.log('On use effect action ', error, email)
 
           if (!cancelled) {
             if (error) {

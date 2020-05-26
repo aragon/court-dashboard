@@ -109,8 +109,6 @@ const NotificationsManager = React.memo(function NotificationsManager() {
     }
   }, [address, account, token])
 
-  console.log('MANAGER juror email ', jurorEmail)
-
   return (
     startingScreenId && (
       <EmailNotificationsManager
