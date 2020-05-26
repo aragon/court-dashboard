@@ -70,10 +70,6 @@ const ACTIVITY_TYPES = {
     icon: iconAnj,
     title: 'Settle appeal deposit',
   },
-  transaction: {
-    title: 'Transaction',
-    icon: iconAnj,
-  },
   [actions.WITHDRAW_ANJ]: {
     icon: iconAnj,
     title: 'Withdraw ANJ',
