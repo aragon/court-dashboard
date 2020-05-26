@@ -17,11 +17,6 @@ import {
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_TIMED_OUT,
 } from './activity-statuses'
-import {
-  getPackageVersion,
-  getLastPackageVersion,
-  setPackageVersion,
-} from '../../local-settings'
 
 const ActivityContext = React.createContext()
 
@@ -38,7 +33,7 @@ const SymbolsByName = new Map(
 const TIMEOUT_DURATION = 10 * MINUTE
 
 function getStoredList(account) {
-  const storedList = new StoredList(`activity:${getNetworkType()}:${account}`, {
+  return new StoredList(`activity:${getNetworkType()}:${account}`, {
     preStringify: activity => ({
       ...activity,
       status: activity.status.description.replace('ACTIVITY_STATUS_', ''),
@@ -48,25 +43,6 @@ function getStoredList(account) {
       status: SymbolsByName.get(`ACTIVITY_STATUS_${activity.status}`),
     }),
   })
-
-  // Temporary function to reset activities if package version changed
-  const packageVersion = getPackageVersion()
-  const lastPackageVersion = getLastPackageVersion()
-
-  const [currentMajorVersion, currentMinorVersion] = packageVersion.split('.')
-  const [lastMajorVersion, lastMinorVersion] = lastPackageVersion.split('.')
-
-  if (
-    lastMajorVersion !== currentMajorVersion ||
-    lastMinorVersion !== currentMinorVersion
-  ) {
-    storedList.update([])
-
-    // Save the current package version
-    setPackageVersion(packageVersion)
-  }
-
-  return storedList
 }
 
 async function getActivityFinalStatus(

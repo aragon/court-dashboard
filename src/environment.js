@@ -25,7 +25,7 @@ const ENV_VARS = {
     return process.env.REACT_APP_IPFS_GATEWAY || ''
   },
   PACKAGE_VERSION() {
-    return process.env.REACT_APP_PACKAGE_VERSION || ''
+    return process.env.REACT_APP_PACKAGE_VERSION
   },
   PORTIS_DAPP_ID() {
     return process.env.REACT_APP_PORTIS_DAPP_ID || ''
