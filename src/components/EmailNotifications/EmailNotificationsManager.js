@@ -312,6 +312,8 @@ const EmailNotificationsManager = React.memo(
     const handleOnUnlockSettings = useCallback(() => {
       const unlockSettings = SETTINGS[UNLOCK_SETTINGS_ACTION]
 
+      console.log('unlock existing email ', subscriptionProgress.email)
+
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
         needSignature: true,
