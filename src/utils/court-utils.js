@@ -47,12 +47,9 @@ export function getTermStartTime(termId, { terms, termDuration }) {
 }
 
 export function getTermEndTime(termId, { terms, termDuration }) {
-  let termEndTime = 0
-
   const termStartTime = getTermStartTime(termId, { terms, termDuration })
-  termEndTime = termStartTime + (termDuration - 1)
 
-  return termEndTime
+  return termStartTime + (termDuration - 1)
 }
 
 export function getTermPeriod(termId, { terms, termDuration }) {
