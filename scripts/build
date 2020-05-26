@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+require('dotenv').config()
+
+const version = require('../package.json').version
+const execute = require('child_process').execSync
+
+let branch
+let enableSentry = '0'
+// Current branch
+if (process.env.NOW_GITHUB_COMMIT_REF) {
+  // ZEIT Now (no .git but an env var)
+  branch = process.env.NOW_GITHUB_COMMIT_REF
+} else if (process.env.GITHUB_REF) {
+  // Github Action
+  branch = process.env.GITHUB_REF
+} else {
+  // // Other environments
+  branch = execute(`git symbolic-ref --short -q HEAD`).toString()
+}
+
+if (branch === 'development' || branch === 'master') {
+  enableSentry = '1'
+}
+
+let build
+// Build number from the short hash
+if (process.env.NOW_GITHUB_COMMIT_SHA) {
+  build = process.env.NOW_GITHUB_COMMIT_SHA.slice(0, 7)
+} else if (process.env.GITHUB_SHA) {
+  build = process.env.GITHUB_SHA.slice(0, 7)
+} else {
+  build = execute(`git log --pretty=format:'%h' -n 1`).toString()
+}
+
+console.log('Branch: ', branch)
+console.log('Build: ', build)
+console.log('Enable Sentry: ', enableSentry)
+console.log('Package version: ', version)
+console.log('')
+
+console.log('Syncing assets…')
+console.log('')
+execute('npm run sync-assets', {
+  stdio: 'inherit',
+})
+
+console.log('Building app…')
+console.log('')
+execute(
+  `cross-env REACT_APP_PACKAGE_VERSION=${version} REACT_APP_ENABLE_SENTRY=${enableSentry} REACT_APP_BUILD=${enableSentry} npx react-app-rewired build`,
+  {
+    stdio: 'inherit',
+  }
+)
