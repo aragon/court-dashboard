@@ -27,7 +27,7 @@ function ActivityItem({ activity }) {
   const theme = useTheme()
   const { removeActivity } = useActivity()
 
-  const { description, icon, title } = getActivityData(activity)
+  const { icon, title } = getActivityData(activity.type)
 
   const handleOpen = useCallback(() => {
     if (activity.transactionHash) {
@@ -122,7 +122,7 @@ function ActivityItem({ activity }) {
               margin-top: ${2 * GU}px;
             `}
           >
-            <ItemContent text={description} />
+            <ItemContent text={activity.description} />
             <StatusMessage activity={activity} />
             <TransactionProgress
               status={activity.status}

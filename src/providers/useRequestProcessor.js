@@ -13,37 +13,34 @@ export function useRequestProcessor() {
   const { neededTransitions } = useCourtClock()
 
   const processRequests = useCallback(
-    requests => {
-      const processedRequests = []
-        .concat(requests)
-        .map(
-          ({
-            action,
-            description,
-            ensureConfirmation = false,
-            isTx = true,
-            name,
-            params,
-            ...request
-          }) => {
-            const intent = isTx
-              ? () => addActivity(action(), name, description)
-              : action
+    (requests = []) => {
+      const processedRequests = requests.map(
+        ({
+          action,
+          description,
+          ensureConfirmation = false,
+          isTx = true,
+          type,
+          ...request
+        }) => {
+          const intent = isTx
+            ? () => addActivity(action(), type, description)
+            : action
 
-            return {
-              name,
-              intent,
-              description,
-              ensureConfirmation,
-              isTx,
-              ...request,
-            }
+          return {
+            type,
+            intent,
+            description,
+            ensureConfirmation,
+            isTx,
+            ...request,
           }
-        )
+        }
+      )
 
       const maxAllowedTermsBehind = processedRequests
         .filter(req => req.isTx)
-        .reduce((acc, req) => Math.max(acc, allowedTermsBehind[req.name]), -1)
+        .reduce((acc, req) => Math.max(acc, allowedTermsBehind[req.type]), -1)
 
       // Some court actions require the court clock to be at most x terms behind
       // Check if a term transition is needed

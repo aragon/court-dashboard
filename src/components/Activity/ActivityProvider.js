@@ -17,11 +17,12 @@ import {
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_TIMED_OUT,
 } from './activity-statuses'
+import actions from '../../actions/court-action-types'
 
 const ActivityContext = React.createContext()
 
 // Only used to serialize / deserialize the symbols
-const SymbolsByName = new Map(
+const StatusSymbolsByName = new Map(
   Object.entries({
     ACTIVITY_STATUS_CONFIRMED,
     ACTIVITY_STATUS_FAILED,
@@ -30,6 +31,8 @@ const SymbolsByName = new Map(
   })
 )
 
+const TypeSymbolsByName = new Map(Object.entries(actions))
+
 const TIMEOUT_DURATION = 10 * MINUTE
 
 function getStoredList(account) {
@@ -37,10 +40,12 @@ function getStoredList(account) {
     preStringify: activity => ({
       ...activity,
       status: activity.status.description.replace('ACTIVITY_STATUS_', ''),
+      type: activity.type.description,
     }),
     postParse: activity => ({
       ...activity,
-      status: SymbolsByName.get(`ACTIVITY_STATUS_${activity.status}`),
+      status: StatusSymbolsByName.get(`ACTIVITY_STATUS_${activity.status}`),
+      type: TypeSymbolsByName.get(activity.type),
     }),
   })
 }
@@ -110,9 +115,9 @@ function ActivityProvider({ children }) {
     async (
       tx,
 
-      // see methods defined in activity-types.js
-      activityType = 'transaction',
-      activityDescription = ''
+      // see types defined in ../actions/court-action-types.js
+      type,
+      description = ''
     ) => {
       // tx might be a promise resolving into a tx
       tx = await tx
@@ -120,13 +125,13 @@ function ActivityProvider({ children }) {
       updateActivities(activities => [
         ...activities,
         {
-          activityDescription,
-          activityType,
           createdAt: Date.now(),
+          description,
           from: tx.from,
           nonce: tx.nonce,
           read: false,
           status: ACTIVITY_STATUS_PENDING,
+          type,
           to: tx.to,
           transactionHash: tx.hash,
         },
