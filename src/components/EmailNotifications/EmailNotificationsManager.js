@@ -327,7 +327,7 @@ const EmailNotificationsManager = React.memo(
           defaultSignRequestText + unlockSettings.signatureSettings.requestText,
         signSuccessText: unlockSettings.signatureSettings.successText,
       }))
-    }, [defaultSignRequestText])
+    }, [defaultSignRequestText, subscriptionProgress.email])
 
     const handleOnUpdateEmail = useCallback(() => {
       setScreenId(EMAIL_NOTIFICATIONS_FORM_SCREEN)
