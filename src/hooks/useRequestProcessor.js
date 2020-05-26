@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
-import { useCourtClock } from './CourtClock'
-import { useRequestQueue } from './RequestQueue'
-import { useHeartbeat } from '../hooks/useCourtContracts'
-import { useActivity } from '../components/Activity/ActivityProvider'
+import { useHeartbeat } from './useCourtContracts'
+import { useCourtClock } from '../providers/CourtClock'
+import { useActivity } from '../providers/ActivityProvider'
+import { useRequestQueue } from '../providers/RequestQueue'
 
 import allowedTermsBehind from '../actions/allowedTermsBehind'
 

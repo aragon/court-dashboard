@@ -3,10 +3,10 @@ import { captureException } from '@sentry/browser'
 
 // hooks
 import { useCourtConfig } from '../providers/CourtConfig'
+import { useActivity } from '../providers/ActivityProvider'
 import { useRequestQueue } from '../providers/RequestQueue'
+import { useRequestProcessor } from './useRequestProcessor'
 import { useContract, useContractReadOnly } from '../web3-contracts'
-import { useActivity } from '../components/Activity/ActivityProvider'
-import { useRequestProcessor } from '../providers/useRequestProcessor'
 
 // services
 import requestAutoReveal from '../services/requestAutoReveal'

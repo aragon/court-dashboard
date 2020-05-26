@@ -7,17 +7,17 @@ import React, {
   useState,
 } from 'react'
 import PropTypes from 'prop-types'
-import StoredList from '../../StoredList'
-import { getNetworkType } from '../../lib/web3-utils'
-import { MINUTE } from '../../utils/date-utils'
-import { useWallet } from '../../providers/Wallet'
+import StoredList from '../StoredList'
+import { getNetworkType } from '../lib/web3-utils'
+import { MINUTE } from '../utils/date-utils'
+import { useWallet } from './Wallet'
 import {
   ACTIVITY_STATUS_CONFIRMED,
   ACTIVITY_STATUS_FAILED,
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_TIMED_OUT,
-} from './activity-statuses'
-import actions from '../../actions/court-action-types'
+} from '../components/Activity/activity-statuses'
+import actions from '../actions/court-action-types'
 
 const ActivityContext = React.createContext()
 
