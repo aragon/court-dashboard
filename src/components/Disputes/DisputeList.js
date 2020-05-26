@@ -191,7 +191,7 @@ const NoMyDisputes = () => {
       >
         ANJ you activate
       </span>
-      , more chances you have to be drafted to arbitrate a dispute.
+      , more chances you have to be drafted to arbitrate a dispute
     </span>
   )
 

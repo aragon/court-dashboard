@@ -46,7 +46,7 @@ const GenericError = React.memo(function GenericError({
       >
         Something went wrong! You can restart the app, or you can{' '}
         <Link href={SUPPORT_URL}>tell us what went wrong</Link> if the problem
-        persists.
+        persists
       </p>
       {(detailsTitle || detailsContent) && (
         <div

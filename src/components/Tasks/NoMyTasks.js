@@ -1,23 +1,12 @@
 import React from 'react'
-import { useTheme } from '@aragon/ui'
 import MessageCard from '../MessageCard'
 import noDraftSvg from '../../assets/noDraft.svg'
 
 function NoMyTasks() {
-  const theme = useTheme()
-
-  const title = 'You haven’t been drafted to arbitrate a dispute yet'
+  const title = 'You have no open tasks right now'
   const paragraph = (
     <span>
-      The more{' '}
-      <span
-        css={`
-          color: ${theme.help};
-        `}
-      >
-        ANJ you activate
-      </span>
-      , more chances you have to be drafted to arbitrate a dispute.
+      You will receive tasks to complete when you are drafted for a dispute
     </span>
   )
 

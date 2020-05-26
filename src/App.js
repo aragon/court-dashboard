@@ -6,6 +6,7 @@ import AppLoader from './components/AppLoader'
 import GlobalErrorHandler from './GlobalErrorHandler'
 import MainView from './components/MainView'
 import OnboardingLoader from './components/OnboardingLoader'
+import EmailNotificationsLoader from './components/EmailNotificationsLoader'
 import RequestPanel from './components/RequestPanel/RequestPanel'
 import Routes from './Routes'
 import { ActivityProvider } from './components/Activity/ActivityProvider'
@@ -32,6 +33,7 @@ function App() {
                     <RequestQueueProvider>
                       <MainView>
                         <OnboardingLoader>
+                          <EmailNotificationsLoader />
                           <AppLoader>
                             <Routes />
                           </AppLoader>

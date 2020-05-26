@@ -13,12 +13,17 @@ import {
 import { Transition, animated } from 'react-spring/renderprops'
 import { useEsc } from '../../hooks/useKeyboardArrows'
 import Network from './Network/Network'
+import NotificationsManager from './Notifications/NotificationsManager'
 
-const SECTIONS = new Map([['network', 'Network']])
+const SECTIONS = new Map([
+  ['network', 'Network'],
+  ['notifications', 'Notifications'],
+])
 const PATHS = Array.from(SECTIONS.keys())
 const VALUES = Array.from(SECTIONS.values())
 
 const NETWORK_INDEX = 0
+const NOTIFICATIONS_INDEX = 1
 
 const AnimatedDiv = animated.div
 
@@ -49,7 +54,8 @@ function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
             selected={sectionIndex}
           />
 
-          <main>{sectionIndex === NETWORK_INDEX && <Network />}</main>
+          {sectionIndex === NETWORK_INDEX && <Network />}
+          {sectionIndex === NOTIFICATIONS_INDEX && <NotificationsManager />}
         </React.Fragment>
       </Layout>
     </div>
@@ -60,7 +66,7 @@ function useGlobalPreferences({ path = '', onScreenChange }) {
   const [sectionIndex, setSectionIndex] = useState(null)
   const handleNavigation = useCallback(
     index => {
-      onScreenChange(PATHS[index]) // TODO - Test if this is working with the email preferences
+      onScreenChange(PATHS[index])
     },
     [onScreenChange]
   )
