@@ -44,6 +44,7 @@ import {
   SUBSCRIBE_MODAL_ACTION,
   SUCCESS_INFO_SCREEN,
   UNLOCK_SETTINGS_ACTION,
+  UNLOCK_SETTINGS_ACTION_NOT_EMAIL,
   UNLOCK_SETTINGS_ACTION_NOT_VERIFIED,
   UNLOCK_NOTIFICATIONS_SCREEN,
   VERIFICATION_ERROR_SCREEN,
@@ -314,7 +315,9 @@ const EmailNotificationsManager = React.memo(
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
         needSignature: true,
-        mode: subscriptionProgress.emailVerified
+        mode: !subscriptionProgress.email
+          ? UNLOCK_SETTINGS_ACTION_NOT_EMAIL
+          : subscriptionProgress.emailVerified
           ? UNLOCK_SETTINGS_ACTION
           : UNLOCK_SETTINGS_ACTION_NOT_VERIFIED,
         signatureTitle: unlockSettings.signatureSettings.title,
