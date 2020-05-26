@@ -205,12 +205,6 @@ export async function resendVerificationEmail(address) {
 export async function subscribeExistingEmail(address) {
   const { email, error, needsSignature } = await getJurorEmail(address)
 
-  console.log(
-    'Service subscribeExistingEmail response ',
-    email,
-    error,
-    needsSignature
-  )
   if (needsSignature) {
     return { needsSignature, email }
   }
