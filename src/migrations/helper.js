@@ -8,7 +8,7 @@ export function isNewVersion(lastVersion, currentVersion) {
     return false
   }
 
-  return semverDiff(lastVersion || DEFAULT_VERSION, currentVersion) != null
+  return semverDiff(lastVersion || DEFAULT_VERSION, currentVersion) !== null
 }
 
 export function satisifesRange(version, fromVersion, toVersion) {
