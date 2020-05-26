@@ -44,6 +44,8 @@ import {
   SUBSCRIBE_MODAL_ACTION,
   SUCCESS_INFO_SCREEN,
   UNLOCK_SETTINGS_ACTION,
+  UNLOCK_SETTINGS_ACTION_NOT_EMAIL,
+  UNLOCK_SETTINGS_ACTION_NOT_VERIFIED,
   UNLOCK_NOTIFICATIONS_SCREEN,
   VERIFICATION_ERROR_SCREEN,
   VERIFICATION_SUCCESS_SCREEN,
@@ -76,12 +78,15 @@ const DEFAULT_SUBSCRIPTION_PROGRESS = {
   verifyUpdateMode: false,
   previousScreen: null,
   needsUnlockSettings: false,
+  emailVerified: false,
+  emailExists: false,
 }
 
 const EmailNotificationsManager = React.memo(
   function EmailNotificationsManager({
     needsUnlockSettings,
     emailExists,
+    emailVerified,
     notificationsDisabled,
     email,
     startingScreen,
@@ -95,8 +100,10 @@ const EmailNotificationsManager = React.memo(
     const [subscriptionProgress, setSubscriptionProgress] = useState({
       ...DEFAULT_SUBSCRIPTION_PROGRESS,
       email,
+      emailExists,
       notificationsDisabled,
       needsUnlockSettings,
+      emailVerified,
     })
 
     const wallet = useWallet()
@@ -310,7 +317,11 @@ const EmailNotificationsManager = React.memo(
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
         needSignature: true,
-        mode: UNLOCK_SETTINGS_ACTION,
+        mode: !subscriptionProgress.emailExists
+          ? UNLOCK_SETTINGS_ACTION_NOT_EMAIL
+          : subscriptionProgress.emailVerified
+          ? UNLOCK_SETTINGS_ACTION
+          : UNLOCK_SETTINGS_ACTION_NOT_VERIFIED,
         signatureTitle: unlockSettings.signatureSettings.title,
         signRequestText:
           defaultSignRequestText + unlockSettings.signatureSettings.requestText,
@@ -388,8 +399,10 @@ const EmailNotificationsManager = React.memo(
         ...subscriptionProgress,
         needsUnlockSettings,
         email,
+        emailVerified,
+        emailExists,
       }))
-    }, [account, needsUnlockSettings, email])
+    }, [account, needsUnlockSettings, email, emailVerified, emailExists])
 
     useEffect(() => {
       let cancelled = false
@@ -414,6 +427,7 @@ const EmailNotificationsManager = React.memo(
         }
 
         const action = actions[subscriptionProgress.mode]
+        let returnedJurorEmail = ''
 
         if (action.request) {
           let params = [account]
@@ -437,10 +451,7 @@ const EmailNotificationsManager = React.memo(
             }
 
             if (email) {
-              setSubscriptionProgress(subscriptionProgress => ({
-                ...subscriptionProgress,
-                email: email,
-              }))
+              returnedJurorEmail = email
             }
           }
         }
@@ -455,6 +466,7 @@ const EmailNotificationsManager = React.memo(
             setSubscriptionProgress(subscriptionProgress => ({
               ...subscriptionProgress,
               needSignature: false,
+              email: returnedJurorEmail || subscriptionProgress.email,
               startRequest: false,
             }))
 
@@ -463,6 +475,7 @@ const EmailNotificationsManager = React.memo(
           setSubscriptionProgress(subscriptionProgress => ({
             ...subscriptionProgress,
             needSignature: false,
+            email: returnedJurorEmail || subscriptionProgress.email,
             startRequest: false,
           }))
         }
