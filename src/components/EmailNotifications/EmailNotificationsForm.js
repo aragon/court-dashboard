@@ -1,20 +1,18 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   Button,
   Checkbox,
-  Field,
   GU,
-  IconCheck,
-  IconCross,
   Link,
-  TextInput,
   textStyle,
   useInside,
   useTheme,
   useViewport,
 } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
+import { useInput } from '../../hooks/useInput'
 import IdentityBadge from '../IdentityBadge'
+import EmailInput from './EmailInput'
 import { validateEmail } from '../../utils/validate-utils'
 
 import emailNotifcationIllustration from '../../../src/assets/emailNotifications.svg'
@@ -24,41 +22,40 @@ function EmailNotificationsForm({
   onOptOut,
   onSubscribeToNotifications,
 }) {
-  const [emailAddress, setEmailAddress] = useState('')
-  const [emailInvalid, setEmailInvalid] = useState(false)
+  const [error, setError] = useState()
   const [termsAccepted, setTermsAccepted] = useState(false)
 
   const theme = useTheme()
   const { account } = useWallet()
-  const [insideModal] = useInside('Modal')
+  const [insideModal] = useInside('NotificationsModal')
   const { below } = useViewport()
   const compactMode = below('medium')
 
-  const handleEmailAddressBlur = useCallback(e => {
-    const email = e.target.value
-    setEmailInvalid(!validateEmail(email))
-  }, [])
+  const { inputProps, status } = useInput(validateEmail)
 
-  const handleEmailAddressChange = useCallback(e => {
-    const email = e.target.value
-    setEmailAddress(email)
-    if (validateEmail(email)) {
-      // Set only as valid while user typing. Use blur to set invalid
-      setEmailInvalid(false)
-    }
-  }, [])
+  const emailInvalid = status === 'invalid'
 
   const handleOnSubscribeToNotifications = useCallback(
     e => {
       e.preventDefault()
-      onSubscribeToNotifications(emailAddress)
+      if (inputProps.value === existingEmail) {
+        setError('Email already exists.')
+        return
+      }
+      onSubscribeToNotifications(inputProps.value)
     },
-    [emailAddress, onSubscribeToNotifications]
+    [onSubscribeToNotifications, existingEmail, inputProps.value]
   )
 
   const handleOnTermsChange = useCallback(() => {
     setTermsAccepted(!termsAccepted)
   }, [setTermsAccepted, termsAccepted])
+
+  useEffect(() => {
+    if (inputProps.value !== existingEmail) {
+      return setError('')
+    }
+  }, [inputProps.value, existingEmail])
 
   return (
     <div
@@ -146,43 +143,11 @@ function EmailNotificationsForm({
               justify-content: space-between;
             `}
           >
-            <Field
-              label={
-                existingEmail
-                  ? 'Enter new email address'
-                  : 'Enter email address'
-              }
-              css={`
-                width: 100%;
-                margin-bottom: 0;
-              `}
-            >
-              <TextInput
-                value={emailAddress}
-                adornment={
-                  emailInvalid ? (
-                    <IconCross
-                      css={`
-                        color: ${theme.negative};
-                      `}
-                    />
-                  ) : (
-                    <IconCheck
-                      css={`
-                        opacity: ${emailAddress.trim() ? '1' : '0'};
-                        color: ${theme.positive};
-                      `}
-                    />
-                  )
-                }
-                adornmentPosition="end"
-                type="email"
-                wide
-                onChange={handleEmailAddressChange}
-                placeholder="you@example.org"
-                onBlur={handleEmailAddressBlur}
-              />
-            </Field>
+            <EmailInput
+              existingEmail={existingEmail}
+              status={status}
+              {...inputProps}
+            />
 
             {!insideModal && (
               <div
@@ -190,6 +155,7 @@ function EmailNotificationsForm({
                   display: flex;
                   align-items: flex-end;
                   margin-left: ${2 * GU}px;
+                  margin-bottom: ${emailInvalid ? 0.5 * GU : 0}px;
                 `}
               >
                 <Button
@@ -204,7 +170,7 @@ function EmailNotificationsForm({
             )}
           </div>
 
-          {emailInvalid && (
+          {error && (
             <div>
               <p
                 css={`
@@ -215,7 +181,7 @@ function EmailNotificationsForm({
                   margin-top: ${0.5 * GU}px;
                 `}
               >
-                Please enter a valid email address.
+                {error}
               </p>
             </div>
           )}
@@ -259,7 +225,6 @@ const LegalTermsAndPolicy = React.memo(function LegalTermsAndPolicy({
   termsAccepted,
   onChange,
 }) {
-  console.log('terms accepted ', termsAccepted)
   return (
     <div
       css={`

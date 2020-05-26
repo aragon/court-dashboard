@@ -7,7 +7,7 @@ import actions from './actions/court-action-types'
 
 export default {
   [actions.APPROVE_FEE_DEPOSIT]: ({ amount }) => {
-    return `Approve fee deposit: ${amount} ANJ`
+    return `Approve fee deposit: ${amount} DAI`
   },
   [actions.ACTIVATE_ANJ]: ({ amount }) => {
     return `Activate the total amount of ${amount} ANJ`
@@ -60,7 +60,7 @@ export default {
   },
   [actions.LEAK_VOTE]: ({ voteId, voter }) => {
     return `
-        Leak vote of ${voter} for vote #${voteId}
+        Report code leaked by ${voter} for vote #${voteId}
       `
   },
   [actions.REVEAL_VOTE]: ({ disputeId, roundId }) => {

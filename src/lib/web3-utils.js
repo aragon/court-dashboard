@@ -201,14 +201,12 @@ export async function checkValidEthNode(uri) {
 export async function signMessage(wallet, message) {
   let signHash
   let error = false
-  let errorMsg
 
   try {
     signHash = await wallet.ethers.getSigner().signMessage(message)
   } catch (err) {
-    error = true
-    errorMsg = err
+    error = err
   }
 
-  return { signHash, error, errorMsg }
+  return { signHash, error }
 }

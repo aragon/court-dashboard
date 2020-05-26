@@ -1,18 +1,16 @@
-import React, { useCallback, useState } from 'react'
-import styled from 'styled-components'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   Button,
   Checkbox,
-  Field,
   GU,
-  IconCheck,
-  IconCross,
   Link,
-  TextInput,
   textStyle,
+  useInside,
   useTheme,
 } from '@aragon/ui'
-import { validateEmail } from '../../utils/notifications-utils'
+import EmailInput from './EmailInput'
+import { useInput } from '../../hooks/useInput'
+import { validateEmail } from '../../utils/validate-utils'
 import emailIllustration from '../../assets/emailIllustration.svg'
 
 const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
@@ -24,23 +22,14 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   onDeleteEmail,
 }) {
   const theme = useTheme()
-  const [emailAddress, setEmailAddress] = useState('')
-  const [emailInvalid, setEmailInvalid] = useState(false)
+  const [error, setError] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
 
-  const handleEmailAddressBlur = useCallback(e => {
-    const email = e.target.value
-    setEmailInvalid(!validateEmail(email))
-  }, [])
+  const [insideModal] = useInside('NotificationsModal')
 
-  const handleEmailAddressChange = useCallback(e => {
-    const email = e.target.value
-    setEmailAddress(email)
-    if (validateEmail(email)) {
-      // Set only as valid while user typing. Use blur to set invalid
-      setEmailInvalid(false)
-    }
-  }, [])
+  const { inputProps, status } = useInput(validateEmail)
+
+  const emailInvalid = status === 'invalid'
 
   const handleOnTermsChange = useCallback(
     checked => {
@@ -50,13 +39,22 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
   )
 
   const handleOnSubscribe = useCallback(() => {
-    onSubscribe(emailAddress)
-  }, [emailAddress, onSubscribe])
+    if (inputProps.value === email) {
+      return setError('Email already exists.')
+    }
+    onSubscribe(inputProps.value)
+  }, [inputProps.value, onSubscribe, email])
+
+  useEffect(() => {
+    if (inputProps.value !== email) {
+      return setError('')
+    }
+  }, [inputProps.value, email])
 
   return (
     <div
       css={`
-        padding-top: ${3 * GU}px;
+        padding-top: ${(insideModal ? 3 : 0) * GU}px;
         display: flex;
         flex-direction: column;
         text-align: center;
@@ -85,8 +83,9 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
           margin-top: ${1.5 * GU}px;
         `}
       >
-        Almost there! We’ve sent a verification email to {email}. Kindly check
-        your inbox and click the link to verify your account.
+        Almost there! We’ve sent a verification email to{' '}
+        <strong>{email}</strong>. Kindly check your inbox and click the link to
+        verify your account.
         {updateMode &&
           'Alternatively, you can update this email or delete it, if you wish to unsubscribe'}
       </span>
@@ -111,50 +110,22 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
                 margin-top: ${5 * GU}px;
               `}
             >
-              <Field label="Update email address">
-                <TextInput
-                  value={emailAddress}
-                  adornment={
-                    emailInvalid ? (
-                      <IconCross
-                        css={`
-                          color: ${theme.negative};
-                        `}
-                      />
-                    ) : emailAddress.trim() ? (
-                      <IconCheck
-                        css={`
-                          color: ${theme.positive};
-                        `}
-                      />
-                    ) : (
-                      <IconCheck
-                        css={`
-                          opacity: 0;
-                        `}
-                      />
-                    )
-                  }
-                  adornmentPosition="end"
-                  type="email"
-                  wide
-                  onChange={handleEmailAddressChange}
-                  placeholder="you@example.org"
-                  onBlur={handleEmailAddressBlur}
-                />
-                {emailInvalid && (
+              <EmailInput existingEmail status={status} {...inputProps} />
+              {error && (
+                <div>
                   <p
                     css={`
                       color: ${theme.negative};
                       ${textStyle('body4')};
-                      float: left;
+                      text-align: left;
+                      height: 0;
                       margin-top: ${0.5 * GU}px;
                     `}
                   >
-                    Please enter a valid email address.
+                    {error}
                   </p>
-                )}
-              </Field>
+                </div>
+              )}
             </div>
             <LegalTermsAndPolicy
               termsAccepted={termsAccepted}
@@ -170,17 +141,17 @@ const VerifyEmailAddress = React.memo(function VerifyEmailAddress({
                 margin-top: ${3 * GU}px;
               `}
             >
-              <ActionButtons compactMode={compactMode} onClick={onDeleteEmail}>
+              <ActionButton compactMode={compactMode} onClick={onDeleteEmail}>
                 Delete email
-              </ActionButtons>
-              <ActionButtons
+              </ActionButton>
+              <ActionButton
                 compactMode={compactMode}
                 mode="strong"
                 disabled={emailInvalid || !termsAccepted}
                 onClick={handleOnSubscribe}
               >
                 Send verification email
-              </ActionButtons>
+              </ActionButton>
             </div>
           </>
         )
@@ -203,8 +174,9 @@ function LegalTermsAndPolicy({ termsAccepted, onChange }) {
           display: flex;
         `}
       >
-        <Checkbox checked={termsAccepted} onChange={onChange} />
-
+        <div>
+          <Checkbox checked={termsAccepted} onChange={onChange} />
+        </div>
         <span
           css={`
             ${textStyle('body2')};
@@ -228,9 +200,15 @@ function LegalTermsAndPolicy({ termsAccepted, onChange }) {
   )
 }
 
-const ActionButtons = styled(Button)`
-  width: ${({ compactMode }) =>
-    compactMode ? '100% ' : `calc((100% - ${2 * GU}px) /  2)`};
-`
+function ActionButton({ compactMode, ...props }) {
+  return (
+    <Button
+      css={`
+        width: ${compactMode ? '100%' : `calc((100% - ${2 * GU}px) /  2)`};
+      `}
+      {...props}
+    />
+  )
+}
 
 export default VerifyEmailAddress

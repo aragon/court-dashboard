@@ -18,9 +18,9 @@ export function courtServerEndpoint() {
   }
 
   const networkType = getNetworkType(CHAIN_ID)
-  return `https://court-backend${
+  return `https://court${
     networkType === 'main' ? '' : `-${COURT_SERVER_NAME || networkType}`
-  }.eth.aragon.network`
+  }.backend.aragon.org`
 }
 
 // The graph endpoints
