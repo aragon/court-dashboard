@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { animated, Spring, Transition } from 'react-spring/renderprops'
+import { useHistory } from 'react-router-dom'
 import { Box, GU, springs, useInside, useViewport } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
@@ -107,6 +108,7 @@ const EmailNotificationsManager = React.memo(
     })
 
     const wallet = useWallet()
+    const history = useHistory()
     const account = wallet.account
     const [insideModal] = useInside('NotificationsModal')
     const provider = getProviderFromUseWalletId(wallet.activated)
@@ -374,9 +376,9 @@ const EmailNotificationsManager = React.memo(
       [account]
     )
 
-    const handleOnGoToPreferences = useCallback(() => {
-      setScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
-    }, [])
+    const handleOnGoToDashboard = useCallback(() => {
+      history.push('/dashboard')
+    }, [history])
 
     const handleOnSignSuccess = useCallback((signHash, timestamp) => {
       setSubscriptionProgress(subscriptionProgress => ({
@@ -640,9 +642,9 @@ const EmailNotificationsManager = React.memo(
               <StatusInfo
                 error={false}
                 title="Verification was successful"
-                description="Your email was successfully verified and you can enable or disable notifications from all Aragon Court events."
-                actionText="Go to Notification settings"
-                onAction={handleOnGoToPreferences}
+                description="Go back to the main dashboard and re-connect your account to access your notification settings"
+                actionText="Go to Dashboard"
+                onAction={handleOnGoToDashboard}
               />
             )
           }

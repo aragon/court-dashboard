@@ -72,6 +72,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
           >
             <span
               css={`
+                display: block;
                 ${textStyle('body1')};
                 color: ${theme.surfaceContentSecondary};
                 font-weight: 600;
@@ -89,7 +90,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
               Connect to your Ethereum provider by clicking on the{' '}
               <IconConnect size="small" />
               <strong>Connect account</strong> button on the header. You may be
-              temporarily redirected to a new screen.
+              temporarily redirected to a new screen
             </span>
           </div>
         )}
