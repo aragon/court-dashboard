@@ -1,6 +1,5 @@
 import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { animated, Spring, Transition } from 'react-spring/renderprops'
-import { useHistory } from 'react-router-dom'
 import { Box, GU, springs, useInside, useViewport } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
@@ -91,6 +90,7 @@ const EmailNotificationsManager = React.memo(
     notificationsDisabled,
     email,
     startingScreen,
+    onReturnToDashboard,
   }) {
     const [screenId, setScreenId] = useState(
       emailExists
@@ -108,7 +108,6 @@ const EmailNotificationsManager = React.memo(
     })
 
     const wallet = useWallet()
-    const history = useHistory()
     const account = wallet.account
     const [insideModal] = useInside('NotificationsModal')
     const provider = getProviderFromUseWalletId(wallet.activated)
@@ -376,10 +375,6 @@ const EmailNotificationsManager = React.memo(
       [account]
     )
 
-    const handleOnGoToDashboard = useCallback(() => {
-      history.push('/dashboard')
-    }, [history])
-
     const handleOnSignSuccess = useCallback((signHash, timestamp) => {
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
@@ -644,7 +639,7 @@ const EmailNotificationsManager = React.memo(
                 title="Verification was successful"
                 description="Go back to the main dashboard and re-connect your account to access your notification settings"
                 actionText="Go to Dashboard"
-                onAction={handleOnGoToDashboard}
+                onAction={onReturnToDashboard}
               />
             )
           }
