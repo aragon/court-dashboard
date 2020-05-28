@@ -114,6 +114,7 @@ const EmailNotificationsManager = React.memo(
       emailVerified,
     })
 
+    const screenIdd = VERIFICATION_SUCCESS_SCREEN
     const wallet = useWallet()
     const account = wallet.account
     const [insideModal] = useInside('NotificationsModal')
@@ -497,7 +498,7 @@ const EmailNotificationsManager = React.memo(
     return (
       <WrappedContainer screenId={screenId}>
         {(() => {
-          if (screenId === SIGNATURE_REQUEST_SCREEN) {
+          if (screenIdd === SIGNATURE_REQUEST_SCREEN) {
             return (
               <SignatureRequest
                 mode="request"
@@ -509,7 +510,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenId === SIGNATURE_SUCCESS_SCREEN) {
+          if (screenIdd === SIGNATURE_SUCCESS_SCREEN) {
             return (
               <SignatureRequest
                 mode="success"
@@ -520,12 +521,12 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenId === EMAIL_NOTIFICATIONS_ERROR_SCREEN) {
+          if (screenIdd === EMAIL_NOTIFICATIONS_ERROR_SCREEN) {
             const { title, description } = DEFAULT_ERROR_SETTINGS
             return <StatusInfo error title={title} description={description} />
           }
 
-          if (screenId === SUCCESS_INFO_SCREEN) {
+          if (screenIdd === SUCCESS_INFO_SCREEN) {
             return (
               <StatusInfo
                 error={false}
@@ -535,7 +536,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenId === EMAIL_NOTIFICATIONS_FORM_SCREEN) {
+          if (screenIdd === EMAIL_NOTIFICATIONS_FORM_SCREEN) {
             return (
               <EmailNotificationsForm
                 account={account}
@@ -547,7 +548,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenId === EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN) {
+          if (screenIdd === EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN) {
             return (
               <ExistingEmailSubscription
                 account={account}
@@ -558,7 +559,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenId === VERIFY_YOUR_EMAIL_SCREEN) {
+          if (screenIdd === VERIFY_YOUR_EMAIL_SCREEN) {
             return (
               <VerifyEmailAddress
                 updateMode={subscriptionProgress.verifyUpdateMode}
@@ -570,7 +571,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenId === DELETE_EMAIL_SCREEN) {
+          if (screenIdd === DELETE_EMAIL_SCREEN) {
             return (
               <DeleteEmail
                 email={subscriptionProgress.email}
@@ -579,7 +580,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenId === UNLOCK_NOTIFICATIONS_SCREEN) {
+          if (screenIdd === UNLOCK_NOTIFICATIONS_SCREEN) {
             return (
               <UnlockNotifications
                 compactMode={compactMode}
@@ -591,7 +592,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenId === NOTIFICATIONS_PREFERENCES_SCREEN) {
+          if (screenIdd === NOTIFICATIONS_PREFERENCES_SCREEN) {
             return (
               <NotificationsPreferences
                 email={subscriptionProgress.email}
@@ -605,7 +606,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenId === VERIFICATION_ERROR_SCREEN) {
+          if (screenIdd === VERIFICATION_ERROR_SCREEN) {
             return (
               <StatusInfo
                 error
@@ -614,20 +615,20 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenId === VERIFICATION_SUCCESS_SCREEN) {
+          if (screenIdd === VERIFICATION_SUCCESS_SCREEN) {
             return (
               <StatusInfo
                 error={false}
                 title="Verification was successful"
                 description={
                   <span>
+                    Go back to the dashboard and
                     <span
                       css={`
                         display: inline-flex;
                         align-items: center;
                       `}
                     >
-                      Go back to the dashboard and
                       <IconConnect size="small" />
                       <strong>Connect your account</strong>,
                     </span>{' '}
@@ -642,7 +643,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenId === VERIFY_EMAIL_ADDRESS_PREFERENCES) {
+          if (screenIdd === VERIFY_EMAIL_ADDRESS_PREFERENCES) {
             return (
               <VerifyEmailAddressPreferences
                 email={subscriptionProgress.email}
@@ -651,7 +652,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenId === LOADING_SCREEN) {
+          if (screenIdd === LOADING_SCREEN) {
             return <LoadingPreferences />
           }
         })()}
