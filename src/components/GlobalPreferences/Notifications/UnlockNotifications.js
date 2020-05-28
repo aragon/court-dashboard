@@ -6,6 +6,7 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
   compactMode,
   needsUnlockSettings,
   onUnlock,
+  onReturnToDashboard,
 }) {
   const theme = useTheme()
 
@@ -64,34 +65,61 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
             </Button>
           </div>
         ) : (
-          <div
-            css={`
-              background: ${theme.background};
-              padding: ${3 * GU}px ${(compactMode ? 3 : 13) * GU}px;
-            `}
-          >
-            <span
+          <div>
+            <div
               css={`
-                display: block;
-                ${textStyle('body1')};
-                color: ${theme.surfaceContentSecondary};
-                font-weight: 600;
+                background: ${theme.background};
+                padding: ${3 * GU}px ${(compactMode ? 3 : 13) * GU}px;
               `}
             >
-              You must connect your account to access notifications settings
-            </span>
-            <span
+              <span
+                css={`
+                  display: block;
+                  ${textStyle('body1')};
+                  color: ${theme.surfaceContentSecondary};
+                  font-weight: 600;
+                `}
+              >
+                You must connect your account to access notifications settings
+              </span>
+              <div
+                css={`
+                  margin-top: ${1.5 * GU}px;
+                `}
+              >
+                <span
+                  css={`
+                    ${textStyle('body2')};
+                    color: ${theme.surfaceContentSecondary};
+                  `}
+                >
+                  <span
+                    css={`
+                      display: inline-flex;
+                      align-items: center;
+                    `}
+                  >
+                    Go back to the dashboard and
+                    <IconConnect size="small" />
+                    <strong>Connect your account</strong>,
+                  </span>{' '}
+                  <span>
+                    on the top right header, to access your notification
+                    settings
+                  </span>
+                </span>
+              </div>
+            </div>
+            <Button
               css={`
-                ${textStyle('body2')};
-                color: ${theme.surfaceContentSecondary};
-                margin-top: ${1.5 * GU}px;
+                margin-top: ${2 * GU}px;
               `}
+              mode="strong"
+              onClick={onReturnToDashboard}
+              wide
             >
-              Connect to your Ethereum provider by clicking on the{' '}
-              <IconConnect size="small" />
-              <strong>Connect account</strong> button on the header. You may be
-              temporarily redirected to a new screen
-            </span>
+              Go to dashboard
+            </Button>
           </div>
         )}
       </div>

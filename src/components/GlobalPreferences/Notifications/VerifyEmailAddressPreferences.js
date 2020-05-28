@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, GU, textStyle, useTheme, useViewport } from '@aragon/ui'
-import emailNotifcationIllustration from '../../../../src/assets/emailNotifications.svg'
+import emailIllustration from '../../../../src/assets/emailIllustration.svg'
 
 const VerifyEmailAddressPreferences = React.memo(
   function VerifyEmailAddressPreferences({ email, onResend }) {
@@ -18,12 +18,7 @@ const VerifyEmailAddressPreferences = React.memo(
         `}
       >
         <div>
-          <img
-            src={emailNotifcationIllustration}
-            width={181}
-            height={181}
-            alt=""
-          />
+          <img src={emailIllustration} width={181} height={181} alt="" />
         </div>
         <h3
           css={`
