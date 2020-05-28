@@ -55,7 +55,9 @@ function GlobalPreferences({ compact, onClose, onNavigation, sectionIndex }) {
           />
 
           {sectionIndex === NETWORK_INDEX && <Network />}
-          {sectionIndex === NOTIFICATIONS_INDEX && <NotificationsManager />}
+          {sectionIndex === NOTIFICATIONS_INDEX && (
+            <NotificationsManager onReturnToDashboard={onClose} />
+          )}
         </React.Fragment>
       </Layout>
     </div>
