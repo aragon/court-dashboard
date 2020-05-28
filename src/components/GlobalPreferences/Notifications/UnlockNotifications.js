@@ -89,24 +89,24 @@ const UnlockNotifications = React.memo(function UnlockNotifications({
               >
                 <span
                   css={`
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
                     ${textStyle('body2')};
                     color: ${theme.surfaceContentSecondary};
                   `}
                 >
+                  Go back to the dashboard and
                   <span
                     css={`
                       display: inline-flex;
                       align-items: center;
                     `}
                   >
-                    Go back to the dashboard and
                     <IconConnect size="small" />
                     <strong>Connect your account</strong>,
                   </span>{' '}
-                  <span>
-                    on the top right header, to access your notification
-                    settings
-                  </span>
+                  on the top right header, to access your notification settings
                 </span>
               </div>
             </div>

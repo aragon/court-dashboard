@@ -114,7 +114,7 @@ const EmailNotificationsManager = React.memo(
       emailVerified,
     })
 
-    const screenIdd = VERIFICATION_SUCCESS_SCREEN
+    const screenIdd = UNLOCK_NOTIFICATIONS_SCREEN
     const wallet = useWallet()
     const account = wallet.account
     const [insideModal] = useInside('NotificationsModal')
@@ -621,7 +621,13 @@ const EmailNotificationsManager = React.memo(
                 error={false}
                 title="Verification was successful"
                 description={
-                  <span>
+                  <span
+                    css={`
+                      display: flex;
+                      flex-wrap: wrap;
+                      justify-content: center;
+                    `}
+                  >
                     Go back to the dashboard and
                     <span
                       css={`
@@ -632,10 +638,8 @@ const EmailNotificationsManager = React.memo(
                       <IconConnect size="small" />
                       <strong>Connect your account</strong>,
                     </span>{' '}
-                    <span>
-                      on the top right header, to access your notification
-                      settings
-                    </span>
+                    on the top right header, to access your notification
+                    settings
                   </span>
                 }
                 actionText="Go to Dashboard"
