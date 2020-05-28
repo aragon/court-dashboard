@@ -29,7 +29,7 @@ import {
   createSession,
   deleteCurrentSession,
   deleteJurorEmail,
-  // resendVerificationEmail,
+  resendVerificationEmail,
   subscribeToNotifications,
   subscribeExistingEmail,
   switchNotificationsStatus,
@@ -105,7 +105,6 @@ const EmailNotificationsManager = React.memo(
         : EMAIL_NOTIFICATIONS_FORM_SCREEN
     )
 
-    const screenIdd = VERIFY_EMAIL_ADDRESS_PREFERENCES
     const [subscriptionProgress, setSubscriptionProgress] = useState({
       ...DEFAULT_SUBSCRIPTION_PROGRESS,
       email,
@@ -242,10 +241,8 @@ const EmailNotificationsManager = React.memo(
     }, [account, defaultSignRequestText])
 
     const handleOnResendEmail = useCallback(async () => {
-      //   const { needsSignature, error } = await resendVerificationEmail(account)
+      const { needsSignature, error } = await resendVerificationEmail(account)
 
-      const needsSignature = false
-      const error = false
       if (error && !needsSignature) {
         setSubscriptionProgress({ serviceError: true })
         return
@@ -520,7 +517,7 @@ const EmailNotificationsManager = React.memo(
     return (
       <WrappedContainer screenId={screenId}>
         {(() => {
-          if (screenIdd === SIGNATURE_REQUEST_SCREEN) {
+          if (screenId === SIGNATURE_REQUEST_SCREEN) {
             return (
               <SignatureRequest
                 mode="request"
@@ -532,7 +529,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenIdd === SIGNATURE_SUCCESS_SCREEN) {
+          if (screenId === SIGNATURE_SUCCESS_SCREEN) {
             return (
               <SignatureRequest
                 mode="success"
@@ -543,12 +540,12 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenIdd === EMAIL_NOTIFICATIONS_ERROR_SCREEN) {
+          if (screenId === EMAIL_NOTIFICATIONS_ERROR_SCREEN) {
             const { title, description } = DEFAULT_ERROR_SETTINGS
             return <StatusInfo error title={title} description={description} />
           }
 
-          if (screenIdd === SUCCESS_INFO_SCREEN) {
+          if (screenId === SUCCESS_INFO_SCREEN) {
             return (
               <StatusInfo
                 error={false}
@@ -558,7 +555,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenIdd === EMAIL_NOTIFICATIONS_FORM_SCREEN) {
+          if (screenId === EMAIL_NOTIFICATIONS_FORM_SCREEN) {
             return (
               <EmailNotificationsForm
                 account={account}
@@ -570,7 +567,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenIdd === EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN) {
+          if (screenId === EMAIL_NOTIFICATIONS_EXISTING_EMAIL_SCREEN) {
             return (
               <ExistingEmailSubscription
                 account={account}
@@ -581,7 +578,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenIdd === VERIFY_YOUR_EMAIL_SCREEN) {
+          if (screenId === VERIFY_YOUR_EMAIL_SCREEN) {
             return (
               <VerifyEmailAddress
                 updateMode={subscriptionProgress.verifyUpdateMode}
@@ -593,7 +590,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenIdd === DELETE_EMAIL_SCREEN) {
+          if (screenId === DELETE_EMAIL_SCREEN) {
             return (
               <DeleteEmail
                 email={subscriptionProgress.email}
@@ -602,7 +599,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenIdd === UNLOCK_NOTIFICATIONS_SCREEN) {
+          if (screenId === UNLOCK_NOTIFICATIONS_SCREEN) {
             return (
               <UnlockNotifications
                 compactMode={compactMode}
@@ -614,7 +611,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenIdd === NOTIFICATIONS_PREFERENCES_SCREEN) {
+          if (screenId === NOTIFICATIONS_PREFERENCES_SCREEN) {
             return (
               <NotificationsPreferences
                 email={subscriptionProgress.email}
@@ -628,7 +625,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenIdd === VERIFICATION_ERROR_SCREEN) {
+          if (screenId === VERIFICATION_ERROR_SCREEN) {
             return (
               <StatusInfo
                 error
@@ -637,7 +634,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenIdd === VERIFICATION_SUCCESS_SCREEN) {
+          if (screenId === VERIFICATION_SUCCESS_SCREEN) {
             return (
               <StatusInfo
                 error={false}
@@ -665,7 +662,7 @@ const EmailNotificationsManager = React.memo(
               />
             )
           }
-          if (screenIdd === VERIFY_EMAIL_ADDRESS_PREFERENCES) {
+          if (screenId === VERIFY_EMAIL_ADDRESS_PREFERENCES) {
             return (
               <VerifyEmailAddressPreferences
                 email={subscriptionProgress.email}
@@ -674,7 +671,7 @@ const EmailNotificationsManager = React.memo(
             )
           }
 
-          if (screenIdd === LOADING_SCREEN) {
+          if (screenId === LOADING_SCREEN) {
             return <LoadingPreferences />
           }
         })()}
