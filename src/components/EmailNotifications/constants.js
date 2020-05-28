@@ -79,10 +79,6 @@ export const SETTINGS = {
       requestText: 'this popup will not be displayed again',
       successText: 'You have successfully proved ownership of your account.',
     },
-    successInfo: {
-      title: 'Account authenticated',
-      text: 'You have successfully proved ownership of your account.',
-    },
   },
   [RESEND_EMAIL_ACTION]: {
     signatureSettings: {

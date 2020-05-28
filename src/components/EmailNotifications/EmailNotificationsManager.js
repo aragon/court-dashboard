@@ -207,38 +207,18 @@ const EmailNotificationsManager = React.memo(
     }, [account, defaultSignRequestText])
 
     const handleOnOptOut = useCallback(async () => {
-      const { error, needsSignature } = await switchNotificationsStatus(
-        account,
-        true
-      )
-
-      if (error && !needsSignature) {
-        setSubscriptionProgress({ serviceError: true })
-        return
-      }
-
       const optOutSettings = SETTINGS[OPTOUT_ACTION]
-
-      if (!needsSignature) {
-        setSubscriptionProgress(subscriptionProgress => ({
-          ...subscriptionProgress,
-          statusInfoTitle: optOutSettings.successInfo.title,
-          statusInfoText: optOutSettings.successInfo.text,
-        }))
-        setScreenId(SUCCESS_INFO_SCREEN)
-        return
-      }
 
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
-        needSignature: needsSignature,
+        needSignature: true,
         mode: OPTOUT_ACTION,
         signatureTitle: optOutSettings.signatureSettings.title,
         signRequestText:
           defaultSignRequestText + optOutSettings.signatureSettings.requestText,
         signSuccessText: optOutSettings.signatureSettings.successText,
       }))
-    }, [account, defaultSignRequestText])
+    }, [defaultSignRequestText])
 
     const handleOnResendEmail = useCallback(async () => {
       const { needsSignature, error } = await resendVerificationEmail(account)
