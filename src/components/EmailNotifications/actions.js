@@ -45,8 +45,6 @@ export const actions = {
     requiresEmail: false,
   },
   [OPTOUT_ACTION]: {
-    request: switchNotificationsStatus,
-    params: [true], // disabled = true
     requiresEmail: false,
   },
   [RESEND_EMAIL_ACTION]: {
