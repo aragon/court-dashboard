@@ -232,7 +232,15 @@ const EmailNotificationsManager = React.memo(
         setSubscriptionProgress(subscriptionProgress => ({
           ...subscriptionProgress,
         }))
-        toast('A verification email has been resent.')
+        toast(
+          <div
+            css={`
+              text-align: center;
+            `}
+          >
+            A verification email has been resent.
+          </div>
+        )
         return
       }
 
