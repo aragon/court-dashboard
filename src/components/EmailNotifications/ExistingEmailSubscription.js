@@ -99,7 +99,7 @@ function ExistingEmailSubscription({
           `}
         >
           <ActionButton compactMode={compactMode} onClick={onOptOut}>
-            Opt out
+            No, thanks
           </ActionButton>
           <ActionButton
             compactMode={compactMode}

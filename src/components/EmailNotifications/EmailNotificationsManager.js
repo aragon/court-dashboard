@@ -1,6 +1,14 @@
 import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { animated, Spring, Transition } from 'react-spring/renderprops'
-import { Box, GU, springs, useInside, useViewport } from '@aragon/ui'
+import {
+  Box,
+  GU,
+  IconConnect,
+  springs,
+  useInside,
+  useToast,
+  useViewport,
+} from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
 
@@ -63,7 +71,6 @@ const DEFAULT_ERROR_SETTINGS = {
 const DEFAULT_SUBSCRIPTION_PROGRESS = {
   needSignature: false,
   serviceError: false,
-  signatureError: false,
   startRequest: false,
   action: null,
   nextScreen: null,
@@ -90,6 +97,7 @@ const EmailNotificationsManager = React.memo(
     notificationsDisabled,
     email,
     startingScreen,
+    onReturnToDashboard,
   }) {
     const [screenId, setScreenId] = useState(
       emailExists
@@ -110,6 +118,7 @@ const EmailNotificationsManager = React.memo(
     const account = wallet.account
     const [insideModal] = useInside('NotificationsModal')
     const provider = getProviderFromUseWalletId(wallet.activated)
+    const toast = useToast()
 
     const { below } = useViewport()
     const compactMode = below('medium')
@@ -198,38 +207,18 @@ const EmailNotificationsManager = React.memo(
     }, [account, defaultSignRequestText])
 
     const handleOnOptOut = useCallback(async () => {
-      const { error, needsSignature } = await switchNotificationsStatus(
-        account,
-        true
-      )
-
-      if (error && !needsSignature) {
-        setSubscriptionProgress({ serviceError: true })
-        return
-      }
-
       const optOutSettings = SETTINGS[OPTOUT_ACTION]
-
-      if (!needsSignature) {
-        setSubscriptionProgress(subscriptionProgress => ({
-          ...subscriptionProgress,
-          statusInfoTitle: optOutSettings.successInfo.title,
-          statusInfoText: optOutSettings.successInfo.text,
-        }))
-        setScreenId(SUCCESS_INFO_SCREEN)
-        return
-      }
 
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
-        needSignature: needsSignature,
+        needSignature: true,
         mode: OPTOUT_ACTION,
         signatureTitle: optOutSettings.signatureSettings.title,
         signRequestText:
           defaultSignRequestText + optOutSettings.signatureSettings.requestText,
         signSuccessText: optOutSettings.signatureSettings.successText,
       }))
-    }, [account, defaultSignRequestText])
+    }, [defaultSignRequestText])
 
     const handleOnResendEmail = useCallback(async () => {
       const { needsSignature, error } = await resendVerificationEmail(account)
@@ -243,7 +232,7 @@ const EmailNotificationsManager = React.memo(
         setSubscriptionProgress(subscriptionProgress => ({
           ...subscriptionProgress,
         }))
-        setScreenId(VERIFY_YOUR_EMAIL_SCREEN)
+        toast('A verification email has been resent.')
         return
       }
 
@@ -258,7 +247,7 @@ const EmailNotificationsManager = React.memo(
           defaultSignRequestText + resendSettings.signatureSettings.requestText,
         signSuccessText: resendSettings.signatureSettings.successText,
       }))
-    }, [account, defaultSignRequestText])
+    }, [account, defaultSignRequestText, toast])
 
     const handleOnDeleteConfirmation = useCallback(() => {
       setSubscriptionProgress(subscriptionProgress => ({
@@ -374,10 +363,6 @@ const EmailNotificationsManager = React.memo(
       [account]
     )
 
-    const handleOnGoToPreferences = useCallback(() => {
-      setScreenId(UNLOCK_NOTIFICATIONS_SCREEN)
-    }, [])
-
     const handleOnSignSuccess = useCallback((signHash, timestamp) => {
       setSubscriptionProgress(subscriptionProgress => ({
         ...subscriptionProgress,
@@ -401,8 +386,16 @@ const EmailNotificationsManager = React.memo(
         email,
         emailVerified,
         emailExists,
+        notificationsDisabled,
       }))
-    }, [account, needsUnlockSettings, email, emailVerified, emailExists])
+    }, [
+      account,
+      needsUnlockSettings,
+      email,
+      emailVerified,
+      emailExists,
+      notificationsDisabled,
+    ])
 
     useEffect(() => {
       let cancelled = false
@@ -500,13 +493,6 @@ const EmailNotificationsManager = React.memo(
       }
       setScreenId(EMAIL_NOTIFICATIONS_ERROR_SCREEN)
     }, [subscriptionProgress.serviceError])
-
-    useEffect(() => {
-      if (!subscriptionProgress.signatureError) {
-        return
-      }
-      setScreenId(EMAIL_NOTIFICATIONS_ERROR_SCREEN)
-    }, [subscriptionProgress.signatureError])
 
     useEffect(() => {
       if (!subscriptionProgress.needSignature) {
@@ -609,6 +595,7 @@ const EmailNotificationsManager = React.memo(
                 needsUnlockSettings={
                   account && subscriptionProgress.needsUnlockSettings
                 }
+                onReturnToDashboard={onReturnToDashboard}
               />
             )
           }
@@ -640,9 +627,30 @@ const EmailNotificationsManager = React.memo(
               <StatusInfo
                 error={false}
                 title="Verification was successful"
-                description="Your email was successfully verified and you can enable or disable notifications from all Aragon Court events."
-                actionText="Go to Notification settings"
-                onAction={handleOnGoToPreferences}
+                description={
+                  <span
+                    css={`
+                      display: flex;
+                      flex-wrap: wrap;
+                      justify-content: center;
+                    `}
+                  >
+                    Go back to the dashboard and
+                    <span
+                      css={`
+                        display: inline-flex;
+                        align-items: center;
+                      `}
+                    >
+                      <IconConnect size="small" />
+                      <strong>Connect your account</strong>,
+                    </span>{' '}
+                    on the top right header, to access your notification
+                    settings
+                  </span>
+                }
+                actionText="Go to Dashboard"
+                onAction={onReturnToDashboard}
               />
             )
           }

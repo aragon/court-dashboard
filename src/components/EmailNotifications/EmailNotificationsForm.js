@@ -136,39 +136,11 @@ function EmailNotificationsForm({
             margin-top: ${5 * GU}px;
           `}
         >
-          <div
-            css={`
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between;
-            `}
-          >
-            <EmailInput
-              existingEmail={existingEmail}
-              status={status}
-              {...inputProps}
-            />
-
-            {!insideModal && (
-              <div
-                css={`
-                  display: flex;
-                  align-items: flex-end;
-                  margin-left: ${2 * GU}px;
-                  margin-bottom: ${emailInvalid ? 0.5 * GU : 0}px;
-                `}
-              >
-                <Button
-                  mode="strong"
-                  disabled={emailInvalid || !termsAccepted}
-                  onClick={handleOnSubscribeToNotifications}
-                  size="medium"
-                >
-                  {existingEmail ? 'Update' : 'Subscribe'}
-                </Button>
-              </div>
-            )}
-          </div>
+          <EmailInput
+            existingEmail={existingEmail}
+            status={status}
+            {...inputProps}
+          />
 
           {error && (
             <div>
@@ -192,7 +164,7 @@ function EmailNotificationsForm({
         onChange={handleOnTermsChange}
       />
 
-      {insideModal && (
+      {insideModal ? (
         <div
           css={`
             display: flex;
@@ -204,7 +176,7 @@ function EmailNotificationsForm({
           `}
         >
           <ActionButton compactMode={compactMode} onClick={onOptOut}>
-            Opt out
+            No, thanks
           </ActionButton>
           <ActionButton
             compactMode={compactMode}
@@ -216,6 +188,18 @@ function EmailNotificationsForm({
             Subscribe
           </ActionButton>
         </div>
+      ) : (
+        <Button
+          css={`
+            margin-top: ${2.5 * GU}px;
+          `}
+          mode="strong"
+          disabled={emailInvalid || !termsAccepted}
+          onClick={handleOnSubscribeToNotifications}
+          size="medium"
+        >
+          {existingEmail ? 'Update' : 'Subscribe to email notifications'}
+        </Button>
       )}
     </div>
   )

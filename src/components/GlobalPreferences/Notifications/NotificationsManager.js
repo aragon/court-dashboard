@@ -17,7 +17,9 @@ import {
   LOADING_SCREEN,
 } from '../../EmailNotifications/constants'
 
-const NotificationsManager = React.memo(function NotificationsManager() {
+const NotificationsManager = React.memo(function NotificationsManager({
+  onReturnToDashboard,
+}) {
   const { account } = useWallet()
   const { search } = useLocation()
   const [startingScreenId, setStartingScreenId] = useState()
@@ -85,7 +87,16 @@ const NotificationsManager = React.memo(function NotificationsManager() {
     if (emailVerified && !jurorNeedsSignature) {
       return setStartingScreenId(NOTIFICATIONS_PREFERENCES_SCREEN)
     }
-  }, [account, emailExists, emailVerified, fetchingEmail, fetchingSubscriptionData, jurorNeedsSignature, address, token])
+  }, [
+    account,
+    emailExists,
+    emailVerified,
+    fetchingEmail,
+    fetchingSubscriptionData,
+    jurorNeedsSignature,
+    address,
+    token,
+  ])
 
   useEffect(() => {
     let cancelled = false
@@ -118,6 +129,7 @@ const NotificationsManager = React.memo(function NotificationsManager() {
         notificationsDisabled={notificationsDisabled}
         email={jurorEmail}
         startingScreen={startingScreenId}
+        onReturnToDashboard={onReturnToDashboard}
       />
     )
   )
