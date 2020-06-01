@@ -44,6 +44,7 @@ export const actions = {
     requiresEmail: false,
   },
   [OPTOUT_ACTION]: {
+    request: deleteJurorEmail,
     requiresEmail: false,
   },
   [RESEND_EMAIL_ACTION]: {
