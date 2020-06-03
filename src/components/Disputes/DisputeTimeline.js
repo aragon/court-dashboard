@@ -2,22 +2,23 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { Accordion, GU, textStyle, useTheme, Timer } from '@aragon/ui'
 
-import Stepper from '../Stepper'
-import Step from '../Step'
-import DisputeRoundPill from './DisputeRoundPill'
 import DisputeOutcomeText from './DisputeOutcomeText'
+import DisputeRoundPill from './DisputeRoundPill'
+import Step from '../Step'
+import Stepper from '../Stepper'
 
+import { useCourtClock } from '../../providers/CourtClock'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 import {
   IconFlag,
   IconFolder,
-  IconUsers,
-  IconThinking,
-  IconRuling,
-  IconVoting,
-  IconRewards,
   IconGavelNoFill,
+  IconRewards,
+  IconRuling,
+  IconThinking,
+  IconUsers,
+  IconVoting,
 } from '../../utils/dispute-icons'
 
 import {
@@ -29,9 +30,13 @@ import { getDisputeTimeLine } from '../../utils/dispute-utils'
 
 const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
   const theme = useTheme()
-
   const courtConfig = useCourtConfig()
-  const disputeTimeLine = getDisputeTimeLine(dispute, courtConfig)
+  const { currentTermId } = useCourtClock()
+  const disputeTimeLine = getDisputeTimeLine(
+    dispute,
+    courtConfig,
+    currentTermId
+  )
 
   return (
     <div>
