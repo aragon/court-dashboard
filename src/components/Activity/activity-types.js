@@ -70,10 +70,6 @@ const ACTIVITY_TYPES = {
     icon: iconAnj,
     title: 'Settle appeal deposit',
   },
-  transaction: {
-    title: 'Transaction',
-    icon: iconAnj,
-  },
   [actions.WITHDRAW_ANJ]: {
     icon: iconAnj,
     title: 'Withdraw ANJ',
@@ -81,5 +77,5 @@ const ACTIVITY_TYPES = {
 }
 
 export function getActivityData(type) {
-  return ACTIVITY_TYPES[type] || ACTIVITY_TYPES.transaction
+  return ACTIVITY_TYPES[type]
 }

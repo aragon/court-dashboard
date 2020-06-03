@@ -19,7 +19,7 @@ import {
   ACTIVITY_STATUS_TIMED_OUT,
 } from './activity-statuses'
 import TransactionProgress from './TransactionProgress'
-import { useActivity } from './ActivityProvider'
+import { useActivity } from '../../providers/ActivityProvider'
 import { getActivityData } from './activity-types'
 import TimeTag from './TimeTag'
 
