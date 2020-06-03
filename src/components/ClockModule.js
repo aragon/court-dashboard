@@ -35,7 +35,7 @@ function ClockModule() {
 
   const theme = useTheme()
   const wallet = useWallet()
-  const onHeartbeat = useHeartbeat()
+  const { heartbeat: onHeartbeat } = useHeartbeat()
   const courtConfig = useCourtConfig()
 
   const {
@@ -245,7 +245,11 @@ function ClockModule() {
               >
                 {isSynced ? 'Up to date' : 'Needs updating'}:
               </span>
-              {isSynced ? 'Current' : 'Last'} term {currentTermId}
+              <span>
+                {isSynced
+                  ? `Current term ${currentTermId}`
+                  : `Last term ${currentTermId - neededTransitions}`}
+              </span>
             </span>
           </div>
           <div

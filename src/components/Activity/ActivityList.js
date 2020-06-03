@@ -9,7 +9,7 @@ import {
   useViewport,
 } from '@aragon/ui'
 import { ACTIVITY_STATUS_PENDING } from './activity-statuses'
-import { useActivity } from './ActivityProvider'
+import { useActivity } from '../../providers/ActivityProvider'
 import ActivityItem from './ActivityItem'
 
 import activityNoResults from './assets/activity-no-results.png'
