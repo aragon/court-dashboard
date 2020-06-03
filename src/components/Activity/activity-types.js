@@ -77,5 +77,5 @@ const ACTIVITY_TYPES = {
 }
 
 export function getActivityData(type) {
-  return ACTIVITY_TYPES[type] || ACTIVITY_TYPES.transaction
+  return ACTIVITY_TYPES[type]
 }
