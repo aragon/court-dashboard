@@ -5,17 +5,9 @@ require('dotenv').config()
 const version = require('../package.json').version
 const execute = require('child_process').execSync
 
-let build
-// Build number from the short hash
-if (process.env.NOW_GITHUB_COMMIT_SHA) {
-  build = process.env.NOW_GITHUB_COMMIT_SHA.slice(0, 7)
-} else if (process.env.GITHUB_SHA) {
-  build = process.env.GITHUB_SHA.slice(0, 7)
-} else {
-  build = execute(`git log --pretty=format:'%h' -n 1`)
-    .toString()
-    .trim()
-}
+const build = execute(`git log --pretty=format:'%h' -n 1`)
+  .toString()
+  .trim()
 
 console.log('Build: ', build)
 console.log('Package version: ', version)
