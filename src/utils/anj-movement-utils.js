@@ -262,9 +262,11 @@ export function convertMovement(acceptedMovements, movement) {
   const direction = getMovementDirection(acceptedMovements, movementType)
 
   return {
-    type: movementType,
     amount: movement.amount,
     direction,
+    isEffective: movement.isEffective,
+    isImmediate: movement.isImmediate,
+    type: movementType,
   }
 }
 
