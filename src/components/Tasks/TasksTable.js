@@ -8,10 +8,11 @@ import {
   useViewport,
 } from '@aragon/ui'
 import IdentityBadge from '../IdentityBadge'
-import NoFilterResults from '../NoFilterResults'
 import TasksFilters from './TasksFilters'
 import TaskStatus from './TaskStatus'
 import TaskDueDate from './TaskDueDate'
+
+import noResults from '../../assets/noResults.svg'
 
 const ENTRIES_PER_PAGE = 6
 
@@ -84,18 +85,22 @@ const TaskTable = React.memo(function TaskTable({
             Dispute #{disputeId}
           </Link>,
           <IdentityBadge entity={juror} />,
+
           <TaskStatus dueDate={dueDate} />,
           <TaskDueDate dueDate={dueDate} />,
         ]
       }}
       status={emptyFilterResults ? 'empty-filters' : 'default'}
-      statusEmptyFilters={
-        <NoFilterResults
-          onClearFilters={onClearFilters}
-          paragraph="We couldn’t find any task matching your filter selection"
-          border={false}
-        />
-      }
+      emptyState={{
+        'empty-filters': {
+          displayLoader: false,
+          title: 'No results found',
+          subtitle: 'We couldn’t find any task matching your filter selection.',
+          illustration: <img src={noResults} alt="" />,
+          clearLabel: 'Clear filters',
+        },
+      }}
+      onStatusEmptyClear={onClearFilters}
     />
   )
 })
