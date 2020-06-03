@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, GU, textStyle, useTheme } from '@aragon/ui'
+import { Button, GU, textStyle, useTheme, useViewport } from '@aragon/ui'
 import successIllustration from '../../assets/notificationsSuccess.svg'
 import errorIllustration from '../../assets/notificationsError.png'
 
@@ -11,6 +11,8 @@ const StatusInfo = React.memo(function StatusInfo({
   onAction,
 }) {
   const theme = useTheme()
+  const { below } = useViewport()
+  const compact = below('medium')
 
   return (
     <div
@@ -36,26 +38,34 @@ const StatusInfo = React.memo(function StatusInfo({
       >
         {title}
       </h3>
-      <span
+      <div
         css={`
           ${textStyle('body2')};
           color: ${theme.surfaceContentSecondary};
           margin-top: ${1.5 * GU}px;
+          padding: 0px ${(compact ? 3 : 20) * GU}px;
         `}
       >
         {description}
-      </span>
+      </div>
 
       {actionText && (
-        <Button
+        <div
           css={`
-            margin-top: ${3 * GU}px;
+            justify-content: center;
           `}
-          mode="strong"
-          onClick={onAction}
         >
-          {actionText}
-        </Button>
+          <Button
+            css={`
+              margin-top: ${3 * GU}px;
+              width: ${35 * GU}px;
+            `}
+            mode="strong"
+            onClick={onAction}
+          >
+            {actionText}
+          </Button>
+        </div>
       )}
     </div>
   )

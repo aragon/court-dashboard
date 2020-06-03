@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+require('dotenv').config()
+
+const version = require('../package.json').version
+const execute = require('child_process').execSync
+
+const build = execute(`git log --pretty=format:'%h' -n 1`)
+  .toString()
+  .trim()
+
+console.log('Build: ', build)
+console.log('Package version: ', version)
+console.log()
+
+console.log('Syncing assets…')
+console.log()
+execute('npm run sync-assets', {
+  stdio: 'inherit',
+})
+
+console.log('Building app…')
+console.log()
+execute(
+  `cross-env REACT_APP_PACKAGE_VERSION=${version} REACT_APP_BUILD=${build} npx react-app-rewired start`,
+  {
+    stdio: 'inherit',
+  }
+)

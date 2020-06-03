@@ -9,9 +9,7 @@ import {
 
 const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
-export const RINKEBY_COURT = '0xb5ffbe75fa785725eea5f931b64fc04e516c9c5d'
-export const RINKEBY_USABILITY_COURT =
-  '0x44f788370206696b20B94BC77c4f73Ca264aa05E'
+export const RINKEBY_COURT = '0xe9180dBE762Fe39520fC9883f7f7EFeBA6506534'
 
 export const RINKEBY_STAGING_COURT =
   '0x52180Af656A1923024D1ACcF1D827AB85cE48878'
@@ -58,9 +56,6 @@ export const networkAgentAddress = getNetworkConfig().network_agent
 export const networkReserveAddress = getNetworkConfig().network_reserve
 
 function getRinkebyCourtAddress(subGraphName) {
-  if (subGraphName === 'usability') {
-    return RINKEBY_USABILITY_COURT
-  }
   if (subGraphName === 'staging') {
     return RINKEBY_STAGING_COURT
   }

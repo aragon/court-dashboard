@@ -4,7 +4,6 @@ import {
   resendVerificationEmail,
   subscribeExistingEmail,
   subscribeToNotifications,
-  switchNotificationsStatus,
 } from '../../services/notificationServiceApi'
 
 import {
@@ -17,6 +16,9 @@ import {
   SUBSCRIBE_EXISTING_ACTION,
   SUBSCRIBE_MODAL_ACTION,
   UNLOCK_SETTINGS_ACTION,
+  UNLOCK_SETTINGS_ACTION_NOT_EMAIL,
+  UNLOCK_SETTINGS_ACTION_NOT_VERIFIED,
+  VERIFY_EMAIL_ADDRESS_PREFERENCES,
   VERIFY_YOUR_EMAIL_SCREEN,
 } from './constants'
 
@@ -42,8 +44,7 @@ export const actions = {
     requiresEmail: false,
   },
   [OPTOUT_ACTION]: {
-    request: switchNotificationsStatus,
-    params: [true], // disabled = true
+    request: deleteJurorEmail,
     requiresEmail: false,
   },
   [RESEND_EMAIL_ACTION]: {
@@ -54,5 +55,12 @@ export const actions = {
   [UNLOCK_SETTINGS_ACTION]: {
     request: getJurorEmail,
     successScreen: NOTIFICATIONS_PREFERENCES_SCREEN,
+  },
+  [UNLOCK_SETTINGS_ACTION_NOT_VERIFIED]: {
+    request: getJurorEmail,
+    successScreen: VERIFY_EMAIL_ADDRESS_PREFERENCES,
+  },
+  [UNLOCK_SETTINGS_ACTION_NOT_EMAIL]: {
+    successScreen: EMAIL_NOTIFICATIONS_FORM_SCREEN,
   },
 }

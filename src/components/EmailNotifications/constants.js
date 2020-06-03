@@ -54,6 +54,12 @@ export const RESEND_EMAIL_ACTION = Symbol('RESEND_EMAIL_ACTION')
 export const SUBSCRIBE_EXISTING_ACTION = Symbol('SUBSCRIBE_EXISTING_ACTION')
 export const SUBSCRIBE_MODAL_ACTION = Symbol('SUBSCRIBE_MODAL_ACTION')
 export const UNLOCK_SETTINGS_ACTION = Symbol('UNLOCK_SETTINGS')
+export const UNLOCK_SETTINGS_ACTION_NOT_EMAIL = Symbol(
+  'UNLOCK_SETTINGS_ACTION_NOT_EMAIL'
+)
+export const UNLOCK_SETTINGS_ACTION_NOT_VERIFIED = Symbol(
+  'UNLOCK_SETTINGS_ACTION_NOT_VERIFIED'
+)
 
 // SETTINGS
 export const SETTINGS = {
@@ -69,15 +75,9 @@ export const SETTINGS = {
   },
   [OPTOUT_ACTION]: {
     signatureSettings: {
-      title: 'Opt-out of email notifications',
-      requestText: 'opt you out from email notifications',
-      successText:
-        'You have successfully proved ownership of your account and opted out of the email notifications service. You can always opt in again if you go to the Notifications settings, in Global preferences.',
-    },
-    successInfo: {
-      title: 'Opt out',
-      text:
-        'You have successfully opted out of the email notifications service. You can always opt in again if you go to the Notifications settings, in Global preferences.',
+      title: 'Authenticate your account',
+      requestText: 'this popup will not be displayed again',
+      successText: 'You have successfully proved ownership of your account.',
     },
   },
   [RESEND_EMAIL_ACTION]: {
