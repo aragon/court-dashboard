@@ -11,16 +11,16 @@ const build = execute(`git log --pretty=format:'%h' -n 1`)
 
 console.log('Build: ', build)
 console.log('Package version: ', version)
-console.log('')
+console.log()
 
 console.log('Syncing assets…')
-console.log('')
+console.log()
 execute('npm run sync-assets', {
   stdio: 'inherit',
 })
 
 console.log('Building app…')
-console.log('')
+console.log()
 execute(
   `cross-env REACT_APP_PACKAGE_VERSION=${version} REACT_APP_BUILD=${build} npx react-app-rewired start`,
   {
