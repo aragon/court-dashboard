@@ -36,7 +36,7 @@
     "use-wallet": "^0.5.0"
   },
   "scripts": {
-    "start": "npm run sync-assets && cross-env REACT_APP_BUILD=$(git log --pretty=format:'%h' -n 1) react-app-rewired start",
+    "start": "node ./scripts/start",
     "start:local": "cross-env REACT_APP_CHAIN_ID=1337 npm run start",
     "start:mainnet": "cross-env REACT_APP_CHAIN_ID=1 npm run start",
     "start:ropsten": "cross-env REACT_APP_CHAIN_ID=3 npm run start",

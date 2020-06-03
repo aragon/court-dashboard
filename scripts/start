@@ -5,26 +5,6 @@ require('dotenv').config()
 const version = require('../package.json').version
 const execute = require('child_process').execSync
 
-let branch
-let enableSentry = '0'
-// Current branch
-if (process.env.NOW_GITHUB_COMMIT_REF) {
-  // ZEIT Now (no .git but an env var)
-  branch = process.env.NOW_GITHUB_COMMIT_REF
-} else if (process.env.GITHUB_REF) {
-  // Github Action
-  branch = process.env.GITHUB_REF
-} else {
-  // Other environments
-  branch = execute(`git symbolic-ref --short -q HEAD`)
-    .toString()
-    .trim()
-}
-
-if (branch === 'development' || branch === 'master') {
-  enableSentry = '1'
-}
-
 let build
 // Build number from the short hash
 if (process.env.NOW_GITHUB_COMMIT_SHA) {
@@ -37,9 +17,7 @@ if (process.env.NOW_GITHUB_COMMIT_SHA) {
     .trim()
 }
 
-console.log('Branch: ', branch)
 console.log('Build: ', build)
-console.log('Enable Sentry: ', enableSentry)
 console.log('Package version: ', version)
 console.log('')
 
@@ -52,7 +30,7 @@ execute('npm run sync-assets', {
 console.log('Building app…')
 console.log('')
 execute(
-  `cross-env REACT_APP_PACKAGE_VERSION=${version} REACT_APP_ENABLE_SENTRY=${enableSentry} REACT_APP_BUILD=${build} npx react-app-rewired build`,
+  `cross-env REACT_APP_PACKAGE_VERSION=${version} REACT_APP_BUILD=${build} npx react-app-rewired start`,
   {
     stdio: 'inherit',
   }
