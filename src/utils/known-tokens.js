@@ -8,7 +8,7 @@ export const KNOWN_TOKEN_BY_ENV = {
       symbol: 'ANJ',
     },
     rinkeby: {
-      address: '0x929F3B27a22a7A56FC8d89617033D22e53840aC9',
+      address: '0x1FAB7d0D028ded72195322998003F6e82cF4cFdB',
       decimals: 18,
       symbol: 'ANJ',
     },
@@ -30,7 +30,7 @@ export const KNOWN_TOKEN_BY_ENV = {
       symbol: 'ANT',
     },
     rinkeby: {
-      address: '0xbf932fdf8d600398d64614ef9a10401ff046f449',
+      address: '0x8cf8196c14A654dc8Aceb3cbb3dDdfd16C2b652D',
       decimals: 18,
       symbol: 'ANT',
     },
