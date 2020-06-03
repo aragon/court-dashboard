@@ -55,9 +55,9 @@ const DeleteEmail = React.memo(function DeleteEmail({
             margin-top: ${1.5 * GU}px;
           `}
         >
-          This action will unsubscribe you from all email
-          notifications and remove this email address from our databases. You
-          can always re-subscribe from the notifications preferences later.
+          This action will unsubscribe you from all email notifications and
+          remove this email address from our databases. You can always
+          re-subscribe from the notifications preferences later.
         </span>
         <div
           css={`
