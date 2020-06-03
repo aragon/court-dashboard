@@ -28,42 +28,34 @@ export function transformCourtConfigDataAttributes(courtConfig) {
   }
 }
 
-function getFirstTermDate(courtConfig) {
-  const { terms } = courtConfig
+function getFirstTermStartTime(terms) {
+  if (terms.length === 0) {
+    throw new Error('Terms cannot be empty')
+  }
+
   return terms[0].startTime
 }
 
-export function getTermStartTime(term, courtConfig) {
-  const { termDuration } = courtConfig
-  const termMs = term * termDuration
-
-  return getFirstTermDate(courtConfig) + termMs
+export function getExpectedCurrentTermId(now, { terms, termDuration }) {
+  const firstTermStartTime = getFirstTermStartTime(terms)
+  return Math.floor((now.valueOf() - firstTermStartTime) / termDuration)
 }
 
-export function getExpectedCurrentTermId(now, terms, termDuration) {
-  let currentTermId = 0
-
-  if (terms.length > 0) {
-    const firstTermStartTime = terms[0].startTime
-
-    currentTermId = Math.floor(
-      (now.valueOf() - firstTermStartTime) / termDuration
-    )
-  }
-
-  return currentTermId
+export function getTermStartTime(termId, { terms, termDuration }) {
+  const firstTermStartTime = getFirstTermStartTime(terms)
+  return termId * termDuration + firstTermStartTime
 }
 
-export function getTermStartAndEndTime(termId, terms, termDuration) {
-  let [termStartTime, termEndTime] = [0, 0]
+export function getTermEndTime(termId, { terms, termDuration }) {
+  const termStartTime = getTermStartTime(termId, { terms, termDuration })
 
-  if (terms.length > 0) {
-    const firstTermStartTime = terms[0].startTime
-    termStartTime = termId * termDuration + firstTermStartTime
-    termEndTime = termStartTime + (termDuration - 1)
-  }
+  return termStartTime + (termDuration - 1)
+}
 
-  return { termStartTime, termEndTime }
+export function getTermPeriod(termId, { terms, termDuration }) {
+  return [getTermStartTime, getTermEndTime].map(f =>
+    f(termId, { terms, termDuration })
+  )
 }
 
 export function getModuleAddress(modules, moduleType) {
