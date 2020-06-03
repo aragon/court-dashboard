@@ -6,7 +6,7 @@ import {
 import { clearActivities } from './migrations'
 import { isNewVersion, satisifesRange } from './helper'
 
-const MIGRATIONS = [['1.0.1', () => clearActivities()]]
+const MIGRATIONS = [['1.0.0', () => clearActivities()]]
 
 export function checkMigrations() {
   const packageVersion = getPackageVersion()
