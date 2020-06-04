@@ -34,7 +34,7 @@ const OnboardingModal = React.memo(function OnboardingModal({
         const compactMode = width < 500 || height < 400
         return (
           <Modal
-            onClose={onComplete}
+            closeButton={false}
             padding={0}
             width={Math.min(1055, width - 40)}
             visible={visible}

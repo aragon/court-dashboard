@@ -8,6 +8,7 @@ const buttonTransitionStyles = show => ({
   opacity: Number(show),
   transform: `translate3d(0, ${show ? 0 : 2}px, 0)`,
   config: springs.swift,
+  pointerEvents: show ? 'auto' : 'none',
 })
 
 const Navigation = ({ step, steps, onPrev, onNext }) => {
