@@ -282,7 +282,7 @@ const useInfoAttributes = ({
 
     // Juror has voted and reveal period hasn't ended
     return {
-      title: 'Your vote was cast successfuly.',
+      title: 'Your vote was cast and revealed successfully.',
       paragraph: (
         <VoteInfo
           commitmentDate={jurorDraft.commitmentDate}
