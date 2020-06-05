@@ -8,6 +8,40 @@ import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/preced
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
 
+export const transformRoundDataAttributes = round => {
+  const { vote, appeal } = round
+
+  return {
+    ...round,
+    createdAt: parseInt(round.createdAt, 10) * 1000,
+    draftTermId: parseInt(round.draftTermId, 10),
+    delayedTerms: parseInt(round.delayedTerms, 10),
+    number: parseInt(round.number),
+    jurors: round.jurors.map(juror => ({
+      ...juror,
+      commitmentDate: parseInt(juror.commitmentDate || 0, 10) * 1000,
+      revealDate: parseInt(juror.revealDate || 0, 10) * 1000,
+      weight: parseInt(juror.weight, 10),
+    })),
+    vote: vote
+      ? {
+          ...vote,
+          winningOutcome: getOutcomeNumber(vote.winningOutcome),
+        }
+      : null,
+    appeal: appeal
+      ? {
+          ...appeal,
+          appealedRuling: parseInt(appeal.appealedRuling, 10),
+          opposedRuling: parseInt(appeal.opposedRuling, 10),
+          createdAt: parseInt(appeal.createdAt) * 1000,
+          confirmedAt: parseInt(appeal.confirmedAt || 0) * 1000,
+        }
+      : null,
+    state: DisputesTypes.convertFromString(round.state),
+  }
+}
+
 export const transformDisputeDataAttributes = dispute => {
   const transformedDispute = {
     ...dispute,
@@ -18,39 +52,7 @@ export const transformDisputeDataAttributes = dispute => {
       DisputesTypes.Phase.Ruled
         ? DisputesTypes.Status.Closed
         : DisputesTypes.Status.Open,
-    rounds: dispute.rounds.map(round => {
-      const { vote, appeal } = round
-
-      return {
-        ...round,
-        createdAt: parseInt(round.createdAt, 10) * 1000,
-        draftTermId: parseInt(round.draftTermId, 10),
-        delayedTerms: parseInt(round.delayedTerms, 10),
-        number: parseInt(round.number),
-        jurors: round.jurors.map(juror => ({
-          ...juror,
-          commitmentDate: parseInt(juror.commitmentDate || 0, 10) * 1000,
-          revealDate: parseInt(juror.revealDate || 0, 10) * 1000,
-          weight: parseInt(juror.weight, 10),
-        })),
-        vote: vote
-          ? {
-              ...vote,
-              winningOutcome: getOutcomeNumber(vote.winningOutcome),
-            }
-          : null,
-        appeal: appeal
-          ? {
-              ...appeal,
-              appealedRuling: parseInt(appeal.appealedRuling, 10),
-              opposedRuling: parseInt(appeal.opposedRuling, 10),
-              createdAt: parseInt(appeal.createdAt) * 1000,
-              confirmedAt: parseInt(appeal.confirmedAt || 0) * 1000,
-            }
-          : null,
-        state: DisputesTypes.convertFromString(round.state),
-      }
-    }),
+    rounds: dispute.rounds.map(transformRoundDataAttributes),
   }
 
   // If the dispute is part of the precedence campaign we will flag it as such

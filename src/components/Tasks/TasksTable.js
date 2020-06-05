@@ -9,7 +9,6 @@ import {
 } from '@aragon/ui'
 import IdentityBadge from '../IdentityBadge'
 import TasksFilters from './TasksFilters'
-import TaskStatus from './TaskStatus'
 import TaskDueDate from './TaskDueDate'
 
 import noResults from '../../assets/noResults.svg'
@@ -69,7 +68,7 @@ const TaskTable = React.memo(function TaskTable({
       fields={
         emptyFilterResults
           ? []
-          : ['Action', 'Dispute', 'Assigned to juror', 'Status', 'Due date']
+          : ['Action', 'Dispute', 'Assigned to juror', 'Due in']
       }
       entries={tasks}
       renderEntry={({ phase, disputeId, juror, dueDate }) => {
@@ -85,8 +84,6 @@ const TaskTable = React.memo(function TaskTable({
             Dispute #{disputeId}
           </Link>,
           <IdentityBadge entity={juror} />,
-
-          <TaskStatus dueDate={dueDate} />,
           <TaskDueDate dueDate={dueDate} />,
         ]
       }}
