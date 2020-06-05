@@ -1,21 +1,28 @@
 import { useMemo } from 'react'
-import useNow from './useNow'
-import { useTasksSubscription } from './subscription-hooks'
-import { getAdjudicationPhase } from '../utils/dispute-utils'
-import * as DisputesTypes from '../types/dispute-status-types'
+import { useCourtClock } from '../providers/CourtClock'
 import { useCourtConfig } from '../providers/CourtConfig'
+import { useTasksSubscription } from './subscription-hooks'
+
+import { getTermEndTime } from '../utils/court-utils'
+import { getAdjudicationPhase } from '../utils/dispute-utils'
+import {
+  convertToString,
+  getTaskActionString,
+  Phase as DisputePhase,
+} from '../types/dispute-status-types'
 import { getVoidedDisputesByCourt } from '../flagged-disputes/voided-disputes'
 
 export default function useTasks() {
   const courtConfig = useCourtConfig()
+  const { currentTermId } = useCourtClock()
   const { tasks, fetching, error } = useTasksSubscription()
-  const now = useNow()
-  const openTasks = useOpenTasks(tasks, now, courtConfig)
+
+  const openTasks = useOpenTasks(tasks, currentTermId, courtConfig)
 
   return { openTasks, fetching, error }
 }
 
-function useOpenTasks(tasks, now, courtSettings) {
+function useOpenTasks(tasks, currentTermId, courtConfig) {
   const voidedDisputes = getVoidedDisputesByCourt()
   const convertedTasks = useMemo(() => {
     if (!tasks) {
@@ -23,14 +30,12 @@ function useOpenTasks(tasks, now, courtSettings) {
     }
     return tasks.map(task => ({
       ...task,
-      ...getAdjudicationPhase(task.dispute, task, now, courtSettings),
+      ...getAdjudicationPhase(task.dispute, task, currentTermId, courtConfig),
     }))
-  }, [courtSettings, now, tasks])
+  }, [courtConfig, currentTermId, tasks])
 
   const convertedTasksPhasesKey = convertedTasks
-    ? convertedTasks
-        .map(phase => DisputesTypes.convertToString(phase.phase))
-        .join('')
+    ? convertedTasks.map(phase => convertToString(phase.phase)).join('')
     : null
 
   const incompleteTasks = useMemo(() => {
@@ -40,7 +45,7 @@ function useOpenTasks(tasks, now, courtSettings) {
     return convertedTasks.filter(
       task =>
         !voidedDisputes.has(task.dispute.id) &&
-        task.phase !== DisputesTypes.Phase.Ended
+        task.phase !== DisputePhase.Ended
     )
   }, [convertedTasksPhasesKey, voidedDisputes]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -52,23 +57,26 @@ function useOpenTasks(tasks, now, courtSettings) {
 
     for (let i = 0; i < incompleteTasks.length; i++) {
       const currentPhase = incompleteTasks[i].phase
-      const nextTransition = incompleteTasks[i].nextTransition
+      const nextTransition = getTermEndTime(
+        incompleteTasks[i].phaseEndTerm,
+        courtConfig
+      )
 
       if (
-        currentPhase !== DisputesTypes.Phase.AppealRuling &&
-        currentPhase !== DisputesTypes.Phase.ConfirmAppeal
+        currentPhase !== DisputePhase.AppealRuling &&
+        currentPhase !== DisputePhase.ConfirmAppeal
       ) {
         for (let j = 0; j < incompleteTasks[i].jurors.length; j++) {
           if (isVotingTaskOpen(incompleteTasks[i].jurors[j], currentPhase)) {
             openTasks.push({
               number: incompleteTasks[i].number,
               state: incompleteTasks[i].state,
-              createdAt: parseInt(incompleteTasks[i].createdAt, 10) * 1000,
+              createdAt: incompleteTasks[i].createdAt,
               juror: incompleteTasks[i].jurors[j].juror.id,
               disputeId: incompleteTasks[i].dispute.id,
               commitment: incompleteTasks[i].jurors[j].commitment,
               outcome: incompleteTasks[i].jurors[j].outcome,
-              phase: getTaskName(currentPhase),
+              phase: getTaskActionString(currentPhase),
               phaseType: currentPhase,
               dueDate: nextTransition,
             })
@@ -81,12 +89,12 @@ function useOpenTasks(tasks, now, courtSettings) {
           openTasks.push({
             number: incompleteTasks[i].number,
             state: incompleteTasks[i].state,
-            createdAt: parseInt(incompleteTasks[i].createdAt, 10) * 1000,
+            createdAt: incompleteTasks[i].createdAt,
             juror: 'Anyone',
             disputeId: incompleteTasks[i].dispute.id,
-            phase: getTaskName(currentPhase),
-            dueDate: nextTransition,
+            phase: getTaskActionString(currentPhase),
             phaseType: currentPhase,
+            dueDate: nextTransition,
           })
         }
       }
@@ -96,26 +104,11 @@ function useOpenTasks(tasks, now, courtSettings) {
   }, [convertedTasksPhasesKey, incompleteTasks]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-function getTaskName(phase) {
-  if (phase === DisputesTypes.Phase.VotingPeriod) {
-    return 'Commit vote'
-  }
-  if (phase === DisputesTypes.Phase.RevealVote) {
-    return 'Reveal vote'
-  }
-  if (phase === DisputesTypes.Phase.AppealRuling) {
-    return 'Appeal ruling'
-  }
-  if (phase === DisputesTypes.Phase.ConfirmAppeal) {
-    return 'Confirm appeal'
-  }
-}
-
 function isAppealTaskOpen(round, currentPhase) {
-  if (currentPhase === DisputesTypes.Phase.AppealRuling) {
+  if (currentPhase === DisputePhase.AppealRuling) {
     return !round.appeal
   }
-  if (currentPhase === DisputesTypes.Phase.ConfirmAppeal) {
+  if (currentPhase === DisputePhase.ConfirmAppeal) {
     if (round?.appeal?.opposedRuling) {
       return Number(round.appeal.opposedRuling) === 0
     }
@@ -125,10 +118,10 @@ function isAppealTaskOpen(round, currentPhase) {
 }
 
 function isVotingTaskOpen(draft, currentPhase) {
-  if (currentPhase === DisputesTypes.Phase.VotingPeriod) {
+  if (currentPhase === DisputePhase.VotingPeriod) {
     return !draft.commitment
   }
-  if (currentPhase === DisputesTypes.Phase.RevealVote) {
+  if (currentPhase === DisputePhase.RevealVote) {
     if (draft.outcome || !draft.commitment) {
       return false
     }
