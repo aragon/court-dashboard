@@ -239,7 +239,7 @@ const useInfoAttributes = ({
       }
 
       // Juror has revealed
-      // Check if has voted in consensus with the majority for the last round
+      // Check if has voted in consensus with the plurality for the last round
       const hasVotedInConsensus =
         lastRound.vote && jurorDraft.outcome === lastRound.vote.winningOutcome
 
@@ -249,8 +249,8 @@ const useInfoAttributes = ({
       const settledPenalties = lastRound.settledPenalties
 
       const title = hasVotedInConsensus
-        ? 'You have voted in consensus with the majority'
-        : 'You have not voted in consensus with the majority'
+        ? 'You have voted in consensus with the plurality'
+        : 'You have not voted in consensus with the plurality'
       const background = hasVotedInConsensus
         ? positiveBackground
         : negativeBackground
