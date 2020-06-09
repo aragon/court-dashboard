@@ -9,7 +9,7 @@ import { useRequestProcessor } from './useRequestProcessor'
 import { useContract, useContractReadOnly } from '../web3-contracts'
 
 // services
-import requestAutoReveal from '../services/requestAutoReveal'
+import requestAutoReveal from '../services/autoReveal'
 
 // utils
 import radspec from '../radspec'

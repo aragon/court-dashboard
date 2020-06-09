@@ -36,3 +36,34 @@ export default async (juror, disputeId, roundId, outcome, password) => {
     throw err
   }
 }
+
+export async function getAutoRevealRequest(juror, disputeId, roundId) {
+  const voteId = getVoteId(disputeId, roundId).toString()
+
+  try {
+    const rawResponse = await fetch(`${COURT_SERVER_ENDPOINT}/reveal`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        juror: juror.toLowerCase(),
+        voteId,
+      }),
+    })
+
+    if (rawResponse.ok) {
+      return
+    }
+
+    const response = await rawResponse.json()
+    const errors = response.errors
+      .map(err => Object.values(err).join(', '))
+      .join(', ')
+
+    throw new Error(
+      `Failed to request auto-reveal service due to errors: ${errors}`
+    )
+  } catch (err) {
+    console.error(err)
+    throw err
+  }
+}
