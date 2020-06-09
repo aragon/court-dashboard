@@ -1,12 +1,14 @@
 import gql from 'graphql-tag'
 
-// All juror drafts by `id` not yet rewarded
-export const JurorDraftsNotRewarded = gql`
-  subscription JurorDraftsNotRewarded($id: ID!) {
+// All juror drafts by juror with address `id`
+export const JurorDraftsRewards = gql`
+  subscription JurorDraftsRewards($id: ID!) {
     juror(id: $id) {
       id
-      drafts(where: { rewarded: false }) {
+      drafts {
         id
+        rewarded
+        rewardedAt
         weight
         outcome
         round {
@@ -21,18 +23,6 @@ export const JurorDraftsNotRewarded = gql`
             finalRuling
           }
         }
-      }
-    }
-  }
-`
-
-// First juror draft already rewarded
-export const JurorDraftsRewarded = gql`
-  query JurorDraftsRewarded($id: ID!) {
-    juror(id: $id) {
-      id
-      drafts(where: { rewarded: true }, first: 1) {
-        id
       }
     }
   }

@@ -8,6 +8,7 @@ export function transformAppealDataAttributes(appeal) {
     appealDeposit,
     confirmAppealDeposit,
     round,
+    settledAt,
   } = appeal
 
   return {
@@ -28,6 +29,7 @@ export function transformAppealDataAttributes(appeal) {
     opposedRuling: parseInt(opposedRuling, 10),
     appealDeposit: bigNum(appealDeposit),
     confirmAppealDeposit: bigNum(confirmAppealDeposit),
+    settledAt: parseInt(settledAt || 0, 10) * 1000,
   }
 }
 

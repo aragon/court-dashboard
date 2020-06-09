@@ -9,28 +9,36 @@ import {
 } from '../utils/appeal-utils'
 import { getRoundFees } from '../utils/dispute-utils'
 import { useWallet } from '../providers/Wallet'
+import { useJurorLastWithdrawalTimeSubscription } from './subscription-hooks'
 
 export default function useJurorRewards() {
   const courtConfig = useCourtConfig()
   const wallet = useWallet()
   const { jurorDrafts, appeals } = useDashboardState()
+  const lastWithdrawalTime = useJurorLastWithdrawalTimeSubscription(
+    wallet.account
+  )
 
   // For arbitrable and appeal fees we will use a map where map = [disputeId, { amount, rounds }]
   // Where rounds::Set
-  // This is useful since it can happen that a juror has rewards from many rounds on the same dispute
-  // We also need the data set this way so it's easier to claim rewards later
+  // This is useful as jurors could have rewards from many rounds for the same dispute
+  // This data set also helps to claim rewards transparently.
   return useMemo(() => {
-    if (!jurorDrafts || !appeals) return null
+    if (!jurorDrafts || !appeals || !lastWithdrawalTime) return null
 
     // Get ruling and disputes fees
     // Only jurors that voted in consensus with the winning outcome can claim rewards (coherent jurors)
+    // We also include already settled rewards which have not been withdrawn from the treasury yet.
     const { rulingFees, arbitrableFees } = jurorDrafts
       .filter(
         jurorDraft =>
-          jurorDraft.round.settledPenalties && isJurorCoherent(jurorDraft)
+          jurorDraft.round.settledPenalties &&
+          (!jurorDraft.rewarded ||
+            jurorDraft.rewardedAt > lastWithdrawalTime) &&
+          isJurorCoherent(jurorDraft)
       )
       .reduce(
-        ({ rulingFees, arbitrableFees }, { weight, round }) => {
+        ({ rulingFees, arbitrableFees }, { rewarded, round, weight }) => {
           const { jurorFees, coherentJurors, collectedTokens, dispute } = round
 
           // Calculate fees
@@ -46,7 +54,8 @@ export default function useJurorRewards() {
               arbitrableFees,
               dispute.id,
               round.number,
-              disputeFeesAmount
+              disputeFeesAmount,
+              rewarded
             ),
           }
         },
@@ -59,10 +68,11 @@ export default function useJurorRewards() {
       .filter(
         appeal =>
           appeal.round.settledPenalties &&
+          (!appeal.settled || appeal.settledAt > lastWithdrawalTime) &&
           shouldAppealerBeRewarded(appeal, wallet.account)
       )
       .reduce((appealsFee, appeal) => {
-        const { round } = appeal
+        const { round, settled } = appeal
 
         // We need to calculate the totalFees of the next round since this amount will be discounted from the appeal reward for the appealer
         const nextRoundId = round.number + 1
@@ -79,7 +89,8 @@ export default function useJurorRewards() {
           appealsFee,
           round.dispute.id,
           round.number,
-          appealerFees
+          appealerFees,
+          settled
         )
       }, new Map())
 
@@ -91,7 +102,7 @@ export default function useJurorRewards() {
         distribution: getDisputesFeesDistribution(arbitrableFees, appealFees),
       },
     }
-  }, [appeals, wallet, courtConfig, jurorDrafts])
+  }, [appeals, courtConfig, jurorDrafts, lastWithdrawalTime, wallet])
 }
 
 /**
@@ -100,23 +111,34 @@ export default function useJurorRewards() {
  * @param {Number} disputeId Id of the dispute
  * @param {Number} roundId Id of the round
  * @param {BigNum} feeAmount Amount of fees to add to the entry
+ * @param {Boolean} settled True if fees for the given round are settled
  * @returns {Map} Updated map with the new entry or the amount updated
  */
-function setOrUpdateFee(feeMap, disputeId, roundId, feeAmount) {
+function setOrUpdateFee(
+  feeMap,
+  disputeId,
+  roundId,
+  feeAmount,
+  settled = false
+) {
+  let feeEntry
+
   if (feeMap.has(disputeId)) {
-    const disputeFee = feeMap.get(disputeId)
-    const updatedFeeAmount = disputeFee.amount.add(feeAmount)
-    feeMap.set(disputeId, {
-      rounds: disputeFee.rounds.add(roundId),
-      amount: updatedFeeAmount,
-    })
+    const { amount, rounds, settledAmount } = feeMap.get(disputeId)
+    feeEntry = {
+      amount: amount.add(feeAmount),
+      settledAmount: settled ? settledAmount.add(feeAmount) : settledAmount,
+      rounds: [...rounds, { roundId, settled }],
+    }
   } else {
-    feeMap.set(disputeId, {
+    feeEntry = {
       amount: feeAmount,
-      rounds: new Set([roundId]),
-    })
+      settledAmount: settled ? feeAmount : bigNum(0),
+      rounds: [{ roundId, settled }],
+    }
   }
 
+  feeMap.set(disputeId, feeEntry)
   return feeMap
 }
 
@@ -132,15 +154,15 @@ function getDisputesFeesDistribution(artbitrableFeesMap, appealFeesMap) {
 
   const disputeFees = []
   for (const [disputeId, { amount }] of artbitrableFeesMap.entries()) {
-    let feeAmount = amount
+    let totalFeeAmount = amount
 
     if (appealFeesMapCopy.has(disputeId)) {
       const appealFee = appealFeesMap.get(disputeId)
-      feeAmount = feeAmount.add(appealFee.amount)
+      totalFeeAmount = totalFeeAmount.add(appealFee.amount)
       appealFeesMapCopy.delete(disputeId)
     }
 
-    disputeFees.push({ disputeId, amount: feeAmount })
+    disputeFees.push({ disputeId, amount: totalFeeAmount })
   }
 
   // Add the reaminaing appealing fees in case there wasn't an arbitrable reward in the remaining disputes
@@ -158,8 +180,12 @@ function getDisputesFeesDistribution(artbitrableFeesMap, appealFeesMap) {
  */
 function feeMapToArray(feeMap) {
   const arr = []
-  for (const [disputeId, { amount, rounds }] of feeMap) {
-    arr.push({ disputeId, amount, rounds: Array.from(rounds).sort() })
+  for (const [disputeId, { rounds, ...feeEntry }] of feeMap) {
+    arr.push({
+      disputeId,
+      ...feeEntry,
+      rounds: rounds.sort((r1, r2) => r1.roundId - r2.roundId),
+    })
   }
 
   return arr

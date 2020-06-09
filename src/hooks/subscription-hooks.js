@@ -16,7 +16,7 @@ import {
   JurorANJWalletBalance,
   JurorTreasuryBalances,
 } from '../queries/balances'
-import { JurorDraftsFrom, JurorDraftsNotRewarded } from '../queries/jurorDrafts'
+import { JurorDraftsFrom, JurorDraftsRewards } from '../queries/jurorDrafts'
 
 // utils
 import { bigNum } from '../lib/math-utils'
@@ -33,6 +33,7 @@ import {
 
 // types
 import { CourtModuleType } from '../types/court-module-types'
+import { JurorLastFeeWithdrawal } from '../queries/juror'
 
 const NO_AMOUNT = bigNum(0)
 
@@ -244,17 +245,17 @@ export function useCurrentTermJurorDraftsSubscription(
 }
 
 /**
- * Subscribes to all `jurorId` drafts that are not yet rewarded
+ * Subscribes to all `jurorId` drafts
  * @dev This subscription is useful to get all rewards pending for claiming as well
  * as for the amount of locked ANJ a juror has per dispute
  * Ideally we would check that the round is not settled but we cannot do nested filters for now
  *
  * @param {String} jurorId Address of the juror
- * @returns {Object} All `jurorId` drafts not yet rewarded
+ * @returns {Object} All `jurorId` drafts
  */
-export function useJurorDraftsNotRewardedSubscription(jurorId) {
+export function useJurorDraftsRewardsSubscription(jurorId) {
   const [{ data, error }] = useSubscription({
-    query: JurorDraftsNotRewarded,
+    query: JurorDraftsRewards,
     variables: { id: jurorId.toLowerCase() },
   })
 
@@ -263,47 +264,46 @@ export function useJurorDraftsNotRewardedSubscription(jurorId) {
       return null
     }
 
-    return data.juror ? data.juror.drafts.map(transformJurorDataAttributes) : []
+    return data.juror?.drafts.map(transformJurorDataAttributes) || []
   }, [data])
 
   return { jurorDrafts, fetching: !jurorDrafts && !error, error }
 }
 
-function useAppealsByMaker(jurorId, settled) {
+function useAppealsByMaker(jurorId) {
   const [{ data, error }] = useSubscription({
     query: AppealsByMaker,
-    variables: { maker: jurorId.toLowerCase(), settled },
+    variables: { maker: jurorId.toLowerCase() },
   })
 
   return { data, error }
 }
 
-function useAppealsByTaker(jurorId, settled) {
+function useAppealsByTaker(jurorId) {
   const [{ data, error }] = useSubscription({
     query: AppealsByTaker,
-    variables: { taker: jurorId.toLowerCase(), settled },
+    variables: { taker: jurorId.toLowerCase() },
   })
 
   return { data, error }
 }
 
 /**
- * Subscribes to all `jurorId` appeal collaterals that are `!settled ? 'not': ''` settled
+ * Subscribes to all `jurorId` appeal collaterals
  * @dev Since we cannot do or operators on graphql queries, we need to get appeals by taker and maker separately
  *
  * @param {String} jurorId Address of the juror
- * @param {Boolean} settled Tells if appeals should be settled or not
- * @returns {Object} All current `jurorId` appeal collaterals
+ * @returns {Object} All `jurorId` appeal collaterals
  */
-export function useAppealsByUserSubscription(jurorId, settled) {
+export function useAppealsByUserSubscription(jurorId) {
   const {
     data: makerAppealsData,
     error: makerAppealsError,
-  } = useAppealsByMaker(jurorId, settled)
+  } = useAppealsByMaker(jurorId)
   const {
     data: takerAppealsData,
     error: takerAppealsError,
-  } = useAppealsByTaker(jurorId, settled)
+  } = useAppealsByTaker(jurorId)
 
   const appeals = useMemo(() => {
     if (!makerAppealsData || !takerAppealsData) {
@@ -360,4 +360,27 @@ export function useTotalRewardsSubscription() {
   const rewards = data?.feeMovements || null
 
   return { data: rewards, error }
+}
+
+/**
+ * Queries for the last withdrawal fee movement time made by the given juror
+ * @param {String} jurorId Address of the juror
+ * @returns {Object} Juror's last withdrawal fee movement
+ */
+export function useJurorLastWithdrawalTimeSubscription(jurorId) {
+  const [{ data }] = useSubscription({
+    query: JurorLastFeeWithdrawal,
+    variables: { owner: jurorId?.toLowerCase() },
+    pause: !jurorId,
+  })
+
+  if (!data) {
+    return null
+  }
+
+  if (data.feeMovements.length === 0) {
+    return -1
+  }
+
+  return data.feeMovements[0].createdAt * 1000
 }
