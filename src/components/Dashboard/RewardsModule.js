@@ -18,23 +18,29 @@ import { useCourtConfig } from '../../providers/CourtConfig'
 import useJurorSubscriptionFees from '../../hooks/useJurorSubscriptionFees'
 
 import { addressesEqual } from '../../lib/web3-utils'
+import {
+  getTotalFees,
+  getTotalSettledFees,
+  filterSettledRounds,
+} from '../../utils/rewards-utils'
 import { bigNum, formatTokenAmount } from '../../lib/math-utils'
 
 const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
   return useMemo(() => {
-    const totalArbitrableFees = Array.isArray(arbitrableFees)
-      ? arbitrableFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
-      : bigNum(0)
+    const [totalArbitrableFees, totalAppealFees, totalSubscriptionFees] = [
+      arbitrableFees,
+      appealFees,
+      subscriptionFees,
+    ].map(fees => getTotalFees(fees))
 
-    const totalAppealFees = Array.isArray(appealFees)
-      ? appealFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
-      : bigNum(0)
+    const totalSettledFees = getTotalSettledFees(arbitrableFees, appealFees)
 
-    const totalSubscriptionFees = Array.isArray(subscriptionFees)
-      ? subscriptionFees.reduce((acc, fee) => acc.add(fee.amount), bigNum(0))
-      : bigNum(0)
-
-    return { totalArbitrableFees, totalAppealFees, totalSubscriptionFees }
+    return {
+      totalAppealFees,
+      totalArbitrableFees,
+      totalSettledFees,
+      totalSubscriptionFees,
+    }
   }, [appealFees, arbitrableFees, subscriptionFees])
 }
 
@@ -57,8 +63,9 @@ const RewardsModule = React.memo(function RewardsModule({
   const { anjRewards, feeRewards } = rewards || {}
 
   const {
-    totalArbitrableFees,
     totalAppealFees,
+    totalArbitrableFees,
+    totalSettledFees,
     totalSubscriptionFees,
   } = useTotalFeeRewards(
     feeRewards?.arbitrableFees,
@@ -78,7 +85,10 @@ const RewardsModule = React.memo(function RewardsModule({
   const totalDisputesFees = totalArbitrableFees.add(totalAppealFees)
 
   // All dispute fees are sent to the treasury after being settled
-  const totalTreasuryFees = totalDisputesFees.add(treasuryBalance)
+  // Note that the total dispute fees could include already settled fees so we must discount them from the total treasury fees
+  const totalTreasuryFees = totalDisputesFees
+    .sub(totalSettledFees)
+    .add(treasuryBalance)
   const totalFeeRewards = totalTreasuryFees.add(totalSubscriptionFees)
 
   // Form submission
@@ -88,10 +98,15 @@ const RewardsModule = React.memo(function RewardsModule({
 
       if (!rewards) return
 
+      const nonSettledArbitrables = filterSettledRounds(
+        feeRewards.arbitrableFees
+      )
+      const nonSettledAppeals = filterSettledRounds(feeRewards.appealFees)
+
       onClaimRewards(
         wallet.account,
-        feeRewards.arbitrableFees,
-        feeRewards.appealFees,
+        nonSettledArbitrables,
+        nonSettledAppeals,
         totalTreasuryFees,
         subscriptionFees,
         feeToken.id
@@ -129,19 +144,21 @@ const RewardsModule = React.memo(function RewardsModule({
           <div>
             {rewards && anjRewards.gt(0) && <ANJRewards amount={anjRewards} />}
             {totalFeeRewards.gt(0) && (
-              <form onSubmit={handleFormSubmit}>
-                {totalDisputesFees.gt(0) && (
-                  <DisputesFeeRewards
-                    totalAppealFees={totalAppealFees}
-                    totalArbitrableFees={totalArbitrableFees}
-                    distribution={feeRewards.distribution}
-                  />
-                )}
-                {totalSubscriptionFees.gt(0) && (
-                  <SubscriptionFeeRewards totalFees={totalSubscriptionFees} />
-                )}
-                <TotalFees totalFees={totalFeeRewards} />
-              </form>
+              <FeeSection>
+                <form onSubmit={handleFormSubmit}>
+                  {totalSubscriptionFees.gt(0) && (
+                    <SubscriptionFeeRewards totalFees={totalSubscriptionFees} />
+                  )}
+                  {totalDisputesFees.gt(0) && (
+                    <DisputesFeeRewards
+                      totalAppealFees={totalAppealFees}
+                      totalArbitrableFees={totalArbitrableFees}
+                      distribution={feeRewards.distribution}
+                    />
+                  )}
+                  <TotalFees totalFees={totalFeeRewards} />
+                </form>
+              </FeeSection>
             )}
           </div>
         )
@@ -200,7 +217,7 @@ const DisputesFeeRewards = ({
   )
 
   return (
-    <FeeSection>
+    <>
       {totalArbitrableFees.gt(0) && (
         <RowFee
           label="Dispute fees"
@@ -250,7 +267,7 @@ const DisputesFeeRewards = ({
           />
         </Help>
       </div>
-    </FeeSection>
+    </>
   )
 }
 
@@ -264,17 +281,15 @@ function SubscriptionFeeRewards({ totalFees }) {
   )
 
   return (
-    <FeeSection>
-      <RowFee
-        label="Subscriptions"
-        amount={formattedAmount}
-        symbol={feeToken.symbol}
-        showPositive
-        css={`
-          margin-bottom: ${2 * GU}px;
-        `}
-      />
-    </FeeSection>
+    <RowFee
+      label="Subscriptions"
+      amount={formattedAmount}
+      symbol={feeToken.symbol}
+      showPositive
+      css={`
+        margin-bottom: ${2 * GU}px;
+      `}
+    />
   )
 }
 
@@ -286,31 +301,30 @@ function TotalFees({ totalFees }) {
   const totalFeesFormatted = formatTokenAmount(totalFees, true, decimals, true)
 
   return (
-    <FeeSection>
-      <div>
-        <h3
-          css={`
-            ${textStyle('label1')};
-            color: ${theme.surfaceContentSecondary};
-            margin-bottom: ${1 * GU}px;
-          `}
-        >
-          Total
-        </h3>
-        <RowFee
-          label="Total rewards"
-          amount={totalFeesFormatted}
-          symbol={symbol}
-          showPositive
-          css={`
-            margin-bottom: ${2 * GU}px;
-          `}
-        />
-        <Button mode="positive" type="submit" wide>
-          Claim rewards
-        </Button>
-      </div>
-    </FeeSection>
+    <div
+      css={`
+        border-top: 1px solid ${theme.border};
+        margin-top: ${2 * GU}px;
+        padding-top: ${2 * GU}px;
+      `}
+    >
+      <RowFee
+        label="Total rewards"
+        amount={totalFeesFormatted}
+        symbol={symbol}
+        showPositive
+      />
+      <Button
+        mode="positive"
+        type="submit"
+        wide
+        css={`
+          margin-top: ${2 * GU}px;
+        `}
+      >
+        Claim rewards
+      </Button>
+    </div>
   )
 }
 
