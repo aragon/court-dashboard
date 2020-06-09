@@ -5,6 +5,7 @@ import {
   Status as DisputeStatus,
 } from '../../types/dispute-status-types'
 import DisputeAppeal from './actions/DisputeAppeal'
+import DisputeAutoReveal from './DisputeAutoReveal'
 import DisputeDraft from './actions/DisputeDraft'
 import DisputeExecuteRuling from './actions/DisputeExecuteRuling'
 import DisputeReveal from './actions/DisputeReveal'
@@ -74,12 +75,21 @@ function DisputeActions({
         lastRound={lastRound}
       />
       {(() => {
-        // Means juror has already voted
-        if (phase === DisputePhase.VotingPeriod) return null
+        // If connected account not drafted for current dispute
+        if (!isJurorDrafted) return null
 
-        // If we are past the voting period && juror not drafted
-        // or juror drafted and hasn't voted
-        if (!isJurorDrafted || !jurorHasVoted) return null
+        // If juror has already voted
+        if (phase === DisputePhase.VotingPeriod)
+          return (
+            <DisputeAutoReveal
+              disputeId={dispute.id}
+              roundId={dispute.lastRoundId}
+              jurorDraft={jurorDraft}
+            />
+          )
+
+        // If we are past the voting period && juror hasn't voted
+        if (!jurorHasVoted) return null
 
         // If reveal period has already pass
         if (phase !== DisputePhase.RevealVote) return null
