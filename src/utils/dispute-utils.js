@@ -1,7 +1,8 @@
+import { toMs } from './date-utils'
 import { bigNum } from '../lib/math-utils'
-import { getTermEndTime, getTermStartTime } from './court-utils'
 import { getOutcomeNumber } from './crvoting-utils'
 import * as DisputesTypes from '../types/dispute-status-types'
+import { getTermEndTime, getTermStartTime } from './court-utils'
 import { getVoidedDisputesByCourt } from '../flagged-disputes/voided-disputes'
 import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/precedence-campaign-disputes'
 
@@ -13,14 +14,14 @@ export const transformRoundDataAttributes = round => {
 
   return {
     ...round,
-    createdAt: parseInt(round.createdAt, 10) * 1000,
+    createdAt: toMs(parseInt(round.createdAt, 10)),
     draftTermId: parseInt(round.draftTermId, 10),
     delayedTerms: parseInt(round.delayedTerms, 10),
     number: parseInt(round.number),
     jurors: round.jurors.map(juror => ({
       ...juror,
-      commitmentDate: parseInt(juror.commitmentDate || 0, 10) * 1000,
-      revealDate: parseInt(juror.revealDate || 0, 10) * 1000,
+      commitmentDate: toMs(parseInt(juror.commitmentDate || 0, 10)),
+      revealDate: toMs(parseInt(juror.revealDate || 0, 10)),
       weight: parseInt(juror.weight, 10),
     })),
     vote: vote
@@ -34,8 +35,8 @@ export const transformRoundDataAttributes = round => {
           ...appeal,
           appealedRuling: parseInt(appeal.appealedRuling, 10),
           opposedRuling: parseInt(appeal.opposedRuling, 10),
-          createdAt: parseInt(appeal.createdAt) * 1000,
-          confirmedAt: parseInt(appeal.confirmedAt || 0) * 1000,
+          createdAt: toMs(parseInt(appeal.createdAt)),
+          confirmedAt: toMs(parseInt(appeal.confirmedAt || 0)),
         }
       : null,
     state: DisputesTypes.convertFromString(round.state),
@@ -45,7 +46,7 @@ export const transformRoundDataAttributes = round => {
 export const transformDisputeDataAttributes = dispute => {
   const transformedDispute = {
     ...dispute,
-    createdAt: parseInt(dispute.createdAt, 10) * 1000,
+    createdAt: toMs(parseInt(dispute.createdAt, 10)),
     state: DisputesTypes.convertFromString(dispute.state),
     status:
       DisputesTypes.convertFromString(dispute.state) ===

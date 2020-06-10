@@ -9,6 +9,21 @@ export const JurorFeesClaimed = gql`
   }
 `
 
+// Last juror fee withdrawal movement
+export const JurorLastFeeWithdrawal = gql`
+  subscription JurorLastFeeWithdrawal($owner: Bytes!) {
+    feeMovements(
+      where: { owner: $owner, type: "Withdraw" }
+      orderBy: createdAt
+      orderDirection: desc
+      first: 1
+    ) {
+      id
+      createdAt
+    }
+  }
+`
+
 export const ActiveJurors = gql`
   query ActiveJurors {
     jurors(first: 1000, where: { activeBalance_gt: 0 }) {

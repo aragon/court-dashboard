@@ -1,5 +1,6 @@
 import { bigNum } from '../lib/math-utils'
 import { addressesEqual } from '../lib/web3-utils'
+import { toMs } from './date-utils'
 
 export function transformAppealDataAttributes(appeal) {
   const {
@@ -8,6 +9,7 @@ export function transformAppealDataAttributes(appeal) {
     appealDeposit,
     confirmAppealDeposit,
     round,
+    settledAt,
   } = appeal
 
   return {
@@ -28,6 +30,7 @@ export function transformAppealDataAttributes(appeal) {
     opposedRuling: parseInt(opposedRuling, 10),
     appealDeposit: bigNum(appealDeposit),
     confirmAppealDeposit: bigNum(confirmAppealDeposit),
+    settledAt: toMs(parseInt(settledAt || 0, 10)),
   }
 }
 

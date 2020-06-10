@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 
 export const AppealsByMaker = gql`
-  subscription AppealsByMaker($maker: Bytes!, $settled: Boolean!) {
-    appeals(where: { maker: $maker, settled: $settled }) {
+  subscription AppealsByMaker($maker: Bytes!) {
+    appeals(where: { maker: $maker }) {
       id
       round {
         number
@@ -22,13 +22,15 @@ export const AppealsByMaker = gql`
       appealDeposit
       opposedRuling
       confirmAppealDeposit
+      settled
+      settledAt
     }
   }
 `
 
 export const AppealsByTaker = gql`
-  subscription AppealsByTaker($taker: Bytes!, $settled: Boolean!) {
-    appeals(where: { taker: $taker, settled: $settled }) {
+  subscription AppealsByTaker($taker: Bytes!) {
+    appeals(where: { taker: $taker }) {
       id
       round {
         number
@@ -48,6 +50,8 @@ export const AppealsByTaker = gql`
       taker
       opposedRuling
       confirmAppealDeposit
+      settled
+      settledAt
     }
   }
 `

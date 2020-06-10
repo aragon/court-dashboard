@@ -2,9 +2,8 @@ import React from 'react'
 import { GU, ProgressBar, textStyle, useTheme } from '@aragon/ui'
 import useNow from '../../hooks/useNow'
 import { norm } from '../../lib/math-utils'
-import { getRelativeTime } from '../../utils/date-utils'
+import { getRelativeTime, MINUTE } from '../../utils/date-utils'
 
-const MINUTE = 60 * 1000
 const TX_DURATION_AVERAGE = 2 * MINUTE
 const TX_DURATION_THRESHOLD = TX_DURATION_AVERAGE - MINUTE / 2
 

@@ -8,6 +8,8 @@ export const MINUTE = 60 * SECOND
 export const HOUR = 60 * MINUTE
 export const DAY = 24 * HOUR
 
+export const toMs = seconds => seconds * 1000
+
 const KNOWN_FORMATS = {
   iso: 'YYYY-MM-DDTHH:mm:ssZ',
   onlyDate: 'YYYY-MM-DD',

@@ -17,6 +17,7 @@ import TitleHeader from '../TitleHeader'
 import { Status as DisputeStatus } from '../../types/dispute-status-types'
 import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
 import { DisputeNotFound } from '../../errors'
+import { toMs } from '../../utils/date-utils'
 
 import timelineErrorSvg from '../../assets/timelineError.svg'
 
@@ -40,7 +41,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
     () =>
       (evidenceList || []).map(evidence => ({
         ...evidence,
-        createdAt: evidence.createdAt * 1000,
+        createdAt: toMs(evidence.createdAt),
         data: EthersUtils.toUtf8String(evidence.data),
       })),
     [evidenceList]

@@ -3,7 +3,7 @@ import { useWallet } from '../../providers/Wallet'
 import {
   useAppealsByUserSubscription,
   useJurorBalancesSubscription,
-  useJurorDraftsNotRewardedSubscription,
+  useJurorDraftsRewardsSubscription,
 } from '../../hooks/subscription-hooks'
 
 const DashboardContext = React.createContext()
@@ -60,7 +60,7 @@ function WithSubscription({ Provider, connectedAccount, children }) {
     jurorDrafts,
     fetching: jurorDraftsFetching,
     error: jurorDraftsError,
-  } = useJurorDraftsNotRewardedSubscription(connectedAccount)
+  } = useJurorDraftsRewardsSubscription(connectedAccount)
 
   const fetching = balancesFetching || appealsFetching || jurorDraftsFetching
   const errors = [

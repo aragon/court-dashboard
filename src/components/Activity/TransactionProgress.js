@@ -3,17 +3,17 @@ import PropTypes from 'prop-types'
 import { ProgressBar, GU } from '@aragon/ui'
 import { Transition, animated } from 'react-spring/renderprops'
 import { ActivityStatusType } from './prop-types'
-import { norm } from '../../lib/math-utils'
+import TimeTag from './TimeTag'
+
 import useNow from '../../hooks/useNow'
 import {
   ACTIVITY_STATUS_CONFIRMED,
   ACTIVITY_STATUS_PENDING,
 } from './activity-statuses'
-import TimeTag from './TimeTag'
+import { norm } from '../../lib/math-utils'
+import { MINUTE } from '../../utils/date-utils'
 
-const MINUTE = 60 * 1000
 const DELAY_BEFORE_HIDE = 1000
-
 const TX_DURATION_AVERAGE = 3 * MINUTE
 // threshold at which point we switch to displaying the indeterminate progress
 // bar, so that the user doesn’t get confused by a completed progress bar.
