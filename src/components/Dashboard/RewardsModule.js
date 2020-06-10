@@ -406,7 +406,11 @@ function getTotalSettledFees(arbitrableFees, appealFees) {
     .reduce((acc, amount) => acc.add(amount), bigNum(0))
 }
 
-const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
+const useTotalFeeRewards = (
+  arbitrableFees = [],
+  appealFees = [],
+  subscriptionFees = []
+) => {
   return useMemo(() => {
     const [totalArbitrableFees, totalAppealFees, totalSubscriptionFees] = [
       arbitrableFees,
