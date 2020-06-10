@@ -23,7 +23,10 @@ import { bigNum } from '../lib/math-utils'
 import { dayjs, toMs } from '../utils/date-utils'
 import { groupMovements } from '../utils/anj-movement-utils'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
-import { transformDisputeDataAttributes } from '../utils/dispute-utils'
+import {
+  transformRoundDataAttributes,
+  transformDisputeDataAttributes,
+} from '../utils/dispute-utils'
 import { transformJurorDataAttributes } from '../utils/juror-draft-utils'
 import { transformClaimedFeesDataAttributes } from '../utils/subscription-utils'
 import {
@@ -330,7 +333,8 @@ export function useTasksSubscription() {
     variables: subscriptionVariables,
   })
 
-  const tasks = data?.adjudicationRounds || null
+  const tasks =
+    data?.adjudicationRounds.map(transformRoundDataAttributes) || null
 
   return { tasks, fetching: !data && !error, error }
 }
