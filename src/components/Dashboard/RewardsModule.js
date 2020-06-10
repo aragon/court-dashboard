@@ -18,31 +18,7 @@ import { useCourtConfig } from '../../providers/CourtConfig'
 import useJurorSubscriptionFees from '../../hooks/useJurorSubscriptionFees'
 
 import { addressesEqual } from '../../lib/web3-utils'
-import {
-  getTotalFees,
-  getTotalSettledFees,
-  filterSettledRounds,
-} from '../../utils/rewards-utils'
 import { bigNum, formatTokenAmount } from '../../lib/math-utils'
-
-const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
-  return useMemo(() => {
-    const [totalArbitrableFees, totalAppealFees, totalSubscriptionFees] = [
-      arbitrableFees,
-      appealFees,
-      subscriptionFees,
-    ].map(fees => getTotalFees(fees))
-
-    const totalSettledFees = getTotalSettledFees(arbitrableFees, appealFees)
-
-    return {
-      totalAppealFees,
-      totalArbitrableFees,
-      totalSettledFees,
-      totalSubscriptionFees,
-    }
-  }, [appealFees, arbitrableFees, subscriptionFees])
-}
 
 // anjRewards => ANJ => First settle with `onSettleReward()`, then withdraw
 // feeRewards => DAI =>  First settle with `onSettleReward()` or `onSettleAppealDeposit()`, then withdraw
@@ -74,7 +50,8 @@ const RewardsModule = React.memo(function RewardsModule({
   )
 
   // We'll get the total juror's balance held in the treasury
-  // TODO: Handle possible multiple tokens (fee token can change)
+  // TODO: feeToken can change over time, this means jurors could have multiple balances in the treasury (one for each fee token).
+  //       - Handle potential multiple fee token balances
   const treasuryToken = treasury?.find(({ token }) =>
     addressesEqual(token.id, feeToken.id)
   )
@@ -98,15 +75,10 @@ const RewardsModule = React.memo(function RewardsModule({
 
       if (!rewards) return
 
-      const nonSettledArbitrables = filterSettledRounds(
-        feeRewards.arbitrableFees
-      )
-      const nonSettledAppeals = filterSettledRounds(feeRewards.appealFees)
-
       onClaimRewards(
         wallet.account,
-        nonSettledArbitrables,
-        nonSettledAppeals,
+        feeRewards.arbitrableFees,
+        feeRewards.appealFees,
         totalTreasuryFees,
         subscriptionFees,
         feeToken.id
@@ -420,6 +392,37 @@ const FeeSection = ({ children }) => {
       {children}
     </div>
   )
+}
+
+function getTotalFees(fees, key = 'amount') {
+  return Array.isArray(fees)
+    ? fees.reduce((acc, fee) => acc.add(fee[key]), bigNum(0))
+    : bigNum(0)
+}
+
+function getTotalSettledFees(arbitrableFees, appealFees) {
+  return [arbitrableFees, appealFees]
+    .map(fees => getTotalFees(fees, 'settledAmount'))
+    .reduce((acc, amount) => acc.add(amount), bigNum(0))
+}
+
+const useTotalFeeRewards = (arbitrableFees, appealFees, subscriptionFees) => {
+  return useMemo(() => {
+    const [totalArbitrableFees, totalAppealFees, totalSubscriptionFees] = [
+      arbitrableFees,
+      appealFees,
+      subscriptionFees,
+    ].map(fees => getTotalFees(fees))
+
+    const totalSettledFees = getTotalSettledFees(arbitrableFees, appealFees)
+
+    return {
+      totalAppealFees,
+      totalArbitrableFees,
+      totalSettledFees,
+      totalSubscriptionFees,
+    }
+  }, [appealFees, arbitrableFees, subscriptionFees])
 }
 
 export default RewardsModule

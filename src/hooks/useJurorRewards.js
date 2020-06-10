@@ -20,9 +20,9 @@ export default function useJurorRewards() {
   )
 
   // For arbitrable and appeal fees we will use a map where map = [disputeId, { amount, rounds }]
-  // Where rounds::Set
+  // Where `rounds` is the array of roundIds of non settled rounds
   // This is useful as jurors could have rewards from many rounds for the same dispute
-  // This data set also helps to claim rewards transparently.
+  // which will need to be settled (in case they aren't) before withdrawing them from the treasury
   return useMemo(() => {
     if (!jurorDrafts || !appeals || !lastWithdrawalTime) return null
 
@@ -128,13 +128,13 @@ function setOrUpdateFee(
     feeEntry = {
       amount: amount.add(feeAmount),
       settledAmount: settled ? settledAmount.add(feeAmount) : settledAmount,
-      rounds: [...rounds, { roundId, settled }],
+      rounds: [...rounds, ...(settled ? [] : [roundId])],
     }
   } else {
     feeEntry = {
       amount: feeAmount,
       settledAmount: settled ? feeAmount : bigNum(0),
-      rounds: [{ roundId, settled }],
+      rounds: settled ? [] : [roundId],
     }
   }
 
@@ -184,7 +184,7 @@ function feeMapToArray(feeMap) {
     arr.push({
       disputeId,
       ...feeEntry,
-      rounds: rounds.sort((r1, r2) => r1.roundId - r2.roundId),
+      rounds: rounds.sort(),
     })
   }
 

@@ -1,6 +1,7 @@
 import { CourtModuleType } from '../types/court-module-types'
 import { bigNum } from '../lib/math-utils'
 import { transformSubscriptionModuleDataAttributes } from './subscription-utils'
+import { toMs } from './date-utils'
 
 export function transformCourtConfigDataAttributes(courtConfig) {
   const { subscriptions: subscriptionModule } = courtConfig
@@ -11,7 +12,7 @@ export function transformCourtConfigDataAttributes(courtConfig) {
     jurorFee: bigNum(courtConfig.jurorFee),
     minActiveBalance: bigNum(courtConfig.minActiveBalance),
     maxRegularAppealRounds: parseInt(courtConfig.maxRegularAppealRounds, 10),
-    termDuration: parseInt(courtConfig.termDuration, 10) * 1000,
+    termDuration: toMs(parseInt(courtConfig.termDuration, 10)),
     currentTerm: parseInt(courtConfig.currentTerm, 10),
     evidenceTerms: parseInt(courtConfig.evidenceTerms, 10),
     commitTerms: parseInt(courtConfig.commitTerms, 10),
@@ -20,7 +21,7 @@ export function transformCourtConfigDataAttributes(courtConfig) {
     appealConfirmationTerms: parseInt(courtConfig.appealConfirmationTerms, 10),
     terms: courtConfig.terms.map(term => ({
       ...term,
-      startTime: parseInt(term.startTime, 10) * 1000,
+      startTime: toMs(parseInt(term.startTime, 10)),
     })),
     subscriptionModule: transformSubscriptionModuleDataAttributes(
       subscriptionModule

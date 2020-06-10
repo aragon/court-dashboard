@@ -20,7 +20,7 @@ import { JurorDraftsFrom, JurorDraftsRewards } from '../queries/jurorDrafts'
 
 // utils
 import { bigNum } from '../lib/math-utils'
-import { dayjs } from '../utils/date-utils'
+import { dayjs, toMs } from '../utils/date-utils'
 import { groupMovements } from '../utils/anj-movement-utils'
 import { transformAppealDataAttributes } from '../utils/appeal-utils'
 import { transformDisputeDataAttributes } from '../utils/dispute-utils'
@@ -365,7 +365,7 @@ export function useTotalRewardsSubscription() {
 /**
  * Queries for the last withdrawal fee movement time made by the given juror
  * @param {String} jurorId Address of the juror
- * @returns {Object} Juror's last withdrawal fee movement
+ * @returns {Number} Juror's last withdrawal fee movement date in unix time
  */
 export function useJurorLastWithdrawalTimeSubscription(jurorId) {
   const [{ data }] = useSubscription({
@@ -382,5 +382,5 @@ export function useJurorLastWithdrawalTimeSubscription(jurorId) {
     return -1
   }
 
-  return data.feeMovements[0].createdAt * 1000
+  return toMs(data.feeMovements[0].createdAt)
 }

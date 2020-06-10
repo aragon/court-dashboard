@@ -1,3 +1,4 @@
+import { toMs } from './date-utils'
 import { bigNum } from '../lib/math-utils'
 
 export function transformSubscriptionModuleDataAttributes(subscriptionModule) {
@@ -5,7 +6,7 @@ export function transformSubscriptionModuleDataAttributes(subscriptionModule) {
     ...subscriptionModule,
     currentPeriod: parseInt(subscriptionModule.currentPeriod, 10),
     feeAmount: bigNum(subscriptionModule.feeAmount),
-    periodDuration: parseInt(subscriptionModule.periodDuration) * 1000,
+    periodDuration: toMs(parseInt(subscriptionModule.periodDuration)),
     periods: subscriptionModule.periods.map(period => ({
       ...period,
       id: parseInt(period.id, 10),

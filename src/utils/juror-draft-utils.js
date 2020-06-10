@@ -1,6 +1,7 @@
 import { addressesEqual } from '../lib/web3-utils'
 import { isvoteLeaked } from './crvoting-utils'
 import { bigNum } from '../lib/math-utils'
+import { toMs } from './date-utils'
 
 export function getJurorDraft(round, jurorId) {
   if (!round) return null
@@ -33,7 +34,7 @@ export function transformJurorDataAttributes(jurorDraft) {
 
   return {
     ...jurorDraft,
-    rewardedAt: parseInt(rewardedAt || 0, 10) * 1000,
+    rewardedAt: toMs(parseInt(rewardedAt || 0, 10)),
     weight: bigNum(weight),
     round: {
       ...round,
