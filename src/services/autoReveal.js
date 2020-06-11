@@ -3,20 +3,28 @@ import { getVoteId, hashPassword } from '../utils/crvoting-utils'
 
 const COURT_SERVER_ENDPOINT = courtServerEndpoint()
 
-export default async (juror, disputeId, roundId, outcome, password) => {
+export async function requestAutoReveal(
+  juror,
+  disputeId,
+  roundId,
+  outcome,
+  password
+) {
   const voteId = getVoteId(disputeId, roundId).toString()
   const salt = hashPassword(password)
+
+  const body = JSON.stringify({
+    juror: juror.toLowerCase(),
+    voteId,
+    outcome: outcome.toString(),
+    salt,
+  })
 
   try {
     const rawResponse = await fetch(`${COURT_SERVER_ENDPOINT}/reveals`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        juror: juror.toLowerCase(),
-        voteId,
-        outcome: outcome.toString(),
-        salt,
-      }),
+      body,
     })
 
     if (rawResponse.ok) {
@@ -41,27 +49,20 @@ export async function getAutoRevealRequest(juror, disputeId, roundId) {
   const voteId = getVoteId(disputeId, roundId).toString()
 
   try {
-    const rawResponse = await fetch(`${COURT_SERVER_ENDPOINT}/reveal`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        juror: juror.toLowerCase(),
-        voteId,
-      }),
-    })
+    const rawResponse = await fetch(
+      `${COURT_SERVER_ENDPOINT}/reveals/${juror}/${voteId}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
 
     if (rawResponse.ok) {
-      return
+      const { reveal } = await rawResponse.json()
+      return reveal
     }
 
-    const response = await rawResponse.json()
-    const errors = response.errors
-      .map(err => Object.values(err).join(', '))
-      .join(', ')
-
-    throw new Error(
-      `Failed to request auto-reveal service due to errors: ${errors}`
-    )
+    return null
   } catch (err) {
     console.error(err)
     throw err
