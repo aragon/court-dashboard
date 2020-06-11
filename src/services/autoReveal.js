@@ -13,18 +13,16 @@ export async function requestAutoReveal(
   const voteId = getVoteId(disputeId, roundId).toString()
   const salt = hashPassword(password)
 
-  const body = JSON.stringify({
-    juror: juror.toLowerCase(),
-    voteId,
-    outcome: outcome.toString(),
-    salt,
-  })
-
   try {
     const rawResponse = await fetch(`${COURT_SERVER_ENDPOINT}/reveals`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body,
+      body: JSON.stringify({
+        juror: juror.toLowerCase(),
+        voteId,
+        outcome: outcome.toString(),
+        salt,
+      }),
     })
 
     if (rawResponse.ok) {
