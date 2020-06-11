@@ -30,6 +30,7 @@ import IconRewardsGreen from '../../assets/IconRewardsGreen.svg'
 
 function DisputeActions({
   dispute,
+  onAutoReveal,
   onDraft,
   onExecuteRuling,
   onRequestCommit,
@@ -83,8 +84,9 @@ function DisputeActions({
           return (
             <DisputeAutoReveal
               disputeId={dispute.id}
+              commitment={jurorDraft.commitment}
+              onAutoReveal={onAutoReveal}
               roundId={dispute.lastRoundId}
-              jurorDraft={jurorDraft}
             />
           )
 
