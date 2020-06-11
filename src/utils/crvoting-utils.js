@@ -158,3 +158,34 @@ export function isvoteLeaked(outcome) {
 export function getTotalOutcomeWeight(outcomes) {
   return outcomes.reduce((acc, { weight }) => acc + weight, 0)
 }
+
+// Local storage helper functions
+
+// One time codes
+export function saveCodeInLocalStorage(
+  connectedAccount,
+  disputeId,
+  oneTimeCode
+) {
+  localStorage.setItem(
+    `oneTimeCode:${connectedAccount}:${disputeId}`,
+    oneTimeCode
+  )
+}
+
+export function getCodeFromLocalStorage(connectedAccount, disputeId) {
+  return localStorage.getItem(`oneTimeCode:${connectedAccount}:${disputeId}`)
+}
+
+export function removeCodeFromLocalStorage(connectedAccount, disputeId) {
+  localStorage.removeItem(`oneTimeCode:${connectedAccount}:${disputeId}`)
+}
+
+// Auto reveal service preference
+export function getAutoRevealPreference(connectedAccount) {
+  return Boolean(localStorage.getItem(`autoRevealService:${connectedAccount}`))
+}
+
+export function saveAutoRevealPreference(connectedAccount, enabled) {
+  localStorage.setItem(`autoRevealService:${connectedAccount}`, enabled)
+}

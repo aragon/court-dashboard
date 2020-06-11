@@ -4,10 +4,10 @@ import { useWallet } from '../../../providers/Wallet'
 import { getJurorDraft } from '../../../utils/juror-draft-utils'
 import { getDisputeLastRound } from '../../../utils/dispute-utils'
 import {
+  getCodeFromLocalStorage,
   getOutcomeFromCommitment,
   isValidOutcome,
 } from '../../../utils/crvoting-utils'
-import { getCodeFromLocalStorage } from '../../../utils/one-time-code-utils'
 
 const RevealPanel = React.memo(function RevealPanel({
   dispute,
