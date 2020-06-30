@@ -182,10 +182,13 @@ export function removeCodeFromLocalStorage(connectedAccount, disputeId) {
 }
 
 // Auto reveal service preference
-export function getAutoRevealPreference(connectedAccount) {
-  return Boolean(localStorage.getItem(`autoRevealService:${connectedAccount}`))
+export function getAutoRevealPreference(connectedAccount, voteId) {
+  return localStorage.getItem(`autoRevealService:${connectedAccount}:${voteId}`)
 }
 
-export function saveAutoRevealPreference(connectedAccount, enabled) {
-  localStorage.setItem(`autoRevealService:${connectedAccount}`, enabled)
+export function saveAutoRevealPreference(connectedAccount, voteId, enabled) {
+  localStorage.setItem(
+    `autoRevealService:${connectedAccount}:${voteId}`,
+    enabled
+  )
 }

@@ -15,7 +15,10 @@ import {
 import useOneTimeCode from '../../../hooks/useOneTimeCode'
 import { useWallet } from '../../../providers/Wallet'
 import IconOneTimeCode from '../../../assets/IconOneTimeCode.svg'
-import { saveAutoRevealPreference } from '../../../utils/crvoting-utils'
+import {
+  getVoteId,
+  saveAutoRevealPreference,
+} from '../../../utils/crvoting-utils'
 
 const CommitPanel = React.memo(function CommitPanel({
   dispute,
@@ -33,7 +36,11 @@ const CommitPanel = React.memo(function CommitPanel({
   const handleCommit = useCallback(
     event => {
       event.preventDefault()
-      saveAutoRevealPreference(connectedAccount, revealService)
+      saveAutoRevealPreference(
+        connectedAccount,
+        getVoteId(dispute.id, dispute.lastRoundId),
+        revealService
+      )
 
       onDone()
       return onCommit(

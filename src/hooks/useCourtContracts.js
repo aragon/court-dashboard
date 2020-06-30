@@ -210,6 +210,7 @@ export function useDisputeActions() {
     [disputeManagerContract, processRequests]
   )
 
+  // request auto reveal
   const autoReveal = useCallback(
     (account, disputeId, roundId, outcome, password) => {
       return {

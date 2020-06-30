@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, GU, Info } from '@aragon/ui'
 import { useWallet } from '../../providers/Wallet'
 
@@ -7,17 +7,29 @@ import {
   getAutoRevealPreference,
   getCodeFromLocalStorage,
   getOutcomeFromCommitment,
+  getVoteId,
 } from '../../utils/crvoting-utils'
 
 function DisputeAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
   const { account } = useWallet()
 
-  const autoRevealRequested = useAutoRevealPolling(account, disputeId, roundId)
+  const [autoRevealRequested, loading] = useAutoRevealPolling(
+    account,
+    disputeId,
+    roundId
+  )
 
-  if (autoRevealRequested) {
-    return <Info>Auto reveal enabled!</Info>
+  if (loading) {
+    return null
   }
 
+  // Juror already requested the auto reveal service for this dispute
+  if (autoRevealRequested) {
+    return <Info>Auto reveal requested!</Info>
+  }
+
+  // This component is rendered if the juror requested the auto reveal service and failed
+  // or if the juror didn't request the service at all. In the later case it's still useful to give the juror the option to do so.
   return (
     <RequestAutoReveal
       commitment={commitment}
@@ -30,7 +42,11 @@ function DisputeAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
 
 function RequestAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
   const { account } = useWallet()
-  const autoRevealServiceEnabled = getAutoRevealPreference(account)
+  const voteId = getVoteId(disputeId, roundId)
+
+  // auto reveal preference can be either 'true' or 'false'
+  const autoRevealPreference = getAutoRevealPreference(account, voteId)
+  const autoRevealPreviouslyRequested = autoRevealPreference === 'true'
 
   const handleSubmit = useCallback(
     event => {
@@ -52,15 +68,15 @@ function RequestAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
         type="submit"
         wide
       />
-      {autoRevealServiceEnabled && (
+      {autoRevealPreviouslyRequested && (
         <Info
           mode="warning"
           css={`
             margin-top: ${2 * GU}px;
           `}
         >
-          The auto-reveal service request has failed. Please click on the button
-          above to resend the request, reveal your vote and enable the service.
+          Your previous request to enable the auto-reveal service for this vote
+          failed.
         </Info>
       )}
     </form>
@@ -69,26 +85,28 @@ function RequestAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
 
 function useAutoRevealPolling(account, disputeId, roundId) {
   const [autoRevealRequested, setAutoRevealRequested] = useState(false)
+  const [loading, setLoading] = useState(false)
   const timer = 3000
-
-  // We start the timeout timer in 0 in order to immediately make the api call
-  const controlledTimer = useRef(0)
 
   useEffect(() => {
     if (autoRevealRequested) {
       return
     }
 
-    // Assumes jurorDraft exists
+    // We start the timeout timer at 0 to immediately make the api call on render
+    let controlledTimer = 0
+
     let cancelled = false
     let timeoutId
 
-    const fetchAutoReveal = () => {
+    // Assumes jurorDraft exists
+    const fetchAutoReveal = timeout => {
       timeoutId = setTimeout(async () => {
         try {
           const reveal = await getAutoRevealRequest(account, disputeId, roundId)
 
           if (!cancelled) {
+            setLoading(false)
             setAutoRevealRequested(Boolean(reveal))
           }
         } catch (err) {
@@ -97,15 +115,16 @@ function useAutoRevealPolling(account, disputeId, roundId) {
 
         if (!cancelled) {
           clearTimeout(timeoutId)
-          controlledTimer.current = timer
+          controlledTimer = timer
           if (!autoRevealRequested) {
             fetchAutoReveal()
           }
         }
-      }, controlledTimer.current)
+      }, timeout)
     }
 
-    fetchAutoReveal()
+    setLoading(true)
+    fetchAutoReveal(controlledTimer)
 
     return () => {
       cancelled = true
@@ -113,7 +132,7 @@ function useAutoRevealPolling(account, disputeId, roundId) {
     }
   }, [account, autoRevealRequested, disputeId, roundId])
 
-  return autoRevealRequested
+  return [autoRevealRequested, loading]
 }
 
 export default DisputeAutoReveal
