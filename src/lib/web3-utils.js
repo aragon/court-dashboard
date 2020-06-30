@@ -139,7 +139,7 @@ export function isLocalOrUnknownNetwork(chainId = env('CHAIN_ID')) {
 }
 
 export function hexToAscii(hexx) {
-  const hex = hexx.toString()
+  const hex = hexx.slice(2).toString()
   let str = ''
   for (let i = 0; i < hex.length && hex.substr(i, 2) !== '00'; i += 2)
     str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))

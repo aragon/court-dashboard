@@ -9,12 +9,6 @@ import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/preced
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
 
-function metadataToString(metadata) {
-  return decodeURIComponent(
-    metadata.replace('0x', '').replace(/[0-9a-f]{2}/g, '%$&')
-  )
-}
-
 export const transformRoundDataAttributes = round => {
   const { vote, appeal } = round
 
@@ -53,7 +47,6 @@ export const transformDisputeDataAttributes = dispute => {
   const transformedDispute = {
     ...dispute,
     createdAt: toMs(parseInt(dispute.createdAt, 10)),
-    metadata: metadataToString(dispute.metadata),
     state: DisputesTypes.convertFromString(dispute.state),
     status:
       DisputesTypes.convertFromString(dispute.state) ===
