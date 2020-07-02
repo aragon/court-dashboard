@@ -13,6 +13,8 @@ import {
 function DisputeAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
   const { account } = useWallet()
 
+  // We need to poll for the auto reveal request as we are using the request queue processor for processing juror's request to re-register
+  // to the service and since the request flow is asynchronous, we can't ensure whether it was succesful or not.
   const [autoRevealRequested, loading] = useAutoRevealPolling(
     account,
     disputeId,
@@ -28,8 +30,8 @@ function DisputeAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
     return <Info>Auto reveal requested!</Info>
   }
 
-  // This component is rendered if the juror requested the auto reveal service and failed
-  // or if the juror didn't request the service at all. In the later case it's still useful to give the juror the option to do so.
+  // Juror requested the auto reveal service and failed or juror didn't request the service at all.
+  // For the later case it's still useful to give the juror the option to do so.
   return (
     <RequestAutoReveal
       commitment={commitment}
@@ -49,13 +51,13 @@ function RequestAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
   const autoRevealPreviouslyRequested = autoRevealPreference === 'true'
 
   const handleSubmit = useCallback(
-    event => {
+    async event => {
       event.preventDefault()
 
       const password = getCodeFromLocalStorage(account, disputeId)
       const outcome = getOutcomeFromCommitment(commitment, password)
 
-      onAutoReveal(account, disputeId, roundId, outcome, password)
+      await onAutoReveal(account, disputeId, roundId, outcome, password)
     },
     [account, commitment, disputeId, onAutoReveal, roundId]
   )
@@ -93,9 +95,6 @@ function useAutoRevealPolling(account, disputeId, roundId) {
       return
     }
 
-    // We start the timeout timer at 0 to immediately make the api call on render
-    let controlledTimer = 0
-
     let cancelled = false
     let timeoutId
 
@@ -106,7 +105,6 @@ function useAutoRevealPolling(account, disputeId, roundId) {
           const reveal = await getAutoRevealRequest(account, disputeId, roundId)
 
           if (!cancelled) {
-            setLoading(false)
             setAutoRevealRequested(Boolean(reveal))
           }
         } catch (err) {
@@ -114,17 +112,20 @@ function useAutoRevealPolling(account, disputeId, roundId) {
         }
 
         if (!cancelled) {
+          setLoading(false)
           clearTimeout(timeoutId)
-          controlledTimer = timer
+
+          // Note that if the juror has already requested the auto reveal, the polling behaves as a simple query
           if (!autoRevealRequested) {
-            fetchAutoReveal()
+            fetchAutoReveal(timer)
           }
         }
       }, timeout)
     }
 
     setLoading(true)
-    fetchAutoReveal(controlledTimer)
+    // We start the timeout timer at 0 to immediately make the api call on render
+    fetchAutoReveal(0)
 
     return () => {
       cancelled = true
