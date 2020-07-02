@@ -45,10 +45,7 @@ function DisputeAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
 function RequestAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
   const { account } = useWallet()
   const voteId = getVoteId(disputeId, roundId)
-
-  // auto reveal preference can be either 'true' or 'false'
-  const autoRevealPreference = getAutoRevealPreference(account, voteId)
-  const autoRevealPreviouslyRequested = autoRevealPreference === 'true'
+  const autoRevealPreviouslyRequested = getAutoRevealPreference(account, voteId)
 
   const handleSubmit = useCallback(
     event => {
@@ -87,7 +84,7 @@ function RequestAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
 
 function useAutoRevealPolling(account, disputeId, roundId) {
   const [autoRevealRequested, setAutoRevealRequested] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const timer = 3000
 
   useEffect(() => {
@@ -96,40 +93,32 @@ function useAutoRevealPolling(account, disputeId, roundId) {
     }
 
     let cancelled = false
-    let timeoutId
 
     // Assumes jurorDraft exists
-    const fetchAutoReveal = timeout => {
-      timeoutId = setTimeout(async () => {
-        try {
-          const reveal = await getAutoRevealRequest(account, disputeId, roundId)
-
-          if (!cancelled) {
-            setAutoRevealRequested(Boolean(reveal))
-          }
-        } catch (err) {
-          console.error(`Error fetching auto reveal: ${err} retrying…`)
-        }
-
+    const pollAutoReveal = async () => {
+      try {
+        const reveal = await getAutoRevealRequest(account, disputeId, roundId)
         if (!cancelled) {
-          setLoading(false)
-          clearTimeout(timeoutId)
-
-          // Stop the polling once we know the juror successfully requested the auto reveal
-          if (!autoRevealRequested) {
-            fetchAutoReveal(timer)
-          }
+          setAutoRevealRequested(Boolean(reveal))
         }
-      }, timeout)
+      } catch (err) {
+        console.error(`Error fetching auto reveal: ${err} retrying…`)
+      }
+
+      if (!cancelled) {
+        setLoading(false)
+
+        // Stop the polling once we know the juror successfully requested the auto reveal
+        if (!autoRevealRequested) {
+          setTimeout(pollAutoReveal, timer)
+        }
+      }
     }
 
-    setLoading(true)
-    // We start the timeout timer at 0 to immediately make the api call on render
-    fetchAutoReveal(0)
+    pollAutoReveal()
 
     return () => {
       cancelled = true
-      clearTimeout(timeoutId)
     }
   }, [account, autoRevealRequested, disputeId, roundId])
 
