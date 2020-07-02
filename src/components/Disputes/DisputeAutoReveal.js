@@ -115,7 +115,7 @@ function useAutoRevealPolling(account, disputeId, roundId) {
           setLoading(false)
           clearTimeout(timeoutId)
 
-          // Note that if the juror has already requested the auto reveal, the polling behaves as a simple query
+          // Stop the polling once we know the juror successfully requested the auto reveal
           if (!autoRevealRequested) {
             fetchAutoReveal(timer)
           }
