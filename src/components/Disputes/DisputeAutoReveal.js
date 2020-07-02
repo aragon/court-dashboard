@@ -51,13 +51,13 @@ function RequestAutoReveal({ commitment, disputeId, onAutoReveal, roundId }) {
   const autoRevealPreviouslyRequested = autoRevealPreference === 'true'
 
   const handleSubmit = useCallback(
-    async event => {
+    event => {
       event.preventDefault()
 
       const password = getCodeFromLocalStorage(account, disputeId)
       const outcome = getOutcomeFromCommitment(commitment, password)
 
-      await onAutoReveal(account, disputeId, roundId, outcome, password)
+      onAutoReveal(account, disputeId, roundId, outcome, password)
     },
     [account, commitment, disputeId, onAutoReveal, roundId]
   )
