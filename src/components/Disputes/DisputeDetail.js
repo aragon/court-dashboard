@@ -68,6 +68,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
       onRequestReveal={requests.reveal}
       onLeak={actions.leak}
       onRequestAppeal={requests.appeal}
+      onAutoReveal={actions.requestAutoReveal}
       onExecuteRuling={actions.executeRuling}
     />
   )
