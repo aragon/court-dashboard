@@ -13,7 +13,7 @@ import ScreenProviders from './ScreenProviders'
 const SCREENS = [
   {
     id: 'providers',
-    title: 'Ethereum providers',
+    title: 'Use account from',
     height:
       4 * GU + // header
       (12 + 1.5) * GU * Math.ceil(getUseWalletProviders().length / 2) + // buttons
@@ -21,17 +21,17 @@ const SCREENS = [
   },
   {
     id: 'connecting',
-    title: 'Ethereum providers',
+    title: 'Use account from',
     height: 38 * GU,
   },
   {
     id: 'connected',
-    title: 'Active wallet',
+    title: 'Active account',
     height: 22 * GU,
   },
   {
     id: 'error',
-    title: 'Ethereum providers',
+    title: 'Connection error',
     height: 50 * GU,
   },
 ]

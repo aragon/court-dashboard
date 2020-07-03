@@ -45,7 +45,7 @@ function ScreenProviders({ onActivate }) {
         `}
       >
         <Link href="https://ethereum.org/wallets/" css="text-decoration: none">
-          What is an Ethereum provider?
+          Don’t have an Ethereum account?
         </Link>
       </div>
     </div>
