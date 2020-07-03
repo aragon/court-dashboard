@@ -10,19 +10,19 @@ jobs:
   CI:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Install node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12
-    - name: Install dependencies
-      run: yarn install --frozen-lockfile
-    - name: Lint
-      run: yarn lint
-    - name: Build Court Dashboard
-      run: yarn build
-    - name: Run BundleWatch
-      run: yarn bundlewatch
+      - uses: actions/checkout@v1
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Lint
+        run: yarn lint
+      - name: Build Court Dashboard
+        run: yarn build
+      - name: Run BundleWatch
+        run: yarn bundlewatch
     env:
       CI: true
       BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}

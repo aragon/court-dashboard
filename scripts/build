@@ -21,7 +21,7 @@ if (process.env.NOW_GITHUB_COMMIT_REF) {
     .trim()
 }
 
-if (branch === 'development' || branch === 'master') {
+if (branch === 'master') {
   enableSentry = '1'
 }
 
