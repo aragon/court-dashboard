@@ -1,0 +1,3 @@
+[
+  "function getVote(uint256) external view returns (bool,bool,uint64,uint64,uint64,uint64,uint64,uint256,uint256,uint256,bytes)"
+]

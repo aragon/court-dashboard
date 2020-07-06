@@ -1,0 +1,3 @@
+[
+  "function appId() public view returns (bytes32)"
+]
