@@ -10,7 +10,7 @@ import {
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
 import { convertToString, Status } from '../types/dispute-status-types'
-import { hexToAscii } from '../lib/web3-utils'
+import { getDisputedActionRadspec } from '../utils/disputable-utils'
 
 const IPFS_ERROR_MSG = 'Error loading content from ipfs'
 
@@ -44,10 +44,8 @@ export default function useDisputes() {
 
     return {
       disputes: disputes.map((dispute, i) => {
-        const { description } = getDisputeInfo(dispute)
         return {
           ...dispute,
-          description,
           ...disputesPhases[i],
         }
       }),
@@ -71,7 +69,7 @@ export function useDispute(disputeId) {
     error: graphError,
   } = useSingleDisputeSubscription(disputeId)
 
-  const disputeProcessed = useProcessedDispute(dispute)
+  const processedDispute = useProcessedDispute(dispute)
   const disputePhase = getPhaseAndTransition(
     dispute,
     currentTermId,
@@ -82,16 +80,16 @@ export function useDispute(disputeId) {
     : ''
 
   const graphErrorMessage = graphError?.message || ''
-  const disputeErrorMessage = disputeProcessed?.error || graphErrorMessage
+  const disputeErrorMessage = processedDispute?.error || graphErrorMessage
 
   return useMemo(
     () => {
-      const fetching = graphFetching || (dispute && !disputeProcessed)
+      const fetching = graphFetching || (dispute && !processedDispute)
 
       return [
-        dispute && disputeProcessed
+        dispute && processedDispute
           ? {
-              ...disputeProcessed,
+              ...processedDispute,
               ...disputePhase,
             }
           : null,
@@ -107,79 +105,31 @@ export function useDispute(disputeId) {
     [
       disputeErrorMessage,
       disputePhaseKey,
-      disputeProcessed,
       graphErrorMessage,
       graphFetching,
+      processedDispute,
     ]
     /* eslint-enable react-hooks/exhaustive-deps */
   )
 }
 
 function useProcessedDispute(dispute) {
-  const [disputeProcessed, setDisputeProcessed] = useState(null)
+  const [processedDispute, setProcessedDispute] = useState(null)
 
   useEffect(() => {
     let cancelled = false
 
-    const fetchDataFromIpfs = async () => {
+    const processDisputeData = async () => {
       if (dispute.status === Status.Voided) {
         return dispute
       }
 
-      const { dataUri, ...disputeInfo } = getDisputeInfo(dispute)
-
-      if (dispute.disputable) {
-        return {
-          ...dispute,
-          ...disputeInfo,
-        }
-      }
-
-      if (dataUri) {
-        const ipfsPath = getIpfsCidFromUri(dataUri)
-
-        if (ipfsPath) {
-          const { data, error } = await ipfsGet(ipfsPath)
-          if (!error) {
-            try {
-              const parsedDisputeData = JSON.parse(data)
-              const agreementText = parsedDisputeData.agreementText.replace(
-                /^.\//,
-                ''
-              )
-              const agreementUrl =
-                agreementText &&
-                resolvePathname(agreementText, `${IPFS_ENDPOINT}/${ipfsPath}`)
-
-              return {
-                ...dispute,
-                description:
-                  parsedDisputeData.description || disputeInfo.description,
-                disputedActionText: parsedDisputeData.disputedActionText || '',
-                disputedActionURL: parsedDisputeData.disputedActionURL || '',
-                agreementText:
-                  parsedDisputeData.agreementTitle || agreementText || '',
-                agreementUrl: agreementUrl || '',
-                disputedActionRadspec:
-                  parsedDisputeData.disputedActionRadspec || '',
-                organization: parsedDisputeData.organization || '',
-                defendant: parsedDisputeData.defendant || '',
-                plaintiff: parsedDisputeData.plaintiff || '',
-                error: '',
-              }
-            } catch (err) {
-              return {
-                ...dispute,
-                description: data,
-              }
-            }
-          }
-        }
-      }
+      const disputeData = await getDisputeData(dispute)
 
       return {
         ...dispute,
-        error: IPFS_ERROR_MSG,
+        ...disputeData,
+        error: disputeData ? null : IPFS_ERROR_MSG,
       }
     }
 
@@ -188,9 +138,9 @@ function useProcessedDispute(dispute) {
         return
       }
 
-      const processedDispute = await fetchDataFromIpfs()
+      const processedDispute = await processDisputeData()
       if (!cancelled) {
-        setDisputeProcessed(processedDispute)
+        setProcessedDispute(processedDispute)
       }
     }
 
@@ -201,42 +151,101 @@ function useProcessedDispute(dispute) {
     }
   }, [dispute])
 
-  return disputeProcessed
+  return processedDispute
 }
 
-function getDisputeInfo(dispute) {
+async function getDisputeData(dispute) {
   // Dispute is agreement
   if (dispute.disputable) {
-    const {
-      // actionId,
-      // address,
-      agreement,
-      defendant,
-      // disputableActionId,
-      plaintiff,
-      organization,
-      title,
-    } = dispute.disputable
+    return processDisputableData(dispute)
+  }
 
-    const agreementIpfsCid = getIpfsCidFromUri(agreement)
+  // Dispute is raw dispute
+  return processRawDisputeData(dispute)
+}
 
-    return {
-      agreementUrl: `${IPFS_ENDPOINT}/${agreementIpfsCid}`,
-      description: title,
-      defendant,
-      plaintiff,
-      organization,
-      agreementText: title,
+async function processDisputableData(dispute) {
+  const {
+    // actionId,
+    address,
+    agreement,
+    defendant,
+    disputableActionId,
+    plaintiff,
+    organization,
+    title,
+  } = dispute.disputable
+
+  const agreementIpfsCid = getIpfsCidFromUri(agreement)
+
+  const radspec = await getDisputedActionRadspec(address, disputableActionId)
+  console.log('radspec', radspec)
+
+  return {
+    agreementText: title,
+    agreementUrl: `${IPFS_ENDPOINT}/${agreementIpfsCid}`,
+    defendant,
+    description: title,
+    organization,
+    plaintiff,
+  }
+}
+
+/**
+ * Processes metadata for raw disputes. `metadataUri` contains the IPFS CID which will be fetched and parsed.
+ * @param {*} dispute Dispute from which data will be processed.
+ * @returns {Object | null} Dispute processed data.
+ */
+async function processRawDisputeData(dispute) {
+  const { description: disputeDescription, metadataUri } = dispute
+
+  if (metadataUri) {
+    const ipfsPath = getIpfsCidFromUri(metadataUri)
+
+    if (ipfsPath) {
+      // Fetch IPFS content
+      const { data, error } = await ipfsGet(ipfsPath)
+      if (!error) {
+        try {
+          // Parse IPFS content
+          const parsedDisputeData = JSON.parse(data)
+          const agreementText = parsedDisputeData.agreementText.replace(
+            /^.\//,
+            ''
+          )
+          const agreementUrl = agreementText
+            ? resolvePathname(agreementText, `${IPFS_ENDPOINT}/${ipfsPath}`)
+            : ''
+
+          const {
+            agreementTitle = '',
+            defendant = '',
+            description = disputeDescription,
+            disputedActionRadspec = '',
+            disputedActionText = '',
+            disputedActionURL = '',
+            organization = '',
+            plaintiff = '',
+          } = parsedDisputeData
+
+          return {
+            agreementText: agreementTitle || agreementText || '',
+            agreementUrl,
+            defendant,
+            description,
+            disputedActionRadspec,
+            disputedActionText,
+            disputedActionURL,
+            organization,
+            plaintiff,
+          }
+        } catch (err) {
+          return {
+            description: data,
+          }
+        }
+      }
     }
   }
-
-  const decodedMetadata = hexToAscii(dispute.metadata)
-
-  try {
-    const { description, metadata } = JSON.parse(decodedMetadata)
-    return { description, dataUri: metadata }
-  } catch (error) {
-    // if is not a json return the metadata as the description
-    return { description: decodedMetadata }
-  }
+  return null
 }

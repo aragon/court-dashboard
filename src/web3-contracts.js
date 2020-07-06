@@ -14,26 +14,23 @@ export function useContract(address, abi, signer = true) {
       return null
     }
 
-    return new EthersContract(
-      address,
-      abi,
-      signer ? ethers.getSigner() : ethers
-    )
+    return getContract(address, abi, signer ? ethers.getSigner() : ethers)
   }, [abi, account, address, ethers, signer])
 }
 
 export function useContractReadOnly(address, abi) {
-  const ethEndpoint = defaultEthNode
-
-  const ethProvider = useMemo(
-    () => (ethEndpoint ? new Providers.JsonRpcProvider(defaultEthNode) : null),
-    [ethEndpoint]
-  )
-
   return useMemo(() => {
     if (!address) {
       return null
     }
-    return new EthersContract(address, abi, ethProvider)
-  }, [abi, address, ethProvider])
+    return getContract(address, abi)
+  }, [abi, address])
+}
+
+export function getContract(
+  address,
+  abi,
+  provider = new Providers.JsonRpcProvider(defaultEthNode)
+) {
+  return new EthersContract(address, abi, provider)
 }

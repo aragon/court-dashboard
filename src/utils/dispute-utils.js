@@ -5,11 +5,12 @@ import * as DisputesTypes from '../types/dispute-status-types'
 import { getTermEndTime, getTermStartTime } from './court-utils'
 import { getVoidedDisputesByCourt } from '../flagged-disputes/voided-disputes'
 import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/precedence-campaign-disputes'
+import { hexToAscii } from '../lib/web3-utils'
 
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
 
-export const transformRoundDataAttributes = round => {
+export function transformRoundDataAttributes(round) {
   const { vote, appeal } = round
 
   return {
@@ -43,9 +44,38 @@ export const transformRoundDataAttributes = round => {
   }
 }
 
-export const transformDisputeDataAttributes = dispute => {
+/**
+ * Parses metadata of the given dispute
+ * @dev Disputes metadata comes in two forms:
+ *        1 - Raw disputes: metadata is usually a JSON object containing `description` and `metadata` where the later is the metadata uri.
+ *        2 - Disputables: there's no useful information in `metadata` itself, in this case we'll get the dispute information from the `disputable` attr.
+ *  Note that this function is meant to parse only dispute description and metadata uri (in case it exists). More relevant information will be processed elsewhere.
+ * @param {Object} dispute Dispute in question
+ * @returns {Array<String>} Array where the first item is the dispute description and second item is the metadata uri if it exists
+ */
+function parseMetadata(dispute) {
+  if (dispute.disputable) {
+    return [dispute.disputable.title]
+  }
+
+  const decodedMetadata = hexToAscii(dispute.metadata)
+
+  try {
+    const { description, metadata } = JSON.parse(decodedMetadata)
+    return [description, metadata]
+  } catch (error) {
+    // if is not a json return the metadata as the description
+    return [decodedMetadata]
+  }
+}
+
+export function transformDisputeDataAttributes(dispute) {
+  const [description, metadataUri] = parseMetadata(dispute)
+
   const transformedDispute = {
     ...dispute,
+    description,
+    metadataUri,
     createdAt: toMs(parseInt(dispute.createdAt, 10)),
     state: DisputesTypes.convertFromString(dispute.state),
     status:
