@@ -196,6 +196,9 @@ async function processDisputableData(dispute) {
     agreementUrl: `${IPFS_ENDPOINT}/${agreementIpfsCid}`,
     defendant,
     description: title,
+    disputedActionRadspec,
+    disputedActionText,
+    disputedActionURL,
     organization,
     plaintiff,
   }
