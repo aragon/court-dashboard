@@ -121,7 +121,13 @@ const DisputeInfo = React.memo(function({
               </Row>
               <Row compactMode={compactMode}>
                 {disputedActionRadspec ? (
-                  <Field label="Description" value={disputedActionRadspec} />
+                  <Field
+                    label="Description"
+                    value={disputedActionRadspec}
+                    css={`
+                      overflow-wrap: anywhere;
+                    `}
+                  />
                 ) : (
                   <div />
                 )}
@@ -241,12 +247,12 @@ function DisputeHeader({ dispute, error }) {
   )
 }
 
-function Field({ label, value }) {
+function Field({ label, value, ...props }) {
   const theme = useTheme()
   const wallet = useWallet()
 
   return (
-    <div>
+    <div {...props}>
       <h2
         css={`
           ${textStyle('label2')};
