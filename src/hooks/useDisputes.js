@@ -166,7 +166,6 @@ async function getDisputeData(dispute) {
 
 async function processDisputableData(dispute) {
   const {
-    // actionId,
     address,
     agreement,
     defendant,

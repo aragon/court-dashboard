@@ -7,8 +7,8 @@ import { getContract } from '../web3-contracts'
 import env from '../environment'
 import {
   addressesEqual,
-  sanitizeNetworkType,
   getNetworkType,
+  sanitizeNetworkType,
 } from '../lib/web3-utils'
 
 // Disputable apps abis
@@ -21,11 +21,11 @@ const MAX_FORWARDING_DEPTH = 4
 
 // Disputable appIds
 const DANDELION_VOTING_APP_ID =
-  '0x2d7442e1c4cb7a7013aecc419f938bdfa55ad32d90002fb92ee5969e27b2bf07'
+  '0x0a85f166c21ad90fc107023e825457adfa137ef94f52f4f695ec00023bd05742' // disputable-dandelion-voting.aragonpm.eth
 const DELAY_APP_ID =
-  '0x1c2b93ad1c4d4302f0169c8f596ce518e4a3324b1fed90c2d80a549a072bcd4e'
+  '0x133c97c74d2197a068988549d31108ce57af8f0ccf90ff9edf0ba5d349f2a450' // disputable-delay.aragonpm.eth
 const VOTING_APP_ID =
-  '0x9fa3927f639745e587912d4b0fea7ef9013bf93fb907d29faeab57417ba6e1d4'
+  '0x09cdc3e6887a0002b11992e954a40326a511a1750a2f5c69d17b8b660b0d337a' // disputable-voting.aragonpm.eth
 
 const cachedDescriptions = new Map([])
 
@@ -65,6 +65,14 @@ const DISPUTABLE_ACTIONS = new Map([
   ],
 ])
 
+/**
+ * Get disputable long and short description as well as the URL where the disputed action is taking place
+ * @param {String} disputeId Id of the dispute
+ * @param {String} organization Address of the organization where the action is being disputed
+ * @param {String} disputableAddress Address of the disputable app where the disputed action is taking place
+ * @param {String} disputableActionId Disputed action's id relative to the disputable app (e.g. in the context of a disputable voting app, vote #6)
+ * @returns {Object} Object containing the disputed action short and long description as well as the URL.
+ */
 export async function describeDisputedAction(
   disputeId,
   organization,
@@ -122,8 +130,8 @@ export async function describeDisputedAction(
  * Describes the disputed action script using @aragon/connect
  * @param {String} evmScript The EVM script to describe
  * @param {String} organization Address of the organization in question
- * @returns {Array} Array where items are an array of transaction requests in the path of the disputed action
- *                    and the app belonging to the organization where the disputed action is taking place respectively.
+ * @returns {Array} Array of items where the first item is an array of transaction requests in the path of the disputed action
+ *                    and the second item, the app belonging to the organization where the disputed action is taking place.
  */
 async function describeActionScript(evmScript, organization) {
   const org = await connect(organization, 'thegraph', {
@@ -159,6 +167,11 @@ async function describeActionScript(evmScript, organization) {
   return [disputedActionRadspec, disputedActionText]
 }
 
+/**
+ * Gets the array of all children transactions belonging to first step transactions in a forwarding path
+ * @param {Array} transactions Array of transactions corresponding to the first step in a forwarding path
+ * @returns {Array} Array of all childrens.
+ */
 function getTerminalActions(transactions) {
   return transactions
     .map(transaction =>
