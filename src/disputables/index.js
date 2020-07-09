@@ -17,8 +17,6 @@ import disputableDandelionVotingAbi from '../abi/disputables/DisputableDandelion
 import disputableDelayAbi from '../abi/disputables/DisputableDelay.json'
 import disputableVotingAbi from '../abi/disputables/DisputableVoting.json'
 
-const MAX_FORWARDING_DEPTH = 4
-
 // Disputable appIds
 const DANDELION_VOTING_APP_ID =
   '0x0a85f166c21ad90fc107023e825457adfa137ef94f52f4f695ec00023bd05742' // disputable-dandelion-voting.aragonpm.eth
@@ -179,7 +177,7 @@ function getTerminalActions(transactions) {
         ? getTerminalActions(transaction.children)
         : transaction
     )
-    .flat(MAX_FORWARDING_DEPTH)
+    .flat()
 }
 
 /**
@@ -205,7 +203,7 @@ function buildDisputedActionText(app, method) {
   const { artifact, name } = app
   const role = artifact.roles.find(role => method.roles.includes(role.id))
 
-  // If the terminal action function is not ptoected by a role, we'll try to describe the function signature
+  // If the terminal action function is not protected by a role, we'll try to describe the function signature
   // (e.g grantPermission would become Grant permission)
   const actionText = role?.name || describeFunctionSig(method.sig)
 
