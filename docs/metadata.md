@@ -73,14 +73,14 @@ The content is expected to have the following structure:
 The dispute metadata should be in the `disputable` attribute of the `dispute` entity.
 
 ```javascript
-  title              //description
-  agreement          //Address of the agreement that created the dispute
-  actionId           //Action id of the disputed action relative to the agreement app
-  address            //Address of the disputable app where the disputed action is taking place
-  disputableActionId //Action id of the disputed action relative to the disputable app (e.g. in the context of the disputable voting app, if a vote is being disputed, disputableActionId si the vote id)
-  defendant          //Address of the submitter of the disputed action
-  plaintiff          //Address of the challenger of the disputed action
-  organization       //Address of the organization where the disputed action is taking place
+  title              // description
+  agreement          // String in the form of `ipfs:{CID | IPLD path}` corresponding to the agreement content
+  actionId           // Action id of the disputed action relative to the agreement app
+  address            // Address of the disputable app where the disputed action is taking place
+  disputableActionId // Action id of the disputed action relative to the disputable app (e.g. in the context of the disputable voting app, if a vote is being disputed, disputableActionId si the vote id)
+  defendant          // Address of the submitter of the disputed action
+  plaintiff          // Address of the challenger of the disputed action
+  organization       // Address of the organization where the disputed action is taking place
 ```
 
 ---
