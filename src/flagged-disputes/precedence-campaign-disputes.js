@@ -8,7 +8,24 @@ import {
 
 const PRECEDENCE_CAMPAIGN_DISPUTES = {
   main: new Map([
-    [networkConfigs.main.court, new Map([['1'], ['2'], ['3'], ['4'], ['5']])],
+    [
+      networkConfigs.main.court,
+      new Map([
+        ['1'],
+        ['2'],
+        ['3'],
+        ['4'],
+        ['5'],
+        ['6'],
+        ['7'],
+        ['8'],
+        ['9'],
+        ['10'],
+        ['11'],
+        ['12'],
+        ['13'],
+      ]),
+    ],
   ]),
   rinkeby: new Map([
     [RINKEBY_COURT, new Map([])],
