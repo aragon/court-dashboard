@@ -15,7 +15,7 @@ import RevealPanel from './panels/RevealPanel'
 import TitleHeader from '../TitleHeader'
 
 import { Status as DisputeStatus } from '../../types/dispute-status-types'
-import { useDisputeLogic, REQUEST_MODE } from '../../dispute-logic'
+import { useDisputeLogic, REQUEST_MODE } from '../../hooks/dispute-logic'
 import { DisputeNotFound } from '../../errors'
 import { toMs } from '../../utils/date-utils'
 
