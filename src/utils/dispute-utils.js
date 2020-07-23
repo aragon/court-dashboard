@@ -59,7 +59,7 @@ function parseMetadata(dispute) {
     return [dispute.disputable.title]
   }
 
-  const decodedMetadata = toUtf8String(dispute.metadata)
+  const decodedMetadata = toUtf8String(dispute.metadata, true)
 
   try {
     const { description, metadata } = JSON.parse(decodedMetadata)

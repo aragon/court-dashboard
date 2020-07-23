@@ -4,6 +4,7 @@ import {
   findAppMethodFromIntent,
 } from '@aragon/connect'
 import { getContract } from '../web3-contracts'
+import { logWithSentry } from '../sentry'
 import env from '../environment'
 import {
   addressesEqual,
@@ -35,7 +36,7 @@ const DISPUTABLE_ACTIONS = new Map([
     DANDELION_VOTING_APP_ID,
     {
       abi: disputableDandelionVotingAbi,
-      entity: 'vote',
+      entityPath: 'vote',
       fn: 'getVote',
       scriptPosition: 10,
     },
@@ -44,7 +45,7 @@ const DISPUTABLE_ACTIONS = new Map([
     DELAY_APP_ID,
     {
       abi: disputableDelayAbi,
-      entity: 'delay',
+      entityPath: 'delay',
       fn: 'delayedScripts',
       scriptPosition: 2,
 
@@ -56,7 +57,7 @@ const DISPUTABLE_ACTIONS = new Map([
     VOTING_APP_ID,
     {
       abi: disputableVotingAbi,
-      entity: 'vote',
+      entityPath: 'vote',
       fn: 'getVote',
       scriptPosition: 9,
     },
@@ -86,7 +87,9 @@ export async function describeDisputedAction(
     const appId = await disputableContract.appId()
 
     if (DISPUTABLE_ACTIONS.has(appId)) {
-      const { abi, entity, fn, scriptPosition } = DISPUTABLE_ACTIONS.get(appId)
+      const { abi, entityPath, fn, scriptPosition } = DISPUTABLE_ACTIONS.get(
+        appId
+      )
 
       // Get disputed action script
       const disputableAppContract = getContract(disputableAddress, abi)
@@ -107,7 +110,7 @@ export async function describeDisputedAction(
         disputedActionURL: buildDisputedActionUrl(
           organization,
           disputableAddress,
-          entity,
+          entityPath,
           disputableActionId
         ),
       }
@@ -119,6 +122,7 @@ export async function describeDisputedAction(
     }
   } catch (err) {
     console.error('Error describing disputable action', err)
+    logWithSentry(`'Error describing disputable action ${err}`)
   }
 
   return { disputedActionRadspec: 'No description' }
@@ -140,8 +144,16 @@ async function describeActionScript(evmScript, organization) {
   const transactionRequests =
     (await describeScript(evmScript, apps, org.provider)) || []
 
+  if (!transactionRequests.length) {
+    return ['No description']
+  }
+
   // In order to get the terminal action/s we must search through the `transactionRequests` children (if any)
   const terminalActions = getTerminalActions(transactionRequests)
+  // Get disputed action long description
+  const disputedActionRadspec = buildDisputedActionRadspec(terminalActions)
+
+  // Get disputed action short text
   // In most cases we'll have just a single action to describe
   // If we do have multiple, we use the first action.
   const terminalAction = terminalActions[0]
@@ -152,12 +164,6 @@ async function describeActionScript(evmScript, organization) {
     addressesEqual(app.address, terminalActionAppAddress)
   )
 
-  // Get disputed action long description
-  const disputedActionRadspec = terminalActions.length
-    ? buildDisputedActionRadspec(terminalActions)
-    : 'No description'
-
-  // Get disputed action short text
   // Find method corresponding to the function of the disputed action.
   const method = await findAppMethodFromIntent(app, terminalAction)
   const disputedActionText = method ? buildDisputedActionText(app, method) : ''
@@ -200,7 +206,7 @@ function describeFunctionSig(sig) {
  * @returns {String} Short description of the disputed action
  */
 function buildDisputedActionText(app, method) {
-  const { artifact, name } = app
+  const { artifact, name, appId } = app
   const role = artifact.roles.find(role => method.roles.includes(role.id))
 
   // If the terminal action function is not protected by a role, we'll try to describe the function signature
@@ -213,7 +219,7 @@ function buildDisputedActionText(app, method) {
         .split('-')
         .map(capitalize)
         .join(' ')
-    : 'System app' // TODO: Update to more meaningfull name?
+    : `Unknown app (${appId})`
 
   return `${appName}: ${actionText}`
 }
@@ -237,13 +243,18 @@ function buildDisputedActionRadspec(transactions) {
  * Builds the URL corresponding to the disputed action. (e.g the URL of a vote)
  * @param {String} organization Address of the organization
  * @param {String} appAddress Address of the app
- * @param {String} entity Entity where the action is being disputed (e.g vote, delay, etc)
+ * @param {String} entityPath Entity where the action is being disputed (e.g vote, delay, etc)
  * @param {String} actionId Disputable action id
  * @returns {String} URL of the disputed action.
  */
-function buildDisputedActionUrl(organization, appAddress, entity, actionId) {
+function buildDisputedActionUrl(
+  organization,
+  appAddress,
+  entityPath,
+  actionId
+) {
   const orgUrl = buildOrgUrl(organization)
-  return [orgUrl, appAddress, entity, actionId].join('/')
+  return [orgUrl, appAddress, entityPath, actionId].join('/')
 }
 
 /**

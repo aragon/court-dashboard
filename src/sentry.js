@@ -1,4 +1,4 @@
-import { init as initSentry } from '@sentry/browser'
+import { init as initSentry, captureMessage } from '@sentry/browser'
 import env from './environment'
 import { getNetworkType } from './lib/web3-utils'
 
@@ -12,5 +12,11 @@ export default function initializeSentry() {
       environment: getNetworkType(env('CHAIN_ID')),
       release: 'court-dashboard@' + env('BUILD'),
     })
+  }
+}
+
+export function logWithSentry(message, level = 'warning') {
+  if (sentryEnabled) {
+    captureMessage(message, level)
   }
 }
