@@ -38,10 +38,10 @@ type Disputable @entity {
 
 ### Aragon court handles two different types of disputes:
 
-- **Raw disputes** (Disputes that are not tied to an agreement/ real disputed action, were created manually)
-- **Disputables** (Disputes that were created by an Agreement App due to an action being challenged on an Aragon organization)
+- **Raw disputes**: disputes that were not created through an Agreement; most likely created manually
+- **Disputables**: disputes that were created through an Agreement due to an action being challenged on an Aragon organization
 
-In the following section, we'll break down how we handle metadata for this two types.
+In the following section, we'll break down how we handle metadata for these two types.
 
 ## <u>Raw disputes</u>
 
@@ -70,14 +70,14 @@ The content is expected to have the following structure:
 
 ## <u>Disputables</u>
 
-The dispute metadata should be in the `disputable` attribute of the `dispute` entity.
+The dispute metadata should be in the `disputable` attribute of the subgraph's `dispute` entity.
 
 ```javascript
   title              // description
   agreement          // String in the form of `ipfs:{CID | IPLD path}` corresponding to the agreement content
   actionId           // Action id of the disputed action relative to the agreement app
   address            // Address of the disputable app where the disputed action is taking place
-  disputableActionId // Action id of the disputed action relative to the disputable app (e.g. in the context of the disputable voting app, if a vote is being disputed, disputableActionId si the vote id)
+  disputableActionId // Action id of the disputed action relative to the disputable app (e.g. in the context of the disputable voting app, if a vote is being disputed, disputableActionId is the vote id)
   defendant          // Address of the submitter of the disputed action
   plaintiff          // Address of the challenger of the disputed action
   organization       // Address of the organization where the disputed action is taking place

@@ -93,7 +93,7 @@ export async function describeDisputedAction(
       const result = await disputableAppContract[fn](disputableActionId)
       const evmScript = result[scriptPosition]
 
-      // Get long and short description corrsponding to the disputed action.
+      // Get long and short description corresponding to the disputed action.
       const [
         disputedActionRadspec,
         disputedActionText,

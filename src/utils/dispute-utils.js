@@ -47,7 +47,7 @@ export function transformRoundDataAttributes(round) {
 /**
  * Parses metadata of the given dispute
  * @dev Disputes metadata comes in two forms:
- *        1 - Raw disputes: metadata is usually a JSON object containing `description` and `metadata` where the later is the metadata uri.
+ *        1 - Raw disputes: metadata is usually a JSON object containing `description` and `metadata` where the latter is the metadata uri.
  *        2 - Disputables: there's no useful information in `metadata` itself, in this case we'll get the dispute information from the `disputable` attr.
  *  Note that this function is meant to parse only dispute description and metadata uri (in case it exists). More relevant information will be processed elsewhere.
  * @param {Object} dispute Dispute in question
