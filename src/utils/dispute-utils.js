@@ -5,7 +5,7 @@ import * as DisputesTypes from '../types/dispute-status-types'
 import { getTermEndTime, getTermStartTime } from './court-utils'
 import { getVoidedDisputesByCourt } from '../flagged-disputes/voided-disputes'
 import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/precedence-campaign-disputes'
-import { hexToAscii } from '../lib/web3-utils'
+import { toUtf8String } from '../lib/web3-utils'
 
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
@@ -46,8 +46,9 @@ export function transformRoundDataAttributes(round) {
 
 /**
  * Parses metadata of the given dispute
- * @dev Disputes metadata comes in two forms:
- *        1 - Raw disputes: metadata is usually a JSON object containing `description` and `metadata` where the latter is the metadata uri.
+
+ * Disputes metadata comes in two forms:
+ *        1 - Raw disputes: metadata is usually a JSON object containing `description` and `metadata` where the later is the metadata uri.
  *        2 - Disputables: there's no useful information in `metadata` itself, in this case we'll get the dispute information from the `disputable` attr.
  *  Note that this function is meant to parse only dispute description and metadata uri (in case it exists). More relevant information will be processed elsewhere.
  * @param {Object} dispute Dispute in question
@@ -58,7 +59,7 @@ function parseMetadata(dispute) {
     return [dispute.disputable.title]
   }
 
-  const decodedMetadata = hexToAscii(dispute.metadata)
+  const decodedMetadata = toUtf8String(dispute.metadata)
 
   try {
     const { description, metadata } = JSON.parse(decodedMetadata)
@@ -387,7 +388,7 @@ export function getAdjudicationPhase(dispute, round, termId, courtConfig) {
 }
 
 /**
- * @dev Terminology here will be:
+ * Terminology here will be:
  *        Last round => last round actually reached in a dispute
  *        Final round => max possible round for a dispute (when the max appeals for a given dispute is reached)
  * @param {Object} round The round to get the phases from

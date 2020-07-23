@@ -1,10 +1,9 @@
 import env from '../environment'
 import { providers as Providers } from 'ethers'
-import { solidityKeccak256, id as keccak256 } from 'ethers/utils'
+import { id as keccak256 } from 'ethers/utils'
 import { InvalidURI, InvalidNetworkType, NoConnection } from '../errors'
 import { validHttpFormat } from './uri-utils'
-export const soliditySha3 = solidityKeccak256
-export const hash256 = keccak256
+
 export const DEFAULT_LOCAL_CHAIN = 'private'
 export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
 
@@ -138,14 +137,6 @@ export function isLocalOrUnknownNetwork(chainId = env('CHAIN_ID')) {
   return getNetworkType(chainId) === DEFAULT_LOCAL_CHAIN
 }
 
-export function hexToAscii(hexx) {
-  const hex = hexx.slice(2).toString()
-  let str = ''
-  for (let i = 0; i < hex.length && hex.substr(i, 2) !== '00'; i += 2)
-    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
-  return str
-}
-
 // Detect Ethereum addresses in a string and transform each part.
 //
 // `callback` is called on every part with two params:
@@ -210,3 +201,10 @@ export async function signMessage(wallet, message) {
 
   return { signHash, error }
 }
+
+// ethers utils exports
+export {
+  id as hash256,
+  solidityKeccak256 as soliditySha3,
+  toUtf8String,
+} from 'ethers/utils'

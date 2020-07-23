@@ -43,7 +43,7 @@ type Disputable @entity {
 
 In the following section, we'll break down how we handle metadata for these two types.
 
-## <u>Raw disputes</u>
+## Raw disputes
 
 The dispute `metadata` should be a JSON Object and should have the following keys:
 1. `description`
@@ -68,7 +68,7 @@ The content is expected to have the following structure:
 
 > Note that even though `description` should be present in the IPFS content, we also assume it to be present in the `metadata` field. We do this to avoid needing to fetch every disputes' IPFS content when loading their dispute cards.
 
-## <u>Disputables</u>
+## Disputables
 
 The dispute metadata should be in the `disputable` attribute of the subgraph's `dispute` entity.
 

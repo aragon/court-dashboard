@@ -3,6 +3,8 @@ import { Contract as EthersContract, providers as Providers } from 'ethers'
 import { useWallet } from './providers/Wallet'
 import { defaultEthNode } from './networks'
 
+const DEFAULT_PROVIDER = new Providers.JsonRpcProvider(defaultEthNode)
+
 export function useContract(address, abi, signer = true) {
   const { account, ethers } = useWallet()
 
@@ -27,10 +29,6 @@ export function useContractReadOnly(address, abi) {
   }, [abi, address])
 }
 
-export function getContract(
-  address,
-  abi,
-  provider = new Providers.JsonRpcProvider(defaultEthNode)
-) {
+export function getContract(address, abi, provider = DEFAULT_PROVIDER) {
   return new EthersContract(address, abi, provider)
 }

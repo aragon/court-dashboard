@@ -125,6 +125,7 @@ const DisputeInfo = React.memo(function({
                     label="Description"
                     value={disputedActionRadspec}
                     css={`
+                      word-break: break-word;
                       overflow-wrap: anywhere;
                     `}
                   />
