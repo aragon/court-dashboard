@@ -6,7 +6,7 @@ import {
   useANJBalanceToUsd,
   useTokenBalanceToUsd,
 } from '../../hooks/useTokenBalanceToUsd'
-import Loading from './Loading'
+import Loading from '../Loading'
 import SplitAmount from '../SplitAmount'
 
 function CourtStats() {
@@ -17,7 +17,7 @@ function CourtStats() {
     <Box heading="Court Metrics" padding={3 * GU}>
       {(() => {
         if (fetching) {
-          return <Loading height={86} />
+          return <Loading height={86} size="large" />
         }
         return stats.map((stat, index) => {
           return (

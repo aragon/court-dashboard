@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@aragon/ui'
 
-import Loading from './Loading'
+import Loading from '../Loading'
 import NoRewards from './NoRewards'
 
 import { useWallet } from '../../providers/Wallet'
@@ -105,7 +105,7 @@ const RewardsModule = React.memo(function RewardsModule({
     >
       {(() => {
         if (loading) {
-          return <Loading height={150} />
+          return <Loading height={150} size="large" />
         }
 
         if (!hasRewardsToClaim) {

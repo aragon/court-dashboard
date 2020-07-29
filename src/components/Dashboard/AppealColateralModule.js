@@ -4,7 +4,7 @@ import { Box, GU, Link, useTheme } from '@aragon/ui'
 import { formatUnits } from '../../lib/math-utils'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import iconLock from '../../assets/IconLock.svg'
-import Loading from './Loading'
+import Loading from '../Loading'
 
 const AppealColateralModule = React.memo(function AppealColateralModule({
   appeals,
@@ -18,7 +18,7 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
   return (
     <Box heading={!loading && 'Appeal collateral'} padding={0}>
       {loading ? (
-        <Loading height={150} />
+        <Loading height={150} size="large" />
       ) : appeals.length ? (
         appeals.map(({ amountStaked, disputeId }, index) => (
           <div

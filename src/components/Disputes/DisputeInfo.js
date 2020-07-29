@@ -7,7 +7,7 @@ import DisputeInfoContent from './DisputeInfoContent'
 import DisputeStatus from './DisputeStatus'
 import DisputeVoided from './DisputeVoided'
 import ErrorLoading from '../Errors/ErrorLoading'
-import Loading from './Loading'
+import LoadingCard from '../LoadingCard'
 import { Phase as DisputePhase, Status } from '../../types/dispute-status-types'
 import { getNetworkType } from '../../lib/web3-utils'
 
@@ -55,7 +55,7 @@ const DisputeInfo = React.memo(function({
           }
 
           if (loading) {
-            return <Loading border={false} />
+            return <LoadingCard border={false} />
           }
 
           if (isDisputeVoided) {
