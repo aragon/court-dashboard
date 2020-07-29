@@ -60,6 +60,15 @@ function DescriptionStep({ step }) {
           )
         }
 
+        if (type === 'app') {
+          return (
+            <IdentityBadge
+              compact
+              entity={type === 'any-account' ? 'Any account' : value.address}
+            />
+          )
+        }
+
         return <span key={key}> {value.description || value}</span>
       })
     )

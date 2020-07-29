@@ -200,8 +200,9 @@ function getTerminalActions(transactions) {
  */
 function contexctualizeExecutionPath(transactions, apps) {
   return transactions.map(transaction => {
-    const app = apps.find(app => addressesEqual(app.address, transaction.to))
-    const appName = app ? describeAppName(app.name) : 'Unknown app'
+    const { name } =
+      apps.find(app => addressesEqual(app.address, transaction.to)) || {}
+    const appName = name ? describeAppName(name) : 'Unknown app'
 
     return {
       ...transaction,
