@@ -129,7 +129,7 @@ export async function describeDisputedAction(
     logWithSentry(`'Error describing disputable action ${err}`)
   }
 
-  return { disputedActionRadspec: 'No description' }
+  return { disputedActionRadspec: 'Failed to fetch description' }
 }
 
 /**
@@ -156,6 +156,7 @@ async function describeActionScript(evmScript, organization) {
   const disputedActionRadspec = buildDisputedActionRadspec(transactionRequests)
   // In order to get the terminal action/s we must search through the `transactionRequests` children (if any)
   const terminalActions = getTerminalActions(transactionRequests)
+  const executionPath = contexctualizeExecutionPath(transactionRequests, apps)
 
   // Get disputed action short text
   // In most cases we'll have just a single action to describe
@@ -168,11 +169,12 @@ async function describeActionScript(evmScript, organization) {
     addressesEqual(app.address, terminalActionAppAddress)
   )
 
+  // Get disputed action short text
   // Find method corresponding to the function of the disputed action.
   const method = await findAppMethodFromIntent(app, terminalAction)
   const disputedActionText = method ? buildDisputedActionText(app, method) : ''
 
-  return [disputedActionRadspec, disputedActionText, transactionRequests]
+  return [disputedActionRadspec, disputedActionText, executionPath]
 }
 
 /**
@@ -188,6 +190,27 @@ function getTerminalActions(transactions) {
         : transaction
     )
     .flat()
+}
+
+/**
+ * Gets execution path specified by `transactions`
+ * @param {Array} transactions Array of transactions in the execution path
+ * @param {Array} apps Array of all the org's apps
+ * @returns {Array} Execution path
+ */
+function contexctualizeExecutionPath(transactions, apps) {
+  return transactions.map(transaction => {
+    const app = apps.find(app => addressesEqual(app.address, transaction.to))
+    const appName = app ? describeAppName(app.name) : 'Unknown app'
+
+    return {
+      ...transaction,
+      appName,
+      children: transaction.children
+        ? contexctualizeExecutionPath(transaction.children, apps)
+        : [],
+    }
+  })
 }
 
 /**
@@ -218,12 +241,7 @@ function buildDisputedActionText(app, method) {
   const actionText = role?.name || describeFunctionSig(method.sig)
 
   // If `name` is null most likely means the app is Kernel or ACL
-  const appName = name
-    ? name
-        .split('-')
-        .map(capitalize)
-        .join(' ')
-    : `Unknown app (${appId})`
+  const appName = name ? describeAppName(name) : `Unknown app (${appId})`
 
   return `${appName}: ${actionText}`
 }
@@ -271,5 +289,11 @@ function buildOrgUrl(organization) {
   // TODO: Consider the possibility where the main Org frontend is not the Aragon client
   return `https://${networkType}.aragon.org/#/${organization}`
 }
+
+const describeAppName = appName =>
+  appName
+    .split('-')
+    .map(capitalize)
+    .join(' ')
 
 const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
