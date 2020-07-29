@@ -100,6 +100,7 @@ export async function describeDisputedAction(
       const [
         disputedActionRadspec,
         disputedActionText,
+        executionPath,
       ] = await describeActionScript(evmScript, organization)
 
       const disputedActionDescription = {
@@ -113,6 +114,9 @@ export async function describeDisputedAction(
           entityPath,
           disputableActionId
         ),
+
+        // Transaction path
+        executionPath,
       }
 
       // Cache disputed action description
@@ -148,10 +152,10 @@ async function describeActionScript(evmScript, organization) {
     return ['No description']
   }
 
+  // Get disputed action long description
+  const disputedActionRadspec = buildDisputedActionRadspec(transactionRequests)
   // In order to get the terminal action/s we must search through the `transactionRequests` children (if any)
   const terminalActions = getTerminalActions(transactionRequests)
-  // Get disputed action long description
-  const disputedActionRadspec = buildDisputedActionRadspec(terminalActions)
 
   // Get disputed action short text
   // In most cases we'll have just a single action to describe
@@ -168,7 +172,7 @@ async function describeActionScript(evmScript, organization) {
   const method = await findAppMethodFromIntent(app, terminalAction)
   const disputedActionText = method ? buildDisputedActionText(app, method) : ''
 
-  return [disputedActionRadspec, disputedActionText]
+  return [disputedActionRadspec, disputedActionText, transactionRequests]
 }
 
 /**
@@ -226,17 +230,16 @@ function buildDisputedActionText(app, method) {
 
 /**
  * Builds the disputed action radspec description
+ * Assumes array of transactions not empty
  * @param {Array<Object>} transactions Transactions in the disputed action path
  * @returns {String} Radspec description of the disputed action
  */
 function buildDisputedActionRadspec(transactions) {
-  return transactions.length
-    ? transactions
-        .map(step => {
-          return `${step.description || 'No description'}`
-        })
-        .join('\n')
-    : ''
+  return transactions
+    .map(step => {
+      return `${step.description || 'No description'}`
+    })
+    .join('\n')
 }
 
 /**

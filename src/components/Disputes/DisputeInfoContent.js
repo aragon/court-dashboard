@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import resolvePathname from 'resolve-pathname'
 import { GU, Link, textStyle, useTheme, useViewport } from '@aragon/ui'
 import styled from 'styled-components'
+import DisputeDetailDescription from './DisputeDetailDescription'
 import DisputeOutcomeText from './DisputeOutcomeText'
 import IdentityBadge from '../IdentityBadge'
 import Loading from '../Loading'
@@ -29,7 +30,12 @@ function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
   const creator = plaintiff || subject?.id
 
   const [
-    { disputedActionRadspec, disputedActionText, disputedActionURL },
+    {
+      disputedActionRadspec,
+      disputedActionText,
+      disputedActionURL,
+      executionPath,
+    },
     loading,
   ] = useDisputedAction(dispute)
 
@@ -54,7 +60,13 @@ function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
         <Field
           label="Description"
           loading={loading}
-          value={disputedActionRadspec}
+          value={
+            Array.isArray(executionPath) ? (
+              <DisputeDetailDescription path={executionPath} />
+            ) : (
+              disputedActionRadspec
+            )
+          }
           css={`
             word-break: break-word;
             overflow-wrap: anywhere;
