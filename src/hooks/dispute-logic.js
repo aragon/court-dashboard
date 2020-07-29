@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react'
 
-import { useSidePanel } from './hooks/useSidePanel'
-import { useDisputeActions } from './hooks/useCourtContracts'
-import { useDispute } from './hooks/useDisputes'
+import { useSidePanel } from './useSidePanel'
+import { useDisputeActions } from './useCourtContracts'
+import { useDispute } from './useDisputes'
 
 export const REQUEST_MODE = {
   NO_REQUEST: Symbol('NO_REQUEST'),

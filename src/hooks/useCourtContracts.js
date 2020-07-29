@@ -9,7 +9,7 @@ import { useRequestProcessor } from './useRequestProcessor'
 import { useContract, useContractReadOnly } from '../web3-contracts'
 
 // services
-import requestAutoReveal from '../services/requestAutoReveal'
+import { requestAutoReveal as requestAutoRevealApi } from '../services/autoReveal'
 
 // utils
 import radspec from '../radspec'
@@ -20,9 +20,13 @@ import { getModuleAddress } from '../utils/court-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import { getFunctionSignature } from '../lib/web3-utils'
 import { CourtModuleType } from '../types/court-module-types'
-import { saveCodeInLocalStorage } from '../utils/one-time-code-utils'
 import { networkAgentAddress, networkReserveAddress } from '../networks'
-import { hashVote, getVoteId, hashPassword } from '../utils/crvoting-utils'
+import {
+  getVoteId,
+  hashPassword,
+  hashVote,
+  saveCodeInLocalStorage,
+} from '../utils/crvoting-utils'
 
 // abis
 import aragonCourtAbi from '../abi/AragonCourt.json'
@@ -206,6 +210,26 @@ export function useDisputeActions() {
     [disputeManagerContract, processRequests]
   )
 
+  // Request auto reveal
+  const autoReveal = useCallback(
+    (account, disputeId, roundId, outcome, password) => {
+      return {
+        action: async () =>
+          requestAutoRevealApi(account, disputeId, roundId, outcome, password),
+        isTx: false,
+        description: 'Enable auto-reveal service',
+        onError: 'Failed to enable auto-reveal service',
+        onSuccess: 'Auto-reveal service enabled!',
+      }
+    },
+    []
+  )
+
+  const requestAutoReveal = useCallback(
+    (...params) => processRequests([autoReveal(...params)]),
+    [autoReveal, processRequests]
+  )
+
   // Commit
   const commit = useCallback(
     (account, disputeId, roundId, outcome, password, revealServiceEnabled) => {
@@ -229,26 +253,14 @@ export function useDisputeActions() {
 
       // If juror opted-in for the reveal service we'll send the commitment and password to the court-server
       if (revealServiceEnabled) {
-        requestQueue.push({
-          action: async () => {
-            return requestAutoReveal(
-              account,
-              disputeId,
-              roundId,
-              outcome,
-              password
-            )
-          },
-          isTx: false,
-          description: 'Enable auto-reveal service',
-          onError: 'Failed to enable auto-reveal service',
-          onSuccess: 'Auto-reveal service enabled!',
-        })
+        requestQueue.push(
+          autoReveal(account, disputeId, roundId, outcome, password)
+        )
       }
 
       return processRequests(requestQueue)
     },
-    [processRequests, votingContract]
+    [autoReveal, processRequests, votingContract]
   )
 
   // Reveal
@@ -392,6 +404,7 @@ export function useDisputeActions() {
 
   return {
     appealRound,
+    requestAutoReveal,
     commit,
     draft,
     executeRuling,

@@ -19,7 +19,7 @@ import {
   getRequestModeString,
   useDashboardLogic,
   REQUEST_MODE,
-} from '../../dashboard-logic'
+} from '../../hooks/dashboard-logic'
 import {
   getTotalUnlockedActiveBalance,
   getTotalEffectiveInactiveBalance,

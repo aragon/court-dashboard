@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
 
-import { useANJBalances } from './hooks/useANJ'
-import { useSidePanel } from './hooks/useSidePanel'
-import useJurorRewards from './hooks/useJurorRewards'
-import useJurorAppealCollaterals from './hooks/useJurorAppealCollaterals'
-import { useANJActions, useRewardActions } from './hooks/useCourtContracts'
-import { useDashboardState } from './components/Dashboard/DashboardStateProvider'
+import { useANJBalances } from './useANJ'
+import { useSidePanel } from './useSidePanel'
+import useJurorRewards from './useJurorRewards'
+import useJurorAppealCollaterals from './useJurorAppealCollaterals'
+import { useANJActions, useRewardActions } from './useCourtContracts'
+import { useDashboardState } from '../components/Dashboard/DashboardStateProvider'
 
 export const REQUEST_MODE = {
   ACTIVATE: Symbol('ACTIVATE'),

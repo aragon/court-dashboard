@@ -29,9 +29,9 @@ In order to start the dashboard locally, you will need to setup a few processes 
 
  _For a detailed guide on how to achieve this, see more instructions [here](https://github.com/aragon/court-subgraph)._
 
-You can also setup the [court services](https://github.com/aragonone/court-backend/tree/development/packages/services), which include some automation for auto-revealing commitments, penalty settlements and heartbeats. In order for auto-reveals to work, you will need also to setup the [court server](https://github.com/aragonone/court-backend/tree/development/packages/server).
+You can also setup the [court services](https://github.com/aragonone/court-backend/tree/master/packages/services), which include some automation for auto-revealing commitments, penalty settlements and heartbeats. In order for auto-reveals to work, you will need also to setup the [court server](https://github.com/aragonone/court-backend/tree/master/packages/server).
 
-To start populating the court with disputes, you can use the [CLI tool](https://github.com/aragonone/court-backend/tree/development/packages/cli).
+To start populating the court with disputes, you can use the [CLI tool](https://github.com/aragonone/court-backend/tree/master/packages/cli).
 
 ## Contributing
 
