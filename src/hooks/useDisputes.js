@@ -10,7 +10,6 @@ import {
 import { getPhaseAndTransition } from '../utils/dispute-utils'
 import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
 import { convertToString, Status } from '../types/dispute-status-types'
-import { describeDisputedAction } from '../disputables'
 
 const IPFS_ERROR_MSG = 'Error loading content from ipfs'
 
@@ -166,27 +165,12 @@ async function getDisputeData(dispute) {
 
 async function processDisputableData(dispute) {
   const {
-    address,
     agreement,
     defendant,
-    disputableActionId,
     plaintiff,
     organization,
     title,
   } = dispute.disputable
-
-  // Get disputable long and short description
-  // as well as the URL where the disputed action is taking place
-  const {
-    disputedActionRadspec,
-    disputedActionText,
-    disputedActionURL,
-  } = await describeDisputedAction(
-    dispute.id,
-    organization,
-    address,
-    disputableActionId
-  )
 
   const agreementIpfsCid = getIpfsCidFromUri(agreement)
 
@@ -195,9 +179,6 @@ async function processDisputableData(dispute) {
     agreementUrl: `${IPFS_ENDPOINT}/${agreementIpfsCid}`,
     defendant,
     description: title,
-    disputedActionRadspec,
-    disputedActionText,
-    disputedActionURL,
     organization,
     plaintiff,
   }

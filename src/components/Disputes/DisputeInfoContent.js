@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import resolvePathname from 'resolve-pathname'
 import { GU, Link, textStyle, useTheme, useViewport } from '@aragon/ui'
 import styled from 'styled-components'
 import DisputeOutcomeText from './DisputeOutcomeText'
 import IdentityBadge from '../IdentityBadge'
+import Loading from '../Loading'
 import { useWallet } from '../../providers/Wallet'
+
+import { IPFS_ENDPOINT } from '../../endpoints'
+import { transformIPFSHash } from '../../lib/ipfs-utils'
+import { describeDisputedAction } from '../../disputables'
 import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
-import { transformIPFSHash } from '../../lib/ipfs-utils'
-import { IPFS_ENDPOINT } from '../../endpoints'
 
 function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
   const { below } = useViewport()
@@ -17,8 +20,6 @@ function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
   const {
     agreementText,
     agreementUrl,
-    disputedActionRadspec,
-    disputedActionText,
     defendant,
     organization,
     plaintiff,
@@ -27,37 +28,38 @@ function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
 
   const creator = plaintiff || subject?.id
 
+  const [
+    { disputedActionRadspec, disputedActionText, disputedActionURL },
+    loading,
+  ] = useDisputedAction(dispute)
+
   return (
     <>
       <Row compactMode={compactMode}>
-        {disputedActionText ? (
-          <Field
-            label="Disputed Action"
-            value={
-              <DisputeActionText
-                dispute={dispute}
-                isFinalRulingEnsured={isFinalRulingEnsured}
-              />
-            }
-          />
-        ) : (
-          <div />
-        )}
+        <Field
+          label="Disputed Action"
+          loading={loading}
+          value={
+            <DisputeActionText
+              dispute={dispute}
+              disputedActionText={disputedActionText}
+              disputedActionURL={disputedActionURL}
+              isFinalRulingEnsured={isFinalRulingEnsured}
+            />
+          }
+        />
         {organization && <Field label="Organization" value={organization} />}
       </Row>
       <Row compactMode={compactMode}>
-        {disputedActionRadspec ? (
-          <Field
-            label="Description"
-            value={disputedActionRadspec}
-            css={`
-              word-break: break-word;
-              overflow-wrap: anywhere;
-            `}
-          />
-        ) : (
-          <div />
-        )}
+        <Field
+          label="Description"
+          loading={loading}
+          value={disputedActionRadspec}
+          css={`
+            word-break: break-word;
+            overflow-wrap: anywhere;
+          `}
+        />
         {creator && <Field label="Plaintiff" value={creator} />}
       </Row>
       <Row compactMode={compactMode}>
@@ -79,9 +81,13 @@ function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
   )
 }
 
-function Field({ label, value, ...props }) {
+function Field({ label, loading, value, ...props }) {
   const theme = useTheme()
   const wallet = useWallet()
+
+  if (!loading && !value) {
+    return <div />
+  }
 
   return (
     <div {...props}>
@@ -94,58 +100,68 @@ function Field({ label, value, ...props }) {
       >
         {label}
       </h2>
-
-      {typeof value === 'string' ? (
-        value.split('\n').map((line, i) => (
-          <React.Fragment key={i}>
-            {transformAddresses(line, (part, isAddress, index) =>
-              isAddress ? (
-                <span title={part} key={index}>
-                  <IdentityBadge
-                    connectedAccount={addressesEqual(part, wallet.account)}
-                    compact
-                    entity={part}
-                  />
-                </span>
-              ) : (
-                <React.Fragment key={index}>
-                  {transformIPFSHash(part, (word, isIpfsHash, i) => {
-                    if (isIpfsHash) {
-                      const ipfsUrl = resolvePathname(
-                        word,
-                        `${IPFS_ENDPOINT}/${word}`
-                      )
-                      return (
-                        <Link href={ipfsUrl} key={i}>
-                          {word}
-                        </Link>
-                      )
-                    }
-
-                    return <span key={i}>{word}</span>
-                  })}
-                </React.Fragment>
-              )
-            )}
-            <br />
-          </React.Fragment>
-        ))
+      {loading ? (
+        <Loading size="small" center={false} />
       ) : (
-        <div
-          css={`
-            ${textStyle('body2')};
-          `}
-        >
-          {value}
-        </div>
+        <>
+          {typeof value === 'string' ? (
+            value.split('\n').map((line, i) => (
+              <React.Fragment key={i}>
+                {transformAddresses(line, (part, isAddress, index) =>
+                  isAddress ? (
+                    <span title={part} key={index}>
+                      <IdentityBadge
+                        connectedAccount={addressesEqual(part, wallet.account)}
+                        compact
+                        entity={part}
+                      />
+                    </span>
+                  ) : (
+                    <React.Fragment key={index}>
+                      {transformIPFSHash(part, (word, isIpfsHash, i) => {
+                        if (isIpfsHash) {
+                          const ipfsUrl = resolvePathname(
+                            word,
+                            `${IPFS_ENDPOINT}/${word}`
+                          )
+                          return (
+                            <Link href={ipfsUrl} key={i}>
+                              {word}
+                            </Link>
+                          )
+                        }
+
+                        return <span key={i}>{word}</span>
+                      })}
+                    </React.Fragment>
+                  )
+                )}
+                <br />
+              </React.Fragment>
+            ))
+          ) : (
+            <div
+              css={`
+                ${textStyle('body2')};
+              `}
+            >
+              {value}
+            </div>
+          )}
+        </>
       )}
     </div>
   )
 }
 
-function DisputeActionText({ dispute, isFinalRulingEnsured }) {
-  const { disputedActionText, disputedActionURL } = dispute
-  const lastRound = dispute?.rounds?.[dispute.lastRoundId]
+function DisputeActionText({
+  dispute,
+  disputedActionText,
+  disputedActionURL,
+  isFinalRulingEnsured,
+}) {
+  const { lastRoundId, rounds } = dispute
+  const lastRound = rounds?.[lastRoundId]
   const voteWinningOutcome = lastRound?.vote?.winningOutcome
   const appealedRuling = lastRound?.appeal?.appealedRuling
 
@@ -167,6 +183,56 @@ function DisputeActionText({ dispute, isFinalRulingEnsured }) {
       verbose
     />
   )
+}
+
+function useDisputedAction({
+  id,
+  disputable,
+  disputedActionRadspec,
+  disputedActionText,
+  disputedActionURL,
+}) {
+  const [disputedAction, setDisputedAction] = useState({
+    disputedActionRadspec,
+    disputedActionText,
+    disputedActionURL,
+  })
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    // If the dispute was not created through an agreement, the disputed action
+    // descriptions should be already available (initialized above)
+    if (!disputable) {
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+
+    const describeDispute = async () => {
+      // Get disputable long and short description
+      // as well as the URL where the disputed action is taking place
+      const disputedActionDescription = await describeDisputedAction(
+        id,
+        disputable.organization,
+        disputable.address,
+        disputable.disputableActionId
+      )
+
+      if (!cancelled) {
+        setLoading(false)
+        setDisputedAction(disputedActionDescription)
+      }
+    }
+
+    describeDispute()
+
+    return () => {
+      cancelled = true
+    }
+  }, [disputable, id])
+
+  return [disputedAction, loading]
 }
 
 const Row = styled.div`
