@@ -47,10 +47,7 @@ const DISPUTABLE_ACTIONS = new Map([
       abi: disputableDelayAbi,
       entityPath: 'delay',
       fn: 'delayedScripts',
-      scriptPosition: 2,
-
-      // disputable position:
-      // scriptPosition: 4,
+      scriptPosition: 4,
     },
   ],
   [
