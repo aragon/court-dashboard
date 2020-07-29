@@ -1,33 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import resolvePathname from 'resolve-pathname'
-import {
-  Box,
-  GU,
-  Link,
-  TransactionBadge,
-  textStyle,
-  useTheme,
-  useViewport,
-} from '@aragon/ui'
-import styled from 'styled-components'
+import { Box, GU, TransactionBadge, textStyle, useTheme } from '@aragon/ui'
 import DisputeActions from './DisputeActions'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
-import DisputeOutcomeText from './DisputeOutcomeText'
+import DisputeInfoContent from './DisputeInfoContent'
 import DisputeStatus from './DisputeStatus'
 import DisputeVoided from './DisputeVoided'
 import ErrorLoading from '../Errors/ErrorLoading'
-import IdentityBadge from '../IdentityBadge'
 import Loading from './Loading'
-import { useWallet } from '../../providers/Wallet'
 import { Phase as DisputePhase, Status } from '../../types/dispute-status-types'
-import {
-  addressesEqual,
-  getNetworkType,
-  transformAddresses,
-} from '../../lib/web3-utils'
-import { transformIPFSHash } from '../../lib/ipfs-utils'
-import { IPFS_ENDPOINT } from '../../endpoints'
+import { getNetworkType } from '../../lib/web3-utils'
 
 import iconCourt from '../../assets/courtIcon.svg'
 
@@ -38,31 +20,17 @@ const DisputeInfo = React.memo(function({
   loading,
   onDraft,
   onLeak,
+  onAutoReveal,
   onExecuteRuling,
   onRequestAppeal,
   onRequestCommit,
   onRequestReveal,
 }) {
-  const { below } = useViewport()
-  const compactMode = below('medium')
+  const { phase, status } = dispute || {}
 
-  const {
-    agreementText,
-    agreementUrl,
-    defendant,
-    disputedActionText,
-    disputedActionRadspec,
-    organization,
-    phase,
-    plaintiff,
-    status,
-  } = dispute || {}
-
-  const creator = plaintiff || dispute?.subject?.id
-
+  const isDisputeVoided = status === Status.Voided
   const isFinalRulingEnsured =
     phase === DisputePhase.ExecuteRuling || status === Status.Closed
-  const isDisputeVoided = dispute?.status === Status.Voided
 
   return (
     <Box padding={5 * GU}>
@@ -100,75 +68,29 @@ const DisputeInfo = React.memo(function({
             )
           }
           return (
-            <>
-              <Row compactMode={compactMode}>
-                {disputedActionText ? (
-                  <Field
-                    label="Disputed Action"
-                    value={
-                      <DisputeActionText
-                        dispute={dispute}
-                        isFinalRulingEnsured={isFinalRulingEnsured}
-                      />
-                    }
-                  />
-                ) : (
-                  <div />
-                )}
-                {organization && (
-                  <Field label="Organization" value={organization} />
-                )}
-              </Row>
-              <Row compactMode={compactMode}>
-                {disputedActionRadspec ? (
-                  <Field
-                    label="Description"
-                    value={disputedActionRadspec}
-                    css={`
-                      word-break: break-word;
-                      overflow-wrap: anywhere;
-                    `}
-                  />
-                ) : (
-                  <div />
-                )}
-                {creator && <Field label="Plaintiff" value={creator} />}
-              </Row>
-              <Row compactMode={compactMode}>
-                {agreementText ? (
-                  <Field
-                    label="Link to agreement"
-                    value={
-                      <Link external href={agreementUrl}>
-                        {agreementText}
-                      </Link>
-                    }
-                  />
-                ) : (
-                  <div />
-                )}
-                {defendant && <Field label="Defendant" value={defendant} />}
-              </Row>
-            </>
+            <DisputeInfoContent
+              dispute={dispute}
+              isFinalRulingEnsured={isFinalRulingEnsured}
+            />
           )
         })()}
-        {!isDisputeVoided && !error?.fromGraph && (
+        {!loading && !isDisputeVoided && !error?.fromGraph && (
           <>
             {(phase === DisputePhase.AppealRuling ||
               phase === DisputePhase.ConfirmAppeal ||
-              isFinalRulingEnsured) &&
-              !loading && <DisputeCurrentRuling dispute={dispute} />}
-            {!loading && (
-              <DisputeActions
-                dispute={dispute}
-                onDraft={onDraft}
-                onRequestCommit={onRequestCommit}
-                onRequestReveal={onRequestReveal}
-                onLeak={onLeak}
-                onRequestAppeal={onRequestAppeal}
-                onExecuteRuling={onExecuteRuling}
-              />
+              isFinalRulingEnsured) && (
+              <DisputeCurrentRuling dispute={dispute} />
             )}
+            <DisputeActions
+              dispute={dispute}
+              onAutoReveal={onAutoReveal}
+              onDraft={onDraft}
+              onRequestCommit={onRequestCommit}
+              onRequestReveal={onRequestReveal}
+              onLeak={onLeak}
+              onRequestAppeal={onRequestAppeal}
+              onExecuteRuling={onExecuteRuling}
+            />
           </>
         )}
       </section>
@@ -247,108 +169,6 @@ function DisputeHeader({ dispute, error }) {
     </div>
   )
 }
-
-function Field({ label, value, ...props }) {
-  const theme = useTheme()
-  const wallet = useWallet()
-
-  return (
-    <div {...props}>
-      <h2
-        css={`
-          ${textStyle('label2')};
-          color: ${theme.surfaceContentSecondary};
-          margin-bottom: ${1 * GU}px;
-        `}
-      >
-        {label}
-      </h2>
-
-      {typeof value === 'string' ? (
-        value.split('\n').map((line, i) => (
-          <React.Fragment key={i}>
-            {transformAddresses(line, (part, isAddress, index) =>
-              isAddress ? (
-                <span title={part} key={index}>
-                  <IdentityBadge
-                    connectedAccount={addressesEqual(part, wallet.account)}
-                    compact
-                    entity={part}
-                  />
-                </span>
-              ) : (
-                <React.Fragment key={index}>
-                  {transformIPFSHash(part, (word, isIpfsHash, i) => {
-                    if (isIpfsHash) {
-                      const ipfsUrl = resolvePathname(
-                        word,
-                        `${IPFS_ENDPOINT}/${word}`
-                      )
-                      return (
-                        <Link href={ipfsUrl} key={i}>
-                          {word}
-                        </Link>
-                      )
-                    }
-
-                    return <span key={i}>{word}</span>
-                  })}
-                </React.Fragment>
-              )
-            )}
-            <br />
-          </React.Fragment>
-        ))
-      ) : (
-        <div
-          css={`
-            ${textStyle('body2')};
-          `}
-        >
-          {value}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function DisputeActionText({ dispute, isFinalRulingEnsured }) {
-  const { disputedActionText, disputedActionURL } = dispute
-  const lastRound = dispute?.rounds?.[dispute.lastRoundId]
-  const voteWinningOutcome = lastRound?.vote?.winningOutcome
-  const appealedRuling = lastRound?.appeal?.appealedRuling
-
-  if (!isFinalRulingEnsured) {
-    return (
-      <Link external href={disputedActionURL}>
-        {disputedActionText}
-      </Link>
-    )
-  }
-
-  return (
-    <DisputeOutcomeText
-      action={disputedActionText}
-      outcome={appealedRuling || voteWinningOutcome}
-      phase={
-        appealedRuling ? DisputePhase.AppealRuling : DisputePhase.RevealVote
-      }
-      verbose
-    />
-  )
-}
-
-const Row = styled.div`
-  display: grid;
-
-  ${({ compactMode }) => `
-    grid-gap: ${(compactMode ? 2.5 : 5) * GU}px;
-    margin-bottom: ${compactMode ? 0 : 2 * GU}px;
-    grid-template-columns: ${
-      compactMode ? 'auto' : `1fr minmax(${25 * GU}px, auto)`
-    };
-  `}
-`
 
 DisputeInfo.propTypes = {
   dispute: PropTypes.object, // TODO: define DisputeType
