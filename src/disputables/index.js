@@ -195,7 +195,7 @@ function getTerminalActions(transactions) {
  * @param {Array} apps Array of all the org's apps
  * @returns {Array} Execution path
  */
-function contexctualizeExecutionPath(transactions, apps) {
+function contextualizeExecutionPath(transactions, apps) {
   return transactions.map(transaction => {
     const { name } =
       apps.find(app => addressesEqual(app.address, transaction.to)) || {}
