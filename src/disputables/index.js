@@ -61,6 +61,8 @@ const DISPUTABLE_ACTIONS = new Map([
   ],
 ])
 
+const ERROR_MSG = 'Failed to fetch description'
+
 /**
  * Get disputable long and short description as well as the URL where the disputed action is taking place
  * @param {String} disputeId Id of the dispute
@@ -126,7 +128,7 @@ export async function describeDisputedAction(
     logWithSentry(`'Error describing disputable action ${err}`)
   }
 
-  return { disputedActionRadspec: 'Failed to fetch description' }
+  return { disputedActionRadspec: ERROR_MSG }
 }
 
 /**
@@ -146,14 +148,14 @@ async function describeActionScript(evmScript, organization) {
     (await describeScript(evmScript, apps, org.provider)) || []
 
   if (!transactionRequests.length) {
-    return ['No description']
+    return [ERROR_MSG]
   }
 
   // Get disputed action long description
   const disputedActionRadspec = buildDisputedActionRadspec(transactionRequests)
   // In order to get the terminal action/s we must search through the `transactionRequests` children (if any)
   const terminalActions = getTerminalActions(transactionRequests)
-  const executionPath = contexctualizeExecutionPath(transactionRequests, apps)
+  const executionPath = contextualizeExecutionPath(transactionRequests, apps)
 
   // Get disputed action short text
   // In most cases we'll have just a single action to describe
@@ -205,7 +207,7 @@ function contextualizeExecutionPath(transactions, apps) {
       ...transaction,
       appName,
       children: transaction.children
-        ? contexctualizeExecutionPath(transaction.children, apps)
+        ? contextualizeExecutionPath(transaction.children, apps)
         : [],
     }
   })

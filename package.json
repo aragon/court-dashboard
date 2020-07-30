@@ -73,7 +73,7 @@
     "files": [
       {
         "path": "build/static/**/*.js",
-        "maxSize": "900kb",
+        "maxSize": "1MB",
         "compression": "gzip"
       }
     ]
