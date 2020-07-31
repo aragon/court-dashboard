@@ -127,7 +127,6 @@ function AccountModule() {
         visible={opened}
       >
         {({ activating, activationError, screenId }) => {
-          console.log('activating', activating)
           if (screenId === 'connecting') {
             return (
               <ScreenConnecting
