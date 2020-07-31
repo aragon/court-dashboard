@@ -124,7 +124,6 @@ function AccountModule() {
           display={compactMode ? 'icon' : 'all'}
         />
       )}
-
       <HeaderPopover
         direction={direction}
         heading={screen.title}
@@ -135,7 +134,11 @@ function AccountModule() {
         screenId={screenId}
         screenData={{
           account,
-          activating: activatingDelayed,
+          // This is needed because use-wallet throws an error when the
+          // activation fails before React updates the state of `activating`.
+          // A future version of use-wallet might return an
+          // `activationError` object instead, making this unnecessary.
+          activating: screen.id === 'error' ? null : activatingDelayed,
           activationError,
           screenId,
         }}
@@ -147,8 +150,8 @@ function AccountModule() {
         }
         visible={opened}
       >
-        {({ activating, activationError }) => {
-          if (screen.id === 'connecting') {
+        {({ activating, activationError, screenId }) => {
+          if (screenId === 'connecting') {
             return (
               <ScreenConnecting
                 providerId={activating}
@@ -156,10 +159,10 @@ function AccountModule() {
               />
             )
           }
-          if (screen.id === 'connected') {
+          if (screenId === 'connected') {
             return <ScreenConnected wallet={wallet} />
           }
-          if (screen.id === 'error') {
+          if (screenId === 'error') {
             return <ScreenError error={activationError} onBack={clearError} />
           }
           return <ScreenProviders onActivate={handleActivate} />

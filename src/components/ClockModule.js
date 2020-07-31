@@ -30,6 +30,7 @@ import {
 import logoSvg from '../assets/LogoAccent.svg'
 
 const DEFAULT_DIRECTION = 1
+const DEFAULT_SCREEN_ID = 'CLOCK'
 
 function ClockModule() {
   const buttonRef = useRef()
@@ -151,14 +152,16 @@ function ClockModule() {
       <HeaderPopover
         heading="Court clock"
         direction={DEFAULT_DIRECTION}
-        height={(isSynced ? 27.5 : 26) * GU}
-        width={45 * GU}
         onClose={handlePopoverClose}
         opener={buttonRef.current}
-        screenData={{}}
+        screenData={{
+          courtConfig,
+        }}
+        screenId={DEFAULT_SCREEN_ID}
+        screenKey={({ courtConfig }) => courtConfig?.id}
         visible={opened}
       >
-        {() => {
+        {({ courtConfig }) => {
           return (
             <div
               css={`
