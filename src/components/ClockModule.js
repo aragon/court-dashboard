@@ -29,9 +29,6 @@ import {
 
 import logoSvg from '../assets/LogoAccent.svg'
 
-const DEFAULT_DIRECTION = 1
-const DEFAULT_SCREEN_ID = 'CLOCK'
-
 function ClockModule() {
   const buttonRef = useRef()
   const [opened, setOpened] = useState(false)
@@ -150,145 +147,137 @@ function ClockModule() {
       />
 
       <HeaderPopover
+        animateHeight={false}
         heading="Court clock"
-        direction={DEFAULT_DIRECTION}
+        height={(isSynced ? 27.5 : 26) * GU}
+        width={45 * GU}
         onClose={handlePopoverClose}
         opener={buttonRef.current}
-        screenData={{
-          courtConfig,
-        }}
-        screenId={DEFAULT_SCREEN_ID}
-        screenKey={({ courtConfig }) => courtConfig?.id}
         visible={opened}
       >
-        {({ courtConfig }) => {
-          return (
+        <div
+          css={`
+            padding: ${2 * GU}px;
+          `}
+        >
+          <div
+            css={`
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            `}
+          >
             <div
               css={`
-                padding: ${2 * GU}px;
+                display: flex;
+                align-items: center;
               `}
             >
-              <div
+              <img
+                alt=""
+                width={28}
+                height={28}
+                src={logoSvg}
                 css={`
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
+                  margin-right: ${0.5 * GU}px;
                 `}
-              >
-                <div
-                  css={`
-                    display: flex;
-                    align-items: center;
-                  `}
-                >
-                  <img
-                    alt=""
-                    width={28}
-                    height={28}
-                    src={logoSvg}
-                    css={`
-                      margin-right: ${0.5 * GU}px;
-                    `}
-                  />
-                  <span>Aragon Court</span>
-                </div>
-                <div
-                  css={`
-                    display: flex;
-                    align-items: center;
-                  `}
-                >
-                  <span
-                    css={`
-                      margin-right: ${0.5 * GU}px;
-                    `}
-                  >
-                    {shortenAddress(courtConfig?.id)}
-                  </span>
-                  <ButtonBase
-                    disabled={!courtConfig}
-                    href={blockExplorerUrl('address', courtConfig?.id, {
-                      networkType: isLocalOrUnknownNetwork()
-                        ? 'private'
-                        : getNetworkType(),
-                    })}
-                  >
-                    <IconExternal
-                      css={`
-                        color: ${theme.contentSecondary};
-                      `}
-                    />
-                  </ButtonBase>
-                </div>
-              </div>
-              <div
-                css={`
-                  color: ${isSynced ? theme.positive : theme.negative};
-                  display: flex;
-                  align-items: center;
-                  margin-top: ${1 * GU}px;
-                `}
-              >
-                <IconSync />
-                <span
-                  css={`
-                    ${textStyle('body4')}
-                    text-transform: uppercase;
-                  `}
-                >
-                  {`Term ${isSynced ? 'is up-to-date' : 'needs updating'}`}
-                </span>
-              </div>
-              <div
-                css={`
-                  margin-top: ${1 * GU}px;
-                `}
-              >
-                <span>
-                  <span
-                    css={`
-                      color: ${theme.contentSecondary};
-                      margin-right: ${0.5 * GU}px;
-                    `}
-                  >
-                    {isSynced ? 'Up to date' : 'Needs updating'}:
-                  </span>
-                  <span>
-                    {isSynced
-                      ? `Current term ${currentTermId}`
-                      : `Last term ${currentTermId - neededTransitions}`}
-                  </span>
-                </span>
-              </div>
-              <div
-                css={`
-                  margin-top: ${1.5 * GU}px;
-                `}
-              >
-                {isSynced ? (
-                  <span
-                    css={`
-                      ${textStyle('body3')};
-                      color: ${theme.contentSecondary};
-                    `}
-                  >
-                    Term is the time unit for measuring Aragon Court phases.
-                    Each term lasts{' '}
-                    {formatDuration(courtConfig.termDuration / 1000)}.
-                  </span>
-                ) : (
-                  <Button
-                    label="Update term"
-                    mode="strong"
-                    wide
-                    disabled={!courtConfig || !wallet.account}
-                    onClick={handleOnClick}
-                  />
-                )}
-              </div>
+              />
+              <span>Aragon Court</span>
             </div>
-          )
-        }}
+            <div
+              css={`
+                display: flex;
+                align-items: center;
+              `}
+            >
+              <span
+                css={`
+                  margin-right: ${0.5 * GU}px;
+                `}
+              >
+                {shortenAddress(courtConfig?.id)}
+              </span>
+              <ButtonBase
+                disabled={!courtConfig}
+                href={blockExplorerUrl('address', courtConfig?.id, {
+                  networkType: isLocalOrUnknownNetwork()
+                    ? 'private'
+                    : getNetworkType(),
+                })}
+              >
+                <IconExternal
+                  css={`
+                    color: ${theme.contentSecondary};
+                  `}
+                />
+              </ButtonBase>
+            </div>
+          </div>
+          <div
+            css={`
+              color: ${isSynced ? theme.positive : theme.negative};
+              display: flex;
+              align-items: center;
+              margin-top: ${1 * GU}px;
+            `}
+          >
+            <IconSync />
+            <span
+              css={`
+                ${textStyle('body4')}
+                text-transform: uppercase;
+              `}
+            >
+              {`Term ${isSynced ? 'is up-to-date' : 'needs updating'}`}
+            </span>
+          </div>
+          <div
+            css={`
+              margin-top: ${1 * GU}px;
+            `}
+          >
+            <span>
+              <span
+                css={`
+                  color: ${theme.contentSecondary};
+                  margin-right: ${0.5 * GU}px;
+                `}
+              >
+                {isSynced ? 'Up to date' : 'Needs updating'}:
+              </span>
+              <span>
+                {isSynced
+                  ? `Current term ${currentTermId}`
+                  : `Last term ${currentTermId - neededTransitions}`}
+              </span>
+            </span>
+          </div>
+          <div
+            css={`
+              margin-top: ${1.5 * GU}px;
+            `}
+          >
+            {isSynced ? (
+              <span
+                css={`
+                  ${textStyle('body3')};
+                  color: ${theme.contentSecondary};
+                `}
+              >
+                Term is the time unit for measuring Aragon Court phases. Each
+                term lasts {formatDuration(courtConfig.termDuration / 1000)}.
+              </span>
+            ) : (
+              <Button
+                label="Update term"
+                mode="strong"
+                wide
+                disabled={!courtConfig || !wallet.account}
+                onClick={handleOnClick}
+              />
+            )}
+          </div>
+        </div>
       </HeaderPopover>
     </div>
   )

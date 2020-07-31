@@ -3,7 +3,7 @@ import { useWallet } from 'use-wallet'
 import { Button, GU, IconConnect, useViewport } from '@aragon/ui'
 import { shortenAddress } from '../../lib/web3-utils'
 import AccountButton from './AccountButton'
-import HeaderPopover from '../Header/HeaderPopover'
+import AccountPopover from './AccountPopover'
 import ScreenConnected from './ScreenConnected'
 import ScreenConnecting from './ScreenConnecting'
 import ScreenError from './ScreenError'
@@ -124,7 +124,7 @@ function AccountModule() {
           display={compactMode ? 'icon' : 'all'}
         />
       )}
-      <HeaderPopover
+      <AccountPopover
         direction={direction}
         heading={screen.title}
         keys={({ screenId }) => screenId + activating + activationError.name}
@@ -167,7 +167,7 @@ function AccountModule() {
           }
           return <ScreenProviders onActivate={handleActivate} />
         }}
-      </HeaderPopover>
+      </AccountPopover>
     </div>
   )
 }
