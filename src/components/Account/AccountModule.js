@@ -19,65 +19,45 @@ const SCREENS = [
 function AccountModule() {
   const [opened, setOpened] = useState(false)
   const [activatingDelayed, setActivatingDelayed] = useState(false)
-  const [activationError, setActivationError] = useState(null)
   const buttonRef = useRef()
   const { below } = useViewport()
   const compactMode = below('medium')
   const wallet = useWallet()
-  const { account, activating } = wallet
-
-  const clearError = useCallback(() => setActivationError(null), [])
+  const { account, connector, error, status } = wallet
 
   const open = useCallback(() => setOpened(true), [])
   const toggle = useCallback(() => setOpened(opened => !opened), [])
 
-  const handleCancelConnection = useCallback(() => {
-    wallet.deactivate()
-  }, [wallet])
-
-  const handleActivate = useCallback(
-    async providerId => {
-      try {
-        await wallet.activate(providerId)
-      } catch (error) {
-        setActivationError(error)
-      }
-    },
-    [wallet]
-  )
-  // Always show the “connecting…” screen, even if there are no delay
   useEffect(() => {
-    if (activationError) {
+    let timer
+
+    if (status === 'error') {
       setActivatingDelayed(null)
     }
 
-    if (activating) {
-      setActivatingDelayed(activating)
-      return
+    if (status === 'connecting') {
+      setActivatingDelayed(connector)
+      timer = setTimeout(() => {
+        setActivatingDelayed(null)
+      }, 400)
     }
-
-    const timer = setTimeout(() => {
-      setActivatingDelayed(null)
-    }, 400)
 
     return () => clearTimeout(timer)
-  }, [activating, activationError])
+  }, [connector, status])
+
+  const handleCancelConnection = useCallback(() => {
+    wallet.reset()
+  }, [wallet])
+
+  const handleActivate = useCallback(providerId => wallet.connect(providerId), [
+    wallet,
+  ])
 
   const previousScreenIndex = useRef(-1)
 
   const { screenIndex, direction } = useMemo(() => {
-    const screenId = (() => {
-      if (activationError) {
-        return 'error'
-      }
-      if (activatingDelayed) {
-        return 'connecting'
-      }
-      if (account) {
-        return 'connected'
-      }
-      return 'providers'
-    })()
+    const screenId = (() =>
+      status === 'disconnected' ? 'providers' : status)()
 
     const screenIndex = SCREENS.findIndex(screen => screen.id === screenId)
     const direction = previousScreenIndex.current > screenIndex ? -1 : 1
@@ -85,7 +65,7 @@ function AccountModule() {
     previousScreenIndex.current = screenIndex
 
     return { direction, screenIndex }
-  }, [account, activationError, activatingDelayed])
+  }, [status])
 
   const screen = SCREENS[screenIndex]
   const screenId = screen.id
@@ -96,7 +76,6 @@ function AccountModule() {
       return false
     }
     setOpened(false)
-    setActivationError(null)
   }, [screenId])
 
   return (
@@ -127,19 +106,16 @@ function AccountModule() {
       <AccountPopover
         direction={direction}
         heading={screen.title}
-        keys={({ screenId }) => screenId + activating + activationError.name}
+        keys={({ screenId }) => screenId + status + error.name}
         onClose={handlePopoverClose}
         onOpen={open}
         opener={buttonRef.current}
         screenId={screenId}
         screenData={{
           account,
-          // This is needed because use-wallet throws an error when the
-          // activation fails before React updates the state of `activating`.
-          // A future version of use-wallet might return an
-          // `activationError` object instead, making this unnecessary.
-          activating: screen.id === 'error' ? null : activatingDelayed,
-          activationError,
+          activating: activatingDelayed,
+          activationError: error,
+          status,
           screenId,
         }}
         screenKey={({ account, activating, activationError, screenId }) =>
@@ -151,6 +127,7 @@ function AccountModule() {
         visible={opened}
       >
         {({ activating, activationError, screenId }) => {
+          console.log('activating', activating)
           if (screenId === 'connecting') {
             return (
               <ScreenConnecting
@@ -163,7 +140,7 @@ function AccountModule() {
             return <ScreenConnected wallet={wallet} />
           }
           if (screenId === 'error') {
-            return <ScreenError error={activationError} onBack={clearError} />
+            return <ScreenError error={activationError} onBack={wallet.reset} />
           }
           return <ScreenProviders onActivate={handleActivate} />
         }}

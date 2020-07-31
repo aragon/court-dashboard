@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { GU, Link, textStyle, useTheme } from '@aragon/ui'
-import { UnsupportedChainError } from 'use-wallet'
+import { ChainUnsupportedError } from 'use-wallet'
 import { getNetworkName } from '../../lib/web3-utils'
 import connectionError from './assets/connection-error.png'
 
@@ -10,7 +10,7 @@ function AccountModuleErrorScreen({ error, onBack }) {
   const elementRef = useRef()
 
   const [title, secondary] = useMemo(() => {
-    if (error instanceof UnsupportedChainError) {
+    if (error instanceof ChainUnsupportedError) {
       return [
         'Wrong network',
         `Please select the ${getNetworkName()} network in your wallet and try again.`,
