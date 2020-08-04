@@ -18,7 +18,7 @@ const SCREENS = [
 
 function AccountModule() {
   const [opened, setOpened] = useState(false)
-  const [activatingDelayed, setActivatingDelayed] = useState(false)
+  const [activatingDelayed, setActivatingDelayed] = useState(null)
   const buttonRef = useRef()
   const { below } = useViewport()
   const compactMode = below('medium')
