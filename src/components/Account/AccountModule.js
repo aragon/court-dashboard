@@ -45,7 +45,7 @@ function AccountModule() {
     return () => clearTimeout(timer)
   }, [connector, status])
 
-  const handleCancelConnection = useCallback(() => {
+  const handleResetConnection = useCallback(() => {
     wallet.reset()
   }, [wallet])
 
@@ -131,7 +131,7 @@ function AccountModule() {
             return (
               <ScreenConnecting
                 providerId={activating}
-                onCancel={handleCancelConnection}
+                onCancel={handleResetConnection}
               />
             )
           }
@@ -139,7 +139,12 @@ function AccountModule() {
             return <ScreenConnected wallet={wallet} />
           }
           if (screenId === 'error') {
-            return <ScreenError error={activationError} onBack={wallet.reset} />
+            return (
+              <ScreenError
+                error={activationError}
+                onBack={handleResetConnection}
+              />
+            )
           }
           return <ScreenProviders onActivate={handleActivate} />
         }}
