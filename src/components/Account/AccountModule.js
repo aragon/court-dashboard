@@ -56,8 +56,7 @@ function AccountModule() {
   const previousScreenIndex = useRef(-1)
 
   const { screenIndex, direction } = useMemo(() => {
-    const screenId = (() =>
-      status === 'disconnected' ? 'providers' : status)()
+    const screenId = status === 'disconnected' ? 'providers' : status
 
     const screenIndex = SCREENS.findIndex(screen => screen.id === screenId)
     const direction = previousScreenIndex.current > screenIndex ? -1 : 1
