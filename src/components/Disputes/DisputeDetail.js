@@ -94,7 +94,9 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
                 if (evidences.length === 0) {
                   return <NoEvidence />
                 }
-                return <DisputeEvidences evidences={evidences} />
+                return (
+                  <DisputeEvidences dispute={dispute} evidences={evidences} />
+                )
               })()}
             </React.Fragment>
           }
