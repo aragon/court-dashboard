@@ -253,6 +253,7 @@ function useDisputeFields(dispute) {
   ] = useDisputedAction(dispute)
 
   const { disputedAction, description } = useMemo(() => {
+    // Disputes created through agreements
     if (disputable) {
       return {
         disputedAction: disputedActionRadspec,
@@ -260,6 +261,7 @@ function useDisputeFields(dispute) {
       }
     }
 
+    // Old disputes not created through agreements
     return {
       disputedAction: disputedActionText,
       description: disputedActionRadspec,
@@ -296,7 +298,10 @@ const DisputedActionNA = () => {
       >
         N/A
       </span>
-      <Help hint="">The disputed Action</Help>
+      <Help hint="">
+        This dispute is simply between the two arguments. There's no executable
+        action involved.
+      </Help>
     </div>
   )
 }
