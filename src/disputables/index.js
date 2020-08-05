@@ -24,7 +24,9 @@ const DANDELION_VOTING_APP_ID =
 const DELAY_APP_ID =
   '0x133c97c74d2197a068988549d31108ce57af8f0ccf90ff9edf0ba5d349f2a450' // disputable-delay.aragonpm.eth
 const VOTING_APP_ID =
-  '0x09cdc3e6887a0002b11992e954a40326a511a1750a2f5c69d17b8b660b0d337a' // disputable-voting.aragonpm.eth
+  '0x705b5084c67966bb8e4640b28bab7a1e51e03d209d84e3a04d2a4f7415f93b34' // disputable-voting.open.aragonpm.eth
+
+// '0x09cdc3e6887a0002b11992e954a40326a511a1750a2f5c69d17b8b660b0d337a' // disputable-voting.aragonpm.eth
 
 const cachedDescriptions = new Map([])
 
@@ -61,7 +63,7 @@ const DISPUTABLE_ACTIONS = new Map([
   ],
 ])
 
-const ERROR_MSG = 'Failed to fetch description'
+const ERROR_MSG = 'Failed to fetch disputed action'
 
 /**
  * Get disputable long and short description as well as the URL where the disputed action is taking place
@@ -95,24 +97,27 @@ export async function describeDisputedAction(
       const result = await disputableAppContract[fn](disputableActionId)
       const evmScript = result[scriptPosition]
 
-      // Get long and short description corresponding to the disputed action.
+      const disputedActionURL = buildDisputedActionUrl(
+        organization,
+        disputableAddress,
+        entityPath,
+        disputableActionId
+      )
+
       const [
         disputedActionRadspec,
         disputedActionText,
         executionPath,
       ] = await describeActionScript(evmScript, organization)
 
+      // Get long and short description corresponding to the disputed action.
+
       const disputedActionDescription = {
-        disputedActionText,
         disputedActionRadspec,
+        disputedActionText,
 
         // Build URL where the disputed action is taking place
-        disputedActionURL: buildDisputedActionUrl(
-          organization,
-          disputableAddress,
-          entityPath,
-          disputableActionId
-        ),
+        disputedActionURL,
 
         // Transaction path
         executionPath,
@@ -139,6 +144,11 @@ export async function describeDisputedAction(
  *                    and the second item, the app belonging to the organization where the disputed action is taking place.
  */
 async function describeActionScript(evmScript, organization) {
+  // No EVM script, means it's not an executable action (e.g. signaling vote)
+  if (evmScript === '0x') {
+    return []
+  }
+
   const org = await connect(organization, 'thegraph', {
     chainId: env('CHAIN_ID'),
   })

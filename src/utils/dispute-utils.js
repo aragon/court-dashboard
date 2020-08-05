@@ -44,6 +44,20 @@ export function transformRoundDataAttributes(round) {
   }
 }
 
+function transformDisputableDataAttributes(dispute) {
+  if (!dispute.disputable) {
+    return null
+  }
+
+  const { disputable } = dispute
+
+  return {
+    ...disputable,
+    actionContext: toUtf8String(disputable.actionContext || '0x'),
+    challengeContext: toUtf8String(disputable.challengeContext || '0x'),
+  }
+}
+
 /**
  * Parses metadata of the given dispute
 
@@ -75,16 +89,17 @@ export function transformDisputeDataAttributes(dispute) {
 
   const transformedDispute = {
     ...dispute,
-    description,
-    metadataUri,
     createdAt: toMs(parseInt(dispute.createdAt, 10)),
+    description,
+    disputable: transformDisputableDataAttributes(dispute),
+    metadataUri,
+    rounds: dispute.rounds.map(transformRoundDataAttributes),
     state: DisputesTypes.convertFromString(dispute.state),
     status:
       DisputesTypes.convertFromString(dispute.state) ===
       DisputesTypes.Phase.Ruled
         ? DisputesTypes.Status.Closed
         : DisputesTypes.Status.Open,
-    rounds: dispute.rounds.map(transformRoundDataAttributes),
   }
 
   // If the dispute is part of the precedence campaign we will flag it as such

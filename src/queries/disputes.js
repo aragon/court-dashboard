@@ -9,14 +9,7 @@ export const AllDisputes = gql`
       state
       metadata
       disputable {
-        defendant
-        address
-        actionId
-        disputableActionId
-        plaintiff
-        organization
         title
-        agreement
       }
       rounds {
         id
@@ -52,14 +45,15 @@ export const SingleDispute = gql`
       state
       metadata
       disputable {
-        defendant
-        address
         actionId
-        disputableActionId
-        plaintiff
-        organization
-        title
+        address
         agreement
+        actionContext
+        defendant
+        disputableActionId
+        organization
+        plaintiff
+        title
       }
       createdAt
       subject {

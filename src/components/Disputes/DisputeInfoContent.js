@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import resolvePathname from 'resolve-pathname'
-import { GU, Link, textStyle, useTheme, useViewport } from '@aragon/ui'
+import { GU, Help, Link, textStyle, useTheme, useViewport } from '@aragon/ui'
 import styled from 'styled-components'
 import DisputeDetailDescription from './DisputeDetailDescription'
 import DisputeOutcomeText from './DisputeOutcomeText'
@@ -21,52 +21,35 @@ function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
   const {
     agreementText,
     agreementUrl,
+    creator,
     defendant,
-    organization,
-    plaintiff,
-    subject,
-  } = dispute
-
-  const creator = plaintiff || subject?.id
-
-  const [
-    {
-      disputedActionRadspec,
-      disputedActionText,
-      disputedActionURL,
-      executionPath,
-    },
+    description,
+    disputedAction,
+    disputedActionURL,
+    executionPath,
     loading,
-  ] = useDisputedAction(dispute)
+    organization,
+  } = useDisputeFields(dispute)
 
   return (
     <>
       <Row compactMode={compactMode}>
-        <Field
-          label="Disputed Action"
+        <DisputedAction
+          actionText={disputedAction}
+          dispute={dispute}
+          executionPath={executionPath}
+          isFinalRulingEnsured={isFinalRulingEnsured}
           loading={loading}
-          value={
-            <DisputeActionText
-              dispute={dispute}
-              disputedActionText={disputedActionText}
-              disputedActionURL={disputedActionURL}
-              isFinalRulingEnsured={isFinalRulingEnsured}
-            />
-          }
+          url={disputedActionURL}
         />
+
         {organization && <Field label="Organization" value={organization} />}
       </Row>
       <Row compactMode={compactMode}>
         <Field
           label="Description"
           loading={loading}
-          value={
-            Array.isArray(executionPath) ? (
-              <DisputeDetailDescription path={executionPath} />
-            ) : (
-              disputedActionRadspec
-            )
-          }
+          value={description}
           css={`
             word-break: break-word;
             overflow-wrap: anywhere;
@@ -97,7 +80,7 @@ function Field({ label, loading, value, ...props }) {
   const theme = useTheme()
   const wallet = useWallet()
 
-  if (!loading && !value) {
+  if (!value && !loading) {
     return <div />
   }
 
@@ -166,34 +149,126 @@ function Field({ label, loading, value, ...props }) {
   )
 }
 
-function DisputeActionText({
+function DisputedAction({
+  actionText,
   dispute,
-  disputedActionText,
-  disputedActionURL,
+  executionPath,
   isFinalRulingEnsured,
+  loading,
+  url,
 }) {
-  const { lastRoundId, rounds } = dispute
-  const lastRound = rounds?.[lastRoundId]
-  const voteWinningOutcome = lastRound?.vote?.winningOutcome
-  const appealedRuling = lastRound?.appeal?.appealedRuling
+  const ActionTextComponent = useMemo(() => {
+    // Disputes could not have an executable action
+    if (!actionText && !loading) {
+      return <DisputedActionNA />
+    }
 
-  if (!isFinalRulingEnsured) {
+    if (isFinalRulingEnsured) {
+      const { lastRoundId, rounds } = dispute
+      const lastRound = rounds?.[lastRoundId]
+      const voteWinningOutcome = lastRound?.vote?.winningOutcome
+      const appealedRuling = lastRound?.appeal?.appealedRuling
+
+      return (
+        <DisputeOutcomeText
+          action={actionText}
+          outcome={appealedRuling || voteWinningOutcome}
+          phase={
+            appealedRuling ? DisputePhase.AppealRuling : DisputePhase.RevealVote
+          }
+          verbose
+        />
+      )
+    }
     return (
-      <Link external href={disputedActionURL}>
-        {disputedActionText}
+      <Link external href={url}>
+        {Array.isArray(executionPath) ? (
+          <DisputeDetailDescription path={executionPath} />
+        ) : (
+          actionText
+        )}
       </Link>
     )
-  }
+  }, [actionText, dispute, executionPath, isFinalRulingEnsured, loading, url])
 
   return (
-    <DisputeOutcomeText
-      action={disputedActionText}
-      outcome={appealedRuling || voteWinningOutcome}
-      phase={
-        appealedRuling ? DisputePhase.AppealRuling : DisputePhase.RevealVote
-      }
-      verbose
+    <Field
+      label="Disputed Action"
+      loading={loading}
+      value={ActionTextComponent}
     />
+  )
+}
+
+function useDisputeFields(dispute) {
+  const {
+    agreementText,
+    agreementUrl,
+    defendant,
+    disputable,
+    organization,
+    plaintiff,
+    subject,
+  } = dispute
+
+  const creator = plaintiff || subject?.id
+
+  const [
+    {
+      disputedActionRadspec,
+      disputedActionText,
+      disputedActionURL,
+      executionPath,
+    },
+    loading,
+  ] = useDisputedAction(dispute)
+
+  const { disputedAction, description } = useMemo(() => {
+    if (disputable) {
+      return {
+        disputedAction: disputedActionRadspec,
+        description: disputable.actionContext,
+      }
+    }
+
+    return {
+      disputedAction: disputedActionText,
+      description: disputedActionRadspec,
+    }
+  }, [disputable, disputedActionRadspec, disputedActionText])
+
+  return {
+    agreementText,
+    agreementUrl,
+    creator,
+    defendant,
+    description,
+    disputable,
+    disputedAction,
+    disputedActionURL,
+    executionPath,
+    loading,
+    organization,
+  }
+}
+
+const DisputedActionNA = () => {
+  return (
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+      `}
+    >
+      <span
+        css={`
+          margin-right: ${1 * GU}px;
+        `}
+      >
+        N/A
+      </span>
+      <Help hint="">The disputed Action</Help>
+    </div>
   )
 }
 
