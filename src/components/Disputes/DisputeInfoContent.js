@@ -62,7 +62,13 @@ function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
           <Field
             label="Link to agreement"
             value={
-              <Link external href={agreementUrl}>
+              <Link
+                external
+                href={agreementUrl}
+                css={`
+                  text-decoration: none;
+                `}
+              >
                 {agreementText}
               </Link>
             }
@@ -120,7 +126,13 @@ function Field({ label, loading, value, ...props }) {
                             `${IPFS_ENDPOINT}/${word}`
                           )
                           return (
-                            <Link href={ipfsUrl} key={i}>
+                            <Link
+                              href={ipfsUrl}
+                              key={i}
+                              css={`
+                                text-decoration: none;
+                              `}
+                            >
                               {word}
                             </Link>
                           )
@@ -180,14 +192,27 @@ function DisputedAction({
         />
       )
     }
-    return (
-      <Link external href={url}>
-        {Array.isArray(executionPath) ? (
-          <DisputeDetailDescription path={executionPath} />
-        ) : (
-          actionText
-        )}
+
+    const action = Array.isArray(executionPath) ? (
+      <DisputeDetailDescription path={executionPath} />
+    ) : (
+      actionText
+    )
+
+    return url ? (
+      <Link
+        external
+        href={url}
+        css={`
+          text-decoration: none;
+          white-space: break-spaces;
+          text-align: left;
+        `}
+      >
+        {action}
       </Link>
+    ) : (
+      action
     )
   }, [actionText, dispute, executionPath, isFinalRulingEnsured, loading, url])
 
@@ -196,6 +221,10 @@ function DisputedAction({
       label="Disputed Action"
       loading={loading}
       value={ActionTextComponent}
+      css={`
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      `}
     />
   )
 }
