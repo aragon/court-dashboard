@@ -15,9 +15,6 @@ const ENV_VARS = {
   DEFAULT_ETH_NODE() {
     return process.env.REACT_APP_DEFAULT_ETH_NODE || ''
   },
-  ENABLE_SENTRY() {
-    return process.env.REACT_APP_ENABLE_SENTRY === '1'
-  },
   FORTMATIC_API_KEY() {
     return process.env.REACT_APP_FORTMATIC_API_KEY || ''
   },
