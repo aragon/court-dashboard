@@ -5,7 +5,6 @@ import * as DisputesTypes from '../types/dispute-status-types'
 import { getTermEndTime, getTermStartTime } from './court-utils'
 import { getVoidedDisputesByCourt } from '../flagged-disputes/voided-disputes'
 import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/precedence-campaign-disputes'
-import { toUtf8String } from '../lib/web3-utils'
 
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
@@ -44,18 +43,6 @@ export function transformRoundDataAttributes(round) {
   }
 }
 
-function transformDisputableDataAttributes(disputable) {
-  if (!disputable) {
-    return null
-  }
-
-  return {
-    ...disputable,
-    actionContext: toUtf8String(disputable.actionContext || '0x'),
-    challengeContext: toUtf8String(disputable.challengeContext || '0x'),
-  }
-}
-
 /**
  * Parses metadata of the given dispute
 
@@ -71,14 +58,12 @@ function parseMetadata(dispute) {
     return [dispute.disputable.title]
   }
 
-  const decodedMetadata = toUtf8String(dispute.metadata, true)
-
   try {
-    const { description, metadata } = JSON.parse(decodedMetadata)
+    const { description, metadata } = JSON.parse(dispute.metadata)
     return [description, metadata]
   } catch (error) {
     // if is not a json return the metadata as the description
-    return [decodedMetadata]
+    return [dispute.metadata]
   }
 }
 
@@ -89,7 +74,6 @@ export function transformDisputeDataAttributes(dispute) {
     ...dispute,
     createdAt: toMs(parseInt(dispute.createdAt, 10)),
     description,
-    disputable: transformDisputableDataAttributes(dispute.disputable),
     metadataUri,
     rounds: dispute.rounds.map(transformRoundDataAttributes),
     state: DisputesTypes.convertFromString(dispute.state),
