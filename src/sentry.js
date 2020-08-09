@@ -2,8 +2,7 @@ import { init as initSentry, captureMessage } from '@sentry/browser'
 import env from './environment'
 import { getNetworkType } from './lib/web3-utils'
 
-const SENTRY_DSN = env('SENTRY_DSN')
-export const sentryEnabled = Boolean(SENTRY_DSN && env('ENABLE_SENTRY'))
+export const sentryEnabled = Boolean(env('SENTRY_DSN'))
 
 export default function initializeSentry() {
   if (sentryEnabled) {

@@ -32,10 +32,6 @@ API key from [Portis](portis.io). Requires separate keys for testnet / mainnet.
 
 ## Flags
 
-### `REACT_APP_ENABLE_SENTRY`
-
-To enable error reporting to sentry
-
 ### `REACT_APP_SKIP_VOIDING`
 
 To disable flagging of voided disputes.
