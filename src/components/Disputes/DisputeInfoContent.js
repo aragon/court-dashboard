@@ -170,7 +170,7 @@ function DisputedAction({
   url,
 }) {
   const ActionTextComponent = useMemo(() => {
-    // Disputes could not have an executable action
+    // Disputes may not include an embedded executable action
     if (!actionText && !loading) {
       return <DisputedActionNA />
     }
@@ -299,8 +299,8 @@ const DisputedActionNA = () => {
         N/A
       </span>
       <Help hint="">
-        This dispute is simply between the two arguments. There's no executable
-        action involved.
+        This dispute does not involve a binding action and is simply between the
+        given context and arguments.
       </Help>
     </div>
   )

@@ -44,12 +44,10 @@ export function transformRoundDataAttributes(round) {
   }
 }
 
-function transformDisputableDataAttributes(dispute) {
-  if (!dispute.disputable) {
+function transformDisputableDataAttributes(disputable) {
+  if (!disputable) {
     return null
   }
-
-  const { disputable } = dispute
 
   return {
     ...disputable,
@@ -91,7 +89,7 @@ export function transformDisputeDataAttributes(dispute) {
     ...dispute,
     createdAt: toMs(parseInt(dispute.createdAt, 10)),
     description,
-    disputable: transformDisputableDataAttributes(dispute),
+    disputable: transformDisputableDataAttributes(dispute.disputable),
     metadataUri,
     rounds: dispute.rounds.map(transformRoundDataAttributes),
     state: DisputesTypes.convertFromString(dispute.state),
