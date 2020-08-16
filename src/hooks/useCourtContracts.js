@@ -817,12 +817,12 @@ export function useTotalANTStakedPolling(timeout = 1000) {
 
     const fetchTotalANTBalance = () => {
       timeoutId = setTimeout(() => {
-        const agentBalancePromise = antContract.balanceOf(networkAgentAddress)
         const vaultBalancePromise = antContract.balanceOf(networkReserveAddress)
-        return Promise.all([agentBalancePromise, vaultBalancePromise])
-          .then(([antInAgent, antInVault]) => {
+
+        return vaultBalancePromise
+          .then(antInVault => {
             if (!cancelled) {
-              setTotalANTStaked(antInAgent.add(antInVault))
+              setTotalANTStaked(antInVault)
             }
           })
           .catch(err => {
