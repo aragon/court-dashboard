@@ -20,7 +20,7 @@ import { getModuleAddress } from '../utils/court-utils'
 import { bigNum, formatUnits } from '../lib/math-utils'
 import { getFunctionSignature } from '../lib/web3-utils'
 import { CourtModuleType } from '../types/court-module-types'
-import { networkAgentAddress, networkReserveAddress } from '../networks'
+import { networkReserveAddress } from '../networks'
 import {
   getVoteId,
   hashPassword,
@@ -807,7 +807,7 @@ export function useTotalANTStakedPolling(timeout = 1000) {
     let timeoutId
 
     // This stat is only relevant and shown on mainnet
-    if (!networkAgentAddress || !networkReserveAddress) {
+    if (!networkReserveAddress) {
       return setError(true)
     }
 
@@ -817,12 +817,12 @@ export function useTotalANTStakedPolling(timeout = 1000) {
 
     const fetchTotalANTBalance = () => {
       timeoutId = setTimeout(() => {
-        const agentBalancePromise = antContract.balanceOf(networkAgentAddress)
         const vaultBalancePromise = antContract.balanceOf(networkReserveAddress)
-        return Promise.all([agentBalancePromise, vaultBalancePromise])
-          .then(([antInAgent, antInVault]) => {
+
+        return vaultBalancePromise
+          .then(antInVault => {
             if (!cancelled) {
-              setTotalANTStaked(antInAgent.add(antInVault))
+              setTotalANTStaked(antInVault)
             }
           })
           .catch(err => {
