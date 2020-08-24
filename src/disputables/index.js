@@ -27,6 +27,8 @@ const VOTING_APP_ID =
   '0x09cdc3e6887a0002b11992e954a40326a511a1750a2f5c69d17b8b660b0d337a' // disputable-voting.aragonpm.eth
 const VOTING_OPEN_APP_ID =
   '0x705b5084c67966bb8e4640b28bab7a1e51e03d209d84e3a04d2a4f7415f93b34' // disputable-voting.open.aragonpm.eth
+const VOTING_PRECEDENCE_CAMPAIGN_APP_ID =
+  '0x39aa9e500efe56efda203714d12c78959ecbf71223162614ab5b56eaba014145' // disputable-voting.precedence-campaign.aragonpm.eth
 
 const cachedDescriptions = new Map([])
 
@@ -61,6 +63,7 @@ const DISPUTABLE_ACTIONS = new Map([
   ],
   [VOTING_APP_ID, disputableVotingAction],
   [VOTING_OPEN_APP_ID, disputableVotingAction],
+  [VOTING_PRECEDENCE_CAMPAIGN_APP_ID, disputableVotingAction],
 ])
 
 const ERROR_MSG = 'Failed to fetch disputed action'
