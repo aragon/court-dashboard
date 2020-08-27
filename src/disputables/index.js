@@ -11,60 +11,12 @@ import {
   getNetworkType,
   sanitizeNetworkType,
 } from '../lib/web3-utils'
+import { DISPUTABLE_ACTIONS } from './actions'
 
-// Disputable apps abis
+// Disputable abi
 import disputableAbi from '../abi/disputables/IDisputable.json'
-import disputableDandelionVotingAbi from '../abi/disputables/DisputableDandelionVoting.json'
-import disputableDelayAbi from '../abi/disputables/DisputableDelay.json'
-import disputableVotingAbi from '../abi/disputables/DisputableVoting.json'
-
-// Disputable appIds
-const DANDELION_VOTING_APP_ID =
-  '0x0a85f166c21ad90fc107023e825457adfa137ef94f52f4f695ec00023bd05742' // disputable-dandelion-voting.aragonpm.eth
-const DELAY_APP_ID =
-  '0x133c97c74d2197a068988549d31108ce57af8f0ccf90ff9edf0ba5d349f2a450' // disputable-delay.aragonpm.eth
-const VOTING_APP_ID =
-  '0x09cdc3e6887a0002b11992e954a40326a511a1750a2f5c69d17b8b660b0d337a' // disputable-voting.aragonpm.eth
-const VOTING_OPEN_APP_ID =
-  '0x705b5084c67966bb8e4640b28bab7a1e51e03d209d84e3a04d2a4f7415f93b34' // disputable-voting.open.aragonpm.eth
-const VOTING_PRECEDENCE_CAMPAIGN_APP_ID =
-  '0x39aa9e500efe56efda203714d12c78959ecbf71223162614ab5b56eaba014145' // disputable-voting.precedence-campaign.aragonpm.eth
 
 const cachedDescriptions = new Map([])
-
-const disputableVotingAction = {
-  abi: disputableVotingAbi,
-  entityPath: 'vote',
-  fn: 'getVote',
-  scriptPosition: 9,
-}
-
-// Mapping of all disputable apps appId to their
-// corresponding method for describing a disputed action.
-// TODO: Add Conviction Voting
-const DISPUTABLE_ACTIONS = new Map([
-  [
-    DANDELION_VOTING_APP_ID,
-    {
-      abi: disputableDandelionVotingAbi,
-      entityPath: 'vote',
-      fn: 'getVote',
-      scriptPosition: 10,
-    },
-  ],
-  [
-    DELAY_APP_ID,
-    {
-      abi: disputableDelayAbi,
-      entityPath: 'delay',
-      fn: 'delayedScripts',
-      scriptPosition: 4,
-    },
-  ],
-  [VOTING_APP_ID, disputableVotingAction],
-  [VOTING_OPEN_APP_ID, disputableVotingAction],
-  [VOTING_PRECEDENCE_CAMPAIGN_APP_ID, disputableVotingAction],
-])
 
 const ERROR_MSG = 'Failed to fetch disputed action'
 
@@ -91,14 +43,12 @@ export async function describeDisputedAction(
     const appId = await disputableContract.appId()
 
     if (DISPUTABLE_ACTIONS.has(appId)) {
-      const { abi, entityPath, fn, scriptPosition } = DISPUTABLE_ACTIONS.get(
-        appId
-      )
+      const { entityPath, scriptExtractor } = DISPUTABLE_ACTIONS.get(appId)
 
-      // Get disputed action script
-      const disputableAppContract = getContract(disputableAddress, abi)
-      const result = await disputableAppContract[fn](disputableActionId)
-      const evmScript = result[scriptPosition]
+      const evmScript = await scriptExtractor(
+        disputableAddress,
+        disputableActionId
+      )
 
       const disputedActionURL = buildDisputedActionUrl(
         organization,
@@ -153,7 +103,7 @@ async function describeActionScript(evmScript, organization) {
   }
 
   const org = await connect(organization, 'thegraph', {
-    chainId: env('CHAIN_ID'),
+    network: env('CHAIN_ID'),
   })
   const apps = await org.apps()
 
