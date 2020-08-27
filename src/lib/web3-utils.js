@@ -1,8 +1,9 @@
 import env from '../environment'
-import { providers as Providers } from 'ethers'
-import { id as keccak256 } from 'ethers/utils'
+import { providers as Providers, utils } from 'ethers'
 import { InvalidURI, InvalidNetworkType, NoConnection } from '../errors'
 import { validHttpFormat } from './uri-utils'
+
+const { id: hash256, solidityKeccak256: soliditySha3, toUtf8String } = utils
 
 export const DEFAULT_LOCAL_CHAIN = 'private'
 export const ETH_FAKE_ADDRESS = `0x${''.padEnd(40, '0')}`
@@ -11,7 +12,7 @@ const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 const ETH_ADDRESS_TEST_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
 
 export function getFunctionSignature(func) {
-  return keccak256(func).slice(0, 10)
+  return hash256(func).slice(0, 10)
 }
 
 export function getUseWalletProviders() {
@@ -52,7 +53,7 @@ function toChecksumAddress(address) {
 
   address = address.toLowerCase().replace(/^0x/i, '')
 
-  const addressHash = keccak256(address).replace(/^0x/i, '')
+  const addressHash = hash256(address).replace(/^0x/i, '')
   let checksumAddress = '0x'
 
   for (let i = 0; i < address.length; i++) {
@@ -203,8 +204,4 @@ export async function signMessage(wallet, message) {
 }
 
 // ethers utils exports
-export {
-  id as hash256,
-  solidityKeccak256 as soliditySha3,
-  toUtf8String,
-} from 'ethers/utils'
+export { hash256, soliditySha3, toUtf8String }

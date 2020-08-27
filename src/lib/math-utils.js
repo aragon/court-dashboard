@@ -1,7 +1,7 @@
-import { utils as EthersUtils } from 'ethers'
+import { utils as EthersUtils, BigNumber } from 'ethers'
 
 export function bigNum(value) {
-  return new EthersUtils.BigNumber(value)
+  return BigNumber.from(value)
 }
 
 export function formatTokenAmount(
