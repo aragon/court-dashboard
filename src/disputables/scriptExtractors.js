@@ -1,12 +1,8 @@
-import environment from '../environment'
 import { getContract } from '../web3-contracts'
-import { performQuery, disputableVotingQuery } from './queries'
-import { sanitizeNetworkType, getNetworkType } from '../lib/web3-utils'
+import { performDisputableVotingQuery } from './queries'
 
 import disputableDandelionVotingAbi from '../abi/disputables/DisputableDandelionVoting.json'
 import disputableDelayAbi from '../abi/disputables/DisputableDelay.json'
-
-const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
 export function delayExtractor(disputableAddress, disputableActionId) {
   return extractFromContract(
@@ -31,17 +27,16 @@ export function dandelionVotingExtractor(
   )
 }
 
-export async function votingExtractor(disputableAddress, disputableActionId) {
-  // Disputable voting now saves the hash of the evmScript so we need to get it from the subgraph.
-  const networkType = sanitizeNetworkType(getNetworkType())
-  const subgraphUrl = `https://api.thegraph.com/subgraphs/name/aragon/aragon-dvoting-${networkType}${
-    SUBGRAPH_NAME ? `-${SUBGRAPH_NAME}` : ''
-  }`
-
-  const { data } = await performQuery(subgraphUrl, disputableVotingQuery, {
-    id: disputableAddress,
-    voteId: disputableActionId,
-  })
+export async function votingExtractor(
+  disputableAddress,
+  disputableActionId,
+  disputableAppId
+) {
+  const { data } = await performDisputableVotingQuery(
+    disputableAddress,
+    disputableActionId,
+    disputableAppId
+  )
 
   if (!data?.disputableVoting?.votes?.length) {
     throw new Error('Failed to fetch evmScript from subgraph')

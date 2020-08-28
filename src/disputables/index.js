@@ -11,10 +11,11 @@ import {
   getNetworkType,
   sanitizeNetworkType,
 } from '../lib/web3-utils'
-import { DISPUTABLE_ACTIONS } from './actions'
+import { DISPUTABLE_ACTIONS } from './mappings'
 
 // Disputable abi
 import disputableAbi from '../abi/disputables/IDisputable.json'
+import { getKnownArbitrable } from './known-arbitrables'
 
 const cachedDescriptions = new Map([])
 
@@ -26,13 +27,15 @@ const ERROR_MSG = 'Failed to fetch disputed action'
  * @param {String} organization Address of the organization where the action is being disputed
  * @param {String} disputableAddress Address of the disputable app where the disputed action is taking place
  * @param {String} disputableActionId Disputed action's id relative to the disputable app (e.g. in the context of a disputable voting app, vote #6)
+ * @param {String} arbitrableAddress Address of the arbitrable
  * @returns {Object} Object containing the disputed action short and long description as well as the URL.
  */
 export async function describeDisputedAction(
   disputeId,
   organization,
   disputableAddress,
-  disputableActionId
+  disputableActionId,
+  arbitrableAddress
 ) {
   try {
     if (cachedDescriptions.has(disputeId)) {
@@ -47,14 +50,16 @@ export async function describeDisputedAction(
 
       const evmScript = await scriptExtractor(
         disputableAddress,
-        disputableActionId
+        disputableActionId,
+        appId
       )
 
       const disputedActionURL = buildDisputedActionUrl(
         organization,
         disputableAddress,
         entityPath,
-        disputableActionId
+        disputableActionId,
+        arbitrableAddress
       )
 
       const [
@@ -229,27 +234,38 @@ function buildDisputedActionRadspec(transactions) {
  * @param {String} appAddress Address of the app
  * @param {String} entityPath Entity where the action is being disputed (e.g vote, delay, etc)
  * @param {String} actionId Disputable action id
+ * @param {String} arbitrableAddress Address of the arbitrable
  * @returns {String} URL of the disputed action.
  */
 function buildDisputedActionUrl(
   organization,
   appAddress,
   entityPath,
-  actionId
+  actionId,
+  arbitrableAddress
 ) {
-  const orgUrl = buildOrgUrl(organization)
-  return [orgUrl, appAddress, entityPath, actionId].join('/')
+  const networkType = sanitizeNetworkType(getNetworkType())
+  const arbitrable = getKnownArbitrable(networkType, arbitrableAddress)
+
+  let url
+  if (arbitrable) {
+    url = [arbitrable.link, arbitrable.entityPath, actionId].join('/')
+  } else {
+    // Fallback to Aragon client url
+    const orgUrl = buildOrgUrl(organization, networkType)
+    url = [orgUrl, appAddress, entityPath, actionId].join('/')
+  }
+
+  return url
 }
 
 /**
  * Builds URL of the organization
  * @param {String} organization Address of the organization in question
+ * @param {String} networkType The network type
  * @returns {String} URL of the organization
  */
-function buildOrgUrl(organization) {
-  const networkType = sanitizeNetworkType(getNetworkType())
-
-  // TODO: Consider the possibility where the main Org frontend is not the Aragon client
+function buildOrgUrl(organization, networkType) {
   return `https://${networkType}.aragon.org/#/${organization}`
 }
 

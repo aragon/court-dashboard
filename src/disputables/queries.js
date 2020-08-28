@@ -1,9 +1,21 @@
 import gql from 'graphql-tag'
-import { GraphQLWrapper } from '@aragon/connect-thegraph'
+import { Client } from 'urql/'
+import { getSubgraphByAppId } from './utils'
 
-export function performQuery(subgraph, query, args) {
-  const wrapper = new GraphQLWrapper(subgraph)
-  return wrapper.performQuery(query, args)
+export function performDisputableVotingQuery(id, voteId, appId) {
+  // Disputable voting now saves the hash of the evmScript so we need to get it from the subgraph.
+  const subgraphUrl = getSubgraphByAppId(appId)
+
+  return performQuery(subgraphUrl, disputableVotingQuery, {
+    id,
+    voteId,
+  })
+}
+
+function performQuery(subgraph, query, args) {
+  const client = new Client({ url: subgraph })
+
+  return client.query(query, args).toPromise()
 }
 
 export const disputableVotingQuery = gql`

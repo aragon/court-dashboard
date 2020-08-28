@@ -312,6 +312,7 @@ function useDisputedAction({
   disputedActionRadspec,
   disputedActionText,
   disputedActionURL,
+  subject,
 }) {
   const [disputedAction, setDisputedAction] = useState({
     disputedActionRadspec,
@@ -337,7 +338,8 @@ function useDisputedAction({
         id,
         disputable.organization,
         disputable.address,
-        disputable.disputableActionId
+        disputable.disputableActionId,
+        subject.id
       )
 
       if (!cancelled) {
@@ -351,7 +353,7 @@ function useDisputedAction({
     return () => {
       cancelled = true
     }
-  }, [disputable, id])
+  }, [disputable, id, subject])
 
   return [disputedAction, loading]
 }
