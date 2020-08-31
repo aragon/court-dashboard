@@ -9,7 +9,7 @@ import Loading from '../Loading'
 import { useWallet } from '../../providers/Wallet'
 
 import { IPFS_ENDPOINT } from '../../endpoints'
-import { transformIPFSHash } from '../../lib/ipfs-utils'
+import { getIpfsCidFromUri, transformIPFSHash } from '../../lib/ipfs-utils'
 import { describeDisputedAction } from '../../disputables'
 import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
@@ -101,62 +101,82 @@ function Field({ label, loading, value, ...props }) {
       >
         {label}
       </h2>
-      {loading ? (
-        <Loading size="small" center={false} />
-      ) : (
-        <>
-          {typeof value === 'string' ? (
-            value.split('\n').map((line, i) => (
-              <React.Fragment key={i}>
-                {transformAddresses(line, (part, isAddress, index) =>
-                  isAddress ? (
-                    <span title={part} key={index}>
-                      <IdentityBadge
-                        connectedAccount={addressesEqual(part, wallet.account)}
-                        compact
-                        entity={part}
-                      />
-                    </span>
-                  ) : (
-                    <React.Fragment key={index}>
-                      {transformIPFSHash(part, (word, isIpfsHash, i) => {
-                        if (isIpfsHash) {
-                          const ipfsUrl = resolvePathname(
-                            word,
-                            `${IPFS_ENDPOINT}/${word}`
-                          )
-                          return (
-                            <Link
-                              href={ipfsUrl}
-                              key={i}
-                              css={`
-                                text-decoration: none;
-                              `}
-                            >
-                              {word}
-                            </Link>
-                          )
-                        }
+      {(() => {
+        if (loading) {
+          return <Loading size="small" center={false} />
+        }
 
-                        return <span key={i}>{word}</span>
-                      })}
-                    </React.Fragment>
-                  )
-                )}
-                <br />
-              </React.Fragment>
-            ))
-          ) : (
-            <div
-              css={`
-                ${textStyle('body2')};
-              `}
-            >
-              {value}
-            </div>
-          )}
-        </>
-      )}
+        if (typeof value === 'string') {
+          const ipfsPath = getIpfsCidFromUri(value)
+          if (ipfsPath) {
+            const ipfsUrl = resolvePathname(
+              ipfsPath,
+              `${IPFS_ENDPOINT}/${ipfsPath}`
+            )
+            return (
+              <Link
+                href={ipfsUrl}
+                css={`
+                  text-decoration: none;
+                `}
+              >
+                Read more
+              </Link>
+            )
+          }
+
+          return value.split('\n').map((line, i) => (
+            <React.Fragment key={i}>
+              {transformAddresses(line, (part, isAddress, index) =>
+                isAddress ? (
+                  <span title={part} key={index}>
+                    <IdentityBadge
+                      connectedAccount={addressesEqual(part, wallet.account)}
+                      compact
+                      entity={part}
+                    />
+                  </span>
+                ) : (
+                  <React.Fragment key={index}>
+                    {transformIPFSHash(part, (word, isIpfsHash, i) => {
+                      if (isIpfsHash) {
+                        const ipfsUrl = resolvePathname(
+                          word,
+                          `${IPFS_ENDPOINT}/${word}`
+                        )
+                        return (
+                          <Link
+                            href={ipfsUrl}
+                            key={i}
+                            css={`
+                              text-decoration: none;
+                            `}
+                          >
+                            {word}
+                          </Link>
+                        )
+                      }
+
+                      return <span key={i}>{word}</span>
+                    })}
+                  </React.Fragment>
+                )
+              )}
+              <br />
+            </React.Fragment>
+          ))
+        }
+
+        return (
+          <div
+            css={`
+              ${textStyle('body2')};
+            `}
+          >
+            {value}
+          </div>
+        )
+      })()}
     </div>
   )
 }
