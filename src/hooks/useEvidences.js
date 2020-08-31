@@ -21,6 +21,7 @@ export default function useEvidences(dispute, rawEvidences) {
 
     const baseEvidence = {
       id,
+      rawMetadata: uriOrData,
       metadata: null,
       defendant: '',
       agreementText: '',
@@ -93,7 +94,7 @@ export default function useEvidences(dispute, rawEvidences) {
   const processedEvidences = useMemo(() => {
     if (dispute.disputable) {
       return evidences.filter(
-        e => e.metadata !== dispute.disputable.actionContext
+        e => e.rawMetadata !== dispute.disputable.actionContext
       )
     }
 
