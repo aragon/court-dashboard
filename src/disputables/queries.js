@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { Client } from 'urql/'
+import { Client } from 'urql'
 import { getSubgraphByAppId } from './utils'
 
 export function performDisputableVotingQuery(id, voteId, appId) {

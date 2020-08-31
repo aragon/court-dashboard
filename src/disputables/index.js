@@ -15,7 +15,7 @@ import { DISPUTABLE_ACTIONS } from './mappings'
 
 // Disputable abi
 import disputableAbi from '../abi/disputables/IDisputable.json'
-import { getKnownArbitrable } from './known-arbitrables'
+import { buildArbitrableUrl, isArbitrableKnown } from './known-arbitrables'
 
 const cachedDescriptions = new Map([])
 
@@ -245,28 +245,47 @@ function buildDisputedActionUrl(
   arbitrableAddress
 ) {
   const networkType = sanitizeNetworkType(getNetworkType())
-  const arbitrable = getKnownArbitrable(networkType, arbitrableAddress)
+  const arbitrableKnown = isArbitrableKnown(arbitrableAddress, networkType)
 
   let url
-  if (arbitrable) {
-    url = [arbitrable.link, arbitrable.entityPath, actionId].join('/')
+  if (arbitrableKnown) {
+    url = buildArbitrableUrl(arbitrableAddress, actionId, networkType)
   } else {
     // Fallback to Aragon client url
-    const orgUrl = buildOrgUrl(organization, networkType)
-    url = [orgUrl, appAddress, entityPath, actionId].join('/')
+    url = buildClientUrl(
+      organization,
+      appAddress,
+      entityPath,
+      actionId,
+      networkType
+    )
   }
 
   return url
 }
 
 /**
- * Builds URL of the organization
+ * Builds URL of the organization in the Aragon client
  * @param {String} organization Address of the organization in question
+ * @param {String} appAddress Address of the app
+ * @param {String} entityPath Realtive path where the disputed action is taking place
+ * @param {String} actionId Id of the disputed action in the context of the disputable app
  * @param {String} networkType The network type
  * @returns {String} URL of the organization
  */
-function buildOrgUrl(organization, networkType) {
-  return `https://${networkType}.aragon.org/#/${organization}`
+function buildClientUrl(
+  organization,
+  appAddress,
+  entityPath,
+  actionId,
+  networkType
+) {
+  return [
+    `https://${networkType}.aragon.org/#/${organization}`,
+    appAddress,
+    entityPath,
+    actionId,
+  ].join('/')
 }
 
 const describeAppName = appName =>
