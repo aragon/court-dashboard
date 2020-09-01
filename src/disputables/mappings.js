@@ -41,7 +41,7 @@ export const DISPUTABLE_SUBGRAPH_URLS = new Map([
     appId,
     {
       // TODO: Update to Aragon's own node
-      mainnet:
+      main:
         'https://api.thegraph.com/subgraphs/name/aragon/aragon-dvoting-mainnet-staging',
       rinkeby:
         'https://api.thegraph.com/subgraphs/name/aragon/aragon-dvoting-rinkeby',
