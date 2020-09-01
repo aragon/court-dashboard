@@ -53,7 +53,6 @@ To start the court dashboard with mocked data.
 - Ethereum node: 8545
 - Subgraph:
   - 8000 (HTTP)
-  - 8001 (WS)
 - IPFS Gateway: 8080
 - Court server: 8050
 

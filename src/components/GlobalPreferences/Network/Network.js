@@ -13,14 +13,12 @@ import {
   defaultEthNode,
   defaultIpfsGateway,
   defaultSubgraphHttpEndpoint,
-  defaultSubgraphWsEndpoint,
 } from '../../../endpoints'
 import {
   clearLocalStorageNetworkSettings,
   setDefaultEthNode,
   setIpfsGateway,
   setSubgraphHttpEndpoint,
-  setSubgraphWsEndpoint,
 } from '../../../local-settings'
 import { InvalidNetworkType, InvalidURI, NoConnection } from '../../../errors'
 import {
@@ -28,7 +26,7 @@ import {
   getNetworkType,
   sanitizeNetworkType,
 } from '../../../lib/web3-utils'
-import { validHttpFormat, validWebSocketFormat } from '../../../lib/uri-utils'
+import { validHttpFormat } from '../../../lib/uri-utils'
 import { useEnterKey } from '../../../hooks/useKeyboardArrows'
 import { useSubgraph } from '../../../providers/Subgraph'
 
@@ -40,16 +38,14 @@ function Network() {
     handleIpfsGatewayChange,
     handleNetworkChange,
     handleSubgraphHttpEndpointChange,
-    handleSubgraphWsEndpointChange,
     ipfsGateway,
     settingsErrors,
     subgraphHttpEndpoint,
-    subgraphWsEndpoint,
   } = useNetwork()
 
   const { layoutName } = useLayout()
   const compact = layoutName === 'small'
-  const { ethError, httpSubgraphError, wsSubgraphError } = settingsErrors || {}
+  const { ethError, httpSubgraphError } = settingsErrors || {}
 
   return (
     <React.Fragment>
@@ -70,12 +66,6 @@ function Network() {
           text={subgraphHttpEndpoint}
           onTextChange={handleSubgraphHttpEndpointChange}
           error={httpSubgraphError}
-        />
-        <Field
-          label="Subgraph WS endpoint"
-          text={subgraphWsEndpoint}
-          onTextChange={handleSubgraphWsEndpointChange}
-          error={wsSubgraphError}
         />
         <Button mode="strong" onClick={handleNetworkChange} wide={compact}>
           Save changes
@@ -140,16 +130,11 @@ const useNetwork = () => {
   const [subgraphHttpEndpoint, setSubgraphHttpEndpointValue] = useState(
     defaultSubgraphHttpEndpoint
   )
-  const [subgraphWsEndpoint, setSubgraphWsEndpointValue] = useState(
-    defaultSubgraphWsEndpoint
-  )
 
   const { resetSubgraphClient } = useSubgraph()
   const networkType = getNetworkType()
 
-  const subgraphChanged =
-    subgraphHttpEndpoint !== defaultSubgraphHttpEndpoint ||
-    subgraphWsEndpoint !== defaultSubgraphWsEndpoint
+  const subgraphChanged = subgraphHttpEndpoint !== defaultSubgraphHttpEndpoint
 
   const defaultsChanged =
     ipfsGateway !== defaultIpfsGateway ||
@@ -165,7 +150,6 @@ const useNetwork = () => {
     const errors = await validateNetworkSettings(
       ethNode,
       subgraphHttpEndpoint,
-      subgraphWsEndpoint,
       networkType
     )
 
@@ -175,7 +159,6 @@ const useNetwork = () => {
     }
     setDefaultEthNode(ethNode)
     setSubgraphHttpEndpoint(subgraphHttpEndpoint)
-    setSubgraphWsEndpoint(subgraphWsEndpoint)
     setIpfsGateway(ipfsGateway)
 
     if (subgraphChanged) {
@@ -186,7 +169,6 @@ const useNetwork = () => {
     defaultsChanged,
     ethNode,
     subgraphHttpEndpoint,
-    subgraphWsEndpoint,
     networkType,
     ipfsGateway,
     subgraphChanged,
@@ -204,7 +186,6 @@ const useNetwork = () => {
     ethNode,
     ipfsGateway,
     subgraphHttpEndpoint,
-    subgraphWsEndpoint,
     handleNetworkChange,
     handleClearNetworkSettings,
     settingsErrors,
@@ -214,15 +195,12 @@ const useNetwork = () => {
       setIpfsGatewayValue(value),
     handleSubgraphHttpEndpointChange: ({ currentTarget: { value } }) =>
       setSubgraphHttpEndpointValue(value),
-    handleSubgraphWsEndpointChange: ({ currentTarget: { value } }) =>
-      setSubgraphWsEndpointValue(value),
   }
 }
 
 async function validateNetworkSettings(
   ethNode,
   subgraphHttpEndpoint,
-  subgraphWsEndpoint,
   networkType
 ) {
   const settingsErrors = {}
@@ -243,9 +221,6 @@ async function validateNetworkSettings(
 
     if (!validHttpFormat(subgraphHttpEndpoint)) {
       settingsErrors.httpSubgraphError = 'The URI must use the HTTP protocol'
-    }
-    if (!validWebSocketFormat(subgraphWsEndpoint)) {
-      settingsErrors.wsSubgraphError = 'The URI must use the WS protocol'
     }
 
     if (Object.entries(settingsErrors).length === 0) {
