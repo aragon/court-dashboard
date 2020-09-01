@@ -7,8 +7,8 @@ import { getContract } from '../web3-contracts'
 import { logWithSentry } from '../sentry'
 
 import env from '../environment'
-import { getAragonSubgraph } from './utils'
 import { DISPUTABLE_ACTIONS } from './mappings'
+import { getAragonSubgraph } from './connect-endpoints'
 import { addressesEqual, getNetworkType } from '../lib/web3-utils'
 import { buildArbitrableUrl, isArbitrableKnown } from './known-arbitrables'
 

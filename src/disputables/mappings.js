@@ -43,9 +43,9 @@ export const DISPUTABLE_SUBGRAPH_URLS = new Map([
       main:
         'https://graph.backend.aragon.org/subgraphs/name/aragon/aragon-dvoting-mainnet-staging', // TODO: Update to main subgraph when available
       rinkeby:
-        'https://graph.backend.aragon.org/subgraphs/name/aragon/aragon-dvoting-rinkeby',
+        'https://api.thegraph.com/subgraphs/name/aragon/aragon-dvoting-rinkeby',
       ropsten:
-        'https://graph.backend.aragon.org/subgraphs/name/aragon/aragon-dvoting-ropsten',
+        'https://api.thegraph.com/subgraphs/name/aragon/aragon-dvoting-ropsten',
     },
   ]),
 ])

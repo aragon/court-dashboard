@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 import { Client } from 'urql'
-import { getSubgraphByAppId } from './utils'
+import { getSubgraphByAppId } from './connect-endpoints'
 
 export function performDisputableVotingQuery(id, voteId, appId) {
   // Disputable voting now saves the hash of the evmScript so we need to get it from the subgraph.

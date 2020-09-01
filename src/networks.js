@@ -72,12 +72,9 @@ function getRinkebyCourtAddress(subgraphName) {
 }
 
 function getRinkebySubgraphUrls(subgraphName) {
-  const subgraphBase = `api.thegraph.com`
-  const subgraphPath = '/subgraphs/name/aragon/aragon-court'
-
   const [httpEndpoint, wsEndpoint] = ['https', 'wss'].map(
     protocol =>
-      `${protocol}://${subgraphBase}${subgraphPath}-${subgraphName ||
+      `${protocol}://api.thegraph.com/subgraphs/name/aragon/aragon-court-${subgraphName ||
         'rinkeby'}`
   )
 
