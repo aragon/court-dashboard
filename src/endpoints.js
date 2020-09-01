@@ -6,12 +6,10 @@ import {
   getDefaultEthNode,
   getIpfsGateway,
   getSubgraphHttpEndpoint,
-  getSubgraphWsEndpoint,
 } from './local-settings'
 
 const CHAIN_ID = environment('CHAIN_ID')
 const COURT_SERVER_NAME = environment('COURT_SERVER_NAME')
-// const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
 // IPFS endpoint
 export const IPFS_ENDPOINT = isLocalOrUnknownNetwork(CHAIN_ID)
@@ -30,9 +28,9 @@ export function courtServerEndpoint() {
   }.backend.aragon.org`
 }
 
-export function graphEndpoints() {
+export function graphEndpoint() {
   const { nodes } = getNetworkConfig()
-  return [nodes.subgraph.http, nodes.subgraph.ws]
+  return nodes.subgraph
 }
 
 export const defaultEthNode =
@@ -41,5 +39,3 @@ export const defaultEthNode =
 export const defaultIpfsGateway = getIpfsGateway()
 
 export const defaultSubgraphHttpEndpoint = getSubgraphHttpEndpoint()
-
-export const defaultSubgraphWsEndpoint = getSubgraphWsEndpoint()

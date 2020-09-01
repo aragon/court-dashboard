@@ -30,7 +30,6 @@
     "resolve-pathname": "^3.0.0",
     "semver": "^7.3.2",
     "styled-components": "^4.4.1",
-    "subscriptions-transport-ws": "^0.9.16",
     "urql": "^1.6.3",
     "use-wallet": "^0.8.0"
   },

@@ -40,9 +40,6 @@ const ENV_VARS = {
   SUBGRAPH_NAME() {
     return process.env.REACT_APP_SUBGRAPH_NAME
   },
-  SUBGRAPH_WS_ENDPOINT() {
-    return process.env.REACT_APP_SUBGRAPH_WS_ENDPOINT || ''
-  },
 }
 
 export default function env(name) {

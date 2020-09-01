@@ -15,11 +15,8 @@ export const networkConfigs = {
     network_reserve: '0xec0dd1579551964703246becfbf199c27cb84485',
     nodes: {
       defaultEth: 'https://mainnet.eth.aragon.network/',
-      subgraph: {
-        http:
-          'https://graph.backend.aragon.org/subgraphs/name/aragon/aragon-court',
-        ws: 'wss://graph.backend.aragon.org/subgraphs/name/aragon/aragon-court',
-      },
+      subgraph:
+        'https://graph.backend.aragon.org/subgraphs/name/aragon/aragon-court',
     },
   },
   rinkeby: {
@@ -33,21 +30,15 @@ export const networkConfigs = {
     court: '0x3b26bc496aebaed5b3E0E81cDE6B582CDe71396e',
     nodes: {
       defaultEth: 'https://ropsten.eth.aragon.network/',
-      subgraph: {
-        http:
-          'https://api.thegraph.com/subgraphs/name/aragon/aragon-court-ropsten',
-        ws: 'wss://api.thegraph.com/subgraphs/name/aragon/aragon-court-ropsten',
-      },
+      subgraph:
+        'https://api.thegraph.com/subgraphs/name/aragon/aragon-court-ropsten',
     },
   },
   local: {
     court: '0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb',
     nodes: {
       defaultEth: 'http://localhost:8545',
-      subgraph: {
-        http: 'http://127.0.0.1:8000/subgraphs/name/aragon/aragon-court-rpc',
-        ws: 'ws://127.0.0.1:8001/subgraphs/name/aragon/aragon-court-rpc',
-      },
+      subgraph: 'http://127.0.0.1:8000/subgraphs/name/aragon/aragon-court-rpc',
     },
   },
 }
@@ -72,11 +63,6 @@ function getRinkebyCourtAddress(subgraphName) {
 }
 
 function getRinkebySubgraphUrls(subgraphName) {
-  const [httpEndpoint, wsEndpoint] = ['https', 'wss'].map(
-    protocol =>
-      `${protocol}://api.thegraph.com/subgraphs/name/aragon/aragon-court-${subgraphName ||
-        'rinkeby'}`
-  )
-
-  return { http: httpEndpoint, ws: wsEndpoint }
+  return `https://api.thegraph.com/subgraphs/name/aragon/aragon-court-${subgraphName ||
+    'rinkeby'}`
 }
