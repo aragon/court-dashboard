@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export const AllDisputes = gql`
-  subscription AllDisputes($limit: Int) {
+  query AllDisputes($limit: Int) {
     disputes(first: $limit, orderBy: createdAt, orderDirection: desc) {
       id
       finalRuling
@@ -31,7 +31,7 @@ export const AllDisputes = gql`
 `
 
 export const SingleDispute = gql`
-  subscription SingleDispute($id: ID!) {
+  query SingleDispute($id: ID!) {
     dispute(id: $id) {
       id
       txHash

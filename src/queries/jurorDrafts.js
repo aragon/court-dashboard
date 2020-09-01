@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 
 // All juror drafts by juror with address `id`
 export const JurorDraftsRewards = gql`
-  subscription JurorDraftsRewards($id: ID!) {
+  query JurorDraftsRewards($id: ID!) {
     juror(id: $id) {
       id
       drafts {
@@ -30,7 +30,7 @@ export const JurorDraftsRewards = gql`
 
 // Jurors drafts for juror with id `$id` created since `$from`
 export const JurorDraftsFrom = gql`
-  subscription JurorDraftsFrom($id: ID!, $from: BigInt!) {
+  query JurorDraftsFrom($id: ID!, $from: BigInt!) {
     juror(id: $id) {
       id
       drafts(where: { createdAt_gt: $from }) {

@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export const OpenTasks = gql`
-  subscription OpenTasks($state: [Int]) {
+  query OpenTasks($state: [Int]) {
     adjudicationRounds(
       where: { stateInt_in: $state }
       orderBy: createdAt

@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export const CourtConfig = gql`
-  subscription CourtConfig($id: ID!) {
+  query CourtConfig($id: ID!) {
     courtConfig(id: $id) {
       id
       currentTerm
@@ -61,7 +61,7 @@ export const CourtConfig = gql`
   }
 `
 export const JurorsRegistryModule = gql`
-  subscription JurorsRegistryModule($id: ID!) {
+  query JurorsRegistryModule($id: ID!) {
     jurorsRegistryModule(id: $id) {
       id
       totalStaked
@@ -71,7 +71,7 @@ export const JurorsRegistryModule = gql`
 `
 
 export const FeeMovements = gql`
-  subscription FeeMovements {
+  query FeeMovements {
     feeMovements(where: { type_not: Withdraw }) {
       id
       type

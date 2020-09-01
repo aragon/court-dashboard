@@ -11,7 +11,7 @@ export const JurorFeesClaimed = gql`
 
 // Last juror fee withdrawal movement
 export const JurorLastFeeWithdrawal = gql`
-  subscription JurorLastFeeWithdrawal($owner: Bytes!) {
+  query JurorLastFeeWithdrawal($owner: Bytes!) {
     feeMovements(
       where: { owner: $owner, type: "Withdraw" }
       orderBy: createdAt

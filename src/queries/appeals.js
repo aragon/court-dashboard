@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export const AppealsByMaker = gql`
-  subscription AppealsByMaker($maker: Bytes!) {
+  query AppealsByMaker($maker: Bytes!) {
     appeals(where: { maker: $maker }) {
       id
       round {
@@ -29,7 +29,7 @@ export const AppealsByMaker = gql`
 `
 
 export const AppealsByTaker = gql`
-  subscription AppealsByTaker($taker: Bytes!) {
+  query AppealsByTaker($taker: Bytes!) {
     appeals(where: { taker: $taker }) {
       id
       round {
