@@ -80,7 +80,7 @@ const TaskTable = React.memo(function TaskTable({
           >
             {phase}
           </span>,
-          <Link href={`/disputes/${disputeId}`} external={false}>
+          <Link href={`#/disputes/${disputeId}`} external={false}>
             Dispute #{disputeId}
           </Link>,
           <IdentityBadge entity={juror} />,
