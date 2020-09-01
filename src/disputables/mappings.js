@@ -35,7 +35,18 @@ export const DISPUTABLE_ACTIONS = new Map([
 ])
 
 // Mapping of all disputable apps appId to their
-// corresponding subgraph name
-export const DISPUTABLE_SUBGRAPH_NAMES = new Map([
-  ...VOTING_APP_IDS.map(appId => [appId, 'aragon-dvoting']),
+// corresponding subgraph urls by network
+export const DISPUTABLE_SUBGRAPH_URLS = new Map([
+  ...VOTING_APP_IDS.map(appId => [
+    appId,
+    {
+      // TODO: Update to Aragon's own node
+      main:
+        'https://api.thegraph.com/subgraphs/name/aragon/aragon-dvoting-mainnet-staging',
+      rinkeby:
+        'https://api.thegraph.com/subgraphs/name/aragon/aragon-dvoting-rinkeby',
+      ropsten:
+        'https://api.thegraph.com/subgraphs/name/aragon/aragon-dvoting-ropsten',
+    },
+  ]),
 ])

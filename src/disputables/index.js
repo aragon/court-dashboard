@@ -6,11 +6,7 @@ import {
 import { getContract } from '../web3-contracts'
 import { logWithSentry } from '../sentry'
 import env from '../environment'
-import {
-  addressesEqual,
-  getNetworkType,
-  sanitizeNetworkType,
-} from '../lib/web3-utils'
+import { addressesEqual, getNetworkType } from '../lib/web3-utils'
 import { DISPUTABLE_ACTIONS } from './mappings'
 
 // Disputable abi
@@ -244,7 +240,7 @@ function buildDisputedActionUrl(
   actionId,
   arbitrableAddress
 ) {
-  const networkType = sanitizeNetworkType(getNetworkType())
+  const networkType = getNetworkType()
   const arbitrableKnown = isArbitrableKnown(arbitrableAddress, networkType)
 
   let url
