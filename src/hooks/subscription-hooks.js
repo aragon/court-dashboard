@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useSubscription } from 'urql'
+import { useQuery } from 'urql'
 import { useCourtConfig } from '../providers/CourtConfig'
 
 // queries
@@ -40,13 +40,21 @@ import { JurorLastFeeWithdrawal } from '../queries/juror'
 
 const NO_AMOUNT = bigNum(0)
 
+function useQuerySub(query, variables = {}, options = {}) {
+  return useQuery({
+    query: query,
+    variables: variables,
+    requestPolicy: 'cache-and-network',
+    pollInterval: 13 * 1000,
+    ...options,
+  })
+}
+
 // Subscription to get juror's wallet balance
 function useANJBalance(jurorId) {
-  const [{ data, error }] = useSubscription({
-    query: JurorANJWalletBalance,
-    variables: { id: jurorId.toLowerCase() },
+  const [{ data, error }] = useQuerySub(JurorANJWalletBalance, {
+    id: jurorId.toLowerCase(),
   })
-
   return { data, error }
 }
 
@@ -58,9 +66,9 @@ function useJuror(jurorId) {
     .subtract(1, 'day')
     .unix()
 
-  const [{ data, error }] = useSubscription({
-    query: JurorANJBalances,
-    variables: { id: jurorId.toLowerCase(), from: yesterday },
+  const [{ data, error }] = useQuerySub(JurorANJBalances, {
+    id: jurorId.toLowerCase(),
+    from: yesterday,
   })
 
   return { data, error }
@@ -68,11 +76,9 @@ function useJuror(jurorId) {
 
 // Subscription to get all treasury balances of juror with id `jurorId`
 function useJurorTreasuryBalances(jurorId) {
-  const [{ data, error }] = useSubscription({
-    query: JurorTreasuryBalances,
-    variables: { owner: jurorId.toLowerCase() },
+  const [{ data, error }] = useQuerySub(JurorTreasuryBalances, {
+    owner: jurorId.toLowerCase(),
   })
-
   return { data, error }
 }
 
@@ -162,9 +168,8 @@ export function useJurorBalancesSubscription(jurorId) {
  * @returns {Object} Court configuration data
  */
 export function useCourtConfigSubscription(courtAddress) {
-  const [{ data }] = useSubscription({
-    query: CourtConfig,
-    variables: { id: courtAddress.toLowerCase() },
+  const [{ data }] = useQuerySub(CourtConfig, {
+    id: courtAddress.toLowerCase(),
   })
 
   // TODO: handle possible errors
@@ -185,10 +190,7 @@ export function useCourtConfigSubscription(courtAddress) {
  * @returns {Object} Dispute by `id`
  */
 export function useSingleDisputeSubscription(id) {
-  const [{ data, error }] = useSubscription({
-    query: SingleDispute,
-    variables: { id },
-  })
+  const [{ data, error }] = useQuerySub(SingleDispute, { id })
 
   const dispute = useMemo(
     () =>
@@ -207,10 +209,7 @@ export function useSingleDisputeSubscription(id) {
  */
 export function useDisputesSubscription() {
   const courtConfig = useCourtConfig()
-
-  const [{ data, error }] = useSubscription({
-    query: AllDisputes,
-  })
+  const [{ data, error }] = useQuerySub(AllDisputes)
 
   const disputes = useMemo(
     () =>
@@ -237,11 +236,11 @@ export function useCurrentTermJurorDraftsSubscription(
   termStartTime,
   pause
 ) {
-  const [result] = useSubscription({
-    query: JurorDraftsFrom,
-    variables: { id: jurorId.toLowerCase(), from: termStartTime },
-    pause,
-  })
+  const [result] = useQuerySub(
+    JurorDraftsFrom,
+    { id: jurorId.toLowerCase(), from: termStartTime },
+    { pause }
+  )
 
   const { juror } = result.data || {}
   return juror && juror.drafts ? juror.drafts : []
@@ -257,9 +256,8 @@ export function useCurrentTermJurorDraftsSubscription(
  * @returns {Object} All `jurorId` drafts
  */
 export function useJurorDraftsRewardsSubscription(jurorId) {
-  const [{ data, error }] = useSubscription({
-    query: JurorDraftsRewards,
-    variables: { id: jurorId.toLowerCase() },
+  const [{ data, error }] = useQuerySub(JurorDraftsRewards, {
+    id: jurorId.toLowerCase(),
   })
 
   const jurorDrafts = useMemo(() => {
@@ -274,20 +272,16 @@ export function useJurorDraftsRewardsSubscription(jurorId) {
 }
 
 function useAppealsByMaker(jurorId) {
-  const [{ data, error }] = useSubscription({
-    query: AppealsByMaker,
-    variables: { maker: jurorId.toLowerCase() },
+  const [{ data, error }] = useQuerySub(AppealsByMaker, {
+    maker: jurorId.toLowerCase(),
   })
-
   return { data, error }
 }
 
 function useAppealsByTaker(jurorId) {
-  const [{ data, error }] = useSubscription({
-    query: AppealsByTaker,
-    variables: { taker: jurorId.toLowerCase() },
+  const [{ data, error }] = useQuerySub(AppealsByTaker, {
+    taker: jurorId.toLowerCase(),
   })
-
   return { data, error }
 }
 
@@ -328,10 +322,7 @@ export function useTasksSubscription() {
   // 1- Committing, 4-Confirming Appeal , 5- Ended
   const subscriptionVariables = { state: [1, 4] }
 
-  const [{ data, error }] = useSubscription({
-    query: OpenTasks,
-    variables: subscriptionVariables,
-  })
+  const [{ data, error }] = useQuerySub(OpenTasks, subscriptionVariables)
 
   const tasks =
     data?.adjudicationRounds.map(transformRoundDataAttributes) || null
@@ -346,9 +337,8 @@ export function useJurorRegistrySubscription() {
     CourtModuleType.JurorsRegistry
   )
 
-  const [{ data, error }] = useSubscription({
-    query: JurorsRegistryModule,
-    variables: { id: jurorRegistryAddress },
+  const [{ data, error }] = useQuerySub(JurorsRegistryModule, {
+    id: jurorRegistryAddress,
   })
 
   const jurorRegistryStats = data?.jurorsRegistryModule || null
@@ -357,9 +347,7 @@ export function useJurorRegistrySubscription() {
 }
 
 export function useTotalRewardsSubscription() {
-  const [{ data, error }] = useSubscription({
-    query: FeeMovements,
-  })
+  const [{ data, error }] = useQuerySub(FeeMovements)
 
   const rewards = data?.feeMovements || null
 
@@ -372,11 +360,11 @@ export function useTotalRewardsSubscription() {
  * @returns {Number} Juror's last withdrawal fee movement date in unix time
  */
 export function useJurorLastWithdrawalTimeSubscription(jurorId) {
-  const [{ data }] = useSubscription({
-    query: JurorLastFeeWithdrawal,
-    variables: { owner: jurorId?.toLowerCase() },
-    pause: !jurorId,
-  })
+  const [{ data }] = useQuerySub(
+    JurorLastFeeWithdrawal,
+    { owner: jurorId?.toLowerCase() },
+    { pause: !jurorId }
+  )
 
   if (!data) {
     return null
