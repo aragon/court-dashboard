@@ -1,11 +1,5 @@
 import environment from './environment'
 import { getNetworkType, isLocalOrUnknownNetwork } from './lib/web3-utils'
-import {
-  getDefaultEthNode,
-  getIpfsGateway,
-  getSubgraphHttpEndpoint,
-  getSubgraphWsEndpoint,
-} from './local-settings'
 
 const SUBGRAPH_NAME = environment('SUBGRAPH_NAME')
 
@@ -21,24 +15,39 @@ export const networkConfigs = {
     network_reserve: '0xec0dd1579551964703246becfbf199c27cb84485',
     nodes: {
       defaultEth: 'https://mainnet.eth.aragon.network/',
+      subgraph: {
+        http:
+          'https://graph.backend.aragon.org/subgraphs/name/aragon/aragon-court',
+        ws: 'wss://graph.backend.aragon.org/subgraphs/name/aragon/aragon-court',
+      },
     },
   },
   rinkeby: {
     court: getRinkebyCourtAddress(SUBGRAPH_NAME),
     nodes: {
       defaultEth: 'https://rinkeby.eth.aragon.network/',
+      subgraph: getRinkebySubgraphUrls(SUBGRAPH_NAME),
     },
   },
   ropsten: {
     court: '0x3b26bc496aebaed5b3E0E81cDE6B582CDe71396e',
     nodes: {
       defaultEth: 'https://ropsten.eth.aragon.network/',
+      subgraph: {
+        http:
+          'https://api.thegraph.com/subgraphs/name/aragon/aragon-court-ropsten',
+        ws: 'wss://api.thegraph.com/subgraphs/name/aragon/aragon-court-ropsten',
+      },
     },
   },
   local: {
     court: '0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb',
     nodes: {
       defaultEth: 'http://localhost:8545',
+      subgraph: {
+        http: 'http://127.0.0.1:8000/subgraphs/name/aragon/aragon-court-rpc',
+        ws: 'ws://127.0.0.1:8001/subgraphs/name/aragon/aragon-court-rpc',
+      },
     },
   },
 }
@@ -55,18 +64,22 @@ export const networkAgentAddress = getNetworkConfig().network_agent
 
 export const networkReserveAddress = getNetworkConfig().network_reserve
 
-function getRinkebyCourtAddress(subGraphName) {
-  if (subGraphName === 'staging') {
+function getRinkebyCourtAddress(subgraphName) {
+  if (subgraphName === 'staging') {
     return RINKEBY_STAGING_COURT
   }
   return RINKEBY_COURT
 }
 
-export const defaultEthNode =
-  getDefaultEthNode() || getNetworkConfig().nodes.defaultEth
+function getRinkebySubgraphUrls(subgraphName) {
+  const subgraphBase = `api.thegraph.com`
+  const subgraphPath = '/subgraphs/name/aragon/aragon-court'
 
-export const defaultIpfsGateway = getIpfsGateway()
+  const [httpEndpoint, wsEndpoint] = ['https', 'wss'].map(
+    protocol =>
+      `${protocol}://${subgraphBase}${subgraphPath}-${subgraphName ||
+        'rinkeby'}`
+  )
 
-export const defaultSubgraphHttpEndpoint = getSubgraphHttpEndpoint()
-
-export const defaultSubgraphWsEndpoint = getSubgraphWsEndpoint()
+  return { http: httpEndpoint, ws: wsEndpoint }
+}
