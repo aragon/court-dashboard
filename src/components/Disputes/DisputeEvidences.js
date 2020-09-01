@@ -10,8 +10,14 @@ import { dateFormat } from '../../utils/date-utils'
 
 import folderIcon from '../../assets/folderIcon.svg'
 
-const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
-  const [evidenceProcessed, fetchingEvidences] = useEvidences(evidences)
+const DisputeEvidences = React.memo(function DisputeEvidences({
+  dispute,
+  evidences,
+}) {
+  const [evidenceProcessed, fetchingEvidences] = useEvidences(
+    dispute,
+    evidences
+  )
 
   return (
     <React.Fragment>
@@ -40,10 +46,11 @@ const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
                     </span>
                   </div>,
                   <EvidenceContent
-                    metadata={metadata}
-                    submitter={submitter}
                     createdAt={createdAt}
                     error={error}
+                    metadata={metadata}
+                    submitter={submitter}
+                    submitterLabel={getSubmitterLabel(submitter, dispute)}
                   />,
                 ],
               ]}
@@ -55,10 +62,11 @@ const DisputeEvidences = React.memo(function DisputeEvidences({ evidences }) {
 })
 
 const EvidenceContent = React.memo(function EvidenceContent({
-  metadata,
-  submitter,
   createdAt,
   error,
+  metadata,
+  submitter,
+  submitterLabel,
 }) {
   const theme = useTheme()
   const wallet = useWallet()
@@ -100,6 +108,7 @@ const EvidenceContent = React.memo(function EvidenceContent({
             <IdentityBadge
               connectedAccount={addressesEqual(submitter, wallet.account)}
               entity={submitter}
+              label={submitterLabel}
             />
           </div>
         </div>
@@ -144,5 +153,17 @@ const EvidenceContent = React.memo(function EvidenceContent({
     </div>
   )
 })
+
+function getSubmitterLabel(submitter, dispute) {
+  if (addressesEqual(submitter, dispute.defendant)) {
+    return 'Defendant'
+  }
+
+  if (addressesEqual(submitter, dispute.plaintiff)) {
+    return 'Plaintiff'
+  }
+
+  return ''
+}
 
 export default DisputeEvidences

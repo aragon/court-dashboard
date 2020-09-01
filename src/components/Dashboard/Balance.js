@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { Button, GU, Help, textStyle, useTheme } from '@aragon/ui'
 import { animated, useSpring } from 'react-spring'
 
-import Loading from './Loading'
+import Loading from '../Loading'
 import ANJLockedDistribution from './ANJLockedDistribution'
 import SplitAmount from '../SplitAmount'
 
@@ -47,7 +47,7 @@ const Balance = React.memo(function Balance({
         `}
       >
         {loading ? (
-          <Loading height={86} />
+          <Loading height={86} size="large" />
         ) : (
           <animated.div
             style={springProps}

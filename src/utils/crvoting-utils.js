@@ -1,4 +1,4 @@
-import { soliditySha3, hash256 } from '../lib/web3-utils'
+import { keccak256, soliditySha3 } from '../lib/web3-utils'
 import { bigNum } from '../lib/math-utils'
 
 export const OUTCOMES = {
@@ -130,7 +130,7 @@ export function getVoteId(disputeId, roundId) {
 }
 
 export function hashPassword(password) {
-  return hash256(password)
+  return keccak256(password)
 }
 
 export function hashVote(outcome, password) {

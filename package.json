@@ -5,6 +5,7 @@
   "license": "AGPL-3.0-or-later",
   "author": "Aragon Association <legal@aragon.org>",
   "dependencies": {
+    "@aragon/connect": "^0.6.0",
     "@aragon/ui": "^1.4.0",
     "@sentry/browser": "^5.12.1",
     "@uniswap/sdk": "^1.0.0-beta.4",
@@ -13,7 +14,7 @@
     "clipboard-polyfill": "^2.8.6",
     "dayjs": "^1.8.14",
     "dotenv": "^8.2.0",
-    "ethers": "^4.0.42",
+    "ethers": "^5.0.9",
     "file-saver": "^2.0.2",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
@@ -39,6 +40,7 @@
     "start:mainnet": "cross-env REACT_APP_CHAIN_ID=1 npm run start",
     "start:ropsten": "cross-env REACT_APP_CHAIN_ID=3 npm run start",
     "start:rinkeby": "cross-env REACT_APP_CHAIN_ID=4 npm run start",
+    "start:rinkeby:staging": "cross-env REACT_APP_SUBGRAPH_NAME=staging REACT_APP_CHAIN_ID=4 npm run start",
     "build": "node ./scripts/build",
     "build:local": "cross-env REACT_APP_CHAIN_ID=1337 npm run build",
     "build:mainnet": "cross-env REACT_APP_CHAIN_ID=1 npm run build",
@@ -71,7 +73,7 @@
     "files": [
       {
         "path": "build/static/**/*.js",
-        "maxSize": "900kb",
+        "maxSize": "1MB",
         "compression": "gzip"
       }
     ]

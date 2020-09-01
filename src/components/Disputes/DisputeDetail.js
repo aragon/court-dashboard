@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import { BackButton, Bar, Box, GU, SidePanel, Split } from '@aragon/ui'
 import { useHistory } from 'react-router-dom'
-import { utils as EthersUtils } from 'ethers'
 
 import AppealPanel from './panels/AppealPanel'
 import Banner from './PrecedenceCampaign/PrecedenceCampaignBanner'
@@ -18,6 +17,7 @@ import { Status as DisputeStatus } from '../../types/dispute-status-types'
 import { useDisputeLogic, REQUEST_MODE } from '../../hooks/dispute-logic'
 import { DisputeNotFound } from '../../errors'
 import { toMs } from '../../utils/date-utils'
+import { toUtf8String } from '../../lib/web3-utils'
 
 import timelineErrorSvg from '../../assets/timelineError.svg'
 
@@ -42,7 +42,7 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
       (evidenceList || []).map(evidence => ({
         ...evidence,
         createdAt: toMs(evidence.createdAt),
-        data: EthersUtils.toUtf8String(evidence.data),
+        data: toUtf8String(evidence.data),
       })),
     [evidenceList]
   )
@@ -94,7 +94,9 @@ const DisputeDetail = React.memo(function DisputeDetail({ match }) {
                 if (evidences.length === 0) {
                   return <NoEvidence />
                 }
-                return <DisputeEvidences evidences={evidences} />
+                return (
+                  <DisputeEvidences dispute={dispute} evidences={evidences} />
+                )
               })()}
             </React.Fragment>
           }

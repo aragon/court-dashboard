@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
 import { ERROR_TYPES } from '../types/evidences-status-types'
 
-export default function useEvidences(rawEvidences) {
+export default function useEvidences(dispute, rawEvidences) {
   // Contains valid evidences + errored evidences
   const [evidences, setEvidences] = useState([])
   const [fetchingEvidences, setFetchingEvidences] = useState(true)
@@ -21,6 +21,7 @@ export default function useEvidences(rawEvidences) {
 
     const baseEvidence = {
       id,
+      rawMetadata: uriOrData,
       metadata: null,
       defendant: '',
       agreementText: '',
@@ -89,5 +90,16 @@ export default function useEvidences(rawEvidences) {
     }
   }, [rawEvidences, fetchEvidence, evidences])
 
-  return [evidences, fetchingEvidences]
+  // First evidence submitted by defendant is treated as the dispute description
+  const processedEvidences = useMemo(() => {
+    if (dispute.disputable) {
+      return evidences.filter(
+        e => e.rawMetadata !== dispute.disputable.actionContext
+      )
+    }
+
+    return evidences
+  }, [dispute.disputable, evidences])
+
+  return [processedEvidences, fetchingEvidences]
 }

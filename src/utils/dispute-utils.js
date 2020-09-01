@@ -9,7 +9,7 @@ import { getPrecedenceCampaignDisputesByCourt } from '../flagged-disputes/preced
 export const FINAL_ROUND_WEIGHT_PRECISION = bigNum(1000)
 export const PCT_BASE = bigNum(10000)
 
-export const transformRoundDataAttributes = round => {
+export function transformRoundDataAttributes(round) {
   const { vote, appeal } = round
 
   return {
@@ -43,17 +43,45 @@ export const transformRoundDataAttributes = round => {
   }
 }
 
-export const transformDisputeDataAttributes = dispute => {
+/**
+ * Parses metadata of the given dispute
+
+ * Disputes metadata comes in two forms:
+ *        1 - Raw disputes: metadata is usually a JSON object containing `description` and `metadata` where the later is the metadata uri.
+ *        2 - Disputables: there's no useful information in `metadata` itself, in this case we'll get the dispute information from the `disputable` attr.
+ *  Note that this function is meant to parse only dispute description and metadata uri (in case it exists). More relevant information will be processed elsewhere.
+ * @param {Object} dispute Dispute in question
+ * @returns {Array<String>} Array where the first item is the dispute description and second item is the metadata uri if it exists
+ */
+function parseMetadata(dispute) {
+  if (dispute.disputable) {
+    return [dispute.disputable.title]
+  }
+
+  try {
+    const { description, metadata } = JSON.parse(dispute.metadata)
+    return [description, metadata]
+  } catch (error) {
+    // if is not a json return the metadata as the description
+    return [dispute.metadata]
+  }
+}
+
+export function transformDisputeDataAttributes(dispute) {
+  const [description, metadataUri] = parseMetadata(dispute)
+
   const transformedDispute = {
     ...dispute,
     createdAt: toMs(parseInt(dispute.createdAt, 10)),
+    description,
+    metadataUri,
+    rounds: dispute.rounds.map(transformRoundDataAttributes),
     state: DisputesTypes.convertFromString(dispute.state),
     status:
       DisputesTypes.convertFromString(dispute.state) ===
       DisputesTypes.Phase.Ruled
         ? DisputesTypes.Status.Closed
         : DisputesTypes.Status.Open,
-    rounds: dispute.rounds.map(transformRoundDataAttributes),
   }
 
   // If the dispute is part of the precedence campaign we will flag it as such
@@ -357,7 +385,7 @@ export function getAdjudicationPhase(dispute, round, termId, courtConfig) {
 }
 
 /**
- * @dev Terminology here will be:
+ * Terminology here will be:
  *        Last round => last round actually reached in a dispute
  *        Final round => max possible round for a dispute (when the max appeals for a given dispute is reached)
  * @param {Object} round The round to get the phases from

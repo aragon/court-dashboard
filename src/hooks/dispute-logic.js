@@ -58,9 +58,8 @@ export function useDisputeLogic(disputeId) {
   )
   const requests = usePanelRequestActions(setRequestMode)
 
-  const [dispute, disputeFetching, error] = useDispute(disputeId)
-
   const actions = useDisputeActions()
+  const [dispute, disputeFetching, error] = useDispute(disputeId)
 
   return {
     actions,
