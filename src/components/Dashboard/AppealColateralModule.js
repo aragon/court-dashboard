@@ -59,7 +59,7 @@ const AppealColateralModule = React.memo(function AppealColateralModule({
               </span>
             </div>
             <div>
-              <Link href={`/disputes/${disputeId}`} external={false}>
+              <Link href={`#/disputes/${disputeId}`} external={false}>
                 Dispute #{disputeId}
               </Link>
             </div>

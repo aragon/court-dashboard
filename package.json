@@ -53,6 +53,7 @@
     "optimize:svg": "find ./src -name *.svg -exec svgo --config '{ \"plugins\": [ { \"removeDesc\": {\"removeAny\": true} }, { \"removeTitle\": true }, { \"removeViewBox\": false } ] }' {} \\;",
     "sync-assets": "copy-aragon-ui-assets ./public"
   },
+  "homepage": "./",
   "eslintConfig": {
     "extends": "react-app"
   },

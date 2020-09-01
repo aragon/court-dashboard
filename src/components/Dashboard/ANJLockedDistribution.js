@@ -40,7 +40,7 @@ function ANJLockedDistribution({ distribution, text }) {
             <Row
               key={disputeId}
               label={
-                <Link href={`/disputes/${disputeId}`} external={false}>
+                <Link href={`#/disputes/${disputeId}`} external={false}>
                   {`Dispute #${disputeId}`}
                 </Link>
               }

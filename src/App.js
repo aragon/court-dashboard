@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { Main, ToastHub } from '@aragon/ui'
 import theme from './theme-court'
 import AppLoader from './components/AppLoader'
@@ -18,10 +18,10 @@ import { WalletProvider } from './providers/Wallet'
 function App() {
   return (
     <WalletProvider>
-      <BrowserRouter>
+      <HashRouter>
         <ActivityProvider>
           <Main
-            assetsUrl="/aragon-ui/"
+            assetsUrl="./aragon-ui/"
             layout={false}
             scrollView={false}
             theme={theme}
@@ -47,7 +47,7 @@ function App() {
             </GlobalErrorHandler>
           </Main>
         </ActivityProvider>
-      </BrowserRouter>
+      </HashRouter>
     </WalletProvider>
   )
 }
