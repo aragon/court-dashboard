@@ -5,13 +5,15 @@ import {
 } from '@aragon/connect'
 import { getContract } from '../web3-contracts'
 import { logWithSentry } from '../sentry'
+
 import env from '../environment'
-import { addressesEqual, getNetworkType } from '../lib/web3-utils'
+import { getAragonSubgraph } from './utils'
 import { DISPUTABLE_ACTIONS } from './mappings'
+import { addressesEqual, getNetworkType } from '../lib/web3-utils'
+import { buildArbitrableUrl, isArbitrableKnown } from './known-arbitrables'
 
 // Disputable abi
 import disputableAbi from '../abi/disputables/IDisputable.json'
-import { buildArbitrableUrl, isArbitrableKnown } from './known-arbitrables'
 
 const cachedDescriptions = new Map([])
 
@@ -103,9 +105,13 @@ async function describeActionScript(evmScript, organization) {
     return []
   }
 
-  const org = await connect(organization, 'thegraph', {
-    network: env('CHAIN_ID'),
-  })
+  const org = await connect(
+    organization,
+    ['thegraph', { orgSubgraphUrl: getAragonSubgraph() }], // TODO: Remove when @aragon/connect defaults to own node subgraph urls
+    {
+      network: env('CHAIN_ID'),
+    }
+  )
   const apps = await org.apps()
 
   const transactionRequests =
