@@ -1,6 +1,12 @@
 export const KnownArbitrables = {
   main: new Map(
-    [].map(arbitrable => [arbitrable.address.toLowerCase(), arbitrable])
+    [
+      {
+        address: '0x5b0899c8c5af7696ae4e082b04bd2920304ad2aa',
+        urlBuilder: actionId =>
+          `https://cash.aragon.network/#/proposals/${actionId}`,
+      },
+    ].map(arbitrable => [arbitrable.address.toLowerCase(), arbitrable])
   ),
   rinkeby: new Map(
     [
