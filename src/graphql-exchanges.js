@@ -1,7 +1,7 @@
 import { fetchExchange, subscriptionExchange } from 'urql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { captureMessage } from '@sentry/browser'
-import { defaultSubgraphWsEndpoint } from './networks'
+import { defaultSubgraphWsEndpoint } from './endpoints'
 
 const subscriptionClient = new SubscriptionClient(defaultSubgraphWsEndpoint, {
   reconnect: true,

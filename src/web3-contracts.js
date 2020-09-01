@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Contract as EthersContract, providers as Providers } from 'ethers'
 import { useWallet } from './providers/Wallet'
-import { defaultEthNode } from './networks'
+import { defaultEthNode } from './endpoints'
 
 const DEFAULT_PROVIDER = new Providers.JsonRpcProvider(defaultEthNode)
 
