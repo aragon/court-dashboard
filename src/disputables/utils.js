@@ -9,5 +9,5 @@ export function getSubgraphByAppId(appId) {
 
   const name = DISPUTABLE_SUBGRAPH_NAMES.get(appId)
 
-  return `${GRAPH_API_BASE}${GRAPH_API_PATH}${name}-${networkType}`
+  return `${GRAPH_API_BASE}${GRAPH_API_PATH}${name}-${networkType}-staging` // TODO: Remove when dvoting subgraph deployed to main subgraph.
 }
