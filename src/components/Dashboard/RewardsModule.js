@@ -326,7 +326,7 @@ const DisputesFeeDistribution = ({ distribution, symbol, decimals }) => {
                 margin-bottom: ${1 * GU}px;
               `}
               label={
-                <Link href={`/disputes/${disputeId}`} external={false}>
+                <Link href={`#/disputes/${disputeId}`} external={false}>
                   {`Dispute #${disputeId}`}
                 </Link>
               }
