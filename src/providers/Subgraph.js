@@ -8,7 +8,7 @@ import {
 import { getFetchExchange, getSubscriptionExchange } from '../graphql-exchanges'
 
 import { devtoolsExchange } from '@urql/devtools'
-import { defaultSubgraphHttpEndpoint } from '../networks'
+import { defaultSubgraphHttpEndpoint } from '../endpoints'
 
 const SubgraphContext = React.createContext({ resetSubgraphClient: null })
 

@@ -1,5 +1,5 @@
 import isIPFS from 'is-ipfs'
-import { defaultIpfsGateway } from '../networks'
+import { defaultIpfsGateway } from '../endpoints'
 
 const SPLIT_IPFS_REGEX = /(Qm[a-zA-Z0-9]{44})/
 const TEST_IPFS_REGEX = /(Qm[a-zA-Z0-9]{44})/

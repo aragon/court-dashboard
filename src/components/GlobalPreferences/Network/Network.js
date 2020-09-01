@@ -14,7 +14,7 @@ import {
   defaultIpfsGateway,
   defaultSubgraphHttpEndpoint,
   defaultSubgraphWsEndpoint,
-} from '../../../networks'
+} from '../../../endpoints'
 import {
   clearLocalStorageNetworkSettings,
   setDefaultEthNode,

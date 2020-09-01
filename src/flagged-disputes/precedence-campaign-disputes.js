@@ -10,21 +10,7 @@ const PRECEDENCE_CAMPAIGN_DISPUTES = {
   main: new Map([
     [
       networkConfigs.main.court,
-      new Map([
-        ['1'],
-        ['2'],
-        ['3'],
-        ['4'],
-        ['5'],
-        ['6'],
-        ['7'],
-        ['8'],
-        ['9'],
-        ['10'],
-        ['11'],
-        ['12'],
-        ['13'],
-      ]),
+      new Map(new Array(21).fill().map((_, index) => [String(index + 1)])),
     ],
   ]),
   rinkeby: new Map([
