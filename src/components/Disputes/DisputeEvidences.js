@@ -168,6 +168,7 @@ function getSubmitterLabel(submitter, defendant, plaintiff) {
 }
 
 export default function Evidences({ dispute, evidences }) {
+  // This hook ensures us that evidenceProcessed won't be updated unless there are new evidences.
   const [evidenceProcessed, fetchingEvidences] = useEvidences(
     dispute,
     evidences
