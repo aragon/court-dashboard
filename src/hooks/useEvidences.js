@@ -63,7 +63,7 @@ export default function useEvidences(dispute, rawEvidences) {
           if (
             cancelled ||
             // First evidence submitted by defendant is treated as the dispute description
-            evidence.rawMetadata !== dispute.disputable?.actionContext
+            evidence.rawMetadata === dispute.disputable?.actionContext
           ) {
             return
           }
