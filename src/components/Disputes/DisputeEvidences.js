@@ -167,7 +167,7 @@ function getSubmitterLabel(submitter, defendant, plaintiff) {
   return ''
 }
 
-export default ({ dispute, evidences }) => {
+export default function Evidences({ dispute, evidences }) {
   const [evidenceProcessed, fetchingEvidences] = useEvidences(
     dispute,
     evidences
