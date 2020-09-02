@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ipfsGet, getIpfsCidFromUri } from '../lib/ipfs-utils'
 import { ERROR_TYPES } from '../types/evidences-status-types'
 
@@ -55,13 +55,16 @@ export default function useEvidences(dispute, rawEvidences) {
 
   useEffect(() => {
     let cancelled = false
-    setFetchingEvidences(true)
 
     const updateEvidences = async () => {
       await Promise.all(
         rawEvidences.map(async rawEvidence => {
           const evidence = await fetchEvidence(rawEvidence)
-          if (cancelled) {
+          if (
+            cancelled ||
+            // First evidence submitted by defendant is treated as the dispute description
+            evidence.rawMetadata !== dispute.disputable?.actionContext
+          ) {
             return
           }
           setEvidences(() => {
@@ -88,18 +91,7 @@ export default function useEvidences(dispute, rawEvidences) {
     return () => {
       cancelled = true
     }
-  }, [rawEvidences, fetchEvidence, evidences])
+  }, [dispute.disputable, evidences, fetchEvidence, rawEvidences])
 
-  // First evidence submitted by defendant is treated as the dispute description
-  const processedEvidences = useMemo(() => {
-    if (dispute.disputable) {
-      return evidences.filter(
-        e => e.rawMetadata !== dispute.disputable.actionContext
-      )
-    }
-
-    return evidences
-  }, [dispute.disputable, evidences])
-
-  return [processedEvidences, fetchingEvidences]
+  return [evidences, fetchingEvidences]
 }
