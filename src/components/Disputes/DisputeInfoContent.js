@@ -8,11 +8,11 @@ import IdentityBadge from '../IdentityBadge'
 import Loading from '../Loading'
 import { useWallet } from '../../providers/Wallet'
 
+import { describeDisputedAction } from '../../disputables'
 import { IPFS_ENDPOINT } from '../../endpoints'
 import { getIpfsCidFromUri, transformIPFSHash } from '../../lib/ipfs-utils'
-import { describeDisputedAction } from '../../disputables'
-import { Phase as DisputePhase } from '../../types/dispute-status-types'
 import { addressesEqual, transformAddresses } from '../../lib/web3-utils'
+import { Phase as DisputePhase } from '../../types/dispute-status-types'
 
 function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
   const { below } = useViewport()
@@ -109,10 +109,7 @@ function Field({ label, loading, value, ...props }) {
         if (typeof value === 'string') {
           const ipfsPath = getIpfsCidFromUri(value)
           if (ipfsPath) {
-            const ipfsUrl = resolvePathname(
-              ipfsPath,
-              `${IPFS_ENDPOINT}/${ipfsPath}`
-            )
+            const ipfsUrl = resolvePathname(ipfsPath, `${IPFS_ENDPOINT}/`)
             return (
               <Link
                 href={ipfsUrl}
@@ -142,7 +139,7 @@ function Field({ label, loading, value, ...props }) {
                       if (isIpfsHash) {
                         const ipfsUrl = resolvePathname(
                           word,
-                          `${IPFS_ENDPOINT}/${word}`
+                          `${IPFS_ENDPOINT}/`
                         )
                         return (
                           <Link
