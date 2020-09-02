@@ -206,6 +206,9 @@ async function processRawDisputeData(dispute) {
             /^.\//,
             ''
           )
+          // Note that in this case, we expect the agreement's location to be relative to the
+          // metadata URI. For example, if the metadataUri is `<cid>/metadata.json`, the agreement's
+          // location would be `<cid>/<agreement>`
           const agreementUrl = agreementText
             ? resolvePathname(agreementText, `${IPFS_ENDPOINT}/${ipfsPath}`)
             : ''
