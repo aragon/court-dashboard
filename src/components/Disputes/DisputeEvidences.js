@@ -11,19 +11,16 @@ import { dateFormat } from '../../utils/date-utils'
 import folderIcon from '../../assets/folderIcon.svg'
 
 const DisputeEvidences = React.memo(function DisputeEvidences({
-  dispute,
+  defendant,
   evidences,
+  loading,
+  plaintiff,
 }) {
-  const [evidenceProcessed, fetchingEvidences] = useEvidences(
-    dispute,
-    evidences
-  )
-
   return (
     <React.Fragment>
-      <SyncIndicator visible={fetchingEvidences} label="Loading evidences…" />
-      {evidenceProcessed &&
-        evidenceProcessed.map((evidence, index) => {
+      <SyncIndicator visible={loading} label="Loading evidences…" />
+      {evidences &&
+        evidences.map((evidence, index) => {
           const { createdAt, submitter, metadata, error } = evidence
           return (
             <Accordion
@@ -50,7 +47,11 @@ const DisputeEvidences = React.memo(function DisputeEvidences({
                     error={error}
                     metadata={metadata}
                     submitter={submitter}
-                    submitterLabel={getSubmitterLabel(submitter, dispute)}
+                    submitterLabel={getSubmitterLabel(
+                      submitter,
+                      defendant,
+                      plaintiff
+                    )}
                   />,
                 ],
               ]}
@@ -154,16 +155,31 @@ const EvidenceContent = React.memo(function EvidenceContent({
   )
 })
 
-function getSubmitterLabel(submitter, dispute) {
-  if (addressesEqual(submitter, dispute.defendant)) {
+function getSubmitterLabel(submitter, defendant, plaintiff) {
+  if (addressesEqual(submitter, defendant)) {
     return 'Defendant'
   }
 
-  if (addressesEqual(submitter, dispute.plaintiff)) {
+  if (addressesEqual(submitter, plaintiff)) {
     return 'Plaintiff'
   }
 
   return ''
 }
 
-export default DisputeEvidences
+export default function Evidences({ dispute, evidences }) {
+  // This hook ensures us that evidenceProcessed won't be updated unless there are new evidences.
+  const [evidenceProcessed, fetchingEvidences] = useEvidences(
+    dispute,
+    evidences
+  )
+
+  return (
+    <DisputeEvidences
+      defendant={dispute.defendant}
+      evidences={evidenceProcessed}
+      loading={fetchingEvidences}
+      plaintiff={dispute.plaintiff}
+    />
+  )
+}
