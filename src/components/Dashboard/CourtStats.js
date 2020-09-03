@@ -1,13 +1,15 @@
 import React from 'react'
 import { Box, GU, textStyle, useTheme } from '@aragon/ui'
-import { formatUnits } from '../../lib/math-utils'
-import useCourtStats from '../../hooks/useCourtStats'
-import {
-  useANJBalanceToUsd,
-  useTokenBalanceToUsd,
-} from '../../hooks/useTokenBalanceToUsd'
 import Loading from '../Loading'
 import SplitAmount from '../SplitAmount'
+
+import { useCourtConfig } from '../../providers/CourtConfig'
+import useCourtStats from '../../hooks/useCourtStats'
+import {
+  useTokenAmountToUsd,
+  useANJAmountToUsd,
+} from '../../hooks/useTokenAmountToUsd'
+import { formatUnits } from '../../lib/math-utils'
 
 function CourtStats() {
   const theme = useTheme()
@@ -61,6 +63,8 @@ function CourtStats() {
 }
 
 function TokenStats({ stat, theme }) {
+  const { anjToken } = useCourtConfig()
+
   const { value, token, error } = stat
   const { decimals, icon, symbol } = token
   return (
@@ -106,25 +110,28 @@ function TokenStats({ stat, theme }) {
         `}
       >
         $
-        {!error
-          ? symbol === 'ANJ'
-            ? AnjUsdValue(value)
-            : TokenUsdValue(token, value)
-          : '-'}
+        {!error ? (
+          symbol === anjToken.symbol ? (
+            <ANJUsdValue amount={value} />
+          ) : (
+            <TokenUsdValue amount={value} decimals={decimals} symbol={symbol} />
+          )
+        ) : (
+          '-'
+        )}
       </span>
     </>
   )
 }
 
-function AnjUsdValue(amount) {
-  const usdValue = useANJBalanceToUsd(amount)
-  return usdValue
+function ANJUsdValue({ amount }) {
+  const usdValue = useANJAmountToUsd(amount)
+  return <span>{usdValue}</span>
 }
 
-function TokenUsdValue(token, amount) {
-  const { decimals, symbol } = token
-  const usdValue = useTokenBalanceToUsd(symbol, decimals, amount)
-  return usdValue
+function TokenUsdValue({ amount, decimals, symbol }) {
+  const usdValue = useTokenAmountToUsd(symbol, decimals, amount)
+  return <span>{usdValue}</span>
 }
 
 export default CourtStats
