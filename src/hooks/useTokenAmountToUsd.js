@@ -8,6 +8,7 @@ import { getNetworkType } from '../lib/web3-utils'
 
 const API_BASE = 'https://api.0x.org'
 const PRECISION = bigNum(10).pow(18)
+const SELL_TOKEN = 'USDC'
 
 /**
  * Convert ANJ amount into USD price
@@ -17,6 +18,10 @@ const PRECISION = bigNum(10).pow(18)
 export function useANJAmountToUsd(amount) {
   const { anjToken } = useCourtConfig()
   const anjPrice = useUniswapAnjPrice()
+
+  if (anjPrice === 0) {
+    return '-'
+  }
 
   return convertAmount(amount, anjPrice, anjToken.decimals)
 }
@@ -38,9 +43,13 @@ export function useTokenAmountToUsd(symbol, decimals, amount) {
       return
     }
 
-    fetch(`${API_BASE}/swap/v0/prices?sellToken=USDC`)
-      .then(res => res.json())
-      .then(prices => {
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE}/swap/v0/prices?sellToken=${SELL_TOKEN}`
+        )
+        const prices = await res.json()
+
         if (cancelled || !amount || !prices?.records?.length) {
           return
         }
@@ -58,11 +67,13 @@ export function useTokenAmountToUsd(symbol, decimals, amount) {
           decimals
         )
         setAmountInUsd(convertedAmount)
-      })
-      .catch(err => {
+      } catch (err) {
         console.error(`Could not fetch ${symbol} USD price`, err)
         captureException(err)
-      })
+      }
+    }
+
+    fetchPrice()
 
     return () => {
       cancelled = true

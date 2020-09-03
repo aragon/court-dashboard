@@ -32,7 +32,7 @@ export function useUniswapAnjPrice() {
   useEffect(() => {
     let cancelled = false
     let retryTimer
-    async function getData() {
+    async function fetchPrice() {
       try {
         const anjResults = await client.query(ANJ_PRICE_QUERY).toPromise()
         const ethResults = await client.query(ETH_PRICE_QUERY).toPromise()
@@ -47,11 +47,11 @@ export function useUniswapAnjPrice() {
         }
       } catch (err) {
         captureException(err)
-        retryTimer = setTimeout(getData, RETRY_EVERY)
+        retryTimer = setTimeout(fetchPrice, RETRY_EVERY)
       }
     }
 
-    getData()
+    fetchPrice()
 
     return () => {
       cancelled = true
