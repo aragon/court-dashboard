@@ -7,8 +7,10 @@ import { bigNum, formatUnits } from '../lib/math-utils'
 import { getNetworkType } from '../lib/web3-utils'
 
 const API_BASE = 'https://api.0x.org'
-const PRECISION = bigNum(10).pow(18)
+const UNISWAP_PRECISION = bigNum(10).pow(18)
+
 const SELL_TOKEN = 'USDC'
+const SELL_TOKEN_PRECISION = bigNum(10).pow(6)
 
 /**
  * Convert ANJ amount into USD price
@@ -19,11 +21,11 @@ export function useANJAmountToUsd(amount) {
   const { anjToken } = useCourtConfig()
   const anjPrice = useUniswapAnjPrice()
 
-  if (anjPrice === 0) {
+  if (!amount || anjPrice === 0) {
     return '-'
   }
 
-  return convertAmount(amount, anjPrice, anjToken.decimals)
+  return convertAmount(amount, anjPrice, anjToken.decimals, UNISWAP_PRECISION)
 }
 
 /**
@@ -64,7 +66,8 @@ export function useTokenAmountToUsd(symbol, decimals, amount) {
         const convertedAmount = convertAmount(
           amount,
           priceRecord.price,
-          decimals
+          decimals,
+          SELL_TOKEN_PRECISION
         )
         setAmountInUsd(convertedAmount)
       } catch (err) {
@@ -83,10 +86,10 @@ export function useTokenAmountToUsd(symbol, decimals, amount) {
   return amountInUsd
 }
 
-function convertAmount(amount, price, decimals) {
-  const rate = price * PRECISION
+function convertAmount(amount, price, decimals, precision) {
+  const rate = (price * precision).toFixed()
 
-  return formatUnits(amount.mul(rate.toString()).div(PRECISION), {
+  return formatUnits(amount.mul(rate.toString()).div(precision), {
     digits: decimals,
   })
 }

@@ -3,13 +3,13 @@ import { Box, GU, textStyle, useTheme } from '@aragon/ui'
 import Loading from '../Loading'
 import SplitAmount from '../SplitAmount'
 
+import { formatUnits } from '../../lib/math-utils'
+import {
+  useANJAmountToUsd,
+  useTokenAmountToUsd,
+} from '../../hooks/useTokenAmountToUsd'
 import { useCourtConfig } from '../../providers/CourtConfig'
 import useCourtStats from '../../hooks/useCourtStats'
-import {
-  useTokenAmountToUsd,
-  useANJAmountToUsd,
-} from '../../hooks/useTokenAmountToUsd'
-import { formatUnits } from '../../lib/math-utils'
 
 function CourtStats() {
   const theme = useTheme()
