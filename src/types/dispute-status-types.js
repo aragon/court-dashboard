@@ -40,7 +40,7 @@ const stringMapping = {
   [Phase.ClaimRewards]: 'Claim rewards',
   [Phase.Invalid]: 'Invalid',
   [Phase.Ended]: 'Ended',
-  [Phase.ExecuteRuling]: 'Execute Ruling',
+  [Phase.ExecuteRuling]: 'Waiting',
   [Phase.Created]: 'Dispute created',
 }
 

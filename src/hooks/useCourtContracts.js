@@ -186,10 +186,12 @@ export function useDisputeActions() {
   )
   const votingContract = useCourtContract(CourtModuleType.Voting, votingAbi)
 
+  /*
   const aragonCourtContract = useCourtContract(
     CourtModuleType.AragonCourt,
     aragonCourtAbi
   )
+  */
 
   const feeTokenContract = useFeeTokenContract()
 
@@ -386,8 +388,11 @@ export function useDisputeActions() {
     [appeal, approveFeeDeposit, confirmAppeal, processRequests]
   )
 
+  // TODO(2020-09-07): we are disallowing disputes related to the AN Cash DAO from being executed
+  // for now and will re-enable it at a future time
   const executeRuling = useCallback(
     disputeId => {
+      /*
       return processRequests([
         {
           action: () =>
@@ -398,8 +403,11 @@ export function useDisputeActions() {
           type: actions.EXECUTE_RULING,
         },
       ])
+      */
     },
-    [aragonCourtContract, processRequests]
+    [
+      /* aragonCourtContract, processRequests */
+    ]
   )
 
   return {
