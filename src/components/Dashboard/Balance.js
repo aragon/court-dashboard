@@ -7,7 +7,7 @@ import ANJLockedDistribution from './ANJLockedDistribution'
 import SplitAmount from '../SplitAmount'
 
 import { useCourtConfig } from '../../providers/CourtConfig'
-import { useANJBalanceToUsd } from '../../hooks/useTokenBalanceToUsd'
+import { useANJAmountToUsd } from '../../hooks/useTokenAmountToUsd'
 
 import { PCT_BASE } from '../../utils/dispute-utils'
 import { bigNum, formatTokenAmount, formatUnits } from '../../lib/math-utils'
@@ -31,7 +31,7 @@ const Balance = React.memo(function Balance({
     anjToken: { symbol, decimals },
   } = useCourtConfig()
 
-  const convertedAmount = useANJBalanceToUsd(amount)
+  const convertedAmount = useANJAmountToUsd(amount)
 
   const springProps = useSpring({
     to: { opacity: 1 },
