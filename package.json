@@ -8,7 +8,6 @@
     "@aragon/connect": "^0.6.0",
     "@aragon/ui": "^1.4.0",
     "@sentry/browser": "^5.12.1",
-    "@uniswap/sdk": "^1.0.0-beta.4",
     "@web3-react/core": "^6.0.2",
     "@web3-react/injected-connector": "^6.0.3",
     "clipboard-polyfill": "^2.8.6",
