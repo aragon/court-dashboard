@@ -33,6 +33,11 @@ function DisputeInfoContent({ dispute, isFinalRulingEnsured }) {
 
   return (
     <>
+      {isFinalRulingEnsured && (
+        <Row>
+          <FinalJuryOutcome dispute={dispute} />
+        </Row>
+      )}
       <Row compactMode={compactMode}>
         <DisputedAction
           actionText={disputedAction}
@@ -178,6 +183,27 @@ function Field({ label, loading, value, ...props }) {
   )
 }
 
+function FinalJuryOutcome({ dispute }) {
+  const { lastRoundId, rounds } = dispute
+  const lastRound = rounds?.[lastRoundId]
+  const voteWinningOutcome = lastRound?.vote?.winningOutcome
+  const appealedRuling = lastRound?.appeal?.appealedRuling
+
+  return (
+    <Field
+      label="Final Jury Outcome"
+      value={
+        <DisputeOutcomeText
+          outcome={appealedRuling || voteWinningOutcome}
+          phase={
+            appealedRuling ? DisputePhase.AppealRuling : DisputePhase.RevealVote
+          }
+        />
+      }
+    />
+  )
+}
+
 function DisputedAction({
   actionText,
   dispute,
@@ -190,24 +216,6 @@ function DisputedAction({
     // Disputes may not include an embedded executable action
     if (!actionText && !loading) {
       return <DisputedActionNA />
-    }
-
-    if (isFinalRulingEnsured) {
-      const { lastRoundId, rounds } = dispute
-      const lastRound = rounds?.[lastRoundId]
-      const voteWinningOutcome = lastRound?.vote?.winningOutcome
-      const appealedRuling = lastRound?.appeal?.appealedRuling
-
-      return (
-        <DisputeOutcomeText
-          action={actionText}
-          outcome={appealedRuling || voteWinningOutcome}
-          phase={
-            appealedRuling ? DisputePhase.AppealRuling : DisputePhase.RevealVote
-          }
-          verbose
-        />
-      )
     }
 
     const action = Array.isArray(executionPath) ? (
@@ -231,7 +239,7 @@ function DisputedAction({
     ) : (
       action
     )
-  }, [actionText, dispute, executionPath, isFinalRulingEnsured, loading, url])
+  }, [actionText, executionPath, loading, url])
 
   return (
     <Field
