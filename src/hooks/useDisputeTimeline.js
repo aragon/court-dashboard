@@ -89,6 +89,10 @@ export default function useDisputeTimeline(dispute) {
 
       return timeLine
     },
+
+    // We are leaving out courtConfig and dispute.rounds as dependencies to prevent  the timeline  from being recomputed on every poll.
+    // The current phase dependency is sufficient for recomputing it.
+    // If there's a new round, means the phase has changed
     [createdAt, currentPhase.phase, evidenceSubmissionEndTime] // eslint-disable-line react-hooks/exhaustive-deps
   )
 }
