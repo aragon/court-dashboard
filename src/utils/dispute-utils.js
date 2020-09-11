@@ -111,83 +111,6 @@ function overrideVoidedDispute(dispute, voidedDispute) {
 }
 
 /**
- * Construct dispute timeline for the given dispute
- * @param {Object} dispute The dispute to get the timeline from
- * @param {Object} courtConfig The court configuration
- * @param {Number} currentTerm The court current term
- * @returns {Array} The timeline of the given dispute
- */
-export function getDisputeTimeLine(dispute, courtConfig, currentTerm) {
-  const { createdAt } = dispute
-
-  const currentPhaseAndTime = getPhaseAndTransition(
-    dispute,
-    currentTerm,
-    courtConfig
-  )
-
-  const evidenceSubmissionEndTerm = getEvidenceSubmissionEndTerm(
-    dispute,
-    courtConfig
-  )
-  const evidenceSubmissionEndTime = getTermEndTime(
-    evidenceSubmissionEndTerm,
-    courtConfig
-  )
-
-  const timeLine = [
-    {
-      phase: DisputesTypes.Phase.Evidence,
-      endTime: evidenceSubmissionEndTime,
-      active: currentPhaseAndTime.phase === DisputesTypes.Phase.Evidence,
-      roundId: 0,
-    },
-    {
-      phase: DisputesTypes.Phase.Created, // create Symbol
-      endTime: createdAt,
-    },
-  ]
-
-  const rounds = []
-  dispute.rounds.forEach(round => {
-    const roundPhases = getRoundPhasesAndTime(
-      round,
-      currentPhaseAndTime,
-      currentTerm,
-      courtConfig
-    )
-    rounds.unshift([...roundPhases].reverse())
-  })
-
-  if (rounds.length === 0) {
-    return timeLine
-  }
-
-  timeLine.unshift(rounds)
-
-  if (
-    currentPhaseAndTime.phase === DisputesTypes.Phase.ExecuteRuling ||
-    currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards
-  ) {
-    timeLine.unshift({
-      phase: DisputesTypes.Phase.ExecuteRuling,
-      active: DisputesTypes.Phase.ExecuteRuling === currentPhaseAndTime.phase,
-      roundId: currentPhaseAndTime.roundId,
-    })
-  }
-
-  if (currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards) {
-    timeLine.unshift({
-      phase: DisputesTypes.Phase.ClaimRewards,
-      active: currentPhaseAndTime.phase === DisputesTypes.Phase.ClaimRewards,
-      roundId: currentPhaseAndTime.roundId,
-    })
-  }
-
-  return timeLine
-}
-
-/**
  * @param {Object} dispute The dispute to query the current phase and next transition of
  * @param {Number} currentTerm The court current term
  * @param {Object} courtConfig The court configuration
@@ -394,7 +317,12 @@ export function getAdjudicationPhase(dispute, round, termId, courtConfig) {
  * @param {Object} courtConfig The court configuration
  * @returns {Array} Array of all `round` phases.
  */
-function getRoundPhasesAndTime(round, currentPhase, currentTerm, courtConfig) {
+export function getRoundPhasesAndTime(
+  round,
+  currentPhase,
+  currentTerm,
+  courtConfig
+) {
   const {
     commitTerms,
     revealTerms,
@@ -540,7 +468,7 @@ function getRoundPhasesAndTime(round, currentPhase, currentTerm, courtConfig) {
  * @param {Object} courtConfig The court configuration
  * @returns {Number} The end time of the evidence submission phase in ms
  */
-function getEvidenceSubmissionEndTerm(dispute, courtConfig) {
+export function getEvidenceSubmissionEndTerm(dispute, courtConfig) {
   const firstRound = dispute.rounds[0]
 
   // If the evidence period is closed before the full `evidenceTerms` period,
