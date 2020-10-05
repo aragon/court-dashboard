@@ -1,8 +1,6 @@
 import React from 'react'
 import { Button, GU, Header, useLayout } from '@aragon/ui'
 
-import ANJIcon from '../assets/IconANJButton.svg'
-
 function TitleHeader({ title, onlyTitle = false }) {
   const { layoutName } = useLayout()
   const compactMode = layoutName === 'small'
@@ -28,32 +26,6 @@ function TitleHeader({ title, onlyTitle = false }) {
                 `}
               />
             )}
-            <Button
-              icon={
-                <div
-                  css={`
-                    display: flex;
-                    height: ${GU * 3}px;
-                    width: ${GU * 3}px;
-                    margin-right: ${compactMode ? 0 : -6}px;
-                  `}
-                >
-                  <img
-                    src={ANJIcon}
-                    css={`
-                      margin: auto;
-                      width: 14px;
-                      height: 16px;
-                    `}
-                  />
-                </div>
-              }
-              label="Buy ANJ"
-              mode="strong"
-              display={compactMode ? 'icon' : 'all'}
-              href="https://anj.aragon.org/"
-              target="_blank"
-            />
           </div>
         )
       }

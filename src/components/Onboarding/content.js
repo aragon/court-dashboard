@@ -9,7 +9,6 @@ import large5 from './highlights/assets/rinkeby/large/5.png'
 
 import mainnetLarge1 from './highlights/assets/mainnet/large/1.png'
 import mainnetLarge2 from './highlights/assets/mainnet/large/2.png'
-import mainnetLarge3 from './highlights/assets/mainnet/large/3.png'
 import mainnetLarge4 from './highlights/assets/mainnet/large/4.png'
 import mainnetLarge5 from './highlights/assets/mainnet/large/5.png'
 import mainnetLarge6 from './highlights/assets/mainnet/large/6.png'
@@ -17,7 +16,6 @@ import mainnetLarge7 from './highlights/assets/mainnet/large/7.png'
 
 import mainnetSmall1 from './highlights/assets/mainnet/small/1.png'
 import mainnetSmall2 from './highlights/assets/mainnet/small/2.png'
-import mainnetSmall3 from './highlights/assets/mainnet/small/3.png'
 import mainnetSmall4 from './highlights/assets/mainnet/small/4.png'
 import mainnetSmall5 from './highlights/assets/mainnet/small/5.png'
 import mainnetSmall6 from './highlights/assets/mainnet/small/6.png'
@@ -198,32 +196,6 @@ highlights.main = [
       large: mainnetLarge2,
       color: '#F9FAFC',
       buttonColor: '#FF9780',
-    },
-  },
-  {
-    title: {
-      small: null,
-      large: 'Buying ANJ ⚖️',
-    },
-    description: {
-      small: null,
-      large: (
-        <>
-          <p>
-            ANJ is the native token for Aragon Court and helps ensure
-            particpants are properly motivated to do their jobs well.
-          </p>
-          <p>
-            You can convert ANT, DAI, ETH, or USDC to ANJ using the module at{' '}
-            <Link href="https://anj.aragon.org/">anj.aragon.org</Link> or by
-            clicking “Buy ANJ”.
-          </p>
-        </>
-      ),
-    },
-    visual: {
-      small: mainnetSmall3,
-      large: mainnetLarge3,
     },
   },
   {

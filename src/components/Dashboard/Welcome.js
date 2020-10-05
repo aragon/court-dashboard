@@ -1,7 +1,6 @@
 import React from 'react'
 import { Button, GU, textStyle, useTheme } from '@aragon/ui'
 
-import ANJIcon from '../../assets/IconANJButton.svg'
 import Logo from '../../assets/Welcome.svg'
 
 function Welcome() {
@@ -50,25 +49,6 @@ function Welcome() {
             align-items: center;
           `}
         >
-          <Button
-            icon={
-              <img
-                src={ANJIcon}
-                css={`
-                  width: 18px;
-                  height: 20px;
-                `}
-              />
-            }
-            label="Buy ANJ"
-            display="all"
-            mode="strong"
-            href="https://anj.aragon.org/"
-            css={`
-              margin-right: ${1.5 * GU}px;
-              width: 150px;
-            `}
-          />
           <Button
             label="User guide"
             href="https://help.aragon.org/article/41-aragon-court"
