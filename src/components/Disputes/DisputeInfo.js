@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Box, GU, TransactionBadge, textStyle, useTheme } from '@aragon/ui'
+import { Box, GU, TransactionBadge, textStyle } from '@aragon/ui'
 import DisputeActions from './DisputeActions'
 import DisputeCurrentRuling from './DisputeCurrentRuling'
 import DisputeInfoContent from './DisputeInfoContent'
@@ -11,7 +11,7 @@ import LoadingCard from '../LoadingCard'
 import { Phase as DisputePhase, Status } from '../../types/dispute-status-types'
 import { getNetworkType } from '../../lib/web3-utils'
 
-import iconCourt from '../../assets/courtIcon.svg'
+import iconDispute from '../../assets/IconDispute.svg'
 
 const DisputeInfo = React.memo(function({
   id,
@@ -99,7 +99,6 @@ const DisputeInfo = React.memo(function({
 })
 
 function DisputeHeader({ dispute, error }) {
-  const theme = useTheme()
   const { id, description, txHash } = dispute || {}
 
   return (
@@ -116,20 +115,7 @@ function DisputeHeader({ dispute, error }) {
           width: 100%;
         `}
       >
-        <div
-          css={`
-            background: linear-gradient(
-              233deg,
-              ${theme.accentStart} -50%,
-              ${theme.accentEnd} 91%
-            );
-            border-radius: 50%;
-            padding: ${1.5 * GU}px;
-            display: inline-block;
-          `}
-        >
-          <img src={iconCourt} alt="" width="39" height="32" />
-        </div>
+        <img src={iconDispute} alt="" width="70" height="70" />
         <div
           css={`
             margin-left: ${3 * GU}px;

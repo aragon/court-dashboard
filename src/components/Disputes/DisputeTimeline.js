@@ -11,13 +11,13 @@ import { useCourtClock } from '../../providers/CourtClock'
 import { useCourtConfig } from '../../providers/CourtConfig'
 
 import {
+  IconAppealing,
   IconFlag,
   IconFolder,
-  IconGavelNoFill,
   IconRewards,
   IconRuling,
-  IconThinking,
-  IconUsers,
+  IconShield,
+  IconUser,
   IconVoting,
 } from '../../utils/dispute-icons'
 
@@ -80,7 +80,7 @@ const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
                             >
                               <img
                                 alt={18}
-                                src={IconGavelNoFill}
+                                src={IconShield}
                                 css={`
                                   margin-right: ${1 * GU}px;
                                 `}
@@ -216,7 +216,7 @@ function PhaseIcon({ phase, active }) {
       return IconFolder
     }
     if (phase === DisputePhase.JuryDrafting) {
-      return IconUsers
+      return IconUser
     }
     if (
       phase === DisputePhase.VotingPeriod ||
@@ -228,7 +228,7 @@ function PhaseIcon({ phase, active }) {
       phase === DisputePhase.AppealRuling ||
       phase === DisputePhase.ConfirmAppeal
     ) {
-      return IconThinking
+      return IconAppealing
     }
     if (phase === DisputePhase.ExecuteRuling) {
       return IconRuling
