@@ -1,8 +1,8 @@
 import React from 'react'
 import { ButtonIcon, GU, IconMenu } from '@aragon/ui'
 import AccountModule from '../Account/AccountModule'
-import ClockModule from '../ClockModule'
 import ActivityButton from '../Activity/ActivityButton'
+import ClockModule from '../ClockModule'
 import GlobalPreferencesButton from '../GlobalPreferences/GlobalPreferencesButton'
 import HeaderLogo from './HeaderLogo'
 
