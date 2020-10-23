@@ -27,7 +27,7 @@ import {
   shortenAddress,
 } from '../lib/web3-utils'
 
-import logoSvg from '../assets/LogoAccent.svg'
+import logoSvg from '../assets/logo.svg'
 
 function ClockModule() {
   const buttonRef = useRef()
