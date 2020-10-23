@@ -1,19 +1,18 @@
 import React from 'react'
 import { Box, GU, Split, useLayout, useTheme } from '@aragon/ui'
-import Profile from './Profile'
-import Balance from './Balance'
 import AccountBanner from './AccountBanner'
+import Balance from './Balance'
+import Profile from './Profile'
 import { useCourtConfig } from '../../providers/CourtConfig'
+import { useWallet } from '../../providers/Wallet'
 
 import { getAccountStatus } from '../../utils/account-utils'
-import { useWallet } from '../../providers/Wallet'
 import {
   getTotalUnlockedActiveBalance,
   getTotalLockedANJDistribution,
   getTotalEffectiveInactiveBalance,
 } from '../../utils/balance-utils'
 
-// TODO: import icons from aragon-ui when available
 import walletIcon from '../../assets/IconWallet.svg'
 import inactiveANJIcon from '../../assets/IconANJInactive.svg'
 import activeANJIcon from '../../assets/IconANJActive.svg'
