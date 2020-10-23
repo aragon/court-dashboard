@@ -18,4 +18,5 @@ export default {
   tagActivityContent: '#FFFFFF',
 
   surfaceOpened: '#FF8D86',
+  surfaceUnder: '#F9FAFC',
 }
