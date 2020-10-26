@@ -30,9 +30,6 @@ export default function MessageCard({
           alt=""
           css={`
             display: block;
-            width: 100%;
-            max-width: ${(isCompactMode ? 12 : 30) * GU}px;
-            height: auto;
             margin: ${4 * GU}px 0;
           `}
         />

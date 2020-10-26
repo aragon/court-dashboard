@@ -1,7 +1,7 @@
 import React from 'react'
 import { GU, textStyle, useTheme } from '@aragon/ui'
 
-import errorLoadingSvg from '../../assets/errorLoading.svg'
+import errorLoadingSvg from '../../assets/noResults.svg'
 
 export default function ErrorLoadingEvidence() {
   const theme = useTheme()

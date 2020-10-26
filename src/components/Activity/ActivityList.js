@@ -12,7 +12,7 @@ import { ACTIVITY_STATUS_PENDING } from './activity-statuses'
 import { useActivity } from '../../providers/ActivityProvider'
 import ActivityItem from './ActivityItem'
 
-import activityNoResults from './assets/activity-no-results.png'
+import activityNoResults from './assets/activity-no-results.svg'
 
 // 8GU for top bar, 4GU for activity heading,
 // 11GU for HelpScout beacon (3GU top/bottom padding, 5GU beacon)
@@ -126,12 +126,7 @@ function ActivityList() {
               height: ${28.5 * GU}px;
             `}
           >
-            <img
-              src={activityNoResults}
-              alt="No results"
-              height="125px"
-              width="125px"
-            />
+            <img src={activityNoResults} alt="No results" />
             <span
               css={`
                 margin-top: ${2 * GU}px;

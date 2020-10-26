@@ -19,7 +19,7 @@ import { DisputeNotFound } from '../../errors'
 import { toMs } from '../../utils/date-utils'
 import { toUtf8String } from '../../lib/web3-utils'
 
-import timelineErrorSvg from '../../assets/timelineError.svg'
+import timelineErrorSvg from '../../assets/noResultsSmall.svg'
 
 const DisputeDetail = React.memo(function DisputeDetail({ match }) {
   const history = useHistory()

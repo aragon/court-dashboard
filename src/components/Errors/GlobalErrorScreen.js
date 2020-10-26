@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Card, GU, useTheme, useViewport } from '@aragon/ui'
-import globalError from '../../assets/globalError.svg'
+import globalError from '../../assets/noResultsSmall.svg'
 import backgroundError from '../../assets/backgroundError.svg'
 import logo from '../../assets/logo.svg'
 

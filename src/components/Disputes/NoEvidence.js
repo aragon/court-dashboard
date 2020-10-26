@@ -1,7 +1,7 @@
 import React from 'react'
 
 import MessageCard from '../MessageCard'
-import noEvidenceSvg from '../../assets/noEvidence.svg'
+import noEvidenceSvg from '../../assets/noDraft.svg'
 
 function NoEvidence() {
   const title = ' The evidence is being presented'
