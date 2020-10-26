@@ -7,7 +7,6 @@ import {
 } from '../hooks/subscription-hooks'
 import { getKnownToken } from '../utils/known-tokens'
 import { bigNum } from '../lib/math-utils'
-import IconANJ from '../assets/IconANJ.svg'
 import IconANT from '../assets/IconANT.svg'
 import IconDAI from '../assets/IconDAI.svg'
 
@@ -15,8 +14,8 @@ const STATS_FETCHING_TIMEOUT = 15000
 
 const COURT_STATS = [
   {
-    label: 'Total Active ANJ',
-    token: { ...getKnownToken('ANJ'), icon: IconANJ },
+    label: 'Total Active ANT',
+    token: { ...getKnownToken('ANT'), icon: IconANT },
   },
   {
     label: 'Total Staked ANT',

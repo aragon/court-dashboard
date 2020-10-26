@@ -11,7 +11,7 @@ import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
 import { formatUnits, getPercentageBN, bigNum } from '../../lib/math-utils'
 
-import anjSpringIcon from '../../assets/IconANJSpring.svg'
+import antSpringIcon from '../../assets/IconANTSpring.svg'
 import userIcon from '../../assets/IconUser.svg'
 import hexagonIcon from '../../assets/IconHexagonGreen.svg'
 import { useJurorDrafted } from '../../hooks/useJurorDrafted'
@@ -52,7 +52,7 @@ const getBannerAttributes = (
   }
 
   return {
-    icon: anjSpringIcon,
+    icon: antSpringIcon,
     title: 'Activate ANJ to be an active juror',
     paragraph: `You must activate at least ${formatUnits(minActiveBalance, {
       digits: decimals,

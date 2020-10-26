@@ -6,8 +6,7 @@ import {
   ACCOUNT_STATUS_JUROR_INACTIVE,
 } from '../../types/account-status-types'
 
-import inactiveJurorIcon from '../../assets/IconJurorInactive.svg'
-import activeJurorIcon from '../../assets/IconJurorActive.svg'
+import shieldIcon from '../../assets/IconShield.svg'
 
 const getProfileAttributes = (status, theme) => {
   if (status === ACCOUNT_STATUS_JUROR_ACTIVE)
@@ -16,7 +15,7 @@ const getProfileAttributes = (status, theme) => {
       primaryColor: theme.accentContent,
       secondaryColor: theme.accentContent,
       statusLabel: 'ACTIVE JUROR',
-      icon: activeJurorIcon,
+      icon: shieldIcon,
     }
 
   if (status === ACCOUNT_STATUS_JUROR_INACTIVE)
@@ -25,7 +24,7 @@ const getProfileAttributes = (status, theme) => {
       primaryColor: theme.content,
       secondaryColor: theme.contentSecondary,
       statusLabel: 'INACTIVE JUROR',
-      icon: inactiveJurorIcon,
+      icon: shieldIcon,
     }
 
   return {
@@ -94,9 +93,10 @@ function Profile({ account, status }) {
             <span
               css={`
                 ${textStyle('label2')};
-                display: flex;
                 color: ${secondaryColor};
                 line-height: 1.2;
+                display: flex;
+                align-items: center;
               `}
             >
               {icon && (

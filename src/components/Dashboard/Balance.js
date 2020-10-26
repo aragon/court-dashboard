@@ -13,18 +13,17 @@ import { PCT_BASE } from '../../utils/dispute-utils'
 import { bigNum, formatTokenAmount, formatUnits } from '../../lib/math-utils'
 import { movementDirection, convertToString } from '../../types/anj-types'
 
-import ANJIcon from '../../assets/IconANJ.svg'
+import ANTIcon from '../../assets/IconANT.svg'
 import lockIcon from '../../assets/IconLock.svg'
 
 const Balance = React.memo(function Balance({
-  label,
-  amount,
-  loading,
   actions,
-  mainIcon,
   activity,
+  amount,
   distribution,
-  mainIconBackground,
+  label,
+  loading,
+  mainIcon,
 }) {
   const theme = useTheme()
   const {
@@ -59,9 +58,6 @@ const Balance = React.memo(function Balance({
           >
             <div
               css={`
-                padding: ${1.5 * GU}px;
-                background: ${mainIconBackground};
-                border-radius: 50%;
                 margin-right: ${2 * GU}px;
               `}
             >
@@ -70,8 +66,8 @@ const Balance = React.memo(function Balance({
                   display: block;
                 `}
                 src={mainIcon}
-                height={3 * GU}
-                width={3 * GU}
+                height={6 * GU}
+                width={6 * GU}
               />
             </div>
             <div>
@@ -95,7 +91,7 @@ const Balance = React.memo(function Balance({
                 <SplitAmount
                   amount={formatUnits(amount, { digits: decimals })}
                 />
-                <img height="20" width="18" src={ANJIcon} alt="ANJ" />
+                <img height="14" width="14" src={ANTIcon} alt="ant" />
               </div>
               <span
                 css={`

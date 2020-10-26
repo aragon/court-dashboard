@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, GU, Split, useLayout, useTheme } from '@aragon/ui'
+import { Box, GU, Split, useLayout } from '@aragon/ui'
 import AccountBanner from './AccountBanner'
 import Balance from './Balance'
 import Profile from './Profile'
@@ -14,8 +14,8 @@ import {
 } from '../../utils/balance-utils'
 
 import walletIcon from '../../assets/IconWallet.svg'
-import inactiveANJIcon from '../../assets/IconANJInactive.svg'
-import activeANJIcon from '../../assets/IconANJActive.svg'
+import inactiveANTIcon from '../../assets/IconANTInactive.svg'
+import activeANTIcon from '../../assets/IconANTActive.svg'
 
 const BalanceModule = React.memo(
   ({
@@ -27,7 +27,6 @@ const BalanceModule = React.memo(
     onRequestWithdraw,
   }) => {
     const wallet = useWallet()
-    const theme = useTheme()
     const { name: layout } = useLayout()
     const { minActiveBalance } = useCourtConfig()
 
@@ -84,8 +83,7 @@ const BalanceModule = React.memo(
                 <Balance
                   amount={effectiveInactiveBalance}
                   label="Inactive"
-                  mainIcon={inactiveANJIcon}
-                  mainIconBackground={theme.accent.alpha(0.2)}
+                  mainIcon={inactiveANTIcon}
                   actions={[
                     { label: 'Withdraw', onClick: onRequestWithdraw },
                     {
@@ -108,8 +106,7 @@ const BalanceModule = React.memo(
                 <Balance
                   amount={unlockedActiveBalance}
                   label="Active"
-                  mainIcon={activeANJIcon}
-                  mainIconBackground={`linear-gradient(35deg, ${theme.accentStart}  -75%, ${theme.accentEnd} 105%)`}
+                  mainIcon={activeANTIcon}
                   actions={[
                     { label: 'Deactivate', onClick: onRequestDeactivate },
                   ]}
@@ -141,7 +138,6 @@ const BalanceModule = React.memo(
                 amount={walletBalance && walletBalance.amount}
                 label="My wallet"
                 mainIcon={walletIcon}
-                mainIconBackground={theme.accent.alpha(0.2)}
                 actions={[
                   {
                     label: 'Activate',

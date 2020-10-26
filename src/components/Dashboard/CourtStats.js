@@ -93,12 +93,13 @@ function TokenStats({ stat, theme }) {
             `}
           >
             <img
+              height="20"
+              width="20"
+              src={icon}
+              alt=""
               css={`
                 margin-right: ${0.5 * GU}px;
               `}
-              height="20"
-              width="18"
-              src={icon}
             />
           </div>
         )}
