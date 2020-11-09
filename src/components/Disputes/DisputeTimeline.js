@@ -7,9 +7,6 @@ import DisputeRoundPill from './DisputeRoundPill'
 import Step from '../Step'
 import Stepper from '../Stepper'
 
-import { useCourtClock } from '../../providers/CourtClock'
-import { useCourtConfig } from '../../providers/CourtConfig'
-
 import {
   IconFlag,
   IconFolder,
@@ -26,22 +23,15 @@ import {
   getPhaseStringForStatus,
 } from '../../types/dispute-status-types'
 import { dateFormat } from '../../utils/date-utils'
-import { getDisputeTimeLine } from '../../utils/dispute-utils'
+import useDisputeTimeline from '../../hooks/useDisputeTimeline'
 
-const DisputeTimeline = React.memo(function DisputeTimeline({ dispute }) {
+const Timeline = React.memo(function Timeline({ timeline }) {
   const theme = useTheme()
-  const courtConfig = useCourtConfig()
-  const { currentTermId } = useCourtClock()
-  const disputeTimeLine = getDisputeTimeLine(
-    dispute,
-    courtConfig,
-    currentTermId
-  )
 
   return (
     <div>
       <Stepper lineColor={theme.accent.alpha(0.3)} lineTop={12}>
-        {disputeTimeLine.map((item, index) => {
+        {timeline.map((item, index) => {
           if (!Array.isArray(item)) {
             return <ItemStep key={index} item={item} index={index} />
           }
@@ -302,4 +292,8 @@ const StyledAccordion = styled.div`
   }
 `
 
-export default DisputeTimeline
+export default function DisputeTimeline({ dispute }) {
+  const disputeTimeLine = useDisputeTimeline(dispute)
+
+  return <Timeline timeline={disputeTimeLine} />
+}
