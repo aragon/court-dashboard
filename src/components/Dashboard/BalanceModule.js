@@ -95,7 +95,7 @@ const BalanceModule = React.memo(
                       onClick: onRequestActivate,
                     },
                   ]}
-                  activity={inactiveBalance && inactiveBalance.latestMovement}
+                  activity={inactiveBalance?.latestMovement}
                   loading={loading}
                 />
               </Box>
@@ -114,7 +114,7 @@ const BalanceModule = React.memo(
                   actions={[
                     { label: 'Deactivate', onClick: onRequestDeactivate },
                   ]}
-                  activity={activeBalance && activeBalance.latestMovement}
+                  activity={activeBalance?.latestMovement}
                   distribution={lockedBalanceDistribution}
                   loading={loading}
                 />
@@ -139,7 +139,7 @@ const BalanceModule = React.memo(
               `}
             >
               <Balance
-                amount={walletBalance && walletBalance.amount}
+                amount={walletBalance?.amount}
                 label="My wallet"
                 mainIcon={walletIcon}
                 mainIconBackground={theme.accent.alpha(0.2)}
@@ -150,7 +150,7 @@ const BalanceModule = React.memo(
                     onClick: onRequestStakeActivate,
                   },
                 ]}
-                activity={walletBalance && walletBalance.latestMovement}
+                activity={walletBalance?.latestMovement}
                 loading={loading}
               />
             </div>

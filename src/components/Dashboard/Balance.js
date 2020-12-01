@@ -17,13 +17,13 @@ import ANJIcon from '../../assets/IconANJ.svg'
 import lockIcon from '../../assets/IconLock.svg'
 
 const Balance = React.memo(function Balance({
-  label,
   amount,
-  loading,
   actions,
-  mainIcon,
   activity,
   distribution,
+  label,
+  loading,
+  mainIcon,
   mainIconBackground,
 }) {
   const theme = useTheme()
@@ -76,11 +76,11 @@ const Balance = React.memo(function Balance({
             </div>
             <div>
               <span
-                css={`      
-                ${textStyle('body2')}
-                color: ${theme.surfaceContentSecondary};
-                display:block;
-              `}
+                css={`
+                  ${textStyle('body2')};
+                  color: ${theme.surfaceContentSecondary};
+                  display: block;
+                `}
               >
                 {label}
               </span>
@@ -99,10 +99,10 @@ const Balance = React.memo(function Balance({
               </div>
               <span
                 css={`
-                ${textStyle('body4')}
-                color: ${theme.surfaceContentSecondary};
-                display:block;
-              `}
+                  ${textStyle('body4')};
+                  color: ${theme.surfaceContentSecondary};
+                  display: block;
+                `}
               >
                 $ {convertedAmount}
               </span>
@@ -218,7 +218,9 @@ const LatestActivity = ({ activity, distribution }) => {
             color: ${theme.content};
           `}
         >
-          {convertToString(activity.type, activity.direction)}
+          {activity.isImmediate && !activity.isEffective
+            ? 'Effective next term'
+            : convertToString(activity.type, activity.direction)}
         </span>
       </div>
       {distribution && <ANJLockedHelp distribution={distribution} />}
