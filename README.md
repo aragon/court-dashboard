@@ -35,6 +35,13 @@ To start populating the court with disputes, you can use the [CLI tool](https://
 
 ## Contributing
 
+Before explaining how you can contribute, It's worth mentioning that we use `develop` branch as the default one. This makes it easier for us to
+have all the latest, development changes without affecting the current production version. Though, We don't use `release` branches to make the process a little bit easier !
+ * Pushing to `develop` branch via PR deploys changes to testing environments(currently only rinkeby). 
+ * Pushing to `master` branch via PR from `develop` deploys changes to production servers(mainnet).
+ * Pushing to `master|develop` directly will be restricted to make sure the PR's are reviewed.
+ * Creating PRs end up in relation to `develop` by default.
+
 #### 👋 Get started contributing with a [good first issue](https://github.com/aragon/court-dashboard/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
 Don't be shy to contribute even the smallest tweak. 🐲 There are still some dragons to be aware of, but we'll be here to help you get started!
