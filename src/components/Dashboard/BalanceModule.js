@@ -57,6 +57,7 @@ const BalanceModule = React.memo(
             <Box
               css={`
                 border: 0;
+                background: #fffaf1;
               `}
               padding={3 * GU}
             >

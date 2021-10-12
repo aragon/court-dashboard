@@ -1,5 +1,5 @@
 import React from 'react'
-import { GU, textStyle, Timer, useTheme } from '@aragon/ui'
+import { textStyle, Timer, useTheme } from '@aragon/ui'
 import { useCourtClock } from '../../providers/CourtClock'
 
 function AccountBannerInfo({ title, titleColor = '', paragraph, showTimer }) {
@@ -18,7 +18,6 @@ function AccountBannerInfo({ title, titleColor = '', paragraph, showTimer }) {
           display: flex;
           flex-direction: column;
           justify-content: space-around;
-          height: ${7 * GU}px;
         `}
       >
         <span
