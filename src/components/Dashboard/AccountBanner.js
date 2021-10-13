@@ -9,54 +9,16 @@ import { useTotalActiveBalance } from '../../hooks/useCourtStats'
 import { useJurorFirstTimeANJActivation } from '../../hooks/useANJ'
 
 import { ACCOUNT_STATUS_JUROR_ACTIVE } from '../../types/account-status-types'
-import { formatUnits, getPercentageBN, bigNum } from '../../lib/math-utils'
+import { getPercentageBN, bigNum } from '../../lib/math-utils'
 
 import anjSpringIcon from '../../assets/IconANJSpring.svg'
-import userIcon from '../../assets/IconUser.svg'
-import gavelIcon from '../../assets/IconGavel.svg'
 import { useJurorDrafted } from '../../hooks/useJurorDrafted'
 
-const getBannerAttributes = (
-  status,
-  drafted,
-  isFirstTimeActivating,
-  minActiveBalance,
-  decimals,
-  theme
-) => {
-  if (status === ACCOUNT_STATUS_JUROR_ACTIVE) {
-    // NOTE: This one could not be included in the final version
-    if (drafted) {
-      return {
-        icon: gavelIcon,
-        iconBackground: theme.positive.alpha(0.2),
-        title: 'You have been drafted',
-        titleColor: theme.positive,
-        paragraph:
-          'You can start reviewing the evidence and then commit your vote',
-      }
-    }
-
-    if (isFirstTimeActivating) {
-      return {
-        icon: userIcon,
-        iconBackground: theme.positive.alpha(0.2),
-        title: 'You are eligible to be drafted',
-        titleColor: theme.positive,
-        paragraph: 'You are eligible to be drafted starting from the next term',
-        showTimer: true,
-      }
-    }
-
-    return { showProbability: true }
-  }
-
+const getBannerAttributes = () => {
   return {
     icon: anjSpringIcon,
-    title: 'Activate ANJ to be an active juror',
-    paragraph: `You must activate at least ${formatUnits(minActiveBalance, {
-      digits: decimals,
-    })}  ANJ to participate as a juror`,
+    title: 'Deprecation warning: ANJ Withdraws',
+    paragraph: `This version of Aragon Court is deprecated. Please deactivate your ANJ and convert it to ANT so as to use the new Aragon Court. When deactivating it, make sure you wait until the term ends to be able to withdraw it. Keep in mind that terms need to be updated manually.`,
   }
 }
 
@@ -105,8 +67,8 @@ function AccountBanner({ status, loading, minActiveBalance, activeBalance }) {
           css={`
             display: flex;
             align-items: center;
+            justify-content: center;
             background: ${iconBackground};
-            height: ${7 * GU}px;
             width: ${iconBackground ? 7 * GU + 'px' : 'auto'};
             border-radius: 50%;
           `}
@@ -242,7 +204,7 @@ const BannerWithProbability = ({ activeBalance }) => {
 
   return (
     <Wrapper
-      mainIcon={<CircleGraph value={draftingProbability} size={7 * GU} />}
+      mainIcon={<CircleGraph value={draftingProbability} />}
       information={<AccountBannerInfo title={title} paragraph={paragraph} />}
     />
   )
