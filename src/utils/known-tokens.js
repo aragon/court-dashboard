@@ -47,7 +47,7 @@ export const KNOWN_TOKEN_BY_ENV = {
       symbol: 'DAI',
     },
     rinkeby: {
-      address: '0xe9A083D88Eed757B1d633321Ce0519F432c6284d',
+      address: '0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa',
       decimals: 18,
       symbol: 'DAI',
     },
