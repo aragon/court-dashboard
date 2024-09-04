@@ -40,6 +40,9 @@ const ENV_VARS = {
   SUBGRAPH_NAME() {
     return process.env.REACT_APP_SUBGRAPH_NAME
   },
+  SUBGRAPH_API_KEY() {
+    return process.env.REACT_APP_SUBGRAPH_API_KEY
+  }
 }
 
 export default function env(name) {
