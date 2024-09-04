@@ -1,0 +1,14 @@
+{
+  "site": {
+    "id": "ab7ece00-24a5-4eda-a04a-4d95041f35d8",
+    "team": "aragonone-team",
+    "platform": "ipfs",
+    "source": "ipfs",
+    "name": "weathered-waterfall-1004"
+  },
+  "build": {
+    "baseDir": "",
+    "publicDir": "build",
+    "rootDir": ""
+  }
+}
