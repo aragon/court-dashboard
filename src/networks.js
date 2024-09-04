@@ -16,7 +16,7 @@ export const networkConfigs = {
     nodes: {
       defaultEth: 'https://mainnet.eth.aragon.network/',
       subgraph:
-        `https://gateway-arbitrum.network.thegraph.com/api/${environment('SUBGRAPH_API_KEY')}/subgraphs/id/5vVqwtdSwUFE4UL5zCR1GShhEMMinM1GoNB8dendRUdd`,
+        `https://gateway-arbitrum.network.thegraph.com/api/762a88cfd125b9b89ccf312eb6b268ee/subgraphs/id/5vVqwtdSwUFE4UL5zCR1GShhEMMinM1GoNB8dendRUdd`,
     },
   },
   rinkeby: {

@@ -41,7 +41,7 @@ const ENV_VARS = {
     return process.env.REACT_APP_SUBGRAPH_NAME
   },
   SUBGRAPH_API_KEY() {
-    return process.env.REACT_APP_SUBGRAPH_API_KEY || '762a88cfd125b9b89ccf312eb6b268ee'
+    return process.env.REACT_APP_SUBGRAPH_API_KEY
   }
 }
 
